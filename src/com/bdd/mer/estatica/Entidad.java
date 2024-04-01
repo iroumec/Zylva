@@ -3,10 +3,11 @@ package com.bdd.mer.estatica;
 import com.bdd.mer.estatica.atributo.Atributo;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entidad implements Arrastrable {
+public class Entidad implements Arrastrable, Serializable {
     String nombre;
     int x, y; // Posición del centro del rectángulo
     int ancho = 100, alto = 50; // Ancho y alto del rectángulo
@@ -15,6 +16,8 @@ public class Entidad implements Arrastrable {
     private List<Relacion> relaciones;
     private boolean entidadDebil = false;
     private boolean tieneIDPrincipal = false;
+    private boolean superTipo;
+    private boolean subTipo;
 
     public Entidad(String nombre, int x, int y) {
         this.nombre = nombre;
@@ -160,5 +163,21 @@ public class Entidad implements Arrastrable {
 
     public boolean tieneIDPrincipal() {
         return tieneIDPrincipal;
+    }
+
+    public boolean isSuperTipo() {
+        return superTipo;
+    }
+
+    public void setSuperTipo(boolean superTipo) {
+        this.superTipo = superTipo;
+    }
+
+    public boolean isSubTipo() {
+        return subTipo;
+    }
+
+    public void setSubTipo(boolean subTipo) {
+        this.subTipo = subTipo;
     }
 }

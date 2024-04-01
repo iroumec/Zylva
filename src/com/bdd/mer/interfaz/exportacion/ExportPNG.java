@@ -3,6 +3,7 @@ package com.bdd.mer.interfaz.exportacion;
 import com.bdd.mer.interfaz.PanelDibujo;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,8 +22,19 @@ public final class ExportPNG {
             panelDibujo.paint(g);
             g.dispose();
 
-            // Escribe la imagen en un archivo
-            ImageIO.write(imagen, "PNG", new File(LocalDate.now().toString() + ".png"));
+            // Crea un JFileChooser
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Especifica un archivo para guardar");
+
+            // Muestra el diálogo de guardar archivo
+            int userSelection = fileChooser.showSaveDialog(null);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+
+                // Escribe la imagen en un archivo
+                ImageIO.write(imagen, "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

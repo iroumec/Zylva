@@ -1,8 +1,9 @@
 package com.bdd.mer.estatica.atributo;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Atributo {
+public class Atributo implements Serializable {
 
     private String nombre;
     private boolean multivaluado;

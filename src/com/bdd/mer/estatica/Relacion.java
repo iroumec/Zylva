@@ -4,10 +4,11 @@ import com.bdd.mer.estatica.atributo.Atributo;
 import com.bdd.mer.estatica.coleccion.Dupla;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relacion implements Arrastrable {
+public class Relacion implements Arrastrable, Serializable {
     private String nombre;
     private List<Dupla<Arrastrable, Dupla<Character, Character>>> entidades;
     private int x, y, diagonalHorizontal, diagonalVertical; // Posición del centro del rombo

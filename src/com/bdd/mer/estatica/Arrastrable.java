@@ -14,8 +14,6 @@ public interface Arrastrable {
 
     public void setY(int y);
 
-    public void agregarAtributo(Atributo atributo);
-
     public int getX();
 
     public int getY();

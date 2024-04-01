@@ -1,11 +1,11 @@
 package com.bdd.mer.interfaz.anotacion;
 
 import com.bdd.mer.estatica.Arrastrable;
-import com.bdd.mer.estatica.atributo.Atributo;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Nota implements Arrastrable {
+public class Nota implements Arrastrable, Serializable {
     private String texto;
 
     int ancho = 100, alto = 50; // Ancho y alto del rectángulo
@@ -85,11 +85,6 @@ public class Nota implements Arrastrable {
     @Override
     public void setY(int y) {
         this.y = y;
-    }
-
-    @Override
-    public void agregarAtributo(Atributo atributo) {
-        // Do nothing
     }
 
     @Override

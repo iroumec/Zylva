@@ -2,6 +2,7 @@ package com.bdd.mer.interfaz;
 
 import com.bdd.mer.estatica.Arrastrable;
 import com.bdd.mer.estatica.Entidad;
+import com.bdd.mer.estatica.Jerarquia;
 import com.bdd.mer.estatica.Relacion;
 import com.bdd.mer.interfaz.anotacion.Nota;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 public class PanelDibujo extends JPanel {
     List<Entidad> entidades = new ArrayList<>();
     List<Relacion> relaciones = new ArrayList<>();
+    List<Jerarquia> jerarquias = new ArrayList<>();
     List<Nota> notas = new ArrayList<>();
     private boolean seleccionando = false;
     private Arrastrable componenteArrastrada = null;
@@ -91,6 +93,13 @@ public class PanelDibujo extends JPanel {
                             break;
                         }
                     }
+                    for (Jerarquia jerarquia : jerarquias) {
+                        if (jerarquia.getBounds().contains(e.getPoint())) {
+                            componenteArrastrada = jerarquia;
+                            componenteArrastrada.setSeleccionada(Boolean.FALSE);
+                            break;
+                        }
+                    }
                     for (Nota nota : notas) {
                         if (nota.getBounds().contains(e.getPoint())) {
                             componenteArrastrada = nota;
@@ -132,6 +141,10 @@ public class PanelDibujo extends JPanel {
 
         for (Relacion relacion : relaciones) {
             relacion.dibujar(g);
+        }
+
+        for (Jerarquia jerarquia : jerarquias) {
+            jerarquia.dibujar(g);
         }
 
         for (Entidad entidad : entidades) {
@@ -183,6 +196,52 @@ public class PanelDibujo extends JPanel {
 
         // Si hago un clear, borro las referencias a las entidades y no
         // se dibujan las líneas
+        componentesSeleccionadas = new ArrayList<>();
+    }
+
+    public void agregarJerarquia(Jerarquia nuevaJerarquia) {
+        this.jerarquias.add(nuevaJerarquia);
+    }
+
+    public List<Entidad> getEntidades() {
+        return entidades;
+    }
+
+    public List<Relacion> getRelaciones() {
+        return relaciones;
+    }
+
+    public List<Jerarquia> getJerarquias() {
+        return jerarquias;
+    }
+
+    public List<Nota> getNotas() {
+        return notas;
+    }
+
+    public void setEntidades(List<Entidad> entidades) {
+        this.entidades = entidades;
+    }
+
+    public void setRelaciones(List<Relacion> relaciones) {
+        this.relaciones = relaciones;
+    }
+
+    public void setJerarquias(List<Jerarquia> jerarquias) {
+        this.jerarquias = jerarquias;
+    }
+
+    public void setNotas(List<Nota> notas) {
+        this.notas = notas;
+    }
+
+    public void reiniciar() {
+        entidades = new ArrayList<>();
+        relaciones = new ArrayList<>();
+        jerarquias = new ArrayList<>();
+        notas = new ArrayList<>();
+        seleccionando = false;
+        componenteArrastrada = null;
         componentesSeleccionadas = new ArrayList<>();
     }
 }
