@@ -10,11 +10,11 @@ import java.util.List;
 
 public class Relacion implements Arrastrable, Serializable {
     private String nombre;
-    private List<Dupla<Arrastrable, Dupla<Character, Character>>> entidades;
+    private final List<Dupla<Arrastrable, Dupla<Character, Character>>> entidades;
     private int x, y, diagonalHorizontal, diagonalVertical; // Posición del centro del rombo
     private final Polygon forma;
     private boolean seleccionada = false;
-    private List<Atributo> atributos;
+    private final List<Atributo> atributos;
     private boolean formaDefinida = false;
     private boolean diagonalDefinida = false;
 
@@ -41,7 +41,7 @@ public class Relacion implements Arrastrable, Serializable {
         Graphics2D g2 = (Graphics2D) g;
 
         // Cambia la fuente del texto
-        g2.setFont(new Font("Verdana", Font.BOLD, 10));
+        g2.setFont(new Font("Verdana", Font.BOLD, 12));
 
         // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
@@ -81,9 +81,9 @@ public class Relacion implements Arrastrable, Serializable {
         // Define la forma del polígono y me aseguro de hacerlo una sola vez
         // Si no hago esto, el polígono titila al mover las entidades
         if (!formaDefinida) {
-            forma.addPoint(x, y - diagonalVertical / 2 + 10); // Punto superior
+            forma.addPoint(x, y - diagonalVertical / 2 + 8); // Punto superior
             forma.addPoint(x + diagonalHorizontal / 2, y); // Punto derecho
-            forma.addPoint(x, y + diagonalVertical / 2 - 10); // Punto inferior
+            forma.addPoint(x, y + diagonalVertical / 2 - 8); // Punto inferior
             forma.addPoint(x - diagonalHorizontal / 2, y); // Punto izquierdo
             formaDefinida = true;
         }
@@ -94,6 +94,11 @@ public class Relacion implements Arrastrable, Serializable {
             g2.setStroke(new BasicStroke(3));
         } else {
             g2.setColor(Color.BLACK);
+        }
+
+        // Dibuja los atributos y las líneas de conexión
+        for (int i = 0; i < atributos.size(); i++) {
+            atributos.get(i).dibujar(g2, this.x, this.y, i);
         }
 
         // Dibuja el rombo
@@ -155,5 +160,10 @@ public class Relacion implements Arrastrable, Serializable {
     @Override
     public int getY() {
         return y;
+    }
+
+    @Override
+    public void setText(String newText) {
+        this.nombre = newText;
     }
 }

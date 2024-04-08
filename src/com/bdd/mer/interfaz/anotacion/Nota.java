@@ -3,16 +3,17 @@ package com.bdd.mer.interfaz.anotacion;
 import com.bdd.mer.estatica.Arrastrable;
 
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
 
 public class Nota implements Arrastrable, Serializable {
-    private String texto;
+    private String text;
 
     int ancho = 100, alto = 50; // Ancho y alto del rectángulo
     int x, y; // Centro de la nota
 
-    public Nota(String texto, int x, int y) {
-        this.texto = texto;
+    public Nota(String text, int x, int y) {
+        this.text = text;
         this.x = x;
         this.y = y;
     }
@@ -27,7 +28,7 @@ public class Nota implements Arrastrable, Serializable {
 
         // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
-        int anchoTexto = fm.stringWidth(texto);
+        int anchoTexto = fm.stringWidth(text);
         int altoTexto = fm.getHeight();
 
         // Calcula la posición del texto para centrarlo en el recuadro
@@ -54,17 +55,18 @@ public class Nota implements Arrastrable, Serializable {
         int rectAlto = altoTexto + 2 * margen;
 
         // Dibuja el rectángulo
-        g2.drawRect(rectX, rectY, rectAncho, rectAlto);
+        g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 10, 10);
 
         // Rellena el rectángulo
         g2.setColor(new Color(253,253,150));
-        g2.fillRect(rectX, rectY, rectAncho, rectAlto);
+        g2.fill(new RoundRectangle2D.Double(rectX, rectY, rectAncho, rectAlto, 10, 10));
+        //g2.fillRect(rectX, rectY, rectAncho, rectAlto);
 
         // Restablece el color de dibujo a negro
         g2.setColor(Color.BLACK);
 
         // Dibuja el nombre de la entidad
-        g2.drawString(texto, xTexto, yTexto);
+        g2.drawString(text, xTexto, yTexto);
     }
 
     @Override
@@ -96,4 +98,10 @@ public class Nota implements Arrastrable, Serializable {
     public int getY() {
         return this.y;
     }
+
+    @Override
+    public void setText(String newText) {
+        this.text = newText;
+    }
+
 }

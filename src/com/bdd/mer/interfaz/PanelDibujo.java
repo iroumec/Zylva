@@ -5,6 +5,7 @@ import com.bdd.mer.estatica.Entidad;
 import com.bdd.mer.estatica.Jerarquia;
 import com.bdd.mer.estatica.Relacion;
 import com.bdd.mer.interfaz.anotacion.Nota;
+import com.bdd.mer.interfaz.popup.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +25,10 @@ public class PanelDibujo extends JPanel {
     public PanelDibujo() {
 
         this.setOpaque(Boolean.TRUE);
+        // Aesthetic brown
         this.setBackground(new Color(213,201,188));
+        // Aesthetic blue
+        this.setBackground(new Color(215, 239, 249));
 
         /* NUNCA PUDE HACERLO FUNCIONAR
         // Asigna la acción de comenzar la selección a la tecla Ctrl
@@ -51,6 +55,9 @@ public class PanelDibujo extends JPanel {
                 repaint();
             }
         });
+
+        PopupMenu popupMenuAttribute = new PopupMenu(this, true, true, true);
+        PopupMenu popupMenuNonAttribute = new PopupMenu(this, false, true, true);
 
         // Agrega un controlador de eventos de mouse
         addMouseListener(new MouseAdapter() {
@@ -108,6 +115,7 @@ public class PanelDibujo extends JPanel {
                         }
                     }
                 }
+                mostrarMenu(e);
             }
 
             @Override
@@ -118,6 +126,53 @@ public class PanelDibujo extends JPanel {
                 }
                 componenteArrastrada = null;
                 repaint();
+
+                mostrarMenu(e);
+            }
+
+            private void mostrarMenu(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    // Comprobar si el clic fue sobre un arrastrable
+                    for (Entidad entidad : entidades) {
+                        if (entidad.getBounds().contains(e.getPoint())) {
+                            // Defino la entidad sobre la que se hizo click derecho
+                            popupMenuAttribute.setObject(entidad);
+                            // Si el clic fue sobre una entidad, muestra el menú emergente
+                            popupMenuAttribute.show(e.getComponent(), e.getX(), e.getY());
+                            repaint();
+                            break;
+                        }
+                    }
+                    for (Relacion relacion : relaciones) {
+                        if (relacion.getBounds().contains(e.getPoint())) {
+                            // Defino la entidad sobre la que se hizo click derecho
+                            popupMenuAttribute.setObject(relacion);
+                            // Si el clic fue sobre una entidad, muestra el menú emergente
+                            popupMenuAttribute.show(e.getComponent(), e.getX(), e.getY());
+                            repaint();
+                            break;
+                        }
+                    }
+                    for (Jerarquia jerarquia : jerarquias) {
+                        if (jerarquia.getBounds().contains(e.getPoint())) {
+                            // Defino la jerarquía sobre la que se hizo click derecho
+                            popupMenuNonAttribute.setObject(jerarquia);
+                            // Si el clic fue una sobre una jerarquía, muestra el menú emergente
+                            popupMenuNonAttribute.show(e.getComponent(),e.getX(),e.getY());
+                            repaint();
+                            break;
+                        }
+                    }
+                    for (Nota note : notas) {
+                        if (note.getBounds().contains(e.getPoint())) {
+                            popupMenuNonAttribute.setObject(note);
+                            popupMenuNonAttribute.show(e.getComponent(), e.getX(), e.getY());
+                            repaint();
+                            break;
+                        }
+                    }
+                }
+
             }
         });
 
@@ -181,6 +236,11 @@ public class PanelDibujo extends JPanel {
         repaint();
     }
 
+    public void deleteNote(Nota note) {
+        notas.remove(note);
+        repaint();
+    }
+
     public void setSeleccionando(boolean seleccionando) {
         this.seleccionando = seleccionando;
     }
@@ -201,6 +261,11 @@ public class PanelDibujo extends JPanel {
 
     public void agregarJerarquia(Jerarquia nuevaJerarquia) {
         this.jerarquias.add(nuevaJerarquia);
+    }
+
+    public void deleteHierarchy(Jerarquia hierarchy) {
+        jerarquias.remove(hierarchy);
+        repaint();
     }
 
     public List<Entidad> getEntidades() {
@@ -243,5 +308,21 @@ public class PanelDibujo extends JPanel {
         seleccionando = false;
         componenteArrastrada = null;
         componentesSeleccionadas = new ArrayList<>();
+    }
+
+    /*
+    El método corrobora que todos los objetos Arrastrable seleccionados son entidades y
+    aún no se hallan en ninguna jerarquía.
+
+    El MER no soporta herencia múltiple.
+     */
+    public boolean participaSoloEntidades() {
+        for (Arrastrable a : componentesSeleccionadas) {
+            if (!a.getClass().toString().equals("class com.bdd.mer.estatica.Entidad")) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

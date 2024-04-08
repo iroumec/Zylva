@@ -2,11 +2,12 @@ package com.bdd.mer.estatica;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Jerarquia implements Arrastrable, Serializable {
     private String nombre = "";
-    int x = 150, y = 150, radio; // Centro del óvalo
+    int x, y, radio; // Centro del óvalo
     private boolean exclusiva;
     private boolean total;
     private Entidad superTipo;
@@ -19,6 +20,8 @@ public class Jerarquia implements Arrastrable, Serializable {
         this.total = total;
         this.superTipo = superTipo;
         this.subTipos = subTipos;
+        this.x = superTipo.getX();
+        this.y = superTipo.getY() + 50;
     }
 
     public void dibujar(Graphics g) {
@@ -98,6 +101,11 @@ public class Jerarquia implements Arrastrable, Serializable {
         return this.y;
     }
 
+    @Override
+    public void setText(String newText) {
+        this.nombre = newText;
+    }
+
     /*
     En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
     de los subtipos.
@@ -118,5 +126,11 @@ public class Jerarquia implements Arrastrable, Serializable {
      */
     public boolean isExclusiva() {
         return this.exclusiva;
+    }
+
+    public List<Entidad> getEntitiesList() {
+        List<Entidad> l = new ArrayList<>(subTipos);
+        l.add(superTipo);
+        return l;
     }
 }

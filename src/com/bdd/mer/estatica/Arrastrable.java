@@ -17,4 +17,6 @@ public interface Arrastrable {
     public int getX();
 
     public int getY();
+
+    public void setText(String newText);
 }

@@ -1,4 +1,4 @@
-package com.bdd.mer.interfaz.exportacion;
+package com.bdd.mer.interfaz.barraDeMenu.exportacion;
 
 import com.bdd.mer.interfaz.PanelDibujo;
 
@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 
 public final class ExportPNG {
 

@@ -14,10 +14,13 @@ public class Entidad implements Arrastrable, Serializable {
     boolean seleccionada = false;
     private List<Atributo> atributos;
     private List<Relacion> relaciones;
+    private List<Jerarquia> hierarchies;
     private boolean entidadDebil = false;
     private boolean tieneIDPrincipal = false;
     private boolean superTipo;
     private boolean subTipo;
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public Entidad(String nombre, int x, int y) {
         this.nombre = nombre;
@@ -26,7 +29,10 @@ public class Entidad implements Arrastrable, Serializable {
 
         atributos = new ArrayList<>();
         relaciones = new ArrayList<>();
+        hierarchies = new ArrayList<>();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void dibujar(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
@@ -89,29 +95,56 @@ public class Entidad implements Arrastrable, Serializable {
         g2.drawString(nombre, xTexto, yTexto);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public Rectangle getBounds() {
         return new Rectangle(x - ancho / 2, y - alto / 2, ancho, alto);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void agregarAtributo(Atributo atributo) {
         this.atributos.add(atributo);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void agregarRelacion(Relacion relacion) { this.relaciones.add(relacion); }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public List<Relacion> getRelaciones() { return this.relaciones; }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public List<Jerarquia> getHeriarchiesList() { return this.hierarchies; }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public int getX() {
         return x;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void setX(int x) {
         this.x = x;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public int getY() {
         return y;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void setText(String newText) {
+        this.nombre = newText;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void setY(int y) {
         this.y = y;
@@ -179,5 +212,23 @@ public class Entidad implements Arrastrable, Serializable {
 
     public void setSubTipo(boolean subTipo) {
         this.subTipo = subTipo;
+    }
+
+    public void addHierarchy(Jerarquia hierarchy) {
+        hierarchies.add(hierarchy);
+    }
+
+    public void removeHierarchy(Jerarquia hierarchy) {
+        hierarchies.remove(hierarchy);
+    }
+
+    public Atributo hasMainAttribute() {
+        for (Atributo a : atributos) {
+            if (a.isMain()) {
+                return a;
+            }
+        }
+
+        return null;
     }
 }

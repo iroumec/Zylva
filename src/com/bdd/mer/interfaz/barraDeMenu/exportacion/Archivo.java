@@ -1,4 +1,4 @@
-package com.bdd.mer.interfaz.exportacion;
+package com.bdd.mer.interfaz.barraDeMenu.exportacion;
 
 import com.bdd.mer.estatica.Entidad;
 import com.bdd.mer.estatica.Jerarquia;

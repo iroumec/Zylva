@@ -24,9 +24,9 @@ public class Atributo implements Serializable {
 
 
         String nombreAMostrar;
-        if (tipo == TipoAtributo.PRINCIPAL) {
+        if (tipo == TipoAtributo.MAIN) {
             nombreAMostrar = "P - " + this.nombre;
-        } else if (tipo == TipoAtributo.ALTERNATIVO) {
+        } else if (tipo == TipoAtributo.ALTERNATIVE) {
             nombreAMostrar = "A - " + this.nombre;
         } else {
             nombreAMostrar = "C - " + this.nombre;
@@ -63,4 +63,8 @@ public class Atributo implements Serializable {
     public void setTipo(TipoAtributo tipo) {
         this.tipo = tipo;
     }
+
+    public TipoAtributo getType() { return this.tipo; }
+
+    public boolean isMain() { return (this.tipo == TipoAtributo.MAIN); }
 }
