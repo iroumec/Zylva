@@ -1,11 +1,10 @@
 package com.bdd.mer.interfaz.popup;
 
-import com.bdd.mer.estatica.Arrastrable;
+import com.bdd.mer.estatica.Component;
 import com.bdd.mer.estatica.Entidad;
 import com.bdd.mer.estatica.Relacion;
 import com.bdd.mer.estatica.atributo.Atributo;
 import com.bdd.mer.estatica.atributo.TipoAtributo;
-import com.bdd.mer.estatica.coleccion.Dupla;
 import com.bdd.mer.interfaz.PanelDibujo;
 
 import javax.swing.*;
@@ -20,7 +19,7 @@ public class addAtributeMenuItem extends JMenuItem {
         this.popupMenu = popupMenu;
 
         addActionListener(_ -> {
-            Arrastrable object = popupMenu.getObject();
+            Component object = popupMenu.getObject();
 
             // Crea los componentes del panel
             JTextField fieldNombre = new JTextField(10);
@@ -55,12 +54,12 @@ public class addAtributeMenuItem extends JMenuItem {
                             }
                         }
 
-                        ((Entidad) object).agregarAtributo(new Atributo(nombre,
+                        ((Entidad) object).agregarAtributo(new Atributo((Entidad) object, nombre,
                                 boxOpcional.isSelected(),
                                 boxMultivaluado.isSelected(),
                                 attributeType));
                     } else if (object.getClass().toString().equals("class com.bdd.mer.estatica.Relacion")) {
-                            ((Relacion) object).agregarAtributo(new Atributo(nombre,
+                            ((Relacion) object).agregarAtributo(new Atributo((Relacion) object, nombre,
                                     boxOpcional.isSelected(),
                                     boxMultivaluado.isSelected(),
                                     attributeType));

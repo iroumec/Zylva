@@ -1,6 +1,8 @@
 package com.bdd.mer.estatica.coleccion;
 
-public class Dupla<T, U> {
+import java.io.Serializable;
+
+public class Dupla<T, U> implements Serializable {
     private final T primero;
     private final U segundo;
 

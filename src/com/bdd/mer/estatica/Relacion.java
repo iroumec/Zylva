@@ -8,9 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relacion implements Arrastrable, Serializable {
+public class Relacion implements Component, Serializable {
     private String nombre;
-    private final List<Dupla<Arrastrable, Dupla<Character, Character>>> entidades;
+    private final List<Dupla<Component, Dupla<Character, Character>>> entidades;
     private int x, y, diagonalHorizontal, diagonalVertical; // Posición del centro del rombo
     private final Polygon forma;
     private boolean seleccionada = false;
@@ -18,12 +18,12 @@ public class Relacion implements Arrastrable, Serializable {
     private boolean formaDefinida = false;
     private boolean diagonalDefinida = false;
 
-    public Relacion(String nombre, List<Dupla<Arrastrable, Dupla<Character, Character>>> entidades, int x, int y) {
+    public Relacion(String nombre, List<Dupla<Component, Dupla<Character, Character>>> entidades, int x, int y) {
 
         this.nombre = nombre;
         this.entidades = entidades;
 
-        for (Dupla<Arrastrable, Dupla<Character, Character>> dupla : entidades) {
+        for (Dupla<Component, Dupla<Character, Character>> dupla : entidades) {
             ((Entidad) dupla.getPrimero()).agregarRelacion(this);
         }
 
@@ -41,7 +41,7 @@ public class Relacion implements Arrastrable, Serializable {
         Graphics2D g2 = (Graphics2D) g;
 
         // Cambia la fuente del texto
-        g2.setFont(new Font("Verdana", Font.BOLD, 12));
+        g2.setFont(new Font("Verdana", Font.BOLD, 10));
 
         // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
@@ -53,13 +53,16 @@ public class Relacion implements Arrastrable, Serializable {
         int yTexto = y + altoTexto / 2;
 
         // Cambia el grosor del recuadro
-        g2.setStroke(new BasicStroke(2));
+        g2.setStroke(new BasicStroke(1));
 
         // Dibuja el recuadro de la entidad
         int margen = 20; // Margen alrededor del texto
 
+        // Aplica suavizado a las líneas
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
         // Dibuja una línea desde el centro de la relación hasta el centro de cada entidad
-        for (Dupla<Arrastrable, Dupla<Character, Character>> dupla : entidades) {
+        for (Dupla<Component, Dupla<Character, Character>> dupla : entidades) {
             g2.drawLine(x, y, dupla.getPrimero().getX(), dupla.getPrimero().getY());
             // Si es débil, dibuja dos líneas.
             if (((Entidad) dupla.getPrimero()).isDebil()) {
@@ -98,7 +101,7 @@ public class Relacion implements Arrastrable, Serializable {
 
         // Dibuja los atributos y las líneas de conexión
         for (int i = 0; i < atributos.size(); i++) {
-            atributos.get(i).dibujar(g2, this.x, this.y, i);
+            atributos.get(i).dibujar(g2, this.x, this.y, i, false);
         }
 
         // Dibuja el rombo
@@ -110,6 +113,9 @@ public class Relacion implements Arrastrable, Serializable {
 
         g2.setColor(Color.BLACK);
         g2.drawString(nombre, xTexto, yTexto); // Dibuja el nombre de la relación
+
+        // Libera los recursos utilizados por g2
+        //g2.dispose();
     }
 
     public Rectangle getBounds() {
@@ -138,7 +144,13 @@ public class Relacion implements Arrastrable, Serializable {
         this.atributos.add(atributo);
     }
 
-    public List<Dupla<Arrastrable, Dupla<Character, Character>>> getEntidades() { return this.entidades; }
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void removeAttribute(Atributo attribute) {this.atributos.remove(attribute); }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public List<Dupla<Component, Dupla<Character, Character>>> getEntidades() { return this.entidades; }
 
     @Override
     public void setX(int x) {

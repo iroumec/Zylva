@@ -1,12 +1,12 @@
 package com.bdd.mer.interfaz.anotacion;
 
-import com.bdd.mer.estatica.Arrastrable;
+import com.bdd.mer.estatica.Component;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
 
-public class Nota implements Arrastrable, Serializable {
+public class Nota implements Component, Serializable {
     private String text;
 
     int ancho = 100, alto = 50; // Ancho y alto del rectángulo
@@ -40,6 +40,9 @@ public class Nota implements Arrastrable, Serializable {
 
         // Dibuja el recuadro de la entidad
         int margen = 10; // Margen alrededor del texto
+
+        // Aplica suavizado a las líneas
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
         if (seleccionada) {

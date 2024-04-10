@@ -5,13 +5,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Jerarquia implements Arrastrable, Serializable {
+public class Jerarquia implements Component, Serializable {
     private String nombre = "";
     int x, y, radio; // Centro del óvalo
-    private boolean exclusiva;
-    private boolean total;
-    private Entidad superTipo;
-    private List<Entidad> subTipos;
+    private final boolean exclusiva;
+    private final boolean total;
+    private final Entidad superTipo;
+    private final List<Entidad> subTipos;
     private boolean seleccionada = false;
 
     public Jerarquia(String nombre, boolean exclusiva, boolean total, Entidad superTipo, List<Entidad> subTipos) {
@@ -46,6 +46,9 @@ public class Jerarquia implements Arrastrable, Serializable {
         // Calcula el diámetro del círculo basado en el tamaño del texto
         int diameter = Math.max(textWidth, textHeight) + 10;
         this.radio = diameter/2;
+
+        // Aplica suavizado a las líneas
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Dibuja la línea al supertipo
         g2.drawLine(this.x, this.y, superTipo.getX(), superTipo.getY());

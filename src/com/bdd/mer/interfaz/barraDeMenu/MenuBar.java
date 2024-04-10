@@ -56,6 +56,26 @@ public class MenuBar extends JMenuBar {
         });
         cleanFrameButton.setBorderPainted(Boolean.FALSE);
 
-        add(cleanFrameButton);
+        // Añado un botón para aprender
+        JButton tipsButton = new JButton("Help");
+        tipsButton.addActionListener(_ -> {
+            JOptionPane.showMessageDialog(null, "You can press Supr to delete all selected components \n\n Zilva DERExt was made by Iñaki Roumec");
+        });
+        add(tipsButton);
+        // Al pasar el mouse por encima, el fondo se coloca en rojo
+        tipsButton.setBackground(UIManager.getColor("control"));
+        tipsButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                tipsButton.setBackground(new Color(215, 239, 249));
+            }
+
+            // Cuando saco el puntero, el botón vuelve a su color original
+            public void mouseExited(MouseEvent e) {
+                tipsButton.setBackground(UIManager.getColor("control"));
+            }
+        });
+        tipsButton.setBorderPainted(Boolean.FALSE);
+
+        add(tipsButton);
     }
 }

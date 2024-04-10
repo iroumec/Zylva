@@ -7,16 +7,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entidad implements Arrastrable, Serializable {
+public class Entidad implements Component, Serializable {
     String nombre;
     int x, y; // Posición del centro del rectángulo
     int ancho = 100, alto = 50; // Ancho y alto del rectángulo
     boolean seleccionada = false;
-    private List<Atributo> atributos;
-    private List<Relacion> relaciones;
-    private List<Jerarquia> hierarchies;
+    private final List<Atributo> atributos;
+    private final List<Relacion> relaciones;
+    private final List<Jerarquia> hierarchies;
+    private final List<MacroEntity> macroEntities;
     private boolean entidadDebil = false;
-    private boolean tieneIDPrincipal = false;
     private boolean superTipo;
     private boolean subTipo;
 
@@ -30,6 +30,7 @@ public class Entidad implements Arrastrable, Serializable {
         atributos = new ArrayList<>();
         relaciones = new ArrayList<>();
         hierarchies = new ArrayList<>();
+        macroEntities = new ArrayList<>();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -55,7 +56,10 @@ public class Entidad implements Arrastrable, Serializable {
         // Dibuja el recuadro de la entidad
         int margen = 10; // Margen alrededor del texto
 
-        // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
+        // Aplica suavizado a las líneas
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Cambia el color de dibujo basándote si la entidad está seleccionada o no
         if (seleccionada) {
             g2.setColor(Color.CYAN);
             g2.setStroke(new BasicStroke(3));
@@ -68,9 +72,12 @@ public class Entidad implements Arrastrable, Serializable {
         int rectAncho = anchoTexto + 2 * margen;
         int rectAlto = altoTexto + 2 * margen;
 
+        // Variable para la colocación de atributos compuestos
+        int espaciosExtras = 0;
         // Dibuja los atributos y las líneas de conexión
         for (int i = 0; i < atributos.size(); i++) {
-            atributos.get(i).dibujar(g2, this.x, this.y, i);
+            atributos.get(i).dibujar(g2, this.x, this.y, i + espaciosExtras, false);
+            espaciosExtras += atributos.get(i).getNumberOfComponents();
         }
 
         // Dibuja el rectángulo
@@ -78,10 +85,12 @@ public class Entidad implements Arrastrable, Serializable {
 
         // Dibuja un rectángulo exterior si la entidad es débil
         if (entidadDebil) {
-            g2.drawRect(rectX - 5, rectY - 5, rectAncho + 10, rectAlto + 10);
             // Rellena el rectángulo
-            g2.setColor(Color.BLACK);
+            g2.setColor(new Color(215, 239, 249));
             g2.fillRect(rectX - 5, rectY - 5, rectAncho + 10, rectAlto + 10);
+            // Dibuja el rectángulo
+            g2.setColor(Color.BLACK);
+            g2.drawRect(rectX - 5, rectY - 5, rectAncho + 10, rectAlto + 10);
         }
 
         // Rellena el rectángulo
@@ -103,13 +112,23 @@ public class Entidad implements Arrastrable, Serializable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void agregarAtributo(Atributo atributo) {
-        this.atributos.add(atributo);
-    }
+    public void agregarAtributo(Atributo atributo) { this.atributos.add(atributo); }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void removeAttribute(Atributo attribute) {this.atributos.remove(attribute); }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public List<Atributo> getAttributes() { return this.atributos; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void agregarRelacion(Relacion relacion) { this.relaciones.add(relacion); }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void removeRelation(Relacion relation) { relaciones.remove(relation); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -158,22 +177,6 @@ public class Entidad implements Arrastrable, Serializable {
         this.nombre = nombre;
     }
 
-    public int getAncho() {
-        return ancho;
-    }
-
-    public void setAncho(int ancho) {
-        this.ancho = ancho;
-    }
-
-    public int getAlto() {
-        return alto;
-    }
-
-    public void setAlto(int alto) {
-        this.alto = alto;
-    }
-
     public void setSeleccionada(boolean seleccionada) {
         this.seleccionada = seleccionada;
     }
@@ -184,18 +187,6 @@ public class Entidad implements Arrastrable, Serializable {
 
     public boolean isDebil() {
         return entidadDebil;
-    }
-
-    public List<Atributo> getAtributos() {
-        return atributos;
-    }
-
-    public void setTieneIDPrincipal(boolean tieneIDPrincipal) {
-        this.tieneIDPrincipal = tieneIDPrincipal;
-    }
-
-    public boolean tieneIDPrincipal() {
-        return tieneIDPrincipal;
     }
 
     public boolean isSuperTipo() {
