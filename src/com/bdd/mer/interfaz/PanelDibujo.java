@@ -19,30 +19,22 @@ public class PanelDibujo extends JPanel {
     List<Relacion> relaciones = new ArrayList<>();
     List<Jerarquia> jerarquias = new ArrayList<>();
     List<Nota> notas = new ArrayList<>();
-    private boolean seleccionando = false;
     private Component componenteArrastrada = null;
     private Set<Component> componentesSeleccionadas = new HashSet<>();
     private final Rectangle selectionArea;
+    private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
+
+    // Me sirve para cuando coloco componentes apretando una combinación de teclas
+    private int mouseX, mouseY;
 
     public PanelDibujo() {
 
         this.setOpaque(Boolean.TRUE);
         // Aesthetic brown
-        this.setBackground(new Color(213, 201, 188));
+        //this.setBackground(new Color(213, 201, 188));
         // Aesthetic blue
         this.setBackground(new Color(215, 239, 249));
-
-        /* NUNCA PUDE HACERLO FUNCIONAR
-        // Asigna la acción de comenzar la selección a la tecla Ctrl
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl pressed"), "comenzarSeleccion");
-        getActionMap().put("comenzarSeleccion", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setSeleccionando(true);
-                System.out.println("ss");
-            }
-        });*/
 
         selectionArea = new Rectangle(0, 0, 0, 0);
 
@@ -50,7 +42,9 @@ public class PanelDibujo extends JPanel {
             public void mousePressed(MouseEvent e) {
                 if (noComponenteThere(e.getX(), e.getY())) {
                     // Inicia la selección en el punto donde se presionó el mouse
-                    selectionArea.setBounds(e.getX(), e.getY(), 0, 0);
+                    selectionAreaStartX = e.getX();
+                    selectionAreaStartY = e.getY();
+                    selectionArea.setBounds(selectionAreaStartX, selectionAreaStartY, 0, 0);
                     repaint();
                     selectingArea = true;
                 } else {
@@ -66,40 +60,37 @@ public class PanelDibujo extends JPanel {
                     repaint();
                 } else {
                     if (!e.isPopupTrigger()) {
-                        // Si el mouse se suelta y el área de selección es nula
-                        limpiarEntidadesSeleccionadas();
+                        if (!e.isControlDown()) {
+                            // Si el mouse se suelta y el área de selección es nula
+                            limpiarEntidadesSeleccionadas();
+                        }
                     }
                 }
             }
         });
 
+        // Eventos en los que el mouse se mueve
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (selectingArea) {
                     // Actualiza el tamaño del área de selección mientras se arrastra el mouse
                     selectionArea.setBounds(
-                            Math.min(e.getX(), selectionArea.x),
-                            Math.min(e.getY(), selectionArea.y),
-                            Math.abs(e.getX() - selectionArea.x),
-                            Math.abs(e.getY() - selectionArea.y)
+                            Math.min(e.getX(), selectionAreaStartX),
+                            Math.min(e.getY(), selectionAreaStartY),
+                            Math.abs(e.getX() - selectionAreaStartX),
+                            Math.abs(e.getY() - selectionAreaStartY)
                     );
                     repaint();
                 }
             }
-        });
 
-        // Asigna la acción de finalizar la selección a la liberación de la tecla Ctrl
-        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, 0, true), "finalizarSeleccion");
-        getActionMap().put("finalizarSeleccion", new AbstractAction() {
+            // It gets the mouse position in the DrawPanel
             @Override
-            public void actionPerformed(ActionEvent e) {
-                if (seleccionando) {
-                    limpiarEntidadesSeleccionadas();
-                    setSeleccionando(false);
-                } else {
-                    setSeleccionando(true);
+            public void mouseMoved(MouseEvent e) {
+                if (PanelDibujo.this.getBounds().contains(e.getX(), e.getY())) {
+                    PanelDibujo.this.mouseX = e.getX();
+                    PanelDibujo.this.mouseY = e.getY();
                 }
-                repaint();
             }
         });
 
@@ -113,9 +104,9 @@ public class PanelDibujo extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 // Cuando se hace clic en el mouse, verifica si se ha seleccionado una entidad
-                if (seleccionando) {
+                if (e.isControlDown()) {
                     for (Entidad entidad : entidades) {
-                        if (entidad.getBounds().contains(e.getPoint())) {
+                        if (entidad.getBounds().contains(new Point(PanelDibujo.this.mouseX, PanelDibujo.this.mouseY))) {
                             // Si el punto donde se hizo clic está dentro de la entidad,
                             // agrega la entidad a la lista de entidades seleccionadas
                             componentesSeleccionadas.add(entidad);
@@ -162,10 +153,10 @@ public class PanelDibujo extends JPanel {
                 // Si se presiona el click derecho
                 if (e.isPopupTrigger()) {
                     boolean componentClicked = false;
-                    // Comprobar si el clic fue sobre un arrastrable
+                    // Comprobar si el clic fue sobre una componente
                     for (Entidad entidad : entidades) {
                         if (entidad.getBounds().contains(e.getPoint())) {
-                            // Defino la entidad sobre la que se hizo click derecho
+                            // Defino la entidad sobre la que se hizo clic derecho
                             popupMenuAttribute.setObject(entidad);
                             // Si el clic fue sobre una entidad, muestra el menú emergente
                             popupMenuAttribute.show(e.getComponent(), e.getX(), e.getY());
@@ -176,7 +167,7 @@ public class PanelDibujo extends JPanel {
                     }
                     for (Relacion relacion : relaciones) {
                         if (relacion.getBounds().contains(e.getPoint())) {
-                            // Defino la entidad sobre la que se hizo click derecho
+                            // Defino la entidad sobre la que se hizo clic derecho
                             popupMenuAttribute.setObject(relacion);
                             // Si el clic fue sobre una entidad, muestra el menú emergente
                             popupMenuAttribute.show(e.getComponent(), e.getX(), e.getY());
@@ -187,7 +178,7 @@ public class PanelDibujo extends JPanel {
                     }
                     for (Jerarquia jerarquia : jerarquias) {
                         if (jerarquia.getBounds().contains(e.getPoint())) {
-                            // Defino la jerarquía sobre la que se hizo click derecho
+                            // Defino la jerarquía sobre la que se hizo clic derecho
                             popupMenuNonAttribute.setObject(jerarquia);
                             // Si el clic fue una sobre una jerarquía, muestra el menú emergente
                             popupMenuNonAttribute.show(e.getComponent(), e.getX(), e.getY());
@@ -232,7 +223,7 @@ public class PanelDibujo extends JPanel {
             public void mouseDragged(MouseEvent e) {
                 // Cuando se arrastra el mouse, mueve la entidad arrastrada
                 // solo si no estamos en modo de selección
-                if (!seleccionando && componenteArrastrada != null) {
+                if (!e.isControlDown() && componenteArrastrada != null) {
                     componenteArrastrada.setX(e.getX());
                     componenteArrastrada.setY(e.getY());
                     repaint();
@@ -240,6 +231,8 @@ public class PanelDibujo extends JPanel {
             }
         });
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void paintComponent(Graphics g) {
@@ -266,6 +259,8 @@ public class PanelDibujo extends JPanel {
         }
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public boolean noComponenteThere(int x, int y) {
         List<Component> components = getListComponents();
         for (Component component : components) {
@@ -275,6 +270,8 @@ public class PanelDibujo extends JPanel {
         }
         return true;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void selectComponents() {
         List<Component> components = getListComponents();
@@ -287,43 +284,55 @@ public class PanelDibujo extends JPanel {
         }
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void agregarEntidad(Entidad entidad) {
         entidades.add(entidad);
         repaint();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void eliminarEntidad(Entidad entidad) {
         entidades.remove(entidad);
         repaint();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void agregarRelacion(Relacion relacion) {
         relaciones.add(relacion);
         repaint();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void eliminarRelacion(Relacion relacion) {
         relaciones.remove(relacion);
         repaint();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void agregarNota(Nota nota) {
         notas.add(nota);
         repaint();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void deleteNote(Nota note) {
         notas.remove(note);
         repaint();
     }
 
-    public void setSeleccionando(boolean seleccionando) {
-        this.seleccionando = seleccionando;
-    }
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<Component> getComponentesSeleccionadas() {
         return (new ArrayList<>(componentesSeleccionadas));
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void limpiarEntidadesSeleccionadas() {
         for (Component a : componentesSeleccionadas) {
@@ -335,6 +344,8 @@ public class PanelDibujo extends JPanel {
         componentesSeleccionadas = new HashSet<>();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public List<Component> getListComponents() {
         List<Component> list = new ArrayList<>();
         list.addAll(entidades);
@@ -345,56 +356,79 @@ public class PanelDibujo extends JPanel {
         return list;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void agregarJerarquia(Jerarquia nuevaJerarquia) {
         this.jerarquias.add(nuevaJerarquia);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void deleteHierarchy(Jerarquia hierarchy) {
         jerarquias.remove(hierarchy);
         repaint();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public List<Entidad> getEntidades() {
         return entidades;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<Relacion> getRelaciones() {
         return relaciones;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public List<Jerarquia> getJerarquias() {
         return jerarquias;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<Nota> getNotas() {
         return notas;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void setEntidades(List<Entidad> entidades) {
         this.entidades = entidades;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void setRelaciones(List<Relacion> relaciones) {
         this.relaciones = relaciones;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void setJerarquias(List<Jerarquia> jerarquias) {
         this.jerarquias = jerarquias;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void setNotas(List<Nota> notas) {
         this.notas = notas;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void reiniciar() {
         entidades = new ArrayList<>();
         relaciones = new ArrayList<>();
         jerarquias = new ArrayList<>();
         notas = new ArrayList<>();
-        seleccionando = false;
         componenteArrastrada = null;
         componentesSeleccionadas = new HashSet<>();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     /*
     El método corrobora que todos los objetos Component seleccionados son entidades y
@@ -410,5 +444,17 @@ public class PanelDibujo extends JPanel {
         }
 
         return true;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public int getMouseX() {
+        return this.mouseX;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public int getMouseY() {
+        return this.mouseY;
     }
 }

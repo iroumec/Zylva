@@ -19,8 +19,6 @@ public class MarcoPrincipal extends JFrame {
     private final PanelDibujo panelDibujo;
 
     public MarcoPrincipal() {
-        String fuente = "Verdana";
-
         setUndecorated(false);  // Elimina la barra de título
         setTitle("Zilva DERExt");
         setSize(800, 600);
@@ -39,175 +37,200 @@ public class MarcoPrincipal extends JFrame {
         menu.setBackground(Color.WHITE);
 
         /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                             Add Entity                                                     */
+        /*                                         Add Entity Key                                                     */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        JButton addEntityButton = getNewButton("Entidad", dimension, fuente);
-        // Defino la función del botón
-        addEntityButton.addActionListener(_ -> {
-            // Muestra una ventana emergente para ingresar el nombre de la entidad. La ventana está centrada en el marco principal
-            String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva entidad");
-            if (nombre != null) {
-                // Si el usuario ingresó un nombre, agrega una nueva entidad con ese nombre
-                panelDibujo.agregarEntidad(new Entidad(nombre, 50, 50));
-            }
-        });
-        menu.add(addEntityButton);
-
-        /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                          Add Relationship                                                  */
-        /* ---------------------------------------------------------------------------------------------------------- */
-
-        JButton addRelationshipButton = getNewButton("Relation", dimension, fuente);
-        // Defino la funcionalidad del botón
-        addRelationshipButton.addActionListener(_ -> {
-            boolean creacionRelacionCancelada = false;
-
-            // Solo procede si se han seleccionado entre 1 y 3 entidades
-            if (panelDibujo.participaSoloEntidades() && !panelDibujo.getComponentesSeleccionadas().isEmpty() && panelDibujo.getComponentesSeleccionadas().size() <= 3) {
-                // Muestra una ventana emergente para ingresar el nombre de la relación
-
-                String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva relación");
+        JButton addEntityKey = new JButton("Añadir entidad");
+        addEntityKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK), "actionE");
+        addEntityKey.getActionMap().put("actionE", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Muestra una ventana emergente para ingresar el nombre de la entidad. La ventana está centrada en el marco principal
+                String nombre = JOptionPane.showInputDialog(MarcoPrincipal.this, "Ingrese el nombre de la nueva entidad");
                 if (nombre != null) {
-                    // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
-                    List<Dupla<Component, Dupla<Character, Character>>> entidadesParticipantes = new ArrayList<>();
-                    Dupla<Character, Character> cardinalidad;
-                    for (Component entidad : panelDibujo.getComponentesSeleccionadas()) {
-                        cardinalidad = ingresarCardinalidad(((Entidad) entidad).getNombre());
-                        if (cardinalidad != null) {
-                            entidadesParticipantes.add(new Dupla<>(entidad, cardinalidad));
-                        } else {
-                            creacionRelacionCancelada = true;
-                            break;
-                        }
+                    if (!nombre.isEmpty()) {
+                        // Si el usuario ingresó un nombre, agrega una nueva entidad con ese nombre
+                        panelDibujo.agregarEntidad(new Entidad(nombre, panelDibujo.getMouseX(), panelDibujo.getMouseY()));
+                    } else {
+                        JOptionPane.showMessageDialog(MarcoPrincipal.this, "El nombre de la entidad no puede estar vacío");
                     }
-                    if (!creacionRelacionCancelada) {
-                        panelDibujo.agregarRelacion(new Relacion(nombre, entidadesParticipantes, 150, 150));
-                        panelDibujo.limpiarEntidadesSeleccionadas();
-                    }
-
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Debe seleccionar entre 1 y 3 entidades para crear una relación.");
             }
-
-            // Desactiva el modo de selección
-            panelDibujo.setSeleccionando(false);
         });
-        menu.add(addRelationshipButton);
+
+        // Agrega la tecla a las funcionalidades del frame
+        getContentPane().add(addEntityKey);
 
         /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                           Add Dependency                                                   */
+        /*                                      Add Relationship Key                                                  */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        JButton addDependencyButton = getNewButton("Dependencia", dimension, fuente);
-        // Defino la función del botón
-        addDependencyButton.addActionListener(_ -> {
-            boolean creacionRelacionCancelada = false;
+        JButton addRelationshipKey = new JButton("Add relationship");
+        addRelationshipKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK), "actionR");
+        addRelationshipKey.getActionMap().put("actionR", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean canceledRelationship = false;
 
-            // Solo procede si se han seleccionado entre 1 y 3 entidades
-            if (panelDibujo.participaSoloEntidades() && panelDibujo.getComponentesSeleccionadas().size() == 2) {
-                // Muestra una ventana emergente para ingresar el nombre de la relación
+                // Solo procede si se han seleccionado entre 1 y 3 entidades
+                if (panelDibujo.participaSoloEntidades() && !panelDibujo.getComponentesSeleccionadas().isEmpty() && panelDibujo.getComponentesSeleccionadas().size() <= 3) {
+                    // Muestra una ventana emergente para ingresar el nombre de la relación
 
-                String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva dependencia");
-                if (nombre != null) {
-                    // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
-                    Entidad entidadDebil = seleccionarEntidadDebil();
-
-                    List<Dupla<Component, Dupla<Character, Character>>> entidadesParticipantes = new ArrayList<>();
-                    Dupla<Character, Character> cardinalidad;
-
-                    for (Component entidad : panelDibujo.getComponentesSeleccionadas()) {
-                        if (entidad == entidadDebil) {
+                    String nombre = JOptionPane.showInputDialog(MarcoPrincipal.this, "Ingrese el nombre de la nueva relación");
+                    if (nombre != null) {
+                        // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
+                        List<Dupla<Component, Dupla<Character, Character>>> entidadesParticipantes = new ArrayList<>();
+                        Dupla<Character, Character> cardinalidad;
+                        for (Component entidad : panelDibujo.getComponentesSeleccionadas()) {
                             cardinalidad = ingresarCardinalidad(((Entidad) entidad).getNombre());
                             if (cardinalidad != null) {
                                 entidadesParticipantes.add(new Dupla<>(entidad, cardinalidad));
                             } else {
-                                creacionRelacionCancelada = true;
+                                canceledRelationship = true;
                                 break;
                             }
-                        } else {
-                            // Una entidad débil solo puede estar relacionada con una entidad fuerte si
-                            // esta última tiene cardinalidad 1:1
-                            entidadesParticipantes.add(new Dupla<>(entidad, new Dupla<>('1', '1')));
                         }
+                        if (!canceledRelationship) {
+                            panelDibujo.agregarRelacion(new Relacion(nombre, entidadesParticipantes, panelDibujo.getMouseX(), panelDibujo.getMouseY()));
+                            panelDibujo.limpiarEntidadesSeleccionadas();
+                        }
+
                     }
-
-                    if (!creacionRelacionCancelada) {
-                        panelDibujo.agregarRelacion(new Relacion(nombre, entidadesParticipantes, 150, 150));
-                        panelDibujo.limpiarEntidadesSeleccionadas();
-                    }
-
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Debe seleccionar 2 entidades para crear una dependencia.");
-            }
-
-            // Desactiva el modo de selección
-            panelDibujo.setSeleccionando(false);
-        });
-        menu.add(addDependencyButton);
-
-        /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                           Add Hierarchy                                                    */
-        /* ---------------------------------------------------------------------------------------------------------- */
-
-        JButton addHierarchyButton = getNewButton("Jerarquía", dimension, fuente);
-        // Defino la función del botón
-        addHierarchyButton.addActionListener(_ -> {
-            // Solo procede si se ha seleccionado al menos tres entidades
-            if (panelDibujo.getComponentesSeleccionadas().size() >= 3 && panelDibujo.participaSoloEntidades()) {
-                Entidad supertipo = seleccionarSupertipo();
-                List<Entidad> subtipos = obtenerListaSubtipos(supertipo);
-                if (rolesJerarquiaOcupados(supertipo, subtipos)) {
-                    ocuparRoles(supertipo, subtipos);
-                    Dupla<Boolean, Boolean> tipo = seleccionarTipoJerarquia();
-
-                    Jerarquia newHierarchy = new Jerarquia("",tipo.getPrimero(), tipo.getSegundo(), supertipo, subtipos);
-
-                    panelDibujo.agregarJerarquia(newHierarchy);
-
-                    // Add the hierarchy to the entities
-                    for (Component e : panelDibujo.getComponentesSeleccionadas()) {
-                        ((Entidad) e).addHierarchy(newHierarchy);
-                    }
-
                 } else {
-                    JOptionPane.showMessageDialog(this, "Una o más entidades seleccionadas ya ocupan el rol seleccionado en otra jerarquía.");
+                    JOptionPane.showMessageDialog(MarcoPrincipal.this, "Debe seleccionar entre 1 y 3 entidades para crear una relación.");
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleccione al menos tres entidades.");
-            }
-
-            // Desactiva el modo de selección
-            panelDibujo.setSeleccionando(false);
-            panelDibujo.limpiarEntidadesSeleccionadas();
-            panelDibujo.repaint();
-        });
-        menu.add(addHierarchyButton);
-
-        /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                             Add Note                                                       */
-        /* ---------------------------------------------------------------------------------------------------------- */
-
-        // Añade una nota al programa
-        JButton botonAgregarNota = getNewButton("Nota", dimension, fuente);
-        botonAgregarNota.addActionListener(_ -> {
-            // Muestra una ventana emergente para ingresar el contenido de la nota
-            String contenido = JOptionPane.showInputDialog(this, "Ingrese el contenido de la nueva nota");
-            if (contenido != null) {
-                // Si el usuario ingresó contenido, agrega una nueva nota con ese contenido
-                panelDibujo.agregarNota(new Nota(contenido, 150, 150));
             }
         });
-        menu.add(botonAgregarNota);
+
+        // Agrega la tecla a las funcionalidades del frame
+        getContentPane().add(addRelationshipKey);
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                           Add Dependency Key                                                   */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        JButton addDependencyKey= new JButton("Add dependency");
+        addDependencyKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK), "actionD");
+        addDependencyKey.getActionMap().put("actionD", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean canceledRelationship = false;
+
+                // Solo procede si se han seleccionado entre 1 y 3 entidades
+                if (panelDibujo.participaSoloEntidades() && panelDibujo.getComponentesSeleccionadas().size() == 2) {
+                    // Muestra una ventana emergente para ingresar el nombre de la relación
+
+                    String nombre = JOptionPane.showInputDialog(MarcoPrincipal.this, "Ingrese el nombre de la nueva dependencia");
+                    if (nombre != null) {
+                        // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
+                        Entidad entidadDebil = seleccionarEntidadDebil();
+
+                        List<Dupla<Component, Dupla<Character, Character>>> entidadesParticipantes = new ArrayList<>();
+                        Dupla<Character, Character> cardinalidad;
+
+                        for (Component entidad : panelDibujo.getComponentesSeleccionadas()) {
+                            if (entidad == entidadDebil) {
+                                cardinalidad = ingresarCardinalidad(((Entidad) entidad).getNombre());
+                                if (cardinalidad != null) {
+                                    entidadesParticipantes.add(new Dupla<>(entidad, cardinalidad));
+                                } else {
+                                    canceledRelationship = true;
+                                    break;
+                                }
+                            } else {
+                                // Una entidad débil solo puede estar relacionada con una entidad fuerte si
+                                // esta última tiene cardinalidad 1:1
+                                entidadesParticipantes.add(new Dupla<>(entidad, new Dupla<>('1', '1')));
+                            }
+                        }
+
+                        if (!canceledRelationship) {
+                            panelDibujo.agregarRelacion(new Relacion(nombre, entidadesParticipantes, panelDibujo.getMouseX(), panelDibujo.getMouseY()));
+                            panelDibujo.limpiarEntidadesSeleccionadas();
+                        }
+
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MarcoPrincipal.this, "Debe seleccionar 2 entidades para crear una dependencia.");
+                }
+
+                // Desactiva el modo de selección
+            }
+        });
+
+        // Agrega la tecla a las funcionalidades del frame
+        getContentPane().add(addDependencyKey);
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                       Add Hierarchy Key                                                    */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+
+        JButton addHierarchyKey= new JButton("Add hierarchy");
+        addHierarchyKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK), "actionH");
+        addHierarchyKey.getActionMap().put("actionH", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Solo procede si se ha seleccionado al menos tres entidades
+                if (panelDibujo.getComponentesSeleccionadas().size() >= 3 && panelDibujo.participaSoloEntidades()) {
+                    Entidad supertipo = seleccionarSupertipo();
+                    List<Entidad> subtipos = obtenerListaSubtipos(supertipo);
+                    if (rolesJerarquiaOcupados(supertipo, subtipos)) {
+                        ocuparRoles(supertipo, subtipos);
+                        Dupla<Boolean, Boolean> tipo = seleccionarTipoJerarquia();
+
+                        Jerarquia newHierarchy = new Jerarquia(tipo.getPrimero(), tipo.getSegundo(), supertipo, subtipos);
+
+                        panelDibujo.agregarJerarquia(newHierarchy);
+
+                        // Add the hierarchy to the entities
+                        for (Component entity : panelDibujo.getComponentesSeleccionadas()) {
+                            ((Entidad) entity).addHierarchy(newHierarchy);
+                        }
+
+                    } else {
+                        JOptionPane.showMessageDialog(MarcoPrincipal.this, "Una o más entidades seleccionadas ya ocupan el rol seleccionado en otra jerarquía.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(MarcoPrincipal.this, "Seleccione al menos tres entidades.");
+                }
+
+                // Desactiva el modo de selección
+                panelDibujo.limpiarEntidadesSeleccionadas();
+                panelDibujo.repaint();
+            }
+        });
+
+        // Agrega la tecla a las funcionalidades del frame
+        getContentPane().add(addHierarchyKey);
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                          Add Note Key                                                      */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        JButton addNoteKey= new JButton("Add note");
+        addNoteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK), "actionN");
+        addNoteKey.getActionMap().put("actionN", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Muestra una ventana emergente para ingresar el contenido de la nota
+                String contenido = JOptionPane.showInputDialog(MarcoPrincipal.this, "Ingrese el contenido de la nueva nota");
+                if (contenido != null) {
+                    // Si el usuario ingresó contenido, agrega una nueva nota con ese contenido
+                    panelDibujo.agregarNota(new Nota(contenido, panelDibujo.getMouseX(), panelDibujo.getMouseY()));
+                }
+            }
+        });
+
+        // Agrega la tecla a las funcionalidades del frame
+        getContentPane().add(addNoteKey);
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                              Delete Key                                                    */
         /* ---------------------------------------------------------------------------------------------------------- */
 
         // Tecla para eliminar (en realidad, botón oculto que se activa al presionar una tecla).
-        JButton teclaEliminar = new JButton("Eliminar");
+        JButton teclaEliminar = new JButton("Delete key");
         teclaEliminar.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Suprimir presionado");
         teclaEliminar.getActionMap().put("Suprimir presionado", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -284,7 +307,6 @@ public class MarcoPrincipal extends JFrame {
                 }
 
                 // Desactiva el modo de selección
-                panelDibujo.setSeleccionando(false);
                 panelDibujo.limpiarEntidadesSeleccionadas();
             }
         });
@@ -294,7 +316,7 @@ public class MarcoPrincipal extends JFrame {
 
         // Agrega el panel de dibujo y el menú al marco
         add(panelDibujo, BorderLayout.CENTER);
-        add(menu, BorderLayout.WEST);
+        //add(menu, BorderLayout.WEST);
         // Añade la barra de menú a la ventana
         setJMenuBar(menuBar);
     }
@@ -464,28 +486,5 @@ public class MarcoPrincipal extends JFrame {
         for (Entidad e : subtipos) {
             e.setSubTipo(Boolean.TRUE);
         }
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public JButton getNewButton(String nombreBoton, Dimension dimension, String fuente) {
-        JButton botonARetornar = new JButton(nombreBoton);
-
-        botonARetornar.setMaximumSize(dimension);
-        botonARetornar.setBackground(Color.WHITE);
-        botonARetornar.setOpaque(Boolean.TRUE);
-        botonARetornar.setFont(new Font(fuente, Font.BOLD, 12));
-
-        return botonARetornar;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public PanelDibujo getPanelDibujo() {
-        return panelDibujo;
     }
 }

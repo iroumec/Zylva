@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LoadingScreen extends JWindow {
-    private Timer timer;
 
     public LoadingScreen() {
         // Configurar el tamaño y la posición de la ventana de carga
@@ -21,7 +20,8 @@ public class LoadingScreen extends JWindow {
         add(loadingLabel);
 
         // Configurar el temporizador para cerrar la ventana después de 3 segundos
-        timer = new Timer(3000, _ -> {
+        // Cerrar la ventana en el EDT
+        Timer timer = new Timer(3000, _ -> {
             SwingUtilities.invokeLater(this::dispose); // Cerrar la ventana en el EDT
         });
         timer.setRepeats(false);

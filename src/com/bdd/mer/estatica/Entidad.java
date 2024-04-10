@@ -173,10 +173,6 @@ public class Entidad implements Component, Serializable {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
     public void setSeleccionada(boolean seleccionada) {
         this.seleccionada = seleccionada;
     }

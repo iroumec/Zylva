@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Jerarquia implements Component, Serializable {
-    private String nombre = "";
     int x, y, radio; // Centro del óvalo
     private final boolean exclusiva;
     private final boolean total;
@@ -14,8 +13,7 @@ public class Jerarquia implements Component, Serializable {
     private final List<Entidad> subTipos;
     private boolean seleccionada = false;
 
-    public Jerarquia(String nombre, boolean exclusiva, boolean total, Entidad superTipo, List<Entidad> subTipos) {
-        this.nombre = nombre;
+    public Jerarquia(boolean exclusiva, boolean total, Entidad superTipo, List<Entidad> subTipos) {
         this.exclusiva = exclusiva;
         this.total = total;
         this.superTipo = superTipo;
@@ -38,7 +36,7 @@ public class Jerarquia implements Component, Serializable {
             letra = "o";
         }
 
-        // Obtengo la fuente del texto y ccalculo su tamaño
+        // Obtengo la fuente del texto y calculo su tamaño
         FontMetrics fm = g2.getFontMetrics();
         int textWidth = fm.stringWidth(letra);
         int textHeight = fm.getHeight();
@@ -49,6 +47,11 @@ public class Jerarquia implements Component, Serializable {
 
         // Aplica suavizado a las líneas
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Si la jerarquía es seleccionada, se pinta de CYAN
+        if (seleccionada) {
+            g2.setColor(Color.CYAN);
+        }
 
         // Dibuja la línea al supertipo
         g2.drawLine(this.x, this.y, superTipo.getX(), superTipo.getY());
@@ -72,6 +75,34 @@ public class Jerarquia implements Component, Serializable {
         // Dibuja el texto dentro del círculo
         g2.setColor(Color.BLACK);
         g2.drawString(letra, this.x - 4, this.y + 4);
+    }
+
+    /*
+    En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
+    de los subtipos.
+
+    Una jerarquía exclusiva se nota con una doble línea del supertipo al ícono de jerarquía.
+    Por otro lado, si la jerarquía es parcial, se utiliza una única línea.
+     */
+    public boolean isTotal() {
+        return this.total;
+    }
+
+    /*
+    En una jerarquía exclusiva, los ejemplares de los subtipos son conjuntos disjuntos (solo pueden
+    pertenecer a un subtipo a la vez).
+
+    Una jerarquía exclusiva se nota con la letra "d" (Disjunt), mientras que una jerarquía compartida
+    se nota con la letra "o" (Overlapping).
+     */
+    public boolean isExclusiva() {
+        return this.exclusiva;
+    }
+
+    public List<Entidad> getEntitiesList() {
+        List<Entidad> l = new ArrayList<>(subTipos);
+        l.add(superTipo);
+        return l;
     }
 
     @Override
@@ -106,34 +137,6 @@ public class Jerarquia implements Component, Serializable {
 
     @Override
     public void setText(String newText) {
-        this.nombre = newText;
-    }
-
-    /*
-    En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
-    de los subtipos.
-
-    Una jerarquía exclusiva se nota con una doble línea del supertipo al ícono de jerarquía.
-    Por otro lado, si la jerarquía es parcial, se utiliza una única línea.
-     */
-    public boolean isTotal() {
-        return this.total;
-    }
-
-    /*
-    En una jerarquía exclusiva, los ejemplares de los subtipos son conjuntos disjuntos (solo pueden
-    pertenecer a un subtipo a la vez).
-
-    Una jerarquía exclusiva se nota con la letra "d" (Disjunt), mientras que una jerarquía compartida
-    se nota con la letra "o" (Overlapping).
-     */
-    public boolean isExclusiva() {
-        return this.exclusiva;
-    }
-
-    public List<Entidad> getEntitiesList() {
-        List<Entidad> l = new ArrayList<>(subTipos);
-        l.add(superTipo);
-        return l;
+        /* Nothing */
     }
 }
