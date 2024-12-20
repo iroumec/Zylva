@@ -1,27 +1,30 @@
-package com.bdd.mer.interfaz.anotacion;
+package com.bdd.mer.components.note;
 
-import com.bdd.mer.estatica.Component;
+import com.bdd.mer.components.Component;
+import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.frame.PopupMenu;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
+import java.util.List;
 
-public class Nota implements Component, Serializable {
-    private String text;
+public class Note extends Component implements Serializable {
 
     int ancho = 100, alto = 50; // Ancho y alto del rectángulo
-    int x, y; // Centro de la nota
-
-    public Nota(String text, int x, int y) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-    }
 
     boolean seleccionada = false;
 
-    public void dibujar(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
+    public Note(String text, int x, int y) {
+        super(text, x, y);
+    }
+
+    @Override
+    protected PopupMenu getGenericPopupMenu() {
+        return null;
+    }
+
+    public void draw(Graphics2D g2) {
 
         // Cambia la fuente del texto
         g2.setFont(new Font("Verdana", Font.BOLD, 10));
@@ -78,33 +81,17 @@ public class Nota implements Component, Serializable {
     }
 
     @Override
-    public void setSeleccionada(boolean seleccionada) {
-        this.seleccionada = seleccionada;
+    public List<Component> getComponentsForRemoval() {
+        return List.of();
     }
 
     @Override
-    public void setX(int x) {
-        this.x = x;
+    public void cleanPresence() {
+
     }
 
     @Override
-    public void setY(int y) {
-        this.y = y;
-    }
+    public void changeReference(Entity oldEntity, Entity newEntity) {
 
-    @Override
-    public int getX() {
-        return this.x;
     }
-
-    @Override
-    public int getY() {
-        return this.y;
-    }
-
-    @Override
-    public void setText(String newText) {
-        this.text = newText;
-    }
-
 }

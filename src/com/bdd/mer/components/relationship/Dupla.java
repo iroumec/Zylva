@@ -1,10 +1,10 @@
-package com.bdd.mer.estatica.coleccion;
+package com.bdd.mer.components.relationship;
 
 import java.io.Serializable;
 
 public class Dupla<T, U> implements Serializable {
-    private final T primero;
-    private final U segundo;
+    private T primero;
+    private U segundo;
 
     public Dupla(T primero, U segundo) {
         this.primero = primero;
@@ -17,5 +17,13 @@ public class Dupla<T, U> implements Serializable {
 
     public U getSegundo() {
         return segundo;
+    }
+
+    public void setPrimero(T newFirst) {
+        this.primero = newFirst;
+    }
+
+    public void setSegundo(U segundo) {
+        this.segundo = segundo;
     }
 }

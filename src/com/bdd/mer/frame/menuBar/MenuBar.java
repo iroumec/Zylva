@@ -1,7 +1,7 @@
-package com.bdd.mer.interfaz.barraDeMenu;
+package com.bdd.mer.frame.menuBar;
 
-import com.bdd.mer.interfaz.MarcoPrincipal;
-import com.bdd.mer.interfaz.PanelDibujo;
+import com.bdd.mer.frame.MainFrame;
+import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ public class MenuBar extends JMenuBar {
 
     private static final Point point = new Point(); // Donde apunta el mouse
 
-    public MenuBar(MarcoPrincipal mainFrame, PanelDibujo panelDibujo) {
+    public MenuBar(MainFrame mainFrame, DrawingPanel drawingPanel) {
 
         /*
         Añade un MouseListener y un MouseMotionListener a la barra de menú.
@@ -33,13 +33,13 @@ public class MenuBar extends JMenuBar {
         });
 
         // Añado el menú de archivos
-        add(new FileMenu(mainFrame, panelDibujo, "File"));
+        add(new FileMenu(mainFrame, drawingPanel, "File"));
 
         // Añado un botón para limpiar la ventana
         JButton cleanFrameButton = new JButton("Clean");
         cleanFrameButton.addActionListener(_ -> {
-            panelDibujo.reiniciar();
-            panelDibujo.repaint();
+            drawingPanel.reset();
+            drawingPanel.repaint();
         });
         add(cleanFrameButton);
         // Al pasar el mouse por encima, el fondo se coloca en rojo

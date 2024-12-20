@@ -1,10 +1,7 @@
-package com.bdd.mer.interfaz.barraDeMenu.exportacion;
+package com.bdd.mer.frame.menuBar.exportacion;
 
-import com.bdd.mer.estatica.Entidad;
-import com.bdd.mer.estatica.Jerarquia;
-import com.bdd.mer.estatica.Relacion;
-import com.bdd.mer.interfaz.PanelDibujo;
-import com.bdd.mer.interfaz.anotacion.Nota;
+import com.bdd.mer.components.Component;
+import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
 import java.io.*;
@@ -12,7 +9,7 @@ import java.util.List;
 
 public final class Archivo {
 
-    public static void guardarDiagrama(PanelDibujo panelDibujo) {
+    public static void guardarDiagrama(DrawingPanel drawingPanel) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Seleccione dónde guardar el archivo y coloque un nombre");
 
@@ -23,18 +20,12 @@ public final class Archivo {
 
             // Aquí puedes escribir el código para guardar tus datos en 'fileToSave'
 
-            List<Entidad> entidades = panelDibujo.getEntidades();
-            List <Relacion> relaciones = panelDibujo.getRelaciones();
-            List<Jerarquia> jerarquias = panelDibujo.getJerarquias();
-            List<Nota> notas = panelDibujo.getNotas();
+            List<Component> components = drawingPanel.getListComponents();
 
             try {
                 FileOutputStream fileOut = new FileOutputStream(fileToSave);
                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                out.writeObject(entidades);
-                out.writeObject(relaciones);
-                out.writeObject(jerarquias);
-                out.writeObject(notas);
+                out.writeObject(components);
                 out.close();
                 fileOut.close();
             } catch (IOException i) {
@@ -43,7 +34,7 @@ public final class Archivo {
         }
     }
 
-    public static void cargarDiagrama(PanelDibujo panelDibujo) {
+    public static void cargarDiagrama(DrawingPanel drawingPanel) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Especifica un archivo para cargar");
 
@@ -56,10 +47,7 @@ public final class Archivo {
             try {
                 FileInputStream fileIn = new FileInputStream(fileToLoad);
                 ObjectInputStream in = new ObjectInputStream(fileIn);
-                panelDibujo.setEntidades((List<Entidad>) in.readObject());
-                panelDibujo.setRelaciones((List<Relacion>) in.readObject());
-                panelDibujo.setJerarquias((List<Jerarquia>) in.readObject());
-                panelDibujo.setNotas((List<Nota>) in.readObject());
+                drawingPanel.addComponents((List<Component>) in.readObject());
                 in.close();
                 fileIn.close();
             } catch (IOException i) {
@@ -67,7 +55,6 @@ public final class Archivo {
             } catch (ClassNotFoundException c) {
                 System.out.println("Las clases no se encontraron");
                 c.printStackTrace();
-                return;
             }
         }
     }

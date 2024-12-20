@@ -1,6 +1,6 @@
-package com.bdd.mer.interfaz.barraDeMenu.exportacion;
+package com.bdd.mer.frame.menuBar.exportacion;
 
-import com.bdd.mer.interfaz.PanelDibujo;
+import com.bdd.mer.frame.DrawingPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,14 +11,14 @@ import java.io.IOException;
 
 public final class ExportPNG {
 
-    public static void exportToPng(PanelDibujo panelDibujo) {
+    public static void exportToPng(DrawingPanel drawingPanel) {
         try {
             // Crea una imagen del mismo tamaño que el panel
-            BufferedImage imagen = new BufferedImage(panelDibujo.getWidth(), panelDibujo.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            BufferedImage imagen = new BufferedImage(drawingPanel.getWidth(), drawingPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
             // Dibuja el panel en la imagen
             Graphics g = imagen.createGraphics();
-            panelDibujo.paint(g);
+            drawingPanel.paint(g);
             g.dispose();
 
             // Crea un JFileChooser

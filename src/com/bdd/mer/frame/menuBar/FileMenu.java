@@ -1,9 +1,9 @@
-package com.bdd.mer.interfaz.barraDeMenu;
+package com.bdd.mer.frame.menuBar;
 
-import com.bdd.mer.interfaz.MarcoPrincipal;
-import com.bdd.mer.interfaz.PanelDibujo;
-import com.bdd.mer.interfaz.barraDeMenu.exportacion.Archivo;
-import com.bdd.mer.interfaz.barraDeMenu.exportacion.ExportPNG;
+import com.bdd.mer.frame.MainFrame;
+import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.menuBar.exportacion.Archivo;
+import com.bdd.mer.frame.menuBar.exportacion.ExportPNG;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 
 public class FileMenu extends JMenu {
 
-    FileMenu(MarcoPrincipal mainFrame, PanelDibujo panelDibujo, String texto) {
+    FileMenu(MainFrame mainFrame, DrawingPanel drawingPanel, String texto) {
 
         // Defino el texto del menú
         setText("File");
@@ -21,7 +21,7 @@ public class FileMenu extends JMenu {
         JMenuItem exportPNG = new JMenuItem("Exportar a PNG");
         exportPNG.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ExportPNG.exportToPng(panelDibujo);
+                ExportPNG.exportToPng(drawingPanel);
             }
         });
 
@@ -29,7 +29,7 @@ public class FileMenu extends JMenu {
         JMenuItem saveDiagram = new JMenuItem("Guardar diagrama");
         saveDiagram.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Archivo.guardarDiagrama(panelDibujo);
+                Archivo.guardarDiagrama(drawingPanel);
             }
         });
 
@@ -37,7 +37,7 @@ public class FileMenu extends JMenu {
         JMenuItem loadDiagram = new JMenuItem("Cargar diagrama");
         loadDiagram.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Archivo.cargarDiagrama(panelDibujo);
+                Archivo.cargarDiagrama(drawingPanel);
                 mainFrame.repaint();
             }
         });

@@ -1,4 +1,4 @@
-package com.bdd.mer.interfaz;
+package com.bdd.mer.frame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -6,6 +6,7 @@ import java.awt.*;
 public class LoadingScreen extends JWindow {
 
     public LoadingScreen() {
+
         // Configurar el tamaño y la posición de la ventana de carga
         setSize(224, 224);
         setLocationRelativeTo(null);
@@ -21,7 +22,7 @@ public class LoadingScreen extends JWindow {
 
         // Configurar el temporizador para cerrar la ventana después de 3 segundos
         // Cerrar la ventana en el EDT
-        Timer timer = new Timer(3000, _ -> {
+        Timer timer = new Timer(1000, _ -> {
             SwingUtilities.invokeLater(this::dispose); // Cerrar la ventana en el EDT
         });
         timer.setRepeats(false);

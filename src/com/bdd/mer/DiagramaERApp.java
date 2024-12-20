@@ -1,11 +1,10 @@
 package com.bdd.mer;
 
-import com.bdd.mer.interfaz.LoadingScreen;
-import com.bdd.mer.interfaz.MarcoPrincipal;
+import com.bdd.mer.frame.LoadingScreen;
+import com.bdd.mer.frame.MainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class DiagramaERApp {
     public static void main(String[] args) {
@@ -17,7 +16,7 @@ public class DiagramaERApp {
             @Override
             protected Void doInBackground() throws Exception {
                 // Simular la inicialización de la aplicación (puedes realizar la carga real aquí)
-                Thread.sleep(3000); // Simula la carga con un retardo
+                Thread.sleep(1000); // Simula la carga con un retardo
                 return null;
             }
 
@@ -33,7 +32,7 @@ public class DiagramaERApp {
                     } catch (Exception e) {
                         // Si FlatLightLaf no está disponible, puedes configurar otro look and feel.
                     }
-                    MarcoPrincipal frame = new MarcoPrincipal();
+                    MainFrame frame = new MainFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     frame.setVisible(true);
                 });
