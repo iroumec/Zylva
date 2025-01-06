@@ -6,43 +6,34 @@ import com.bdd.mer.frame.menuBar.exportacion.Archivo;
 import com.bdd.mer.frame.menuBar.exportacion.ExportPNG;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class FileMenu extends JMenu {
 
-    FileMenu(MainFrame mainFrame, DrawingPanel drawingPanel, String texto) {
+    FileMenu(MainFrame mainFrame, DrawingPanel drawingPanel, String text) {
 
-        // Defino el texto del menú
-        setText("File");
+        // Menu's Text.
+        setText(text);
 
-        // Defino las opciones del menú
-        // -> Exportar a PNG
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                               Menu's Options                                               */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        // Export to PNG.
         JMenuItem exportPNG = new JMenuItem("Exportar a PNG");
-        exportPNG.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ExportPNG.exportToPng(drawingPanel);
-            }
-        });
+        exportPNG.addActionListener(_ -> ExportPNG.exportToPng(drawingPanel));
 
-        // -> Guardar diagrama
+        // Save diagram.
         JMenuItem saveDiagram = new JMenuItem("Guardar diagrama");
-        saveDiagram.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Archivo.guardarDiagrama(drawingPanel);
-            }
-        });
+        saveDiagram.addActionListener(_ -> Archivo.saveDiagram(drawingPanel));
 
-        // -> Cargar diagrama
+        // Load diagram.
         JMenuItem loadDiagram = new JMenuItem("Cargar diagrama");
-        loadDiagram.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Archivo.cargarDiagrama(drawingPanel);
-                mainFrame.repaint();
-            }
+        loadDiagram.addActionListener(_ -> {
+            Archivo.loadDiagram(drawingPanel);
+            mainFrame.repaint();
         });
 
-        // Añado las opciones al menú
+        // The options are added to the menu.
         add(exportPNG);
         add(saveDiagram);
         add(loadDiagram);

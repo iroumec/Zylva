@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relationship extends AttributableComponent implements Serializable {
+public class Relationship extends AttributableComponent {
 
     private final List<Dupla<Entity, Cardinality>> entities; // I use a Dupla and not a HashMap because I cannot change dynamically an entity in it
     private int diagonalHorizontal, diagonalVertical; // Posición del centro del rombo
@@ -54,10 +54,10 @@ public class Relationship extends AttributableComponent implements Serializable 
 
     public void draw(Graphics2D g2) {
 
-        // Calcula el ancho del texto
-        FontMetrics fm = g2.getFontMetrics();
-        int anchoTexto = fm.stringWidth(this.getText());
-        int altoTexto = fm.getHeight();
+        Dupla<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
+
+        int anchoTexto = fontMetrics.getPrimero();
+        int altoTexto = fontMetrics.getSegundo();
 
         // Calcula la posición del texto para centrarlo en el recuadro
         int xTexto = getX() - anchoTexto / 2;

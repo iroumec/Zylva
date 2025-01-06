@@ -1,13 +1,16 @@
 package com.bdd.mer.components;
 
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.relationship.Dupla;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
 
-public abstract class Component {
+public abstract class Component implements Serializable {
 
     // Is the component being selected?
     private boolean selected;
@@ -111,4 +114,14 @@ public abstract class Component {
     }
 
     public boolean canBeDeleted() { return true; }
+
+    public Dupla<Integer, Integer> getFontMetrics(Graphics2D graphics2D) {
+
+        FontMetrics fm = graphics2D.getFontMetrics();
+
+        int anchoTexto = fm.stringWidth(this.getText());
+        int altoTexto = fm.getHeight();
+
+        return new Dupla<>(anchoTexto, altoTexto);
+    }
 }

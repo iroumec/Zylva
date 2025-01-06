@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hierarchy extends Component implements Serializable {
+public class Hierarchy extends Component {
 
     private int radio; // Centro del óvalo
     private final HierarchyType exclusivity;

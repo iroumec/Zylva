@@ -15,7 +15,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entity extends AttributableComponent implements Serializable {
+public class Entity extends AttributableComponent {
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     protected final List<Relationship> relationships;
     protected final List<Hierarchy> hierarchies;
@@ -34,6 +36,8 @@ public class Entity extends AttributableComponent implements Serializable {
         hierarchies = new ArrayList<>();
         macroEntities = new ArrayList<>();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected PopupMenu getGenericPopupMenu() {
@@ -125,6 +129,8 @@ public class Entity extends AttributableComponent implements Serializable {
         return out;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public List<Component> getComponentsForRemoval() {
 
@@ -137,10 +143,14 @@ public class Entity extends AttributableComponent implements Serializable {
         return out;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void cleanPresence() {
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void changeReference(Entity oldComponent, Entity newComponent) {
@@ -201,25 +211,7 @@ public class Entity extends AttributableComponent implements Serializable {
 
         WeakEntity weakVersion = new WeakEntity(this.getText(), this.getX(), this.getY());
 
-        for (Relationship relationship : this.relationships) {
-            weakVersion.addRelationship(relationship);
-        }
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-            weakVersion.addHierarchy(hierarchy);
-        }
-
-        for (MacroEntity macroEntity : this.macroEntities) {
-            weakVersion.addMacroEntity(macroEntity);
-        }
-
-        List<Attribute> attributes = this.getAttributes();
-
-        for (Attribute attribute : attributes) {
-            weakVersion.addAttribute(attribute);
-        }
-
-        weakVersion.setShape(this.getBounds());
+        this.copyAttributes(weakVersion);
 
         return weakVersion;
 
@@ -295,6 +287,30 @@ public class Entity extends AttributableComponent implements Serializable {
         }
 
         return false;
+
+    }
+
+    protected void copyAttributes(Entity entity) {
+
+        for (Relationship relationship : this.relationships) {
+            entity.addRelationship(relationship);
+        }
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+            entity.addHierarchy(hierarchy);
+        }
+
+        for (MacroEntity macroEntity : this.macroEntities) {
+            entity.addMacroEntity(macroEntity);
+        }
+
+        List<Attribute> attributes = this.getAttributes();
+
+        for (Attribute attribute : attributes) {
+            entity.addAttribute(attribute);
+        }
+
+        entity.setShape(this.getBounds());
 
     }
 }

@@ -2,6 +2,7 @@ package com.bdd.mer.components.entity;
 
 import com.bdd.mer.components.atributo.Attribute;
 import com.bdd.mer.components.hierarchy.Hierarchy;
+import com.bdd.mer.components.macroEntity.MacroEntity;
 import com.bdd.mer.components.relationship.Relationship;
 
 import java.awt.*;
@@ -31,25 +32,7 @@ public class WeakEntity extends Entity {
 
         Entity strongVersion = new Entity(this.getText(), this.getX(), this.getY());
 
-        for (Relationship relationship : this.relationships) {
-            strongVersion.addRelationship(relationship);
-        }
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-            strongVersion.addHierarchy(hierarchy);
-        }
-
-        /*
-        for (MacroEntity macroEntity : this.hierarchies) {
-            weakVersion.addMacroEntity(macroEntity);
-        }
-        */
-
-        List<Attribute> attributes = this.getAttributes();
-
-        for (Attribute attribute : attributes) {
-            strongVersion.addAttribute(attribute);
-        }
+        this.copyAttributes(strongVersion);
 
         return strongVersion;
 

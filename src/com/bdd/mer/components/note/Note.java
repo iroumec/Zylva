@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Note extends Component implements Serializable {
+public class Note extends Component {
 
     public Note(String text, int x, int y) {
         super(text, x, y);

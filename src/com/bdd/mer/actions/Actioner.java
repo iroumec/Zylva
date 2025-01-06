@@ -17,10 +17,12 @@ import com.bdd.mer.components.note.Note;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Actioner {
+public final class Actioner implements Serializable {
 
     private DrawingPanel drawingPanel;
 

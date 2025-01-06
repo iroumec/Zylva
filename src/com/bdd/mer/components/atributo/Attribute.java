@@ -10,7 +10,7 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.List;
 
-public class Attribute extends AttributableComponent implements Serializable {
+public class Attribute extends AttributableComponent {
 
     private AttributeSymbol symbol;
     private AttributeArrow arrow;

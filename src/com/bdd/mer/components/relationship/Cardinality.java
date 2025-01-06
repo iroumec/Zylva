@@ -10,7 +10,7 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.List;
 
-public class Cardinality extends Component implements Serializable {
+public class Cardinality extends Component {
 
     private Entity owner;
     private Relationship relationship;
