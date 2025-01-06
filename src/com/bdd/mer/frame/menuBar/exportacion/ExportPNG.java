@@ -33,6 +33,8 @@ public final class ExportPNG {
 
                 // Escribe la imagen en un archivo
                 ImageIO.write(imagen, "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
+
+                JOptionPane.showMessageDialog(null, "La imagen fue guardada con éxito en " + fileToSave.getAbsolutePath() + ".png.");
             }
         } catch (IOException e) {
             e.printStackTrace();

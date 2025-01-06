@@ -12,7 +12,7 @@ public class LoadingScreen extends JWindow {
         setLocationRelativeTo(null);
 
         // Cargar la imagen original
-        ImageIcon originalIcon = new ImageIcon("src/com/bdd/mer/interfaz/images/Zilva.jpeg");
+        ImageIcon originalIcon = new ImageIcon("src/com/bdd/mer/multimedia/Zilva.jpeg");
         Image originalImage = originalIcon.getImage();
         // Escalar la imagen al tamaño deseado
         Image scaledImage = originalImage.getScaledInstance(224, 224, Image.SCALE_SMOOTH);

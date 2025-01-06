@@ -47,7 +47,12 @@ public final class Archivo {
             try {
                 FileInputStream fileIn = new FileInputStream(fileToLoad);
                 ObjectInputStream in = new ObjectInputStream(fileIn);
-                drawingPanel.addComponents((List<Component>) in.readObject());
+
+                List<Component> components = (List<Component>) in.readObject();
+
+                for (Component component : components) {
+                    drawingPanel.addComponent(component);
+                }
                 in.close();
                 fileIn.close();
             } catch (IOException i) {

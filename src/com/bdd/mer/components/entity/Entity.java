@@ -4,6 +4,7 @@ import com.bdd.mer.components.atributo.Attribute;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
+import com.bdd.mer.components.macroEntity.MacroEntity;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
@@ -16,23 +17,9 @@ import java.util.List;
 
 public class Entity extends AttributableComponent implements Serializable {
 
-    // Atributos de la entidad.
-    private Attribute mainAttribute;
-    private final List<Attribute> alternativeAttributes;
-    private final List<Attribute> commonAttributes;
-
-    // Relaciones en las que participa.
-    private List<Relationship> relationships;
-
-    // Jerarquía en la que participa.
-    private final List<Hierarchy> hierarchies;
-
-    // Macro-Entidad en la que la entidad participa.
-    private final List<MacroEntity> macroEntities;
-
-    private boolean superTipo;
-    private boolean subTipo;
-    private Rectangle bounds = new Rectangle();
+    protected final List<Relationship> relationships;
+    protected final List<Hierarchy> hierarchies;
+    protected final List<MacroEntity> macroEntities;
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -43,13 +30,9 @@ public class Entity extends AttributableComponent implements Serializable {
     public Entity(String text, int x, int y) {
         super(text, x, y);
 
-        alternativeAttributes = new ArrayList<>();
-        commonAttributes = new ArrayList<>();
         relationships = new ArrayList<>();
         hierarchies = new ArrayList<>();
         macroEntities = new ArrayList<>();
-
-        this.mainAttribute = null;
     }
 
     @Override
@@ -79,17 +62,14 @@ public class Entity extends AttributableComponent implements Serializable {
 
     public void draw(Graphics2D g2) {
 
-        // Cambia la fuente del texto
-        g2.setFont(new Font("Verdana", Font.BOLD, 10));
-
         // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
         int anchoTexto = fm.stringWidth(this.getText());
         int altoTexto = fm.getHeight();
 
         // Calcula la posición del texto para centrarlo en el recuadro
-        int xTexto = x - anchoTexto / 2;
-        int yTexto = y + altoTexto / 2;
+        int xTexto = getX() - anchoTexto / 2;
+        int yTexto = getY() + altoTexto / 2;
 
         // Cambia el grosor del recuadro.
         g2.setStroke(new BasicStroke(1));
@@ -97,41 +77,43 @@ public class Entity extends AttributableComponent implements Serializable {
         // Dibuja el recuadro de la entidad
         int margen = 10; // Margen alrededor del texto
 
-        // Aplica suavizado a las líneas
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-        int rectX = x - anchoTexto / 2 - margen;
-        int rectY = y - altoTexto / 2 - margen;
+        int rectX = getX() - anchoTexto / 2 - margen;
+        int rectY = getY() - altoTexto / 2 - margen;
         int rectAncho = anchoTexto + 2 * margen;
         int rectAlto = altoTexto + 2 * margen;
 
-        // Rellena el rectángulo
-        g2.setColor(Color.WHITE);
-        g2.fillRect(rectX, rectY, rectAncho, rectAlto);
+        // Agrega una sombra suave
+        g2.setColor(new Color(0, 0, 0, 50));
+        g2.fillRoundRect(rectX + 4, rectY + 4, rectAncho, rectAlto, 15, 15);
+
+        GradientPaint gp = new GradientPaint(
+                rectX, rectY, new Color(240, 240, 240),
+                rectX, rectY + rectAlto, new Color(210, 210, 210)
+        );
+
+        g2.setPaint(gp);
+        g2.fillRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
 
         // Name of the entity.
         g2.setColor(Color.BLACK);
         g2.drawString(super.getText(), xTexto, yTexto);
 
+
+
         // Cambia el color de dibujo basándote si la entidad está seleccionada o no
         if (this.isSelected()) {
-            g2.setColor(Color.CYAN);
-            g2.setStroke(new BasicStroke(2));
-        } else {
-            g2.setColor(Color.BLACK);
+            this.setSelectionOptions(g2);
         }
 
         // Dibuja el rectángulo
-        g2.drawRect(rectX, rectY, rectAncho, rectAlto);
-        this.bounds = new Rectangle(rectX, rectY, rectAncho, rectAlto);
+        g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
+        this.setShape(new Rectangle(rectX, rectY, rectAncho, rectAlto));
+
+        g2.setStroke(new BasicStroke(1));
+        g2.setColor(Color.BLACK);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-
-    public Rectangle getBounds() {
-        return bounds;
-        //return new Rectangle(x, y, ancho, alto);
-    }
 
     @Override
     public List<Entity> getEntities() {
@@ -146,14 +128,11 @@ public class Entity extends AttributableComponent implements Serializable {
     @Override
     public List<Component> getComponentsForRemoval() {
 
-        List<Component> out = new ArrayList<>();
+        List<Component> out = super.getComponentsForRemoval();
 
         out.addAll(this.relationships);
         out.addAll(this.hierarchies);
         out.addAll(this.macroEntities);
-        out.addAll(super.getComponentsForRemoval());
-
-        out.add(this);
 
         return out;
     }
@@ -178,32 +157,20 @@ public class Entity extends AttributableComponent implements Serializable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Relationship> getRelaciones() { return this.relationships; }
+    public boolean addHierarchy(Hierarchy newHierarchy) {
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+        if (newHierarchy.isChild(this)) {
+            for (Hierarchy hierarchy : this.hierarchies) {
+                if (hierarchy.isChild(this)) {
+                    if (!hierarchy.getParent().hasAHierarchyInCommon(newHierarchy.getParent())) {
+                        return false;
+                    }
+                }
+            }
+        }
 
-    public List<Hierarchy> getHeriarchiesList() { return this.hierarchies; }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public boolean isSuperTipo() {
-        return superTipo;
-    }
-
-    public void setSuperTipo(boolean superTipo) {
-        this.superTipo = superTipo;
-    }
-
-    public boolean isSubTipo() {
-        return subTipo;
-    }
-
-    public void setSubTipo(boolean subTipo) {
-        this.subTipo = subTipo;
-    }
-
-    public void addHierarchy(Hierarchy hierarchy) {
-        hierarchies.add(hierarchy);
+        hierarchies.add(newHierarchy);
+        return true;
     }
 
     public void removeHierarchy(Hierarchy hierarchy) {
@@ -214,96 +181,21 @@ public class Entity extends AttributableComponent implements Serializable {
     /*                                         Attribute Related Methods                                              */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public boolean hasMainAttribute() { return this.mainAttribute != null; }
+    @Override
+    public boolean hasMainAttribute() {
 
-    // -------------------------------------------------------------------------------------------------------------- //
-
-    public void addCommonAttribute(Attribute attribute) {
-
-        this.commonAttributes.add(attribute);
-
-    }
-
-    // -------------------------------------------------------------------------------------------------------------- //
-
-    public void addAlternativeAttribute(Attribute attribute) {
-
-        this.alternativeAttributes.add(attribute);
-
-    }
-
-    // -------------------------------------------------------------------------------------------------------------- //
-
-    public void addMainAttribute(Attribute attribute) {
-
-        if (hasMainAttribute()) {
-            addAlternativeAttribute(this.mainAttribute);
-        }
-
-        this.mainAttribute = attribute;
-
-    }
-
-    // -------------------------------------------------------------------------------------------------------------- //
-
-    public void removeAttribute(Attribute attribute) {
-
-        if (this.hasMainAttribute()) {
-            if (this.mainAttribute.equals(attribute)) {
-                this.mainAttribute = null;
-            }
-        }
-
-        this.alternativeAttributes.remove(attribute);
-        this.commonAttributes.remove(attribute);
-
-    }
-
-    // -------------------------------------------------------------------------------------------------------------- //
-
-    public List<Attribute> getAttributes() {
-
-        List<Attribute> out = new ArrayList<>();
-
-        if (this.hasMainAttribute()) {
-            out.add(this.mainAttribute);
-        }
-
-        out.addAll(this.alternativeAttributes);
-        out.addAll(this.commonAttributes);
-
-        // Fix this
-        out.addAll(super.getAttributes());
-
-        return out;
-    }
-
-    // -------------------------------------------------------------------------------------------------------------- //
-
-    public int getAttributePosition(Attribute attribute) {
-
-        int out = 0;
         List<Attribute> attributes = this.getAttributes();
 
-        for (Attribute attributeInEntity : attributes) {
-
-            System.out.println(attributeInEntity.getText());
-            System.out.println(attribute.getText());
-
-            if (attributeInEntity.equals(attribute)) {
-                return out;
+        for (Attribute attribute : attributes) {
+            if (attribute.isMain()) {
+                return true;
             }
-
-            out++;
-            out += attributeInEntity.getNumberOfAttributes();
-
         }
 
-        return -1;
-
+        return false;
     }
 
-    protected void setBounds(Rectangle rectangle) { this.bounds = rectangle; }
+    // -------------------------------------------------------------------------------------------------------------- //
 
     public WeakEntity getWeakVersion() {
 
@@ -317,11 +209,9 @@ public class Entity extends AttributableComponent implements Serializable {
             weakVersion.addHierarchy(hierarchy);
         }
 
-        /*
-        for (MacroEntity macroEntity : this.hierarchies) {
+        for (MacroEntity macroEntity : this.macroEntities) {
             weakVersion.addMacroEntity(macroEntity);
         }
-        */
 
         List<Attribute> attributes = this.getAttributes();
 
@@ -329,21 +219,82 @@ public class Entity extends AttributableComponent implements Serializable {
             weakVersion.addAttribute(attribute);
         }
 
+        weakVersion.setShape(this.getBounds());
+
         return weakVersion;
 
     }
 
     public Point getClosestPoint(Point point) {
 
-        int minX = (int) this.bounds.getMinX();
-        int maxX = (int) this.bounds.getMaxX();
-        int minY = (int) this.bounds.getMinY();
-        int maxY = (int) this.bounds.getMaxY();
+        Rectangle bounds = this.getBounds();
+
+        int minX = (int) bounds.getMinX();
+        int maxX = (int) bounds.getMaxX();
+        int minY = (int) bounds.getMinY();
+        int maxY = (int) bounds.getMaxY();
 
         // Encontrar el punto más cercano en el perímetro del rectángulo
         int closestX = Math.max(minX, Math.min(point.x, maxX)); // Limitar x al rango del rectángulo
         int closestY = Math.max(minY, Math.min(point.y, maxY)); // Limitar y al rango del rectángulo
 
         return new Point(closestX, closestY);
+    }
+
+    public void drawClosestPointLine(Graphics2D g2, int x, int y) {
+
+        Point closestPoint = getClosestPoint(new Point(x, y));
+
+        // Dibujar la línea hacia el punto más cercano
+        g2.drawLine(x, y, closestPoint.x, closestPoint.y);
+    }
+
+    public void addMacroEntity(MacroEntity macroEntity) {
+        this.macroEntities.add(macroEntity);
+    }
+
+    private boolean hasAHierarchyInCommon(Entity entity) {
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+            if (hierarchy.isChild(this) && hierarchy.isChild(entity)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    private List<Entity> getHierarchicalChildren() {
+
+        List<Entity> out = new ArrayList<>();
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+
+            if (hierarchy.isParent(this)) {
+
+                out.addAll(hierarchy.getChilds());
+
+            }
+        }
+
+        return out;
+    }
+
+    public boolean shareHierarchicalChild(Entity entiy) {
+
+        List<Entity> thisEntityhierarchicalChildren = this.getHierarchicalChildren();
+        List<Entity> secondEntityHierarchicalChildren = entiy.getHierarchicalChildren();
+
+        for (Entity child : thisEntityhierarchicalChildren) { // It could be optimized.
+
+            if (secondEntityHierarchicalChildren.contains(child)) {
+                return true;
+            }
+
+        }
+
+        return false;
+
     }
 }

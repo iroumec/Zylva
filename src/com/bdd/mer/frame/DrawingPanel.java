@@ -3,7 +3,6 @@ package com.bdd.mer.frame;
 import com.bdd.mer.actions.Actioner;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
-import com.bdd.mer.components.entity.MacroEntity;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,7 @@ import java.util.List;
 
 public class DrawingPanel extends JPanel {
 
-    List<Component> components = new ArrayList<>();
+    private List<Component> components = new ArrayList<>();
     private Actioner actioner;
     private Component componenteArrastrada = null;
     private Set<Component> componentesSeleccionadas = new HashSet<>();
@@ -30,8 +29,8 @@ public class DrawingPanel extends JPanel {
         // Aesthetic brown
         //this.setBackground(new Color(213, 201, 188));
         // Aesthetic blue
-        this.setBackground(new Color(215, 239, 249));
-        //this.setBackground(Color.WHITE);
+        //this.setBackground(new Color(215, 239, 249));
+        this.setBackground(Color.WHITE);
 
         selectionArea = new Rectangle(0, 0, 0, 0);
 
@@ -150,7 +149,7 @@ public class DrawingPanel extends JPanel {
                     }
 
                     if (!componentClicked) {
-                        limpiarEntidadesSeleccionadas();
+                        //limpiarEntidadesSeleccionadas();
                         backgroundPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                         repaint();
                     }
@@ -179,8 +178,14 @@ public class DrawingPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // It draws the selection area
+        // It draws the selection area.
         Graphics2D g2d = (Graphics2D) g;
+
+        // Aplicación de suavizado a las líneas.
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+
         g2d.draw(selectionArea);
 
         for (Component component : this.components) {
@@ -220,7 +225,14 @@ public class DrawingPanel extends JPanel {
 
     public void addComponent(Component component) {
         this.components.addFirst(component);
-        repaint();
+        this.repaint();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void addComponentLast(Component component) {
+        this.components.addLast(component);
+        this.repaint();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -229,6 +241,16 @@ public class DrawingPanel extends JPanel {
         component.cleanPresence();
         this.components.remove(component);
         repaint();
+    }
+
+    public void replaceComponent(Component oldComponent, Component newComponent) {
+
+        int oldComponentIndex = this.components.indexOf(oldComponent);
+
+        this.components.remove(oldComponent);
+
+        this.components.add(oldComponentIndex, newComponent);
+
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -242,11 +264,6 @@ public class DrawingPanel extends JPanel {
     public void limpiarEntidadesSeleccionadas() {
         for (Component a : componentesSeleccionadas) {
            a.setSelected(Boolean.FALSE);
-           if (a.getClass().toString().equals("class com.bdd.mer.estatica.entity.MacroEntity")) {
-               for (Component b : ((MacroEntity) a).participatingComponents()) {
-                   b.setSelected(Boolean.FALSE);
-               }
-           }
         }
 
         // Si hago un clear, borro las referencias a las entidades y no
@@ -254,30 +271,6 @@ public class DrawingPanel extends JPanel {
         componentesSeleccionadas = new HashSet<>();
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-/*
-    public void addComponents(List<Component> componentsList) {
-        for (Component c : componentsList) {
-            if (c.getClass().toString().equals("class com.bdd.mer.estatica.entity.MacroEntity")) {
-                agregarEntidad((Entity) c);
-            } else if (c.getClass().toString().equals("class com.bdd.mer.estatica.relationship.Relationship")) {
-                agregarRelacion((Relationship) c);
-            }
-        }
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    /*
-    public void deleteComponents(List<Component> componentsList) {
-        for (Component c : componentsList) {
-            if (c.getClass().toString().equals("class com.bdd.mer.estatica.entity.MacroEntity")) {
-                this.eliminarEntidad((Entity) c);
-            } else if (c.getClass().toString().equals("class com.bdd.mer.estatica.relationship.Relationship")) {
-                this.eliminarRelacion((Relationship) c);
-            }
-        }
-    }
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void reset() {
@@ -288,56 +281,15 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    /*
-    El método corrobora que todos los objetos Component seleccionados son entidades y
-    aún no se hallan en ninguna jerarquía.
-
-    El MER no soporta herencia múltiple.
-     */
-    public boolean participaSoloEntidades() {
-        for (Component a : componentesSeleccionadas) {
-            if (!a.getClass().toString().equals("class com.bdd.mer.estatica.Entidad") &&
-                !a.getClass().toString().equals("class com.bdd.mer.estatica.entity.MacroEntity")) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public List<Entity> getSelectedEntities() {
 
         List<Entity> out = new ArrayList<>();
 
-        for (Component component : this.components) {
+        for (Component component : this.componentesSeleccionadas) {
             out.addAll(component.getEntities());
         }
 
         return out;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public boolean oneRelationshipAndEntities() {
-        boolean relationshipFound = false;
-        for (Component component : componentesSeleccionadas) {
-            // If the component is not an entity...
-            if (!component.getClass().toString().equals("class com.bdd.mer.estatica.Entidad")) {
-                // If the component is a relationship
-                if (component.getClass().toString().equals("class com.bdd.mer.estatica.relationship.Relacion")) {
-                    // Two relationships were selected
-                    if (relationshipFound) {
-                        return false;
-                    } else {
-                        relationshipFound = true;
-                    }
-                } else {
-                    return false;
-                }
-            }
-        }
-
-        return relationshipFound;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -353,12 +305,6 @@ public class DrawingPanel extends JPanel {
     }
 
     public List<Component> getListComponents() { return new ArrayList<>(this.components); }
-
-    public void addComponents(List<Component> components) {
-    }
-
-    public void deleteComponents(List<Component> components) {
-    }
 
     public Actioner getActioner() { return this.actioner; }
 
@@ -380,10 +326,14 @@ public class DrawingPanel extends JPanel {
         JMenuItem addNote = new JMenuItem("Add note");
         addNote.addActionListener(_ -> this.getActioner().addNote());
 
+        JMenuItem addMacroEntity = new JMenuItem("Add macro-entity");
+        addMacroEntity.addActionListener(_ -> this.getActioner().addMacroEntity());
+
         backgroundPopupMenu.addOption(addEntity);
         backgroundPopupMenu.addOption(addRelationship);
         backgroundPopupMenu.addOption(addDependency);
         backgroundPopupMenu.addOption(addNote);
+        backgroundPopupMenu.addOption(addMacroEntity);
 
         return backgroundPopupMenu;
     }

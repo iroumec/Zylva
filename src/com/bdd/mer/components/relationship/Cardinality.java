@@ -14,7 +14,6 @@ public class Cardinality extends Component implements Serializable {
 
     private Entity owner;
     private Relationship relationship;
-    private Rectangle bounds;
 
     public Cardinality(String firstValue, String secondValue) {
         this.setText(giveFormat(firstValue, secondValue));
@@ -38,13 +37,11 @@ public class Cardinality extends Component implements Serializable {
     @Override
     public void draw(Graphics2D g2) {
 
-        g2.setFont(new Font("Verdana", Font.BOLD, 10));
-
         Point closestPoint = owner.getClosestPoint(new Point(this.relationship.getX(), this.relationship.getY()));
 
         g2.drawString(this.getText(),
-                (closestPoint.x + relationship.getX()) / 2,
-                (closestPoint.y + relationship.getY()) / 2);
+                (closestPoint.x + relationship.getX()) / 2 + 5, // Este cumple una función parecida a lo que dice abajo, pero vertical.
+                (closestPoint.y + relationship.getY()) / 2 - 5); // EL -3 es para que no se solape la cardinalidad con la línea cuando está completamente en vertical.
 
         // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
@@ -54,13 +51,9 @@ public class Cardinality extends Component implements Serializable {
         //g2.drawRect(x, rectY, anchoTexto, altoTexto); Uncomment this to see the hitbox
         // Maybe I'll need to fix this later...
 
-        this.bounds = new Rectangle(x, y, anchoTexto, altoTexto);
+        this.setShape(new Rectangle((closestPoint.x + relationship.getX()) / 2 + 5, (closestPoint.y + relationship.getY()) / 2 - 5, anchoTexto, altoTexto));
+        //g2.drawRect((closestPoint.x + relationship.getX()) / 2 + 5, (closestPoint.y + relationship.getY()) / 2 - 5, anchoTexto, altoTexto);
 
-    }
-
-    @Override
-    public Rectangle getBounds() {
-        return this.bounds;
     }
 
     @Override

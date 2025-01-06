@@ -9,28 +9,29 @@ import java.awt.*;
 
 public abstract class Component {
 
-    // Option of the component.
-    public List<String> options;
-
     // Is the component being selected?
-    public boolean selected;
+    private boolean selected;
 
     // Text shown in the component.
-    public String text;
+    private String text;
 
     // Position of the component.
-    public int x, y;
+    private int x, y;
+
+    private Shape shape;
 
     private static DrawingPanel drawingPanel;
 
     // PopupMenu of the Component.
-    PopupMenu popupMenu;
+    private PopupMenu popupMenu;
 
     public Component() {
         this("", 0, 0);
     }
 
-    protected Component(String text, int x, int y)  {
+    public Component(String text) { this(text, 0 , 0); }
+
+    public Component(String text, int x, int y)  {
         this.selected = false;
         this.text = text;
         this.x = x;
@@ -49,7 +50,11 @@ public abstract class Component {
 
     public abstract void draw(Graphics2D g2);
 
-    public abstract Rectangle getBounds();
+    public Rectangle getBounds() {
+        return this.shape.getBounds();
+    }
+
+    public void setShape(Shape shape) { this.shape = shape; }
 
     public void setSelected(boolean isSelected) { this.selected = isSelected; }
 
@@ -59,9 +64,21 @@ public abstract class Component {
 
     public String getText() { return this.text; }
 
-    public void setX(int x) { this.x = x; }
+    public void setX(int x) {
 
-    public void setY(int y) { this.y = y; }
+        if (x >= 0) {
+            this.x = x;
+        }
+
+    }
+
+    public void setY(int y) {
+
+        if (y >= 0) {
+            this.y = y;
+        }
+
+    }
 
     public int getX() { return this.x; }
 
@@ -74,9 +91,24 @@ public abstract class Component {
 
     public List<Entity> getEntities() { return new ArrayList<>(); }
 
-    public abstract List<Component> getComponentsForRemoval();
+    public List<Component> getComponentsForRemoval() {
+
+        List<Component> out = new ArrayList<>();
+
+        out.add(this);
+
+        return out;
+    }
 
     public abstract void cleanPresence();
 
     public abstract void changeReference(Entity oldEntity, Entity newEntity);
+
+    // The color and the stroke are changed if the entity is selected.
+    public void setSelectionOptions(Graphics2D graphics2D) {
+        graphics2D.setColor(new Color(120, 190, 235));
+        graphics2D.setStroke(new BasicStroke(2));
+    }
+
+    public boolean canBeDeleted() { return true; }
 }

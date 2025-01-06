@@ -60,15 +60,16 @@ public class MenuBar extends JMenuBar {
         JButton tipsButton = new JButton("Help");
 
         String controls = "CONTROLS: " +
-                "\nCtrl + E -> Add a new entity" +
-                "\nCtrl + R -> Add a new relationship" +
-                "\nCtrl + D -> Add a new dependency" +
-                "\nCtrl + H -> Add a new hierarchy" +
-                "\nCtrl + N -> Add a new note" +
-                "\nSupr -> Delete all selected components";
+                "\nCtrl + E: Add a new entity" +
+                "\nCtrl + R: Add a new relationship" +
+                "\nCtrl + D: Add a new dependency" +
+                "\nCtrl + H: Add a new hierarchy" +
+                "\nCtrl + N: Add a new note" +
+                "\nSupr: Delete all selected components";
 
         String credits = "AUTHOR: " +
-                "\nZilva DERExt was made by Iñaki Roumec";
+                "\nZilva DERExt was made by Iñaki Roumec" +
+                "\nhttps://github.com/iroumec";
 
         tipsButton.addActionListener(_ -> {
             JOptionPane.showMessageDialog(null, controls + "\n\n" + credits);

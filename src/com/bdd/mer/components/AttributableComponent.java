@@ -19,7 +19,25 @@ public abstract class AttributableComponent extends Component {
 
     public void removeAttribute(Attribute attribute) { this.attributes.remove(attribute); };
 
-    public abstract int getAttributePosition(Attribute attribute);
+    public int getAttributePosition(Attribute attribute) {
+
+        int out = 0;
+        List<Attribute> attributes = this.getAttributes();
+
+        for (Attribute attributeInEntity : attributes) {
+
+            if (attributeInEntity.equals(attribute)) {
+                return out;
+            }
+
+            out++;
+            out += attributeInEntity.getNumberOfAttributes();
+
+        }
+
+        return -1;
+
+    }
 
     public List<Attribute> getAttributes() { return new ArrayList<>(this.attributes); }
 
@@ -38,13 +56,11 @@ public abstract class AttributableComponent extends Component {
 
     public List<Component> getComponentsForRemoval() {
 
-        List<Component> out = new ArrayList<>();
+        List<Component> out = super.getComponentsForRemoval();
 
         for (Attribute attribute : this.attributes) {
             out.addAll(attribute.getComponentsForRemoval());
         }
-
-        out.add(this);
 
         return out;
     }
@@ -58,4 +74,9 @@ public abstract class AttributableComponent extends Component {
         }
 
     }
+
+    public boolean hasMainAttribute() {
+        return false;
+    }
+
 }

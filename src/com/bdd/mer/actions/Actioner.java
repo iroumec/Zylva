@@ -1,10 +1,9 @@
 package com.bdd.mer.actions;
 
-import com.bdd.mer.components.atributo.Attribute;
-import com.bdd.mer.components.atributo.AttributeArrow;
-import com.bdd.mer.components.atributo.AttributeEnding;
-import com.bdd.mer.components.atributo.AttributeSymbol;
-import com.bdd.mer.components.relationship.Dupla;
+import com.bdd.mer.components.atributo.*;
+import com.bdd.mer.components.macroEntity.MacroEntity;
+import com.bdd.mer.components.hierarchy.HierarchyType;
+import com.bdd.mer.components.hierarchy.TotalHierarchy;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
@@ -62,14 +61,14 @@ public final class Actioner {
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva relación");
 
-            if (nombre != null) {
+            if (nombre != null && !nombre.isEmpty()) {
 
                 Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY());
 
                 List<Cardinality> cardinalities = new ArrayList<>();
 
                 for (Entity entity : drawingPanel.getSelectedEntities()) {
-                    Cardinality cardinality = ingresarCardinalidad(entity);
+                    Cardinality cardinality = getCardinality(entity);
 
                     if (cardinality != null) {
 
@@ -99,6 +98,58 @@ public final class Actioner {
         }
     }
 
+    private Cardinality getCardinality(Entity entity) {
+        JTextField cardinalidadMinimaCampo = new JTextField(1);
+        JTextField cardinalidadMaximaCampo = new JTextField(1);
+        JButton okButton = new JButton("OK");
+        okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
+
+        JPanel miPanel = new JPanel();
+        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + entity.getText() + ": "));
+        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
+        miPanel.add(new JLabel("Cardinalidad mínima:"));
+        miPanel.add(cardinalidadMinimaCampo);
+        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
+        miPanel.add(new JLabel("Cardinalidad máxima:"));
+        miPanel.add(cardinalidadMaximaCampo);
+
+        // Crea un JOptionPane personalizado
+        JOptionPane optionPane = new JOptionPane(miPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+
+        // Crea el cuadro de diálogo basado en el JOptionPane
+        JDialog dialog = optionPane.createDialog("Por favor ingrese dos valores");
+
+        // Establece el foco en el campo de la cardinalidad mínima al abrir el cuadro de diálogo
+        dialog.addWindowFocusListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent e) {
+                cardinalidadMinimaCampo.requestFocusInWindow();
+            }
+        });
+
+        // Muestra el cuadro de diálogo
+        dialog.setVisible(true);
+
+        int resultado = (int) optionPane.getValue();
+        if (resultado == JOptionPane.OK_OPTION) {
+            String cardinalidadMinima = cardinalidadMinimaCampo.getText();
+            String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
+
+            if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Ambos campos deben tener un valor");
+                return getCardinality(entity);
+            } else {
+                return new Cardinality(String.valueOf(cardinalidadMinima.charAt(0)), String.valueOf(cardinalidadMaxima.charAt(0)));
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void changeCardinality(Cardinality cardinality) {
+
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                           Add Dependency                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -106,8 +157,6 @@ public final class Actioner {
     public void addDependency() {
 
         boolean canceledRelationship = false;
-
-        System.out.println(drawingPanel.getSelectedEntities());
 
         if (!drawingPanel.getSelectedEntities().isEmpty() && drawingPanel.getSelectedEntities().size() == 2) {
 
@@ -117,12 +166,11 @@ public final class Actioner {
 
                 Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY());
 
-                Entity entitySelected = seleccionarEntidadDebil();
+                Entity entitySelected = selectWeakEntity();
 
                 if (entitySelected != null) {
                     WeakEntity weakVersion = entitySelected.getWeakVersion();
 
-                    List<Dupla<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
                     Cardinality cardinality = null;
                     StaticCardinality staticCardinality = null;
 
@@ -130,7 +178,7 @@ public final class Actioner {
 
                         if (entity.equals(entitySelected)) {
 
-                            cardinality = ingresarCardinalidad(entity);
+                            cardinality = getCardinality(entity);
 
                             if (cardinality != null) {
 
@@ -146,7 +194,7 @@ public final class Actioner {
 
                             // Una entidad débil solo puede estar relacionada con una entidad fuerte si
                             // esta última tiene cardinalidad 1:1
-                            staticCardinality = new StaticCardinality(entity, "1", "1");
+                            staticCardinality = new StaticCardinality("1", "1");
                             newRelationship.addEntity(entity, staticCardinality);
 
                         }
@@ -170,31 +218,83 @@ public final class Actioner {
         }
     }
 
+    private Entity selectWeakEntity() {
+
+        // Define las opciones para los botones
+        Object[] opciones = {drawingPanel.getSelectedEntities().getFirst().getText(),
+                drawingPanel.getSelectedEntities().getLast().getText()};
+
+        // Muestra el JOptionPane con los botones
+        int seleccion = JOptionPane.showOptionDialog(
+                this.drawingPanel,
+                "Seleccione la entidad débil de la relación",
+                "Selección",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]);
+
+        return switch (seleccion) {
+            case 0 -> (drawingPanel.getSelectedEntities().getFirst());
+            case 1 -> (drawingPanel.getSelectedEntities().getLast());
+            default -> {
+                JOptionPane.showMessageDialog(this.drawingPanel, "Seleccione una entidad débil");
+                yield selectWeakEntity();
+            }
+        };
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                            Add Hierarchy                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void addHierarchy() {
         // Solo procede si se ha seleccionado al menos tres entidades
-        if (drawingPanel.getComponentesSeleccionadas().size() >= 3 && drawingPanel.participaSoloEntidades()) {
-            Entity supertipo = seleccionarSupertipo();
-            List<Entity> subtipos = obtenerListaSubtipos(supertipo);
-            if (rolesJerarquiaOcupados(supertipo, subtipos)) {
-                ocuparRoles(supertipo, subtipos);
-                Dupla<Boolean, Boolean> tipo = seleccionarTipoJerarquia();
+        if (drawingPanel.getSelectedEntities().size() >= 3 && !drawingPanel.getSelectedEntities().isEmpty()) {
 
-                Hierarchy newHierarchy = new Hierarchy("", supertipo, subtipos, "u");
+            Entity supertipo = seleccionarSupertipo();
+
+            main: if (supertipo != null) {
+
+                List<Entity> subtipos = obtenerListaSubtipos(supertipo);
+
+                Hierarchy newHierarchy = getHierarchy(supertipo);
+
+                if (newHierarchy == null) {
+                    return;
+                }
+
+                supertipo.addHierarchy(newHierarchy);
+
+                for (Entity subtipo : subtipos) {
+                    newHierarchy.addChild(subtipo);
+
+                    if (!subtipo.addHierarchy(newHierarchy)) {
+
+                        // Acción reparadora.
+                        supertipo.removeHierarchy(newHierarchy);
+                        for (Entity s : subtipos) {
+                            s.removeHierarchy(newHierarchy);
+
+                            String message = "La entidad "
+                                    + '\"' + subtipo.getText() + '\"'
+                                    + " ya participa de una jerarquía. "
+                                    + "La herencia múltiple solamente es permitida si se tiene el mismo padre.";
+
+                            JOptionPane.showMessageDialog(this.drawingPanel, message);
+
+                            // Salida
+                            break main;
+                        }
+                    }
+                }
 
                 drawingPanel.addComponent(newHierarchy);
 
-                // Add the hierarchy to the entities
-                for (Component entity : drawingPanel.getComponentesSeleccionadas()) {
-                    ((Entity) entity).addHierarchy(newHierarchy);
+                } else {
+                    JOptionPane.showMessageDialog(this.drawingPanel, "Una o más entidades seleccionadas ya ocupan el rol seleccionado en otra jerarquía.");
                 }
-
-            } else {
-                JOptionPane.showMessageDialog(this.drawingPanel, "Una o más entidades seleccionadas ya ocupan el rol seleccionado en otra jerarquía.");
-            }
         } else {
             JOptionPane.showMessageDialog(this.drawingPanel, "Seleccione al menos tres entidades.");
         }
@@ -204,215 +304,7 @@ public final class Actioner {
         drawingPanel.repaint();
     }
 
-    public void addNote() {
-        // Muestra una ventana emergente para ingresar el contenido de la nota
-        String contenido = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el contenido de la nueva nota");
-        if (contenido != null) {
-            // Si el usuario ingresó contenido, agrega una nueva nota con ese contenido
-            drawingPanel.addComponent(new Note(contenido, drawingPanel.getMouseX(), drawingPanel.getMouseY()));
-        }
-    }
-
-    public void deleteSelectedComponents() {
-
-        List<Component> selectedComponents = this.drawingPanel.getComponentesSeleccionadas();
-
-        if (!selectedComponents.isEmpty()) {
-            int confirmacion = JOptionPane.showConfirmDialog(this.drawingPanel, "¿Seguro de que desea eliminar el objeto seleccionado?");
-            if (confirmacion == JOptionPane.YES_OPTION) {
-
-
-                List<Component> componentsForRemoval = new ArrayList<>();
-
-                for (Component component : selectedComponents) {
-                    componentsForRemoval.addAll(component.getComponentsForRemoval());
-                }
-
-                for (Component component : componentsForRemoval) {
-                    this.drawingPanel.removeComponent(component);
-                }
-
-            }
-
-            this.drawingPanel.repaint();
-        } else {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar al menos un elemento.");
-        }
-
-        // Desactiva el modo de selección
-        drawingPanel.limpiarEntidadesSeleccionadas();
-    }
-
-    public void renameComponent(Component component) {
-
-        String newText;
-
-        do {
-            newText = JOptionPane.showInputDialog(null, "Ingrese el nuevo texto: ");
-
-            // "newText" can be null when the user pressed "cancel"
-            if (newText != null && newText.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Ingrese al menos un carácter");
-            }
-        } while (newText != null && newText.isEmpty());
-
-        // If "Cancel" was not pressed
-        if (newText != null) {
-            component.setText(newText);
-            this.drawingPanel.repaint();
-        }
-    }
-
-    public void addAttribute() {
-
-    }
-
-    public void addComplexAttribute(AttributableComponent component) {
-
-        // Creation of the components of the panel.
-        JTextField fieldNombre = new JTextField(10);
-        JCheckBox boxOptional = new JCheckBox("Optional");
-        JCheckBox boxMultivalued = new JCheckBox("Multivalued");
-
-        AttributeSymbol attributeSymbol = selectAtributeType();
-
-        // Crea un array de los componentes
-        Object[] message = {
-                "Ingrese el nombre del atributo:", fieldNombre,
-                "Seleccione las opciones:", boxOptional, boxMultivalued
-        };
-
-        // Muestra el JOptionPane
-        int option = JOptionPane.showConfirmDialog(null, message, "Ingrese la información del atributo", JOptionPane.OK_CANCEL_OPTION);
-
-        // Muestra una ventana emergente para ingresar el nombre del atributo y seleccionar las opciones
-        if (option == JOptionPane.OK_OPTION) {
-
-            String nombre = fieldNombre.getText();
-
-            if (nombre != null) {
-
-                AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
-                AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
-
-                Attribute newAttribute = new Attribute(component, nombre, attributeSymbol, arrowBody, arrowEnding);
-
-                component.addAttribute(newAttribute);
-
-                drawingPanel.addComponent(newAttribute);
-            }
-        }
-
-        drawingPanel.repaint();
-
-    }
-
-    public void changeOptionality(Attribute attribute) {
-
-        attribute.changeOptionality();
-        drawingPanel.repaint();
-        System.out.println("Hello");
-
-    }
-
-    public void changeCardinality(Cardinality cardinality) {
-        
-    }
-
-
-    private Cardinality ingresarCardinalidad(Entity entity) {
-        JTextField cardinalidadMinimaCampo = new JTextField(1);
-        JTextField cardinalidadMaximaCampo = new JTextField(1);
-        JButton okButton = new JButton("OK");
-        okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
-
-        JPanel miPanel = new JPanel();
-        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + entity.getText() + ": "));
-        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
-        miPanel.add(new JLabel("Cardinalidad mínima:"));
-        miPanel.add(cardinalidadMinimaCampo);
-        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
-        miPanel.add(new JLabel("Cardinalidad máxima:"));
-        miPanel.add(cardinalidadMaximaCampo);
-
-        int resultado = JOptionPane.showConfirmDialog(null, miPanel,
-                "Por favor ingrese dos valores", JOptionPane.OK_CANCEL_OPTION);
-        if (resultado == JOptionPane.OK_OPTION) {
-            String cardinalidadMinima = cardinalidadMinimaCampo.getText();
-            String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
-
-            if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Ambos campos deben tener un valor");
-                return ingresarCardinalidad(entity);
-            } else {
-                return new Cardinality(String.valueOf(cardinalidadMinima.charAt(0)), String.valueOf(cardinalidadMaxima.charAt(0)));
-            }
-        } else {
-            return null;
-        }
-    }
-
-    private Entity seleccionarEntidadDebil() {
-
-        // Define las opciones para los botones
-        Object[] opciones = {drawingPanel.getSelectedEntities().getFirst().getText(),
-                drawingPanel.getSelectedEntities().getLast().getText()};
-
-        // Muestra el JOptionPane con los botones
-        int seleccion = JOptionPane.showOptionDialog(this.drawingPanel, "Seleccione la entidad débil de la relación", "Selección",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
-
-        // Determina qué botón se seleccionó
-        if (seleccion == 0) {
-            //((Entity) panelDibujo.getComponentesSeleccionadas().getFirst()).setEntidadDebil(Boolean.TRUE);
-            return (drawingPanel.getSelectedEntities().getFirst());
-        } else if (seleccion == 1) {
-            //((Entity) panelDibujo.getComponentesSeleccionadas().getLast()).setEntidadDebil(Boolean.TRUE);
-            return (drawingPanel.getSelectedEntities().getFirst());
-        } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, "Seleccione una entidad débil");
-            seleccionarEntidadDebil();
-        }
-
-        return null;
-    }
-
-    public Entity seleccionarSupertipo() {
-
-        List<Component> entidadesSeleccionadas = drawingPanel.getComponentesSeleccionadas();
-        Object[] opciones = new Object[entidadesSeleccionadas.size()];
-
-        for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
-            opciones[i] = (((Entity) entidadesSeleccionadas.get(i)).getText());
-        }
-
-        // Muestra el JOptionPane con los botones
-        int seleccion = JOptionPane.showOptionDialog(null, "Seleccione a la entidad supertipo", "Selección",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
-
-        if (seleccion < entidadesSeleccionadas.size()) {
-            return ((Entity) entidadesSeleccionadas.get(seleccion));
-        } else {
-            // Arreglar
-            return null;
-        }
-    }
-
-    public List<Entity> obtenerListaSubtipos(Entity superTipo) {
-        List<Component> entidadesSeleccionadas = drawingPanel.getComponentesSeleccionadas();
-        List<Entity> retorno = new ArrayList<>();
-
-        for (Component a : entidadesSeleccionadas) {
-            // Si tienen una referencia distinta al superTipo seleccionado
-            if (a != superTipo) {
-                retorno.add((Entity) a);
-            }
-        }
-
-        return retorno;
-    }
-
-    public Dupla<Boolean, Boolean> seleccionarTipoJerarquia() {
+    public Hierarchy getHierarchy(Entity supertipo) {
 
         // Crea los radio buttons
         JRadioButton opcionExclusiva = new JRadioButton("Exclusiva", true);
@@ -447,35 +339,176 @@ public final class Actioner {
         panel.add(panelTP);
 
         // Muestra el panel en un JOptionPane
-        JOptionPane.showOptionDialog(null, panel, "Elige una opción",
+        int option = JOptionPane.showOptionDialog(null, panel, "Elige una opción",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
-        return (new Dupla<>(opcionExclusiva.isSelected(), opcionTotal.isSelected()));
-    }
-
-    /*
-    Un supertipo solo puede ser supertipo de una única jerarquía. Un subtipo solo puede
-    ser subtipo de una única jerarquía.
-     */
-    public boolean rolesJerarquiaOcupados(Entity supertipo, List<Entity> subtipos) {
-        if (supertipo.isSuperTipo()) {
-            return false;
+        // If the user clicked Cancel or closed the window
+        if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
+            return null; // Cancel the process
         }
 
-        for (Entity e : subtipos) {
-            if (e.isSubTipo()) {
-                return false;
+        HierarchyType letter = (opcionExclusiva.isSelected()) ? HierarchyType.DISJUNT : HierarchyType.OVERLAPPING;
+
+        Hierarchy newHierarchy;
+
+        if (opcionTotal.isSelected()) {
+            newHierarchy = new TotalHierarchy(letter, supertipo);
+        } else {
+            newHierarchy = new Hierarchy(letter, supertipo);
+        }
+
+        return newHierarchy;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                 Add Note                                                       */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void addNote() {
+        // Muestra una ventana emergente para ingresar el contenido de la nota
+        String contenido = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el contenido de la nueva nota");
+        if (contenido != null) {
+            // Si el usuario ingresó contenido, agrega una nueva nota con ese contenido
+            drawingPanel.addComponent(new Note(contenido, drawingPanel.getMouseX(), drawingPanel.getMouseY()));
+        }
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                         Delete Selected Components                                             */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void deleteSelectedComponents() {
+
+        List<Component> selectedComponents = this.drawingPanel.getComponentesSeleccionadas();
+
+        if (!selectedComponents.isEmpty()) {
+            int confirmacion = JOptionPane.showConfirmDialog(this.drawingPanel, "¿Seguro de que desea eliminar el objeto seleccionado?");
+            if (confirmacion == JOptionPane.YES_OPTION) {
+
+                List<Component> componentsForRemoval = new ArrayList<>();
+
+                for (Component component : selectedComponents) {
+
+                    if (!component.canBeDeleted()) {
+                        return;
+                    }
+
+                    componentsForRemoval.addAll(component.getComponentsForRemoval());
+                }
+
+                for (Component component : componentsForRemoval) {
+                    this.drawingPanel.removeComponent(component);
+                }
+
+            }
+
+            this.drawingPanel.repaint();
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar al menos un elemento.");
+        }
+
+        // Desactiva el modo de selección
+        drawingPanel.limpiarEntidadesSeleccionadas();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Rename Component                                                 */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void renameComponent(Component component) {
+
+        String newText;
+
+        do {
+            newText = JOptionPane.showInputDialog(null, "Ingrese el nuevo texto: ");
+
+            // "newText" can be null when the user pressed "cancel"
+            if (newText != null && newText.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Ingrese al menos un carácter");
+            }
+        } while (newText != null && newText.isEmpty());
+
+        // If "Cancel" was not pressed
+        if (newText != null) {
+            component.setText(newText);
+            this.drawingPanel.repaint();
+        }
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                Add Attribute                                                   */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void addAttribute(AttributableComponent component, AttributeSymbol attributeSymbol) {
+
+        // Creation of the components of the panel.
+        JTextField fieldNombre = new JTextField(10);
+        JCheckBox boxOptional = new JCheckBox("Optional");
+        JCheckBox boxMultivalued = new JCheckBox("Multivalued");
+
+        // Crea un array de los componentes
+        Object[] message = {
+                "Ingrese el nombre del atributo:", fieldNombre,
+                "Seleccione las opciones:", boxOptional, boxMultivalued
+        };
+
+        // Muestra el JOptionPane
+        int option = JOptionPane.showConfirmDialog(null, message, "Ingrese la información del atributo", JOptionPane.OK_CANCEL_OPTION);
+
+        // Muestra una ventana emergente para ingresar el nombre del atributo y seleccionar las opciones
+        if (option == JOptionPane.OK_OPTION) {
+
+            String nombre = fieldNombre.getText();
+
+            if (nombre != null) {
+
+                AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
+                AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
+
+                Attribute newAttribute = new Attribute(component, nombre, attributeSymbol, arrowBody, arrowEnding);
+
+                component.addAttribute(newAttribute);
+
+                drawingPanel.addComponent(newAttribute);
             }
         }
 
-        return true;
     }
 
-    public void ocuparRoles(Entity supertipo, List<Entity> subtipos) {
-        supertipo.setSuperTipo(Boolean.TRUE);
+    public void addComplexAttribute(AttributableComponent component) {
 
-        for (Entity e : subtipos) {
-            e.setSubTipo(Boolean.TRUE);
+        AttributeSymbol attributeSymbol = selectAtributeType();
+
+        if (attributeSymbol.equals(AttributeSymbol.MAIN)) {
+
+            if (component.hasMainAttribute()) {
+                JOptionPane.showMessageDialog(null, "The component can only have one main attribute.");
+                return;
+            }
+
+            JTextField fieldNombre = new JTextField(10);
+
+            int option = JOptionPane.showConfirmDialog(null, fieldNombre, "Ingrese el nombre del atributo:", JOptionPane.OK_CANCEL_OPTION);
+
+            // Muestra una ventana emergente para ingresar el nombre del atributo y seleccionar las opciones
+            if (option == JOptionPane.OK_OPTION) {
+
+                String nombre = fieldNombre.getText();
+
+                if (nombre != null) {
+
+                    Attribute newAttribute = new MainAttribute(component, nombre);
+
+                    component.addAttribute(newAttribute);
+
+                    drawingPanel.addComponent(newAttribute);
+                }
+            }
+
+        } else {
+
+            addAttribute(component, attributeSymbol);
+
         }
     }
 
@@ -518,6 +551,89 @@ public final class Actioner {
         }
     }
 
+    public void changeOptionality(Attribute attribute) {
+
+        attribute.changeOptionality();
+        drawingPanel.repaint();
+
+    }
+
+    public void changeMultivalued(Attribute attribute) {
+
+        attribute.changeMultivalued();
+        drawingPanel.repaint();
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                             Add Macro-Entity                                                   */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    // There must be selected at least an entity and a relationship (unary relationship)
+    public void addMacroEntity() {
+
+        if (drawingPanel.getComponentesSeleccionadas().size() == 1 /*&& drawingPanel.onlyRelationshipSelected()*/) {
+
+            MacroEntity macroEntity = new MacroEntity("", (Relationship) drawingPanel.getComponentesSeleccionadas().getFirst());
+
+            drawingPanel.addComponentLast(macroEntity);
+
+            drawingPanel.limpiarEntidadesSeleccionadas();
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Seleccione una relación.");
+        }
+    }
+
+    /*                                                                                                               */
+
+    public Entity seleccionarSupertipo() {
+
+        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
+        Object[] opciones = new Object[entidadesSeleccionadas.size()];
+
+        for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
+            opciones[i] = (entidadesSeleccionadas.get(i)).getText();
+        }
+
+        // Muestra el JOptionPane con los botones
+        int seleccion = JOptionPane.showOptionDialog(null, "Seleccione a la entidad supertipo", "Selección",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
+
+        return (entidadesSeleccionadas.get(seleccion));
+
+    }
+
+    public List<Entity> obtenerListaSubtipos(Entity supertipo) {
+
+        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
+
+        List<Entity> retorno = new ArrayList<>(entidadesSeleccionadas);
+        retorno.remove((supertipo));
+
+        return retorno;
+    }
+
+    /*
+    Un supertipo solo puede ser supertipo de una única jerarquía. Un subtipo solo puede
+    ser subtipo de una única jerarquía.
+     */
+    /*
+    public boolean rolesJerarquiaOcupados(Entity supertipo, List<Entity> subtipos) {
+        if (supertipo.isSuperTipo()) {
+            return false;
+        }
+
+        for (Entity e : subtipos) {
+            if (e.isSubTipo()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    */
+
     private void changeEntity(Entity oldEntity, Entity newEntity) {
 
         List<Component> components = this.drawingPanel.getListComponents();
@@ -526,9 +642,7 @@ public final class Actioner {
             component.changeReference(oldEntity, newEntity);
         }
 
-        this.drawingPanel.removeComponent(oldEntity);
-
-        this.drawingPanel.addComponent(newEntity);
+        this.drawingPanel.replaceComponent(oldEntity, newEntity);
 
         this.drawingPanel.repaint();
 

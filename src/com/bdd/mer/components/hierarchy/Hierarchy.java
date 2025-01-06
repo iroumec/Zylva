@@ -2,8 +2,10 @@ package com.bdd.mer.components.hierarchy;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,31 +13,44 @@ import java.util.List;
 
 public class Hierarchy extends Component implements Serializable {
 
-    int radio; // Centro del óvalo
-    private String letter;
-    private final Entity parent;
+    private int radio; // Centro del óvalo
+    private final HierarchyType exclusivity;
+    private Entity parent;
     private final List<Entity> childs;
 
-    public Hierarchy(String text, Entity parent, List<Entity> childs, String letter) {
-        super(text, parent.getX(), parent.getY() + 50);
+    public Hierarchy(HierarchyType exclusivity, Entity parent) {
+
+        super(exclusivity.getSymbol(), parent.getX(), parent.getY() + 60);
+
+        this.exclusivity = exclusivity;
         this.parent = parent;
-        this.childs = childs;
-        this.letter = letter; // d if it is exclusive. o id it is not exclusive.
+        this.childs = new ArrayList<>();
+    }
+
+    public void addChild(Entity entity) {
+        this.childs.add(entity);
     }
 
     @Override
     protected PopupMenu getGenericPopupMenu() {
-        return null;
+
+        DrawingPanel drawingPanel = this.getPanelDibujo();
+        PopupMenu hierarchyPopupMenu = new PopupMenu(drawingPanel);
+
+        JMenuItem deleteHierarchy = new JMenuItem("Delete");
+        deleteHierarchy.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
+
+        hierarchyPopupMenu.addOption(deleteHierarchy);
+
+        return hierarchyPopupMenu;
+
     }
 
     public void draw(Graphics2D g2) {
 
-        // Cambia la fuente del texto
-        g2.setFont(new Font("Verdana", Font.BOLD, 10));
-
         // Obtengo la fuente del texto y calculo su tamaño
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(this.letter);
+        int textWidth = fm.stringWidth(this.getSymbol());
         int textHeight = fm.getHeight();
 
         // Calcula el diámetro del círculo basado en el tamaño del texto
@@ -47,31 +62,26 @@ public class Hierarchy extends Component implements Serializable {
 
         // Si la jerarquía es seleccionada, se pinta de CYAN
         if (this.isSelected()) {
-            g2.setColor(Color.CYAN);
+            this.setSelectionOptions(g2);
         }
 
-        // Dibuja la línea al supertipo
-        g2.drawLine(this.x, this.y, parent.getX(), parent.getY());
-        // Si es total, dibuja dos líneas
-        //if (this.isTotal()) {
-        //    g2.drawLine(this.x - 5, this.y - 5, parent.getX() - 5, parent.getY() - 5);
-        //}
+        drawSuperentityLine(g2);
 
         // Dibuja las líneas a los subtipos
         for (Entity e : childs) {
-            g2.drawLine(this.x, this.y, e.getX(), e.getY());
+            g2.drawLine(this.getX(), this.getY(), e.getX(), e.getY());
         }
 
         // Dibuja el círculo adaptado al tamaño del texto
-        g2.drawOval(this.x - radio, this.y - radio, diameter, diameter);
+        g2.drawOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
 
         // Rellena el círculo
         g2.setColor(Color.WHITE);
-        g2.fillOval(this.x - radio, this.y - radio, diameter, diameter);
+        g2.fillOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
 
         // Dibuja el texto dentro del círculo
         g2.setColor(Color.BLACK);
-        g2.drawString(this.letter, this.x - 4, this.y + 4);
+        g2.drawString(this.getSymbol(), this.getX() - 4, this.getY() + 4);
     }
 
     /*
@@ -90,15 +100,13 @@ public class Hierarchy extends Component implements Serializable {
     se nota con la letra "o" (Overlapping).
      */
 
-
-    @Override
-    public Rectangle getBounds() {
-        return new Rectangle(x - radio, y - radio, radio * 2, radio * 2);
+    protected void drawSuperentityLine(Graphics2D g2) {
+        g2.drawLine(this.getX(), this.getY(), parent.getX(), parent.getY());
     }
 
     @Override
-    public List<Component> getComponentsForRemoval() {
-        return List.of();
+    public Rectangle getBounds() {
+        return new Rectangle(getX() - radio, getY() - radio, radio * 2, radio * 2);
     }
 
     @Override
@@ -115,7 +123,64 @@ public class Hierarchy extends Component implements Serializable {
     @Override
     public void changeReference(Entity oldEntity, Entity newEntity) {
 
+        if (this.parent.equals(oldEntity)) {
+            this.parent = newEntity;
+        }
+
+        boolean removeOldEntity = false;
+
+        for (Entity child : this.childs) {
+            if (child.equals(oldEntity)) {
+                removeOldEntity = true;
+                break; // There will only be at most one coincidence.
+            }
+        }
+
+        if (removeOldEntity) {
+            this.childs.remove(oldEntity);
+            this.childs.add(newEntity);
+        }
+
     }
 
-    public List<Entity> getChilds() { return new ArrayList<>(this.childs); };
+    public Entity getParent() { return this.parent; }
+
+    public List<Entity> getChilds() { return new ArrayList<>(this.childs); }
+
+    public String getSymbol() { return this.exclusivity.getSymbol(); }
+
+    public boolean isChild(Entity entity) {
+        return this.childs.contains(entity);
+    }
+
+    public boolean isParent(Entity entity) {
+        return this.parent.equals(entity);
+    }
+
+    public boolean canBeDeleted() {
+
+        if (isThereMultipleInheritance()) {
+
+            JOptionPane.showMessageDialog(null, "La jerarquía no puede eliminarse puesto a que existe una herencia múltiple que depende de ella.");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private boolean isThereMultipleInheritance() {
+
+        for (Entity firstChild : this.childs) {
+            for (Entity secondChild : this.childs) {
+                if (!firstChild.equals(secondChild) && firstChild.shareHierarchicalChild(secondChild)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
 }

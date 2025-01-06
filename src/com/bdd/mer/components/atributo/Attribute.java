@@ -8,6 +8,7 @@ import com.bdd.mer.frame.PopupMenu;
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
+import java.util.List;
 
 public class Attribute extends AttributableComponent implements Serializable {
 
@@ -15,7 +16,6 @@ public class Attribute extends AttributableComponent implements Serializable {
     private AttributeArrow arrow;
     private AttributeEnding ending;
     private AttributableComponent owner;
-    private Rectangle bounds = new Rectangle();
 
     public Attribute(AttributableComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending) {
         super(text, owner.getX(), owner.getY());
@@ -37,16 +37,20 @@ public class Attribute extends AttributableComponent implements Serializable {
         JMenuItem deleteAttribute = new JMenuItem("Delete");
         deleteAttribute.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
 
-        JMenuItem addComplexAttribute = new JMenuItem("Add attribute");
-        addComplexAttribute.addActionListener(_ -> drawingPanel.getActioner().addComplexAttribute(this));
+        JMenuItem addAttribute = new JMenuItem("Add attribute");
+        addAttribute.addActionListener(_ -> drawingPanel.getActioner().addAttribute(this, AttributeSymbol.COMMON));
 
         JMenuItem swapOptionality = new JMenuItem("Swap optionality");
         swapOptionality.addActionListener(_ -> drawingPanel.getActioner().changeOptionality(this));
 
+        JMenuItem swapMultivalued = new JMenuItem("Swap multivalued");
+        swapMultivalued.addActionListener(_ -> drawingPanel.getActioner().changeMultivalued(this));
+
         attributePopupMenu.addOption(renameAttribute);
         attributePopupMenu.addOption(deleteAttribute);
-        attributePopupMenu.addOption(addComplexAttribute);
+        attributePopupMenu.addOption(addAttribute);
         attributePopupMenu.addOption(swapOptionality);
+        attributePopupMenu.addOption(swapMultivalued);
 
         return attributePopupMenu;
 
@@ -55,18 +59,14 @@ public class Attribute extends AttributableComponent implements Serializable {
     public void draw(Graphics2D g2) {
 
         if (this.isSelected()) {
-            g2.setColor(Color.CYAN);
-        } else {
-            g2.setColor(Color.BLACK);
+            this.setSelectionOptions(g2);
         }
 
         Rectangle ownerBounds = this.owner.getBounds();
 
-        int x = (int) ownerBounds.getCenterX();
+        int x = ((int) ownerBounds.getCenterX() + (int) ownerBounds.getMaxX())/2;
         int y = (int) ownerBounds.getMaxY();
         int i = this.owner.getAttributePosition(this);
-
-        System.out.println(i);
 
         // Calcula la posición del atributo
         // La posición en X es la misma que el parámetro
@@ -75,7 +75,7 @@ public class Attribute extends AttributableComponent implements Serializable {
         // Cambia la fuente del texto (es necesario usar una que pueda mostrar los caracteres UNICODE)
         g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
 
-        String nombreAMostrar = this.getArrow() + getEnding() + this.getSymbol() + this.text;
+        String nombreAMostrar = this.getArrow() + getEnding() + this.getSymbol() + this.getText();
         g2.drawString(nombreAMostrar, x, atributoY);
 
         // In case it is compound...
@@ -92,10 +92,10 @@ public class Attribute extends AttributableComponent implements Serializable {
         //g2.drawRect(x, rectY, anchoTexto, altoTexto); Uncomment this to see the hitbox
         // Maybe I'll need to fix this later...
 
-        this.bounds = new Rectangle(x, rectY, anchoTexto, altoTexto);
+        setShape(new Rectangle(x, rectY, anchoTexto, altoTexto));
 
         // Restablezco la fuente
-        g2.setFont(new Font("Verdana", Font.BOLD, 10));
+        g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         g2.setColor(Color.BLACK);
 
@@ -109,16 +109,6 @@ public class Attribute extends AttributableComponent implements Serializable {
 
     protected void drawComponents(Graphics g, int x, int y, int atributoY) {
         g.drawLine(x, y, x, atributoY);
-    }
-
-    @Override
-    public Rectangle getBounds() {
-        return this.bounds;
-    }
-
-    @Override
-    public int getAttributePosition(Attribute attribute) {
-        return 0;
     }
 
     @Override
@@ -144,6 +134,16 @@ public class Attribute extends AttributableComponent implements Serializable {
         } else {
             this.arrow = AttributeArrow.OPTIONAL;
         }
-
     }
+
+    public void changeMultivalued() {
+
+        if (this.ending == AttributeEnding.MULTIVALUED) {
+            this.ending = AttributeEnding.NON_MULTIVALUED;
+        } else {
+            this.ending = AttributeEnding.MULTIVALUED;
+        }
+    }
+
+    public boolean isMain() { return this.symbol.equals(AttributeSymbol.MAIN); }
 }

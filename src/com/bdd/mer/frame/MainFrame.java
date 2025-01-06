@@ -27,7 +27,8 @@ public class MainFrame extends JFrame {
         menu.setPreferredSize(dimension);
         // Aesthetic blue
         //menu.setBackground(new Color(215, 239, 249));
-        menu.setBackground(Color.WHITE);
+        //menu.setBackground(Color.WHITE);
+        menu.setBackground(Color.LIGHT_GRAY);
 
         /* ---------------------------------------------------------------------------------------------------------- */
 
@@ -117,6 +118,19 @@ public class MainFrame extends JFrame {
             }
         });
 
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                            Add MacroEntity Key                                             */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        // Tecla para eliminar (en realidad, botón oculto que se activa al presionar una tecla).
+        JButton addMacroEntityKey = new JButton("Add macro-entity key");
+        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), "ActionM");
+        deleteKey.getActionMap().put("ActionM", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                actioner.addMacroEntity();
+            }
+        });
+
         // Adding the keys to the frame's functionalities.
         getContentPane().add(addEntityKey);
         getContentPane().add(addRelationshipKey);
@@ -124,6 +138,7 @@ public class MainFrame extends JFrame {
         getContentPane().add(addHierarchyKey);
         getContentPane().add(addNoteKey);
         getContentPane().add(deleteKey);
+        getContentPane().add(addMacroEntityKey);
 
         // Agrega el panel de dibujo y el menú al marco
         add(drawingPanel, BorderLayout.CENTER);
