@@ -1,12 +1,6 @@
 package com.bdd.mer.components.entity;
 
-import com.bdd.mer.components.atributo.Attribute;
-import com.bdd.mer.components.hierarchy.Hierarchy;
-import com.bdd.mer.components.macroEntity.MacroEntity;
-import com.bdd.mer.components.relationship.Relationship;
-
 import java.awt.*;
-import java.util.List;
 
 public class WeakEntity extends Entity {
 

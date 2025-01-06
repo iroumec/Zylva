@@ -5,10 +5,6 @@ import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.PopupMenu;
 
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Note extends Component {
 

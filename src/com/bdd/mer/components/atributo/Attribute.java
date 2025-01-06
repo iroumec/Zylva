@@ -7,8 +7,6 @@ import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.Serializable;
-import java.util.List;
 
 public class Attribute extends AttributableComponent {
 
