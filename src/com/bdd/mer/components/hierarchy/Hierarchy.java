@@ -2,8 +2,6 @@ package com.bdd.mer.components.hierarchy;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
-import com.bdd.mer.components.relationship.Cardinality;
-import com.bdd.mer.components.relationship.Dupla;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
