@@ -13,7 +13,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         setUndecorated(false);  // Removing of the title bar.
-        setTitle("Zilva DERExt");
+        setTitle("Zylva DERExt");
         setSize(800, 600);
         setLocationRelativeTo(null);
 
@@ -25,9 +25,6 @@ public class MainFrame extends JFrame {
         Dimension dimension = new Dimension(120, 30);
 
         menu.setPreferredSize(dimension);
-        // Aesthetic blue
-        //menu.setBackground(new Color(215, 239, 249));
-        //menu.setBackground(Color.WHITE);
         menu.setBackground(Color.LIGHT_GRAY);
 
         /* ---------------------------------------------------------------------------------------------------------- */

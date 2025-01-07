@@ -1,6 +1,9 @@
 package com.bdd.mer.actions;
 
 import com.bdd.mer.components.atributo.*;
+import com.bdd.mer.components.atributo.symbology.AttributeArrow;
+import com.bdd.mer.components.atributo.symbology.AttributeEnding;
+import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.macroEntity.MacroEntity;
 import com.bdd.mer.components.hierarchy.HierarchyType;
 import com.bdd.mer.components.hierarchy.TotalHierarchy;
@@ -23,7 +26,7 @@ import java.util.List;
 
 public final class Actioner implements Serializable {
 
-    private DrawingPanel drawingPanel;
+    private final DrawingPanel drawingPanel;
 
     public Actioner(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
@@ -57,7 +60,7 @@ public final class Actioner implements Serializable {
         boolean canceledRelationship = false;
 
         // Solo procede si se han seleccionado entre 1 y 3 entidades
-        if (!drawingPanel.getSelectedEntities().isEmpty() && drawingPanel.getSelectedEntities().size() <= 3 && drawingPanel.getSelectedEntities().size() > 1) {
+        if (drawingPanel.onlyThisClassIsSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
             // Muestra una ventana emergente para ingresar el nombre de la relación
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva relación");
@@ -68,13 +71,17 @@ public final class Actioner implements Serializable {
 
                 List<Cardinality> cardinalities = new ArrayList<>();
 
-                for (Entity entity : drawingPanel.getSelectedEntities()) {
-                    Cardinality cardinality = getCardinality(entity);
+                for (Component entity : drawingPanel.getSelectedComponents()) {
+
+                    // It's safe, due to I asked at the stat if only objects from the Entity class are selected.
+                    Entity castedEntity = (Entity) entity;
+
+                    Cardinality cardinality = getCardinality(castedEntity);
 
                     if (cardinality != null) {
 
                         cardinalities.add(cardinality);
-                        newRelationship.addEntity(entity, cardinality);
+                        newRelationship.addEntity(castedEntity, cardinality);
 
                     } else {
                         canceledRelationship = true;
@@ -148,7 +155,49 @@ public final class Actioner implements Serializable {
     }
 
     public void changeCardinality(Cardinality cardinality) {
+        JTextField cardinalidadMinimaCampo = new JTextField(1);
+        JTextField cardinalidadMaximaCampo = new JTextField(1);
+        JButton okButton = new JButton("OK");
+        okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
 
+        JPanel miPanel = new JPanel();
+        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + cardinality.getOwner().getText() + ": "));
+        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
+        miPanel.add(new JLabel("Cardinalidad mínima:"));
+        miPanel.add(cardinalidadMinimaCampo);
+        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
+        miPanel.add(new JLabel("Cardinalidad máxima:"));
+        miPanel.add(cardinalidadMaximaCampo);
+
+        // Crea un JOptionPane personalizado
+        JOptionPane optionPane = new JOptionPane(miPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+
+        // Crea el cuadro de diálogo basado en el JOptionPane
+        JDialog dialog = optionPane.createDialog("Por favor ingrese dos valores");
+
+        // Establece el foco en el campo de la cardinalidad mínima al abrir el cuadro de diálogo
+        dialog.addWindowFocusListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowGainedFocus(java.awt.event.WindowEvent e) {
+                cardinalidadMinimaCampo.requestFocusInWindow();
+            }
+        });
+
+        // Muestra el cuadro de diálogo
+        dialog.setVisible(true);
+
+        int resultado = (int) optionPane.getValue();
+        if (resultado == JOptionPane.OK_OPTION) {
+            String cardinalidadMinima = cardinalidadMinimaCampo.getText();
+            String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
+
+            if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Ambos campos deben tener un valor");
+            } else {
+                cardinality.setText(Cardinality.giveFormat(cardinalidadMinima, cardinalidadMaxima));
+                this.drawingPanel.repaint();
+            }
+        }
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -159,7 +208,7 @@ public final class Actioner implements Serializable {
 
         boolean canceledRelationship = false;
 
-        if (!drawingPanel.getSelectedEntities().isEmpty() && drawingPanel.getSelectedEntities().size() == 2) {
+        if (drawingPanel.onlyThisClassIsSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva dependencia");
 
@@ -252,11 +301,11 @@ public final class Actioner implements Serializable {
 
     public void addHierarchy() {
         // Solo procede si se ha seleccionado al menos tres entidades
-        if (drawingPanel.getSelectedEntities().size() >= 3 && !drawingPanel.getSelectedEntities().isEmpty()) {
+        if (drawingPanel.onlyThisClassIsSelected(Entity.class) && drawingPanel.getSelectedComponents().size() >= 3) {
 
             Entity supertipo = seleccionarSupertipo();
 
-            main: if (supertipo != null) {
+            main: if (supertipo != null && !supertipo.isAlreadyParent()) {
 
                 List<Entity> subtipos = obtenerListaSubtipos(supertipo);
 
@@ -294,7 +343,7 @@ public final class Actioner implements Serializable {
                 drawingPanel.addComponent(newHierarchy);
 
                 } else {
-                    JOptionPane.showMessageDialog(this.drawingPanel, "Una o más entidades seleccionadas ya ocupan el rol seleccionado en otra jerarquía.");
+                    JOptionPane.showMessageDialog(this.drawingPanel, "La entidad seleccionada ya participa en otra jerarquía.");
                 }
         } else {
             JOptionPane.showMessageDialog(this.drawingPanel, "Seleccione al menos tres entidades.");
@@ -348,7 +397,7 @@ public final class Actioner implements Serializable {
             return null; // Cancel the process
         }
 
-        HierarchyType letter = (opcionExclusiva.isSelected()) ? HierarchyType.DISJUNT : HierarchyType.OVERLAPPING;
+        HierarchyType letter = (opcionExclusiva.isSelected()) ? HierarchyType.DISJUNCT : HierarchyType.OVERLAPPING;
 
         Hierarchy newHierarchy;
 
@@ -359,6 +408,45 @@ public final class Actioner implements Serializable {
         }
 
         return newHierarchy;
+    }
+
+    public Entity seleccionarSupertipo() {
+
+        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
+        Object[] opciones = new Object[entidadesSeleccionadas.size()];
+
+        for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
+            opciones[i] = (entidadesSeleccionadas.get(i)).getText();
+        }
+
+        // Muestra el JOptionPane con los botones
+        int seleccion = JOptionPane.showOptionDialog(null, "Seleccione a la entidad supertipo", "Selección",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
+
+        return (entidadesSeleccionadas.get(seleccion));
+
+    }
+
+    public List<Entity> obtenerListaSubtipos(Entity supertipo) {
+
+        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
+
+        List<Entity> retorno = new ArrayList<>(entidadesSeleccionadas);
+        retorno.remove((supertipo));
+
+        return retorno;
+    }
+
+    public void swapExclusivity(Hierarchy hierarchy) {
+
+        if (hierarchy.getExclusivity().equals(HierarchyType.DISJUNCT)) {
+            hierarchy.setExclusivity(HierarchyType.OVERLAPPING);
+        } else {
+            hierarchy.setExclusivity(HierarchyType.DISJUNCT);
+        }
+
+        this.drawingPanel.repaint();
+
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -380,7 +468,7 @@ public final class Actioner implements Serializable {
 
     public void deleteSelectedComponents() {
 
-        List<Component> selectedComponents = this.drawingPanel.getComponentesSeleccionadas();
+        List<Component> selectedComponents = this.drawingPanel.getSelectedComponents();
 
         if (!selectedComponents.isEmpty()) {
             int confirmacion = JOptionPane.showConfirmDialog(this.drawingPanel, "¿Seguro de que desea eliminar el objeto seleccionado?");
@@ -573,9 +661,9 @@ public final class Actioner implements Serializable {
     // There must be selected at least an entity and a relationship (unary relationship)
     public void addMacroEntity() {
 
-        if (drawingPanel.getComponentesSeleccionadas().size() == 1 /*&& drawingPanel.onlyRelationshipSelected()*/) {
+        if (drawingPanel.getSelectedComponents().size() == 1 && drawingPanel.onlyThisClassIsSelected(Relationship.class)) {
 
-            MacroEntity macroEntity = new MacroEntity("", (Relationship) drawingPanel.getComponentesSeleccionadas().getFirst());
+            MacroEntity macroEntity = new MacroEntity("", (Relationship) drawingPanel.getSelectedComponents().getFirst());
 
             drawingPanel.addComponentLast(macroEntity);
 
@@ -587,53 +675,6 @@ public final class Actioner implements Serializable {
     }
 
     /*                                                                                                               */
-
-    public Entity seleccionarSupertipo() {
-
-        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
-        Object[] opciones = new Object[entidadesSeleccionadas.size()];
-
-        for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
-            opciones[i] = (entidadesSeleccionadas.get(i)).getText();
-        }
-
-        // Muestra el JOptionPane con los botones
-        int seleccion = JOptionPane.showOptionDialog(null, "Seleccione a la entidad supertipo", "Selección",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
-
-        return (entidadesSeleccionadas.get(seleccion));
-
-    }
-
-    public List<Entity> obtenerListaSubtipos(Entity supertipo) {
-
-        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
-
-        List<Entity> retorno = new ArrayList<>(entidadesSeleccionadas);
-        retorno.remove((supertipo));
-
-        return retorno;
-    }
-
-    /*
-    Un supertipo solo puede ser supertipo de una única jerarquía. Un subtipo solo puede
-    ser subtipo de una única jerarquía.
-     */
-    /*
-    public boolean rolesJerarquiaOcupados(Entity supertipo, List<Entity> subtipos) {
-        if (supertipo.isSuperTipo()) {
-            return false;
-        }
-
-        for (Entity e : subtipos) {
-            if (e.isSubTipo()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    */
 
     private void changeEntity(Entity oldEntity, Entity newEntity) {
 

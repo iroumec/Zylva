@@ -1,4 +1,4 @@
-package com.bdd.mer.components.atributo;
+package com.bdd.mer.components.atributo.symbology;
 
 public enum AttributeEnding {
     MULTIVALUED(">"),

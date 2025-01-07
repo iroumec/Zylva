@@ -32,16 +32,4 @@ public class WeakEntity extends Entity {
 
     }
 
-    public void drawClosestPointLine(Graphics2D g2, int x, int y) {
-
-        Point closestPoint = getClosestPoint(new Point(x, y));
-
-        // Dibujar la línea hacia el punto más cercano
-//        g2.drawLine(x + 3, y + 3, closestPoint.x + 3, closestPoint.y + 3);
-//        g2.drawLine(x - 3, y - 3, closestPoint.x - 3, closestPoint.y - 3);
-        g2.drawLine(x - 3, y - 3, this.getX() - 3, this.getY() - 3);
-        g2.drawLine(x + 3, y + 3, this.getX() + 3, this.getY() + 3);
-
-    }
-
 }

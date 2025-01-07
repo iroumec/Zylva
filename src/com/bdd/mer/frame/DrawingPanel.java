@@ -255,7 +255,7 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Component> getComponentesSeleccionadas() {
+    public List<Component> getSelectedComponents() {
         return (new ArrayList<>(componentesSeleccionadas));
     }
 
@@ -336,5 +336,28 @@ public class DrawingPanel extends JPanel {
         backgroundPopupMenu.addOption(addMacroEntity);
 
         return backgroundPopupMenu;
+    }
+
+    public <T> boolean onlyThisClassIsSelected(Class<T> classType) {
+
+        for (Component component : this.componentesSeleccionadas) {
+            if (!classType.equals(component.getClass())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isNumberOfSelectedComponentsBetween(int a, int b) {
+
+        return this.componentesSeleccionadas.size() >= a && this.componentesSeleccionadas.size() <= b;
+
+    }
+
+    public boolean isNumberOfSelectedComponents(int n) {
+
+        return this.componentesSeleccionadas.size() == n;
+
     }
 }

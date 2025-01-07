@@ -74,9 +74,11 @@ public class Cardinality extends Component {
 
     }
 
-    private String giveFormat(String firstValue, String secondValue) {
+    public static String giveFormat(String firstValue, String secondValue) {
         return "(" + firstValue + ", " + secondValue + ")";
     }
+
+    public Entity getOwner() { return this.owner; }
 
     public void setOwner(Entity entity) { this.owner = entity; }
     public void setRelationship(Relationship relationship) { this.relationship = relationship; }

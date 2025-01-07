@@ -1,6 +1,9 @@
 package com.bdd.mer.components.atributo;
 
 import com.bdd.mer.components.AttributableComponent;
+import com.bdd.mer.components.atributo.symbology.AttributeArrow;
+import com.bdd.mer.components.atributo.symbology.AttributeEnding;
+import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;

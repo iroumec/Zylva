@@ -3,27 +3,27 @@ package com.bdd.mer.components.relationship;
 import java.io.Serializable;
 
 public class Dupla<T, U> implements Serializable {
-    private T primero;
-    private U segundo;
+    private T first;
+    private U second;
 
-    public Dupla(T primero, U segundo) {
-        this.primero = primero;
-        this.segundo = segundo;
+    public Dupla(T first, U second) {
+        this.first = first;
+        this.second = second;
     }
 
-    public T getPrimero() {
-        return primero;
+    public T getFirst() {
+        return first;
     }
 
-    public U getSegundo() {
-        return segundo;
+    public U getSecond() {
+        return second;
     }
 
-    public void setPrimero(T newFirst) {
-        this.primero = newFirst;
+    public void setFirst(T newFirst) {
+        this.first = newFirst;
     }
 
-    public void setSegundo(U segundo) {
-        this.segundo = segundo;
+    public void setSecond(U newSecond) {
+        this.second = newSecond;
     }
 }

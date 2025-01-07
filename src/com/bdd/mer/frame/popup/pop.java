@@ -62,7 +62,7 @@
 //            boolean creacionRelacionCancelada = false;
 //
 //            // Solo procede si se han seleccionado entre 1 y 3 entidades
-//            if (drawingPanel.participaSoloEntidades() && !drawingPanel.getComponentesSeleccionadas().isEmpty() && drawingPanel.getComponentesSeleccionadas().size() <= 3) {
+//            if (drawingPanel.participaSoloEntidades() && !drawingPanel.getSelectedComponents().isEmpty() && drawingPanel.getSelectedComponents().size() <= 3) {
 //                // Muestra una ventana emergente para ingresar el nombre de la relación
 //
 //                String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva relación");
@@ -70,7 +70,7 @@
 //                    // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
 //                    java.util.List<Dupla<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
 //                    Cardinality cardinalidad;
-//                    for (Component entidad : drawingPanel.getComponentesSeleccionadas()) {
+//                    for (Component entidad : drawingPanel.getSelectedComponents()) {
 //                        cardinalidad = ingresarCardinalidad(((Entity) entidad).getText());
 //                        if (cardinalidad != null) {
 //                            entidadesParticipantes.add(new Dupla<>((Entity) entidad, cardinalidad));
@@ -101,7 +101,7 @@
 //            boolean creacionRelacionCancelada = false;
 //
 //            // Solo procede si se han seleccionado entre 1 y 3 entidades
-//            if (drawingPanel.participaSoloEntidades() && drawingPanel.getComponentesSeleccionadas().size() == 2) {
+//            if (drawingPanel.participaSoloEntidades() && drawingPanel.getSelectedComponents().size() == 2) {
 //                // Muestra una ventana emergente para ingresar el nombre de la relación
 //
 //                String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva dependencia");
@@ -112,7 +112,7 @@
 //                    List<Dupla<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
 //                    Cardinality cardinalidad;
 //
-//                    for (Component entidad : drawingPanel.getComponentesSeleccionadas()) {
+//                    for (Component entidad : drawingPanel.getSelectedComponents()) {
 //                        if (entidad == EntityDebil) {
 //                            cardinalidad = ingresarCardinalidad(((Entity) entidad).getText());
 //                            if (cardinalidad != null) {
@@ -150,7 +150,7 @@
 //        JMenuItem addHierarchy = new JMenuItem("Agregar jerarquía");
 //        addHierarchy.addActionListener(_ -> {
 //            // Solo procede si se ha seleccionado al menos tres entidades
-//            if (drawingPanel.getComponentesSeleccionadas().size() >= 3 && drawingPanel.participaSoloEntidades()) {
+//            if (drawingPanel.getSelectedComponents().size() >= 3 && drawingPanel.participaSoloEntidades()) {
 //                Entity supertipo = seleccionarSupertipo();
 //                List<Entity> subtipos = obtenerListaSubtipos(supertipo);
 //                if (rolesJerarquiaOcupados(supertipo, subtipos)) {
@@ -162,7 +162,7 @@
 //                    drawingPanel.addComponent(newHierarchy);
 //
 //                    // Add the hierarchy to the entities
-//                    for (Component e : drawingPanel.getComponentesSeleccionadas()) {
+//                    for (Component e : drawingPanel.getSelectedComponents()) {
 //                        ((Entity) e).addHierarchy(newHierarchy);
 //                    }
 //
@@ -187,11 +187,11 @@
 //        JMenuItem addMacroEntity = new JMenuItem("Agregar macro-entidad");
 //        addMacroEntity.addActionListener(_ -> {
 //            // There must be selected at least an entity and a relationship (unary relationship)
-//            if (drawingPanel.getComponentesSeleccionadas().size() >= 2 && drawingPanel.oneRelationshipAndEntities()) {
+//            if (drawingPanel.getSelectedComponents().size() >= 2 && drawingPanel.oneRelationshipAndEntities()) {
 //                String text = JOptionPane.showInputDialog(this, "Ingrese el nombre de la macro-entidad");
 //                if (text != null && !text.isBlank()) {
 //                    MacroEntity macroEntity = new MacroEntity(text);
-//                    for (Component component : drawingPanel.getComponentesSeleccionadas()) {
+//                    for (Component component : drawingPanel.getSelectedComponents()) {
 //                        if (component.getClass().toString().equals("class com.bdd.mer.estatica.Entidad")) {
 //                            macroEntity.addEntity((Entity) component);
 //                        } else {
@@ -305,7 +305,7 @@
 //                boolean complete = false;
 //                while (!complete) {
 //                    JPanel miPanel = new JPanel();
-//                    miPanel.add(new JLabel("Ingrese la nueva cardinalidad para la entidad " + pair.getPrimero().getText() + ": "));
+//                    miPanel.add(new JLabel("Ingrese la nueva cardinalidad para la entidad " + pair.getFirst().getText() + ": "));
 //                    miPanel.add(Box.createVerticalStrut(15)); // Espaciador
 //                    miPanel.add(new JLabel("Cardinalidad mínima:"));
 //                    miPanel.add(cardinalidadMinimaCampo);
@@ -437,8 +437,8 @@
 //    public Entity seleccionarEntidadDebil() {
 //
 //        // Define las opciones para los botones
-//        Object[] opciones = {((Entity) drawingPanel.getComponentesSeleccionadas().getFirst()).getText(),
-//                ((Entity) drawingPanel.getComponentesSeleccionadas().getLast()).getText()};
+//        Object[] opciones = {((Entity) drawingPanel.getSelectedComponents().getFirst()).getText(),
+//                ((Entity) drawingPanel.getSelectedComponents().getLast()).getText()};
 //
 //        // Muestra el JOptionPane con los botones
 //        int seleccion = JOptionPane.showOptionDialog(this, "Seleccione la entidad débil de la relación", "Selección",
@@ -446,11 +446,11 @@
 //
 //        // Determina qué botón se seleccionó
 //        if (seleccion == 0) {
-//            //((Entity) panelDibujo.getComponentesSeleccionadas().getFirst()).setEntidadDebil(Boolean.TRUE);
-//            return ((Entity) drawingPanel.getComponentesSeleccionadas().getFirst());
+//            //((Entity) panelDibujo.getSelectedComponents().getFirst()).setEntidadDebil(Boolean.TRUE);
+//            return ((Entity) drawingPanel.getSelectedComponents().getFirst());
 //        } else if (seleccion == 1) {
-//            //((Entity) panelDibujo.getComponentesSeleccionadas().getLast()).setEntidadDebil(Boolean.TRUE);
-//            return ((Entity) drawingPanel.getComponentesSeleccionadas().getLast());
+//            //((Entity) panelDibujo.getSelectedComponents().getLast()).setEntidadDebil(Boolean.TRUE);
+//            return ((Entity) drawingPanel.getSelectedComponents().getLast());
 //        } else {
 //            JOptionPane.showMessageDialog(this, "Seleccione una entidad débil");
 //            seleccionarEntidadDebil();
@@ -461,7 +461,7 @@
 //
 //    public Entity seleccionarSupertipo() {
 //
-//        List<Component> entidadesSeleccionadas = drawingPanel.getComponentesSeleccionadas();
+//        List<Component> entidadesSeleccionadas = drawingPanel.getSelectedComponents();
 //        Object[] opciones = new Object[entidadesSeleccionadas.size()];
 //
 //        for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
@@ -481,7 +481,7 @@
 //    }
 //
 //    public List<Entity> obtenerListaSubtipos(Entity superTipo) {
-//        List<Component> entidadesSeleccionadas = drawingPanel.getComponentesSeleccionadas();
+//        List<Component> entidadesSeleccionadas = drawingPanel.getSelectedComponents();
 //        List<Entity> retorno = new ArrayList<>();
 //
 //        for (Component a : entidadesSeleccionadas) {

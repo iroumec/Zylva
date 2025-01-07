@@ -2,10 +2,10 @@ package com.bdd.mer.components.hierarchy;
 
 public enum HierarchyType {
 
-    DISJUNT("d"),
+    DISJUNCT("d"),
     OVERLAPPING("o");
 
-    String symbol;
+    final String symbol;
 
     HierarchyType(String symbol) { this. symbol = symbol; }
 

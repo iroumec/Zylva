@@ -2,7 +2,7 @@ package com.bdd.mer.components.relationship;
 
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.atributo.AttributeSymbol;
+import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
@@ -55,8 +55,8 @@ public class Relationship extends AttributableComponent {
 
         Dupla<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
 
-        int anchoTexto = fontMetrics.getPrimero();
-        int altoTexto = fontMetrics.getSegundo();
+        int anchoTexto = fontMetrics.getFirst();
+        int altoTexto = fontMetrics.getSecond();
 
         // Calcula la posición del texto para centrarlo en el recuadro
         int xTexto = getX() - anchoTexto / 2;
@@ -71,7 +71,7 @@ public class Relationship extends AttributableComponent {
         // Dibuja una línea desde el centro de la relación hasta el centro de cada entidad
         for (Dupla<Entity, Cardinality> dupla : this.entities) {
 
-            Entity entity = dupla.getPrimero();
+            Entity entity = dupla.getFirst();
 
             g2.drawLine(this.getX(), this.getY(), entity.getX(), entity.getY());
         }
@@ -153,7 +153,7 @@ public class Relationship extends AttributableComponent {
 
         // We break the bound between the relationship and their entities.
         for (Dupla<Entity, Cardinality> dupla : this.entities) {
-            dupla.getPrimero().removeRelationship(this);
+            dupla.getFirst().removeRelationship(this);
         }
 
     }
@@ -163,8 +163,8 @@ public class Relationship extends AttributableComponent {
 
         for (Dupla<Entity, Cardinality> dupla : this.entities) {
 
-            if (dupla.getPrimero().equals(oldEntity)) {
-                dupla.setPrimero(newEntity);
+            if (dupla.getFirst().equals(oldEntity)) {
+                dupla.setFirst(newEntity);
             }
 
         }
@@ -178,17 +178,43 @@ public class Relationship extends AttributableComponent {
         cardinality.setRelationship(this);
     }
 
+    public void removeEntity(Entity entity) {
+
+        for (Dupla<Entity, Cardinality> dupla : this.entities) {
+            if (dupla.getFirst().equals(entity)) {
+                this.entities.remove(dupla);
+                break;
+            }
+        }
+
+    }
+
     public List<Component> getRelatedComponents() {
 
         List<Component> out = new ArrayList<>(this.getAttributes());
 
         for (Dupla<Entity, Cardinality> dupla : this.entities) {
-            out.add(dupla.getPrimero());
-            out.addAll(dupla.getPrimero().getAttributes());
-            out.add(dupla.getSegundo());
+            out.add(dupla.getFirst());
+            out.addAll(dupla.getFirst().getAttributes());
+            out.add(dupla.getSecond());
         }
 
         return out;
+
+    }
+
+    public int getNumberOfEntities() {
+        return this.entities.size();
+    }
+
+    public void cleanEntity(Entity entity) {
+
+        if (getNumberOfEntities() > 2) {
+            this.removeEntity(entity);
+        }
+
+        // In other case, we don't have to do anything because, if cleanEntity was called, it is because
+        // the entity will be eliminated and, so, the relationship also if it doesn't enter the if body.
 
     }
 }

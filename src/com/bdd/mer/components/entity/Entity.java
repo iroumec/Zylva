@@ -4,7 +4,6 @@ import com.bdd.mer.components.atributo.Attribute;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
-import com.bdd.mer.components.macroEntity.MacroEntity;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
@@ -20,7 +19,6 @@ public class Entity extends AttributableComponent {
 
     protected final List<Relationship> relationships;
     protected final List<Hierarchy> hierarchies;
-    protected final List<MacroEntity> macroEntities;
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -33,7 +31,6 @@ public class Entity extends AttributableComponent {
 
         relationships = new ArrayList<>();
         hierarchies = new ArrayList<>();
-        macroEntities = new ArrayList<>();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -135,9 +132,24 @@ public class Entity extends AttributableComponent {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        out.addAll(this.relationships);
-        out.addAll(this.hierarchies);
-        out.addAll(this.macroEntities);
+        // If a relationship has three or more participating entities, if I delete one, it can still exists.
+        for (Relationship relationship : relationships) {
+            if (relationship.getNumberOfEntities() <= 2) {
+                out.add(relationship);
+            }
+        }
+
+        // If a hierarchy has three or more children, if I delete one, it can still exists.
+        for (Hierarchy hierarchy : hierarchies) {
+            if (hierarchy.isParent(this) || (hierarchy.isChild(this) && hierarchy.getNumberOfChildren() <= 2)) {
+                out.add(hierarchy);
+            }
+        }
+
+        /*
+        Whether an association where an entity participate must be deleted or not when the latter is deleted, it
+        depends on the relationship forming the association.
+         */
 
         return out;
     }
@@ -147,13 +159,24 @@ public class Entity extends AttributableComponent {
     @Override
     public void cleanPresence() {
 
+        // This is important in case the relationship has three or more children.
+        for (Relationship relationship : this.relationships) {
+            relationship.cleanEntity(this);
+        }
+
+        // This is important in case the entity we want to delete is a child and
+        // the hierarchy has three or more children.
+        for (Hierarchy hierarchy : this.hierarchies) {
+            hierarchy.cleanEntity(this);
+        }
+
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void changeReference(Entity oldComponent, Entity newComponent) {
-
+        // Do nothing.
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -232,16 +255,16 @@ public class Entity extends AttributableComponent {
         return new Point(closestX, closestY);
     }
 
-    public void drawClosestPointLine(Graphics2D g2, int x, int y) {
+    public boolean isAlreadyParent() {
 
-        Point closestPoint = getClosestPoint(new Point(x, y));
+        for (Hierarchy hierarchy : this.hierarchies) {
+            if (hierarchy.isParent(this)) {
+                return true;
+            }
+        }
 
-        // Dibujar la línea hacia el punto más cercano
-        g2.drawLine(x, y, closestPoint.x, closestPoint.y);
-    }
+        return false;
 
-    public void addMacroEntity(MacroEntity macroEntity) {
-        this.macroEntities.add(macroEntity);
     }
 
     private boolean hasAHierarchyInCommon(Entity entity) {
@@ -297,10 +320,6 @@ public class Entity extends AttributableComponent {
 
         for (Hierarchy hierarchy : this.hierarchies) {
             entity.addHierarchy(hierarchy);
-        }
-
-        for (MacroEntity macroEntity : this.macroEntities) {
-            entity.addMacroEntity(macroEntity);
         }
 
         List<Attribute> attributes = this.getAttributes();

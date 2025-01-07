@@ -2,6 +2,8 @@ package com.bdd.mer.components.hierarchy;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.relationship.Cardinality;
+import com.bdd.mer.components.relationship.Dupla;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
@@ -13,7 +15,7 @@ import java.util.List;
 public class Hierarchy extends Component {
 
     private int radio; // Centro del óvalo
-    private final HierarchyType exclusivity;
+    private HierarchyType exclusivity;
     private Entity parent;
     private final List<Entity> childs;
 
@@ -39,7 +41,11 @@ public class Hierarchy extends Component {
         JMenuItem deleteHierarchy = new JMenuItem("Delete");
         deleteHierarchy.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
 
+        JMenuItem swapExclusivity = new JMenuItem("Swap exclusivity");
+        swapExclusivity.addActionListener(_ -> drawingPanel.getActioner().swapExclusivity(this));
+
         hierarchyPopupMenu.addOption(deleteHierarchy);
+        hierarchyPopupMenu.addOption(swapExclusivity);
 
         return hierarchyPopupMenu;
 
@@ -49,7 +55,7 @@ public class Hierarchy extends Component {
 
         // Obtengo la fuente del texto y calculo su tamaño
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(this.getSymbol());
+        int textWidth = fm.stringWidth(this.getText());
         int textHeight = fm.getHeight();
 
         // Calcula el diámetro del círculo basado en el tamaño del texto
@@ -80,7 +86,7 @@ public class Hierarchy extends Component {
 
         // Dibuja el texto dentro del círculo
         g2.setColor(Color.BLACK);
-        g2.drawString(this.getSymbol(), this.getX() - 4, this.getY() + 4);
+        g2.drawString(this.getText(), this.getX() - 4, this.getY() + 4);
     }
 
     /*
@@ -146,8 +152,6 @@ public class Hierarchy extends Component {
 
     public List<Entity> getChilds() { return new ArrayList<>(this.childs); }
 
-    public String getSymbol() { return this.exclusivity.getSymbol(); }
-
     public boolean isChild(Entity entity) {
         return this.childs.contains(entity);
     }
@@ -168,6 +172,13 @@ public class Hierarchy extends Component {
 
     }
 
+    public HierarchyType getExclusivity() { return this.exclusivity; }
+
+    public void setExclusivity(HierarchyType exclusivity) {
+        this.exclusivity = exclusivity;
+        this.setText(exclusivity.getSymbol());
+    }
+
     private boolean isThereMultipleInheritance() {
 
         for (Entity firstChild : this.childs) {
@@ -179,6 +190,21 @@ public class Hierarchy extends Component {
         }
 
         return false;
+
+    }
+
+    public int getNumberOfChildren() {
+        return this.childs.size();
+    }
+
+    public void cleanEntity(Entity entity) {
+
+        if (!isParent(entity) && (!isChild(entity) || getNumberOfChildren() > 2)) {
+            this.childs.remove(entity);
+        }
+
+        // In other case, we don't have to do anything because, if cleanEntity was called, it is because
+        // the entity will be eliminated and, so, the hierarchy also if it doesn't enter in the if body.
 
     }
 
