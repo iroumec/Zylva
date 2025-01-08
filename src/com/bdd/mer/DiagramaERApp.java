@@ -13,7 +13,7 @@ public class DiagramaERApp {
         LoadingScreen loadingScreen = new LoadingScreen();
 
         // Crear un SwingWorker para realizar la inicialización en segundo plano
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
 
             @Override
             protected Void doInBackground() throws Exception {
