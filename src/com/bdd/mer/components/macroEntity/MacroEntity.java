@@ -3,20 +3,26 @@ package com.bdd.mer.components.macroEntity;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.Relationship;
+import com.bdd.mer.components.relationship.relatable.Relatable;
+import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
+import org.w3c.dom.css.Rect;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MacroEntity extends Component {
+public class MacroEntity extends Component implements Relatable {
+
+    private final RelatableImplementation relationshipsManager;
 
     // List of components forming the MacroEntity.
     private final Relationship relationship;
 
     public MacroEntity(Relationship relationship) {
+        this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
     }
 
@@ -57,6 +63,19 @@ public class MacroEntity extends Component {
 
         int margen = 5;
 
+        // Calcula el ancho y alto del rectángulo correctamente
+        int rectWidth = (maxX - minX) + 2 * margen;
+        int rectHeight = (maxY - minY) + 2 * margen;
+
+        this.setX((maxX + minX) / 2);
+        this.setY((maxY + minY) / 2);
+
+        this.drawLinesToRelationships(g2, this.getX(), this.getY());
+
+        Rectangle shape = new Rectangle(minX - margen, minY - margen, rectWidth, rectHeight);
+        g2.setColor(Color.WHITE);
+        g2.fill(shape);
+
         g2.setStroke(new BasicStroke(1));
         g2.setColor(Color.BLACK);
 
@@ -65,19 +84,11 @@ public class MacroEntity extends Component {
             this.setSelectionOptions(g2);
         }
 
-        // Calcula el ancho y alto del rectángulo correctamente
-        int rectWidth = (maxX - minX) + 2 * margen;
-        int rectHeight = (maxY - minY) + 2 * margen;
-
         // Dibuja el rectángulo
-        g2.drawRect(minX - margen, minY - margen, rectWidth, rectHeight);
+        g2.draw(shape);
 
         // Actualiza la forma de la entidad
-        this.setShape(new Rectangle(minX - margen, minY - margen, rectWidth, rectHeight));
-
-        // Restablece el grosor del borde y el color
-        g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.BLACK);
+        this.setShape(shape);
     }
 
 
@@ -91,4 +102,18 @@ public class MacroEntity extends Component {
 
     }
 
+    @Override
+    public void addRelationship(Relationship relationship) {
+        this.relationshipsManager.addRelationship(relationship);
+    }
+
+    @Override
+    public void removeRelationship(Relationship relationship) {
+        this.relationshipsManager.removeRelationship(relationship);
+    }
+
+    @Override
+    public void drawLinesToRelationships(Graphics2D graphics2D, int x, int y) {
+        this.relationshipsManager.drawLinesToRelationships(graphics2D, x, y);
+    }
 }

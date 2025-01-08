@@ -1,24 +1,33 @@
-package com.bdd.mer.frame.menuBar.exportacion;
+package com.bdd.mer.frame.menuBar.exportation;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 
 import javax.swing.*;
 import java.io.*;
 import java.util.List;
 
-public final class Archivo {
+public final class FileManager {
 
     public static void saveDiagram(DrawingPanel drawingPanel) {
 
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Select the folder where you want to save the file and put it a name.");
+        fileChooser.setDialogTitle(LanguageManager.getMessage("fileManager.saveDiagram.dialog"));
+
+        // Establecer el filtro para solo mostrar archivos .mer
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Diagram Files", "mer"));
 
         int userSelection = fileChooser.showSaveDialog(null);
 
         if (userSelection == JFileChooser.APPROVE_OPTION) {
 
             File fileToSave = fileChooser.getSelectedFile();
+
+            // Verificar si el archivo tiene la extensión .mer, si no, agregarla
+            if (!fileToSave.getName().endsWith(".mer")) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + ".mer");
+            }
 
             List<Component> components = drawingPanel.getListComponents();
 
@@ -34,7 +43,7 @@ public final class Archivo {
 
             } catch (IOException i) {
 
-                JOptionPane.showMessageDialog(null,"An unexpected error occurred while saving the file.");
+                JOptionPane.showMessageDialog(null,LanguageManager.getMessage("fileManager.saveDiagram.exception"));
             }
         }
     }
@@ -43,7 +52,10 @@ public final class Archivo {
 
         JFileChooser fileChooser = new JFileChooser();
 
-        fileChooser.setDialogTitle("Especify the file you want to load.");
+        // Filtro de archivo para solo mostrar archivos .mer
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Diagram Files", "mer"));
+
+        fileChooser.setDialogTitle("Specify the file you want to load.");
 
         int userSelection = fileChooser.showOpenDialog(null);
 
@@ -58,7 +70,7 @@ public final class Archivo {
 
                 List<Component> components = (List<Component>) in.readObject();
 
-                for (Component component : components) {
+                for (Component component : components.reversed()) {
                     drawingPanel.addComponent(component);
                 }
 

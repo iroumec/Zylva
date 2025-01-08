@@ -2,8 +2,8 @@ package com.bdd.mer.frame.menuBar;
 
 import com.bdd.mer.frame.MainFrame;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.menuBar.exportacion.Archivo;
-import com.bdd.mer.frame.menuBar.exportacion.ExportPNG;
+import com.bdd.mer.frame.menuBar.exportation.FileManager;
+import com.bdd.mer.frame.menuBar.exportation.ExportPNG;
 
 import javax.swing.*;
 
@@ -24,12 +24,12 @@ public class FileMenu extends JMenu {
 
         // Save diagram.
         JMenuItem saveDiagram = new JMenuItem("Guardar diagrama");
-        saveDiagram.addActionListener(_ -> Archivo.saveDiagram(drawingPanel));
+        saveDiagram.addActionListener(_ -> FileManager.saveDiagram(drawingPanel));
 
         // Load diagram.
         JMenuItem loadDiagram = new JMenuItem("Cargar diagrama");
         loadDiagram.addActionListener(_ -> {
-            Archivo.loadDiagram(drawingPanel);
+            FileManager.loadDiagram(drawingPanel);
             mainFrame.repaint();
         });
 

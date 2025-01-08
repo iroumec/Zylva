@@ -3,6 +3,7 @@ package com.bdd.mer.components.relationship.cardinality;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.Relationship;
+import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class Cardinality extends Component {
 
-    private Entity owner;
+    private Relatable owner;
     private Relationship relationship;
 
     public Cardinality(String firstValue, String secondValue) {
@@ -34,27 +35,56 @@ public class Cardinality extends Component {
 
     }
 
+//    @Override
+//    public void draw(Graphics2D g2) {
+//
+//        int x = (((Component) this.getOwner()).getX() + this.relationship.getX()) / 2;
+//        int y = (((Component) this.getOwner()).getY() + this.relationship.getY()) / 2;
+//
+//        g2.drawString(this.getText(), x + 3, y - 3);
+//        // EL +/-3 es para que no se solape la cardinalidad con la línea cuando está completamente en vertical.
+//
+//        // Calcula el ancho del texto
+//        FontMetrics fm = g2.getFontMetrics();
+//        int anchoTexto = fm.stringWidth(this.getText());
+//        int altoTexto = fm.getHeight();
+//
+//        Rectangle shape = new Rectangle(x + 3, y - 3, anchoTexto, altoTexto);
+//        this.setShape(shape);
+//
+//        // Debugging comment. Uncomment the next line to see the cardinality hitbox.
+//        g2.draw(shape);
+//    }
+
     @Override
     public void draw(Graphics2D g2) {
 
-        Point closestPoint = owner.getClosestPoint(new Point(this.relationship.getX(), this.relationship.getY()));
+        int x = (((Component) this.getOwner()).getX() + this.relationship.getX()) / 2;
+        int y = (((Component) this.getOwner()).getY() + this.relationship.getY()) / 2;
 
-        g2.drawString(this.getText(),
-                (closestPoint.x + relationship.getX()) / 2 + 5, // Este cumple una función parecida a lo que dice abajo, pero vertical.
-                (closestPoint.y + relationship.getY()) / 2 - 5); // EL -3 es para que no se solape la cardinalidad con la línea cuando está completamente en vertical.
-
-        // Calcula el ancho del texto
+        // Calcula el ancho y alto del texto
         FontMetrics fm = g2.getFontMetrics();
         int anchoTexto = fm.stringWidth(this.getText());
         int altoTexto = fm.getHeight();
 
-        //g2.drawRect(x, rectY, anchoTexto, altoTexto); Uncomment this to see the hitbox
-        // Maybe I'll need to fix this later...
+        // Ajusta las coordenadas para que el rectángulo encierre el texto correctamente
+        int rectX = x - anchoTexto / 2; // Centra el texto horizontalmente
+        int rectY = y - altoTexto / 2;  // Centra el texto verticalmente
 
-        this.setShape(new Rectangle((closestPoint.x + relationship.getX()) / 2 + 5, (closestPoint.y + relationship.getY()) / 2 - 5, anchoTexto, altoTexto));
-        //g2.drawRect((closestPoint.x + relationship.getX()) / 2 + 5, (closestPoint.y + relationship.getY()) / 2 - 5, anchoTexto, altoTexto);
+        // Crea y dibuja el rectángulo que encierra el texto
+        Rectangle shape = new Rectangle(rectX, rectY, anchoTexto, altoTexto);
+        g2.setColor(Color.WHITE);
+        g2.fill(shape);
+        this.setShape(shape);
 
+        // Dibuja el texto
+        g2.setColor(Color.BLACK);
+        g2.drawString(this.getText(), x - anchoTexto / 2, y + altoTexto / 4);
+
+        // Debugging: Dibuja el rectángulo
+        //g2.draw(shape);
     }
+
 
     @Override
     public List<Component> getComponentsForRemoval() {
@@ -79,8 +109,8 @@ public class Cardinality extends Component {
         return "(" + firstValue + ", " + secondValue + ")";
     }
 
-    public Entity getOwner() { return this.owner; }
+    public Relatable getOwner() { return this.owner; }
 
-    public void setOwner(Entity entity) { this.owner = entity; }
+    public void setOwner(Relatable relatableComponent) { this.owner = relatableComponent; }
     public void setRelationship(Relationship relationship) { this.relationship = relationship; }
 }

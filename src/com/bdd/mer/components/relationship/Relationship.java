@@ -5,6 +5,7 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
+import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class Relationship extends AttributableComponent {
 
-    private final List<Dupla<Entity, Cardinality>> entities; // I use a Dupla and not a HashMap because I cannot change dynamically an entity in it
+    private final List<Dupla<Relatable, Cardinality>> participants; // I use a Dupla and not a HashMap because I cannot change dynamically an entity in it
     private int diagonalHorizontal, diagonalVertical; // Posición del centro del rombo
     private final Polygon forma;
     private boolean diagonalDefinida = false;
@@ -23,7 +24,7 @@ public class Relationship extends AttributableComponent {
     public Relationship(String text, int x, int y) {
         super(text, x, y);
 
-        this.entities = new ArrayList<>();
+        this.participants = new ArrayList<>();
 
         forma = new Polygon();
     }
@@ -43,9 +44,13 @@ public class Relationship extends AttributableComponent {
         JMenuItem addAttribute = new JMenuItem("Add attribute");
         addAttribute.addActionListener(_ -> drawingPanel.getActioner().addAttribute(this, AttributeSymbol.COMMON));
 
+        JMenuItem createAssociation = new JMenuItem("Create association");
+        createAssociation.addActionListener(_ -> drawingPanel.getActioner().addMacroEntity());
+
         relationPopupMenu.addOption(addAttribute);
         relationPopupMenu.addOption(rename);
         relationPopupMenu.addOption(delete);
+        relationPopupMenu.addOption(createAssociation);
 
         return relationPopupMenu;
 
@@ -67,14 +72,6 @@ public class Relationship extends AttributableComponent {
 
         // Dibuja el recuadro de la entidad
         int margen = 20; // Margen alrededor del texto
-
-        // Dibuja una línea desde el centro de la relación hasta el centro de cada entidad
-        for (Dupla<Entity, Cardinality> dupla : this.entities) {
-
-            Entity entity = dupla.getFirst();
-
-            g2.drawLine(this.getX(), this.getY(), entity.getX(), entity.getY());
-        }
 
         // Le doy forma al polígono
         // La diagonal solo necesito calcularla una única vez
@@ -117,8 +114,8 @@ public class Relationship extends AttributableComponent {
     @Override
     public void cleanPresence() {
 
-        // We break the bound between the relationship and their entities.
-        for (Dupla<Entity, Cardinality> dupla : this.entities) {
+        // We break the bound between the relationship and their participants.
+        for (Dupla<Relatable, Cardinality> dupla : this.participants) {
             dupla.getFirst().removeRelationship(this);
         }
 
@@ -127,7 +124,7 @@ public class Relationship extends AttributableComponent {
     @Override
     public void changeReference(Entity oldEntity, Entity newEntity) {
 
-        for (Dupla<Entity, Cardinality> dupla : this.entities) {
+        for (Dupla<Relatable, Cardinality> dupla : this.participants) {
 
             if (dupla.getFirst().equals(oldEntity)) {
                 dupla.setFirst(newEntity);
@@ -137,18 +134,18 @@ public class Relationship extends AttributableComponent {
 
     }
 
-    public void addEntity(Entity entity, Cardinality cardinality) {
-        this.entities.add(new Dupla<>(entity, cardinality));
-        entity.addRelationship(this);
-        cardinality.setOwner(entity);
+    public void addParticipant(Relatable relatableComponent, Cardinality cardinality) {
+        this.participants.add(new Dupla<>(relatableComponent, cardinality));
+        relatableComponent.addRelationship(this);
+        cardinality.setOwner(relatableComponent);
         cardinality.setRelationship(this);
     }
 
     public void removeEntity(Entity entity) {
 
-        for (Dupla<Entity, Cardinality> dupla : this.entities) {
+        for (Dupla<Relatable, Cardinality> dupla : this.participants) {
             if (dupla.getFirst().equals(entity)) {
-                this.entities.remove(dupla);
+                this.participants.remove(dupla);
                 break;
             }
         }
@@ -159,10 +156,20 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = new ArrayList<>(this.getAttributes());
 
-        for (Dupla<Entity, Cardinality> dupla : this.entities) {
-            out.add(dupla.getFirst());
-            out.addAll(dupla.getFirst().getAttributes());
-            out.add(dupla.getSecond());
+        for (Dupla<Relatable, Cardinality> dupla : this.participants) {
+
+            if (dupla.getFirst() instanceof Component relatable) {
+
+                out.add(relatable);
+
+                if (relatable instanceof AttributableComponent attributable) {
+
+                    out.addAll(attributable.getAttributes());
+                }
+
+                out.add(dupla.getSecond());
+
+            }
         }
 
         return out;
@@ -170,7 +177,7 @@ public class Relationship extends AttributableComponent {
     }
 
     public int getNumberOfEntities() {
-        return this.entities.size();
+        return this.participants.size();
     }
 
     public void cleanEntity(Entity entity) {

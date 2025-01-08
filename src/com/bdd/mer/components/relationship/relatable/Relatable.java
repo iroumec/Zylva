@@ -1,0 +1,16 @@
+package com.bdd.mer.components.relationship.relatable;
+
+import com.bdd.mer.components.relationship.Relationship;
+
+import java.awt.*;
+import java.io.Serializable;
+
+public interface Relatable extends Serializable {
+
+    void addRelationship(Relationship relationship);
+
+    void removeRelationship(Relationship relationship);
+
+    void drawLinesToRelationships(Graphics2D graphics2D, int x, int y);
+
+}

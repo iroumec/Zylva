@@ -3,6 +3,7 @@ package com.bdd.mer.frame;
 import com.bdd.mer.actions.Actioner;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.macroEntity.MacroEntity;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,10 +27,6 @@ public class DrawingPanel extends JPanel {
     public DrawingPanel() {
 
         this.setOpaque(Boolean.TRUE);
-        // Aesthetic brown
-        //this.setBackground(new Color(213, 201, 188));
-        // Aesthetic blue
-        //this.setBackground(new Color(215, 239, 249));
         this.setBackground(Color.WHITE);
 
         selectionArea = new Rectangle(0, 0, 0, 0);
@@ -99,16 +96,16 @@ public class DrawingPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 // Cuando se hace clic en el mouse, verifica si se ha seleccionado una entidad
                 if (e.isControlDown()) {
-                    for (Component component : components) {
+                    for (Component component : components.reversed()) {
                         if (component.getBounds().contains(new Point(DrawingPanel.this.mouseX, DrawingPanel.this.mouseY))) {
                             componentesSeleccionadas.add(component);
                             component.setSelected(Boolean.TRUE);
+                            break;
                         }
                     }
 
                 } else {
-                    // For each entity, relationship, hierarchy and note...
-                    List<Component> components = getListComponents();
+                    List<Component> components = getListComponents().reversed();
                     for (Component component : components) {
                         if (component.getBounds().contains(e.getPoint())) {
                             componenteArrastrada = component;
@@ -137,7 +134,7 @@ public class DrawingPanel extends JPanel {
                 if (e.isPopupTrigger()) {
                     boolean componentClicked = false;
 
-                    for (Component component : getListComponents()) {
+                    for (Component component : getListComponents().reversed()) {
                         if (component.getBounds().contains(e.getPoint())) {
                             limpiarEntidadesSeleccionadas();
                             componentesSeleccionadas.add(component);
@@ -189,9 +186,9 @@ public class DrawingPanel extends JPanel {
         g2d.draw(selectionArea);
 
         for (Component component : this.components) {
-            component.draw(g2d);
             g2d.setColor(Color.BLACK);
             g2d.setStroke(new BasicStroke(1));
+            component.draw(g2d);
         }
     }
 
@@ -226,6 +223,7 @@ public class DrawingPanel extends JPanel {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void addComponent(Component component) {
+
         this.components.addFirst(component);
         this.repaint();
     }
@@ -340,16 +338,22 @@ public class DrawingPanel extends JPanel {
         return backgroundPopupMenu;
     }
 
-    public <T> boolean onlyThisClassIsSelected(Class<T> classType) {
+    @SafeVarargs
+    public final boolean onlyTheseClassesAreSelected(Class<? extends Component>... classTypes) {
+        // Use a Set for faster lookup.
+        Set<Class<?>> allowedClasses = new HashSet<>(Arrays.asList(classTypes));
 
+        // Check if all components are of the allowed types.
         for (Component component : this.componentesSeleccionadas) {
-            if (!classType.equals(component.getClass())) {
+            if (!allowedClasses.contains(component.getClass())) {
                 return false;
             }
         }
 
         return true;
     }
+
+
 
     public boolean isNumberOfSelectedComponentsBetween(int a, int b) {
 
@@ -373,4 +377,5 @@ public class DrawingPanel extends JPanel {
 
         return false;
     }
+
 }

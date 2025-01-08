@@ -5,6 +5,8 @@ import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
+import com.bdd.mer.components.relationship.relatable.Relatable;
+import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
@@ -14,11 +16,11 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Entity extends AttributableComponent {
+public class Entity extends AttributableComponent implements Relatable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    protected final List<Relationship> relationships;
+    private final RelatableImplementation relationshipsManager;
     protected final List<Hierarchy> hierarchies;
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -30,7 +32,7 @@ public class Entity extends AttributableComponent {
     public Entity(String text, int x, int y) {
         super(text, x, y);
 
-        relationships = new ArrayList<>();
+        relationshipsManager = new RelatableImplementation();
         hierarchies = new ArrayList<>();
     }
 
@@ -61,59 +63,6 @@ public class Entity extends AttributableComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-//    public void draw(Graphics2D g2) {
-//
-//        // Calcula el ancho del texto
-//        FontMetrics fm = g2.getFontMetrics();
-//        int anchoTexto = fm.stringWidth(this.getText());
-//        int altoTexto = fm.getHeight();
-//
-//        // Calcula la posición del texto para centrarlo en el recuadro
-//        int xTexto = getX() - anchoTexto / 2;
-//        int yTexto = getY() + altoTexto / 2;
-//
-//        // Cambia el grosor del recuadro.
-//        g2.setStroke(new BasicStroke(1));
-//
-//        // Dibuja el recuadro de la entidad
-//        int margen = 10; // Margen alrededor del texto
-//
-//        int rectX = getX() - anchoTexto / 2 - margen;
-//        int rectY = getY() - altoTexto / 2 - margen;
-//        int rectAncho = anchoTexto + 2 * margen;
-//        int rectAlto = altoTexto + 2 * margen;
-//
-//        // Agrega una sombra suave
-//        g2.setColor(new Color(0, 0, 0, 50));
-//        g2.fillRoundRect(rectX + 4, rectY + 4, rectAncho, rectAlto, 15, 15);
-//
-//        GradientPaint gp = new GradientPaint(
-//                rectX, rectY, new Color(240, 240, 240),
-//                rectX, rectY + rectAlto, new Color(210, 210, 210)
-//        );
-//
-//        g2.setPaint(gp);
-//        g2.fillRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
-//
-//        // Name of the entity.
-//        g2.setColor(Color.BLACK);
-//        g2.drawString(super.getText(), xTexto, yTexto);
-//
-//
-//
-//        // Cambia el color de dibujo basándote si la entidad está seleccionada o no
-//        if (this.isSelected()) {
-//            this.setSelectionOptions(g2);
-//        }
-//
-//        // Dibuja el rectángulo
-//        g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
-//        this.setShape(new Rectangle(rectX, rectY, rectAncho, rectAlto));
-//
-//        g2.setStroke(new BasicStroke(1));
-//        g2.setColor(Color.BLACK);
-//    }
-
     public void draw(Graphics2D g2) {
 
         // Calcula el ancho del texto
@@ -135,6 +84,8 @@ public class Entity extends AttributableComponent {
         int rectY = getY() - altoTexto / 2 - margen;
         int rectAncho = anchoTexto + 2 * margen;
         int rectAlto = altoTexto + 2 * margen;
+
+        this.drawLinesToRelationships(g2, this.getX(), this.getY());
 
         RoundRectangle2D shape = new RoundRectangle2D.Float(rectX, rectY, rectAncho, rectAlto, 10, 10);
 
@@ -177,7 +128,7 @@ public class Entity extends AttributableComponent {
         List<Component> out = super.getComponentsForRemoval();
 
         // If a relationship has three or more participating entities, if I delete one, it can still exists.
-        for (Relationship relationship : relationships) {
+        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
             if (relationship.getNumberOfEntities() <= 2) {
                 out.add(relationship);
             }
@@ -204,7 +155,7 @@ public class Entity extends AttributableComponent {
     public void cleanPresence() {
 
         // This is important in case the relationship has three or more children.
-        for (Relationship relationship : this.relationships) {
+        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
             relationship.cleanEntity(this);
         }
 
@@ -224,12 +175,6 @@ public class Entity extends AttributableComponent {
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-
-    public void addRelationship(Relationship relationship) { this.relationships.add(relationship); }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public void removeRelationship(Relationship relationship) { this.relationships.remove(relationship); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -281,22 +226,6 @@ public class Entity extends AttributableComponent {
 
         return weakVersion;
 
-    }
-
-    public Point getClosestPoint(Point point) {
-
-        Rectangle bounds = this.getBounds();
-
-        int minX = (int) bounds.getMinX();
-        int maxX = (int) bounds.getMaxX();
-        int minY = (int) bounds.getMinY();
-        int maxY = (int) bounds.getMaxY();
-
-        // Encontrar el punto más cercano en el perímetro del rectángulo
-        int closestX = Math.max(minX, Math.min(point.x, maxX)); // Limitar x al rango del rectángulo
-        int closestY = Math.max(minY, Math.min(point.y, maxY)); // Limitar y al rango del rectángulo
-
-        return new Point(closestX, closestY);
     }
 
     public boolean isAlreadyParent() {
@@ -358,7 +287,7 @@ public class Entity extends AttributableComponent {
 
     protected void copyAttributes(Entity entity) {
 
-        for (Relationship relationship : this.relationships) {
+        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
             entity.addRelationship(relationship);
         }
 
@@ -375,4 +304,20 @@ public class Entity extends AttributableComponent {
         entity.setShape(this.getBounds());
 
     }
+
+    @Override
+    public void addRelationship(Relationship relationship) {
+        this.relationshipsManager.addRelationship(relationship);
+    }
+
+    @Override
+    public void removeRelationship(Relationship relationship) {
+        this.relationshipsManager.removeRelationship(relationship);
+    }
+
+    @Override
+    public void drawLinesToRelationships(Graphics2D graphics2D, int x, int y) {
+        this.relationshipsManager.drawLinesToRelationships(graphics2D, x, y);
+    }
+
 }

@@ -15,6 +15,7 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.cardinality.StaticCardinality;
+import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
 
@@ -65,7 +66,7 @@ public final class Actioner implements Serializable {
         boolean canceledRelationship = false;
 
         // Solo procede si se han seleccionado entre 1 y 3 entidades
-        if (drawingPanel.onlyThisClassIsSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
+        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, MacroEntity.class) && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
             // Muestra una ventana emergente para ingresar el nombre de la relación
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva relación");
@@ -76,17 +77,17 @@ public final class Actioner implements Serializable {
 
                 List<Cardinality> cardinalities = new ArrayList<>();
 
-                for (Component entity : drawingPanel.getSelectedComponents()) {
+                for (Component component : drawingPanel.getSelectedComponents()) {
 
-                    // It's safe, due to I asked at the stat if only objects from the Entity class are selected.
-                    Entity castedEntity = (Entity) entity;
+                    // It's safe, due to I asked at the stat if only objects from the Entity and MacroEntity classes are selected.
+                    Relatable castedComponent = (Relatable) component;
 
-                    Cardinality cardinality = getCardinality(castedEntity);
+                    Cardinality cardinality = getCardinality(castedComponent);
 
                     if (cardinality != null) {
 
                         cardinalities.add(cardinality);
-                        newRelationship.addEntity(castedEntity, cardinality);
+                        newRelationship.addParticipant(castedComponent, cardinality);
 
                     } else {
                         canceledRelationship = true;
@@ -96,11 +97,11 @@ public final class Actioner implements Serializable {
 
                 if (!canceledRelationship) {
 
-                    drawingPanel.addComponent(newRelationship);
-
                     for (Cardinality cardinality : cardinalities) {
-                        drawingPanel.addComponent(cardinality);
+                        drawingPanel.addComponentLast(cardinality);
                     }
+
+                    drawingPanel.addComponentLast(newRelationship);
 
                     drawingPanel.limpiarEntidadesSeleccionadas();
                 }
@@ -111,14 +112,14 @@ public final class Actioner implements Serializable {
         }
     }
 
-    private Cardinality getCardinality(Entity entity) {
+    private Cardinality getCardinality(Relatable relatableComponent) {
         JTextField cardinalidadMinimaCampo = new JTextField(1);
         JTextField cardinalidadMaximaCampo = new JTextField(1);
         JButton okButton = new JButton("OK");
         okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
 
         JPanel miPanel = new JPanel();
-        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + entity.getText() + ": "));
+        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ((Component) relatableComponent).getText() + ": "));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
         miPanel.add(new JLabel("Cardinalidad mínima:"));
         miPanel.add(cardinalidadMinimaCampo);
@@ -150,7 +151,7 @@ public final class Actioner implements Serializable {
 
             if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Ambos campos deben tener un valor");
-                return getCardinality(entity);
+                return getCardinality(relatableComponent);
             } else {
                 return new Cardinality(String.valueOf(cardinalidadMinima.charAt(0)), String.valueOf(cardinalidadMaxima.charAt(0)));
             }
@@ -166,7 +167,8 @@ public final class Actioner implements Serializable {
         okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
 
         JPanel miPanel = new JPanel();
-        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + cardinality.getOwner().getText() + ": "));
+        // Fix this then.
+        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ((Component) cardinality.getOwner()).getText() + ": "));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
         miPanel.add(new JLabel("Cardinalidad mínima:"));
         miPanel.add(cardinalidadMinimaCampo);
@@ -213,7 +215,7 @@ public final class Actioner implements Serializable {
 
         boolean canceledRelationship = false;
 
-        if (drawingPanel.onlyThisClassIsSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
+        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva dependencia");
 
@@ -237,7 +239,7 @@ public final class Actioner implements Serializable {
 
                             if (cardinality != null) {
 
-                                newRelationship.addEntity(entity, cardinality);
+                                newRelationship.addParticipant(entity, cardinality);
 
                             } else {
 
@@ -250,16 +252,16 @@ public final class Actioner implements Serializable {
                             // Una entidad débil solo puede estar relacionada con una entidad fuerte si
                             // esta última tiene cardinalidad 1:1
                             staticCardinality = new StaticCardinality("1", "1");
-                            newRelationship.addEntity(entity, staticCardinality);
+                            newRelationship.addParticipant(entity, staticCardinality);
 
                         }
                     }
 
                     if (!canceledRelationship) {
 
-                        drawingPanel.addComponent(newRelationship);
-                        drawingPanel.addComponent(cardinality);
-                        drawingPanel.addComponent(staticCardinality);
+                        drawingPanel.addComponentLast(cardinality);
+                        drawingPanel.addComponentLast(staticCardinality);
+                        drawingPanel.addComponentLast(newRelationship);
 
                         changeEntity(entitySelected, weakVersion);
 
@@ -306,7 +308,7 @@ public final class Actioner implements Serializable {
 
     public void addHierarchy() {
         // Solo procede si se ha seleccionado al menos tres entidades
-        if (drawingPanel.onlyThisClassIsSelected(Entity.class) && drawingPanel.getSelectedComponents().size() >= 3) {
+        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.getSelectedComponents().size() >= 3) {
 
             Entity supertipo = seleccionarSupertipo();
 
@@ -666,11 +668,14 @@ public final class Actioner implements Serializable {
     // There must be selected at least an entity and a relationship (unary relationship)
     public void addMacroEntity() {
 
-        if (drawingPanel.getSelectedComponents().size() == 1 && drawingPanel.onlyThisClassIsSelected(Relationship.class)) {
+        if (drawingPanel.getSelectedComponents().size() == 1 && drawingPanel.onlyTheseClassesAreSelected(Relationship.class)) {
 
-            MacroEntity macroEntity = new MacroEntity((Relationship) drawingPanel.getSelectedComponents().getFirst());
+            Relationship relationship = (Relationship) drawingPanel.getSelectedComponents().getFirst();
 
-            drawingPanel.addComponentLast(macroEntity);
+            MacroEntity macroEntity = new MacroEntity(relationship);
+
+            drawingPanel.addComponent(macroEntity);
+            drawingPanel.repaint();
 
             drawingPanel.limpiarEntidadesSeleccionadas();
 

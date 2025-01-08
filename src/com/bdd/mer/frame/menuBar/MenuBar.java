@@ -1,5 +1,6 @@
 package com.bdd.mer.frame.menuBar;
 
+import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.MainFrame;
 import com.bdd.mer.frame.DrawingPanel;
 
@@ -33,10 +34,10 @@ public class MenuBar extends JMenuBar {
         });
 
         // Añado el menú de archivos
-        add(new FileMenu(mainFrame, drawingPanel, "File"));
+        add(new FileMenu(mainFrame, drawingPanel, LanguageManager.getMessage("menuBar.file")));
 
         // Añado un botón para limpiar la ventana
-        JButton cleanFrameButton = new JButton("Clean");
+        JButton cleanFrameButton = new JButton(LanguageManager.getMessage("menuBar.clean"));
         cleanFrameButton.addActionListener(_ -> {
             drawingPanel.reset();
             drawingPanel.repaint();
@@ -57,7 +58,7 @@ public class MenuBar extends JMenuBar {
         cleanFrameButton.setBorderPainted(Boolean.FALSE);
 
         // Añado un botón para aprender
-        JButton tipsButton = new JButton("Help");
+        JButton tipsButton = new JButton(LanguageManager.getMessage("menuBar.help"));
 
         String controls = """
                 CONTROLS: \

@@ -1,4 +1,4 @@
-package com.bdd.mer.frame.menuBar.exportacion;
+package com.bdd.mer.frame.menuBar.exportation;
 
 import com.bdd.mer.frame.DrawingPanel;
 
