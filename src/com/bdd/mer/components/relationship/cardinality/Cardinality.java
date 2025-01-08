@@ -1,7 +1,8 @@
-package com.bdd.mer.components.relationship;
+package com.bdd.mer.components.relationship.cardinality;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 

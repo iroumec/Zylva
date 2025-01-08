@@ -63,11 +63,6 @@ public class Hierarchy extends Component {
         // Aplica suavizado a las líneas
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Si la jerarquía es seleccionada, se pinta de CYAN
-        if (this.isSelected()) {
-            this.setSelectionOptions(g2);
-        }
-
         drawSuperentityLine(g2);
 
         // Dibuja las líneas a los subtipos
@@ -75,15 +70,23 @@ public class Hierarchy extends Component {
             g2.drawLine(this.getX(), this.getY(), e.getX(), e.getY());
         }
 
-        // Dibuja el círculo adaptado al tamaño del texto
-        g2.drawOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
-
         // Rellena el círculo
         g2.setColor(Color.WHITE);
         g2.fillOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
 
+        g2.setColor(Color.BLACK);
+
+        // Si la jerarquía es seleccionada, se pinta de CYAN
+        if (this.isSelected()) {
+            this.setSelectionOptions(g2);
+        }
+
+        // Dibuja el círculo adaptado al tamaño del texto
+        g2.drawOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
+
         // Dibuja el texto dentro del círculo
         g2.setColor(Color.BLACK);
+        g2.setStroke(new BasicStroke(2));
         g2.drawString(this.getText(), this.getX() - 4, this.getY() + 4);
     }
 

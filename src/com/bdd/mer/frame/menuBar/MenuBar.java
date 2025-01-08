@@ -65,6 +65,7 @@ public class MenuBar extends JMenuBar {
                 "\nCtrl + D: Add a new dependency" +
                 "\nCtrl + H: Add a new hierarchy" +
                 "\nCtrl + N: Add a new note" +
+                "\nCtrl + A: Add a new association" +
                 "\nSupr: Delete all selected components";
 
         String credits = "AUTHOR: " +

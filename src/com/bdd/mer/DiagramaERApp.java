@@ -8,15 +8,17 @@ import javax.swing.*;
 
 public class DiagramaERApp {
     public static void main(String[] args) {
-        // Mostrar la ventana de carga
+
+        // Show the loading screen.
         LoadingScreen loadingScreen = new LoadingScreen();
 
         // Crear un SwingWorker para realizar la inicialización en segundo plano
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+
             @Override
             protected Void doInBackground() throws Exception {
                 // Simular la inicialización de la aplicación (puedes realizar la carga real aquí)
-                Thread.sleep(1000); // Simula la carga con un retardo
+                Thread.sleep(500); // Simula la carga con un retardo. Este retardo sirve para mostrar la loading screen.
                 return null;
             }
 

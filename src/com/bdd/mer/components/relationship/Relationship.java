@@ -4,6 +4,7 @@ import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
@@ -17,7 +18,6 @@ public class Relationship extends AttributableComponent {
     private final List<Dupla<Entity, Cardinality>> entities; // I use a Dupla and not a HashMap because I cannot change dynamically an entity in it
     private int diagonalHorizontal, diagonalVertical; // Posición del centro del rombo
     private final Polygon forma;
-    private boolean formaDefinida = false;
     private boolean diagonalDefinida = false;
 
     public Relationship(String text, int x, int y) {
@@ -84,64 +84,30 @@ public class Relationship extends AttributableComponent {
             diagonalDefinida = true;
         }
 
-        // Define la forma del polígono y me aseguro de hacerlo una sola vez
-        // Si no hago esto, el polígono titila al mover las entidades
-        if (!formaDefinida) {
-            forma.addPoint(getX(), getY() - diagonalVertical / 2 + 8); // Punto superior
-            forma.addPoint(getX() + diagonalHorizontal / 2, getY()); // Punto derecho
-            forma.addPoint(getX(), getY() + diagonalVertical / 2 - 8); // Punto inferior
-            forma.addPoint(getX() - diagonalHorizontal / 2, getY()); // Punto izquierdo
-            formaDefinida = true;
-        }
+        forma.reset(); // Desactivating this is funny.
+        forma.addPoint(getX(), getY() - diagonalVertical / 2); // Punto superior
+        forma.addPoint(getX() + diagonalHorizontal / 2, getY()); // Punto derecho
+        forma.addPoint(getX(), getY() + diagonalVertical / 2); // Punto inferior
+        forma.addPoint(getX() - diagonalHorizontal / 2, getY()); // Punto izquierdo
 
-        // Aplica un gradiente al relleno del polígono
-        GradientPaint gp = new GradientPaint(
-                getX(), getY() - (float) diagonalVertical / 2, new Color(240, 240, 240), // Color superior (celeste claro)
-                getX(), getY() + (float) diagonalVertical / 2, new Color(210, 210, 210) // Color inferior (celeste oscuro)
-        );
-        g2.setPaint(gp);
+        g2.setColor(Color.WHITE);
         g2.fillPolygon(forma); // Rellena el polígono con el gradiente
-
-        // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
-        if (this.isSelected()) {
-            g2.setColor(new Color(120, 190, 235));
-            g2.setStroke(new BasicStroke(2));
-        } else {
-            g2.setColor(Color.BLACK);
-        }
-
-        // Dibuja el rombo
-        g2.drawPolygon(forma);
 
         g2.setColor(Color.BLACK);
         g2.drawString(this.getText(), xTexto, yTexto); // Dibuja el nombre de la relación
+
+        // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
+        if (this.isSelected()) {
+            this.setSelectionOptions(g2);
+        }
+
+        // Dibuja el rombo;
+        g2.drawPolygon(forma);
     }
 
     public Rectangle getBounds() {
 
         return this.forma.getBounds();
-    }
-
-    private void updateShape() {
-        forma.reset();
-        forma.addPoint(getX(), getY() - diagonalVertical / 2 + 10); // Punto superior
-        forma.addPoint(getX() + diagonalHorizontal / 2, getY()); // Punto derecho
-        forma.addPoint(getX(), getY() + diagonalVertical / 2 - 10); // Punto inferior
-        forma.addPoint(getX() - diagonalHorizontal / 2, getY()); // Punto izquierdo
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void setX(int x) {
-        super.setX(x);
-        updateShape();
-    }
-
-    @Override
-    public void setY(int y) {
-        super.setY(y);
-        updateShape();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

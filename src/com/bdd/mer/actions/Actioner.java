@@ -12,9 +12,9 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.entity.WeakEntity;
 import com.bdd.mer.components.hierarchy.Hierarchy;
-import com.bdd.mer.components.relationship.Cardinality;
+import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.Relationship;
-import com.bdd.mer.components.relationship.StaticCardinality;
+import com.bdd.mer.components.relationship.cardinality.StaticCardinality;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
 
@@ -37,15 +37,20 @@ public final class Actioner implements Serializable {
     /* ---------------------------------------------------------------------------------------------------------- */
 
     public void addEntity() {
-        // Muestra una ventana emergente para ingresar el nombre de la entidad. La ventana está centrada en el marco principal
-        String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva entidad");
 
-        if (nombre != null) {
-            if (!nombre.isEmpty()) {
-                // Si el usuario ingresó un nombre, agrega una nueva entidad con ese nombre
-                Entity newEntity = new Entity(nombre, drawingPanel.getMouseX(), drawingPanel.getMouseY());
-                //newEntity.setPopupMenu(getGenericPop(newEntity));
-                drawingPanel.addComponent(newEntity);
+        // Muestra una ventana emergente para ingresar el nombre de la entidad. La ventana está centrada en el marco principal
+        String entityName = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva entidad");
+
+        if (entityName != null) {
+            if (!entityName.isEmpty()) {
+                if (!this.drawingPanel.existsComponent(entityName)) {
+                    // Si el usuario ingresó un nombre, agrega una nueva entidad con ese nombre
+                    Entity newEntity = new Entity(entityName, drawingPanel.getMouseX(), drawingPanel.getMouseY());
+                    //newEntity.setPopupMenu(getGenericPop(newEntity));
+                    drawingPanel.addComponent(newEntity);
+                } else {
+                    JOptionPane.showMessageDialog(this.drawingPanel, "El nombre de la entidad ya está en uso.");
+                }
             } else {
                 JOptionPane.showMessageDialog(this.drawingPanel, "El nombre de la entidad no puede estar vacío");
             }
@@ -663,7 +668,7 @@ public final class Actioner implements Serializable {
 
         if (drawingPanel.getSelectedComponents().size() == 1 && drawingPanel.onlyThisClassIsSelected(Relationship.class)) {
 
-            MacroEntity macroEntity = new MacroEntity("", (Relationship) drawingPanel.getSelectedComponents().getFirst());
+            MacroEntity macroEntity = new MacroEntity((Relationship) drawingPanel.getSelectedComponents().getFirst());
 
             drawingPanel.addComponentLast(macroEntity);
 

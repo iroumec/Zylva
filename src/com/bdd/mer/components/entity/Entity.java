@@ -10,6 +10,7 @@ import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,59 @@ public class Entity extends AttributableComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
+//    public void draw(Graphics2D g2) {
+//
+//        // Calcula el ancho del texto
+//        FontMetrics fm = g2.getFontMetrics();
+//        int anchoTexto = fm.stringWidth(this.getText());
+//        int altoTexto = fm.getHeight();
+//
+//        // Calcula la posición del texto para centrarlo en el recuadro
+//        int xTexto = getX() - anchoTexto / 2;
+//        int yTexto = getY() + altoTexto / 2;
+//
+//        // Cambia el grosor del recuadro.
+//        g2.setStroke(new BasicStroke(1));
+//
+//        // Dibuja el recuadro de la entidad
+//        int margen = 10; // Margen alrededor del texto
+//
+//        int rectX = getX() - anchoTexto / 2 - margen;
+//        int rectY = getY() - altoTexto / 2 - margen;
+//        int rectAncho = anchoTexto + 2 * margen;
+//        int rectAlto = altoTexto + 2 * margen;
+//
+//        // Agrega una sombra suave
+//        g2.setColor(new Color(0, 0, 0, 50));
+//        g2.fillRoundRect(rectX + 4, rectY + 4, rectAncho, rectAlto, 15, 15);
+//
+//        GradientPaint gp = new GradientPaint(
+//                rectX, rectY, new Color(240, 240, 240),
+//                rectX, rectY + rectAlto, new Color(210, 210, 210)
+//        );
+//
+//        g2.setPaint(gp);
+//        g2.fillRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
+//
+//        // Name of the entity.
+//        g2.setColor(Color.BLACK);
+//        g2.drawString(super.getText(), xTexto, yTexto);
+//
+//
+//
+//        // Cambia el color de dibujo basándote si la entidad está seleccionada o no
+//        if (this.isSelected()) {
+//            this.setSelectionOptions(g2);
+//        }
+//
+//        // Dibuja el rectángulo
+//        g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
+//        this.setShape(new Rectangle(rectX, rectY, rectAncho, rectAlto));
+//
+//        g2.setStroke(new BasicStroke(1));
+//        g2.setColor(Color.BLACK);
+//    }
+
     public void draw(Graphics2D g2) {
 
         // Calcula el ancho del texto
@@ -82,32 +136,22 @@ public class Entity extends AttributableComponent {
         int rectAncho = anchoTexto + 2 * margen;
         int rectAlto = altoTexto + 2 * margen;
 
-        // Agrega una sombra suave
-        g2.setColor(new Color(0, 0, 0, 50));
-        g2.fillRoundRect(rectX + 4, rectY + 4, rectAncho, rectAlto, 15, 15);
+        RoundRectangle2D shape = new RoundRectangle2D.Float(rectX, rectY, rectAncho, rectAlto, 10, 10);
 
-        GradientPaint gp = new GradientPaint(
-                rectX, rectY, new Color(240, 240, 240),
-                rectX, rectY + rectAlto, new Color(210, 210, 210)
-        );
-
-        g2.setPaint(gp);
-        g2.fillRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
+        g2.setColor(Color.WHITE);
+        g2.fill(shape);
 
         // Name of the entity.
         g2.setColor(Color.BLACK);
         g2.drawString(super.getText(), xTexto, yTexto);
-
-
 
         // Cambia el color de dibujo basándote si la entidad está seleccionada o no
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }
 
-        // Dibuja el rectángulo
-        g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
-        this.setShape(new Rectangle(rectX, rectY, rectAncho, rectAlto));
+        g2.draw(shape);
+        this.setShape(shape);
 
         g2.setStroke(new BasicStroke(1));
         g2.setColor(Color.BLACK);

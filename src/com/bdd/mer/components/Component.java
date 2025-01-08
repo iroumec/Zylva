@@ -34,6 +34,8 @@ public abstract class Component implements Serializable {
 
     public Component(String text) { this(text, 0 , 0); }
 
+    public Component(int x, int y) { this("", x, y); }
+
     public Component(String text, int x, int y)  {
         this.selected = false;
         this.text = text;
@@ -124,4 +126,5 @@ public abstract class Component implements Serializable {
 
         return new Dupla<>(anchoTexto, altoTexto);
     }
+
 }

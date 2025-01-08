@@ -190,6 +190,8 @@ public class DrawingPanel extends JPanel {
 
         for (Component component : this.components) {
             component.draw(g2d);
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(new BasicStroke(1));
         }
     }
 
@@ -359,5 +361,16 @@ public class DrawingPanel extends JPanel {
 
         return this.componentesSeleccionadas.size() == n;
 
+    }
+
+    public boolean existsComponent(String componentName) {
+
+        for (Component component : this.componentesSeleccionadas) {
+            if (!component.getText().isEmpty() && component.getText().equals(componentName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

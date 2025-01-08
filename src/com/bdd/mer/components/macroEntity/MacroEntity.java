@@ -16,8 +16,7 @@ public class MacroEntity extends Component {
     // List of components forming the MacroEntity.
     private final Relationship relationship;
 
-    public MacroEntity(String text, Relationship relationship) {
-        super(text);
+    public MacroEntity(Relationship relationship) {
         this.relationship = relationship;
     }
 
@@ -56,8 +55,6 @@ public class MacroEntity extends Component {
             maxY = Math.max(maxY, (int) bounds.getMaxY());
         }
 
-        System.out.println(minX + " " + minY + " " + maxX + " " + maxY);
-
         int margen = 5;
 
         g2.setStroke(new BasicStroke(1));
@@ -65,8 +62,7 @@ public class MacroEntity extends Component {
 
         // Cambia el color y grosor del borde si está seleccionado
         if (this.isSelected()) {
-            g2.setColor(new Color(120, 190, 235));
-            g2.setStroke(new BasicStroke(2));
+            this.setSelectionOptions(g2);
         }
 
         // Calcula el ancho y alto del rectángulo correctamente

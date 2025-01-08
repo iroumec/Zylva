@@ -35,7 +35,7 @@ public class LoadingScreen extends JWindow {
         }
 
         // Configurar el temporizador para cerrar la ventana después de 3 segundos
-        Timer timer = new Timer(3000, _ -> SwingUtilities.invokeLater(this::dispose));
+        Timer timer = new Timer(1000, _ -> SwingUtilities.invokeLater(this::dispose));
         timer.setRepeats(false);
         timer.start();
 

@@ -1,9 +1,9 @@
-package com.bdd.mer.components.relationship;
+package com.bdd.mer.components.relationship.cardinality;
 
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
-public class StaticCardinality extends Cardinality{
+public class StaticCardinality extends Cardinality {
 
     public StaticCardinality(String firstValue, String secondValue) {
         super(firstValue, secondValue);
