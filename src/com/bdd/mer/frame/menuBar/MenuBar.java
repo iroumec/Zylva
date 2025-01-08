@@ -59,22 +59,31 @@ public class MenuBar extends JMenuBar {
         // Añado un botón para aprender
         JButton tipsButton = new JButton("Help");
 
-        String controls = "CONTROLS: " +
-                "\nCtrl + E: Add a new entity" +
-                "\nCtrl + R: Add a new relationship" +
-                "\nCtrl + D: Add a new dependency" +
-                "\nCtrl + H: Add a new hierarchy" +
-                "\nCtrl + N: Add a new note" +
-                "\nCtrl + A: Add a new association" +
-                "\nSupr: Delete all selected components";
+        String controls = """
+                CONTROLS: \
+                
+                Ctrl + E: Add a new entity\
+                
+                Ctrl + R: Add a new relationship\
+                
+                Ctrl + D: Add a new dependency\
+                
+                Ctrl + H: Add a new hierarchy\
+                
+                Ctrl + N: Add a new note\
+                
+                Ctrl + A: Add a new association\
+                
+                Supr: Delete all selected components""";
 
-        String credits = "AUTHOR: " +
-                "\nZilva DERExt was made by Iñaki Roumec" +
-                "\nhttps://github.com/iroumec";
+        String credits = """
+                AUTHOR: \
+                
+                Zilva DERExt was made by Iñaki Roumec\
+                
+                https://github.com/iroumec""";
 
-        tipsButton.addActionListener(_ -> {
-            JOptionPane.showMessageDialog(null, controls + "\n\n" + credits);
-        });
+        tipsButton.addActionListener(_ -> JOptionPane.showMessageDialog(null, controls + "\n\n" + credits));
         add(tipsButton);
         // Al pasar el mouse por encima, el fondo se coloca en rojo
         tipsButton.setBackground(UIManager.getColor("control"));
