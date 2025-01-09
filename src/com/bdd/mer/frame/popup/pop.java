@@ -3,11 +3,11 @@
 //import com.bdd.mer.estatica.atributo.AttributeType;
 //import com.bdd.mer.estatica.component.Component;
 //import com.bdd.mer.estatica.entity.Entity;
-//import com.bdd.mer.estatica.entity.MacroEntity;
+//import com.bdd.mer.estatica.entity.Association;
 //import com.bdd.mer.estatica.hierarchy.Hierarchy;
 //import com.bdd.mer.estatica.relationship.Cardinality;
 //import com.bdd.mer.estatica.relationship.Relationship;
-//import com.bdd.mer.estatica.coleccion.Dupla;
+//import com.bdd.mer.estatica.coleccion.Duplex;
 //import com.bdd.mer.interfaz.DrawingPanel;
 //import com.bdd.mer.components.note.Nota;
 //
@@ -68,12 +68,12 @@
 //                String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre de la nueva relación");
 //                if (nombre != null) {
 //                    // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
-//                    java.util.List<Dupla<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
+//                    java.util.List<Duplex<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
 //                    Cardinality cardinalidad;
 //                    for (Component entidad : drawingPanel.getSelectedComponents()) {
 //                        cardinalidad = ingresarCardinalidad(((Entity) entidad).getText());
 //                        if (cardinalidad != null) {
-//                            entidadesParticipantes.add(new Dupla<>((Entity) entidad, cardinalidad));
+//                            entidadesParticipantes.add(new Duplex<>((Entity) entidad, cardinalidad));
 //                        } else {
 //                            creacionRelacionCancelada = true;
 //                            break;
@@ -109,14 +109,14 @@
 //                    // Si el usuario ingresó un nombre, agrega una nueva relación con ese nombre
 //                    Entity EntityDebil = seleccionarEntidadDebil();
 //
-//                    List<Dupla<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
+//                    List<Duplex<Entity, Cardinality>> entidadesParticipantes = new ArrayList<>();
 //                    Cardinality cardinalidad;
 //
 //                    for (Component entidad : drawingPanel.getSelectedComponents()) {
 //                        if (entidad == EntityDebil) {
 //                            cardinalidad = ingresarCardinalidad(((Entity) entidad).getText());
 //                            if (cardinalidad != null) {
-//                                entidadesParticipantes.add(new Dupla<>((Entity) entidad, cardinalidad));
+//                                entidadesParticipantes.add(new Duplex<>((Entity) entidad, cardinalidad));
 //                            } else {
 //                                creacionRelacionCancelada = true;
 //                                break;
@@ -124,7 +124,7 @@
 //                        } else {
 //                            // Una entidad débil solo puede estar relacionada con una entidad fuerte si
 //                            // esta última tiene cardinalidad 1:1
-//                            entidadesParticipantes.add(new Dupla<>((Entity) entidad, new Cardinality(entidad, "1", "1")));
+//                            entidadesParticipantes.add(new Duplex<>((Entity) entidad, new Cardinality(entidad, "1", "1")));
 //                        }
 //                    }
 //
@@ -155,7 +155,7 @@
 //                List<Entity> subtipos = obtenerListaSubtipos(supertipo);
 //                if (rolesJerarquiaOcupados(supertipo, subtipos)) {
 //                    ocuparRoles(supertipo, subtipos);
-//                    Dupla<Boolean, Boolean> tipo = seleccionarTipoJerarquia();
+//                    Duplex<Boolean, Boolean> tipo = seleccionarTipoJerarquia();
 //
 //                    Hierarchy newHierarchy = new Hierarchy("", supertipo, subtipos, "u");
 //
@@ -190,7 +190,7 @@
 //            if (drawingPanel.getSelectedComponents().size() >= 2 && drawingPanel.oneRelationshipAndEntities()) {
 //                String text = JOptionPane.showInputDialog(this, "Ingrese el nombre de la macro-entidad");
 //                if (text != null && !text.isBlank()) {
-//                    MacroEntity macroEntity = new MacroEntity(text);
+//                    Association macroEntity = new Association(text);
 //                    for (Component component : drawingPanel.getSelectedComponents()) {
 //                        if (component.getClass().toString().equals("class com.bdd.mer.estatica.Entidad")) {
 //                            macroEntity.addEntity((Entity) component);
@@ -274,13 +274,13 @@
 //        activateConcealment.addActionListener(_ -> {
 //            Component component = this.getObject();
 //
-//            if (((MacroEntity) component).isConcealmentActivated()) {
-//                drawingPanel.addComponents(((MacroEntity) component).participatingComponents());
+//            if (((Association) component).isConcealmentActivated()) {
+//                drawingPanel.addComponents(((Association) component).participatingComponents());
 //            } else {
-//                drawingPanel.deleteComponents(((MacroEntity) component).participatingComponents());
+//                drawingPanel.deleteComponents(((Association) component).participatingComponents());
 //            }
 //
-//            ((MacroEntity) component).exchangeConcealment();
+//            ((Association) component).exchangeConcealment();
 //            drawingPanel.repaint();
 //        });
 //
@@ -291,7 +291,7 @@
 //        JMenuItem changeCardinality = new JMenuItem("Modificar cardinalidad");
 //        changeCardinality.addActionListener(_ -> {
 //
-//            List<Dupla<Entity, Cardinality>> entitiesAndCardinalities = ((Relationship) this.objeto).getEntidades();
+//            List<Duplex<Entity, Cardinality>> entitiesAndCardinalities = ((Relationship) this.objeto).getEntidades();
 //            List<Cardinality> newCardinalities = new ArrayList<>();
 //
 //            JTextField cardinalidadMinimaCampo = new JTextField(1);
@@ -301,7 +301,7 @@
 //
 //            boolean changeCardinalitiesWasCanceled = false;
 //
-//            mainLoop: for (Dupla<Entity, Cardinality> pair : entitiesAndCardinalities) {
+//            mainLoop: for (Duplex<Entity, Cardinality> pair : entitiesAndCardinalities) {
 //                boolean complete = false;
 //                while (!complete) {
 //                    JPanel miPanel = new JPanel();
@@ -494,7 +494,7 @@
 //        return retorno;
 //    }
 //
-//    public Dupla<Boolean, Boolean> seleccionarTipoJerarquia() {
+//    public Duplex<Boolean, Boolean> seleccionarTipoJerarquia() {
 //
 //        // Crea los radio buttons
 //        JRadioButton opcionExclusiva = new JRadioButton("Exclusiva", true);
@@ -532,7 +532,7 @@
 //        JOptionPane.showOptionDialog(null, panel, "Elige una opción",
 //                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 //
-//        return (new Dupla<>(opcionExclusiva.isSelected(), opcionTotal.isSelected()));
+//        return (new Duplex<>(opcionExclusiva.isSelected(), opcionTotal.isSelected()));
 //    }
 //
 //    /*

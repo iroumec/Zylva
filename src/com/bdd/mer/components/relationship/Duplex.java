@@ -2,11 +2,11 @@ package com.bdd.mer.components.relationship;
 
 import java.io.Serializable;
 
-public class Dupla<T, U> implements Serializable {
+public class Duplex<T, U> implements Serializable {
     private T first;
     private U second;
 
-    public Dupla(T first, U second) {
+    public Duplex(T first, U second) {
         this.first = first;
         this.second = second;
     }

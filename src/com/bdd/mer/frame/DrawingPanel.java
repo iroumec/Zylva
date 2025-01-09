@@ -1,9 +1,8 @@
 package com.bdd.mer.frame;
 
-import com.bdd.mer.actions.Actioner;
+import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
-import com.bdd.mer.components.macroEntity.MacroEntity;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,12 +13,13 @@ import java.util.List;
 public class DrawingPanel extends JPanel {
 
     private List<Component> components = new ArrayList<>();
-    private Actioner actioner;
+    private ActionManager actionManager;
     private Component componenteArrastrada = null;
     private Set<Component> componentesSeleccionadas = new HashSet<>();
     private final Rectangle selectionArea;
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
+    private PopupMenu backgroundPopupMenu;
 
     // Me sirve para cuando coloco componentes apretando una combinación de teclas
     private int mouseX, mouseY;
@@ -87,7 +87,7 @@ public class DrawingPanel extends JPanel {
             }
         });
 
-        PopupMenu backgroundPopupMenu = this.getBackgroundPopupMenu();
+        backgroundPopupMenu = this.getBackgroundPopupMenu();
 
 
         // Agrega un controlador de eventos de mouse
@@ -306,34 +306,34 @@ public class DrawingPanel extends JPanel {
 
     public List<Component> getListComponents() { return new ArrayList<>(this.components); }
 
-    public Actioner getActioner() { return this.actioner; }
+    public ActionManager getActioner() { return this.actionManager; }
 
-    public void setActioner(Actioner actioner) { this.actioner = actioner; }
+    public void setActioner(ActionManager actionManager) { this.actionManager = actionManager; }
 
     private PopupMenu getBackgroundPopupMenu() {
 
         PopupMenu backgroundPopupMenu = new PopupMenu(this);
 
-        JMenuItem addEntity = new JMenuItem("Add entity");
+        JMenuItem addEntity = new JMenuItem(LanguageManager.getMessage("option.addEntity"));
         addEntity.addActionListener(_ -> this.getActioner().addEntity());
 
-        JMenuItem addRelationship = new JMenuItem("Add relationship");
+        JMenuItem addRelationship = new JMenuItem(LanguageManager.getMessage("option.addRelationship"));
         addRelationship.addActionListener(_ -> this.getActioner().addRelationship());
 
-        JMenuItem addDependency = new JMenuItem("Add dependency");
+        JMenuItem addDependency = new JMenuItem(LanguageManager.getMessage("option.addDependency"));
         addDependency.addActionListener(_ -> this.getActioner().addDependency());
 
-        JMenuItem addNote = new JMenuItem("Add note");
+        JMenuItem addNote = new JMenuItem(LanguageManager.getMessage("option.addNote"));
         addNote.addActionListener(_ -> this.getActioner().addNote());
 
-        JMenuItem addMacroEntity = new JMenuItem("Add macro-entity");
-        addMacroEntity.addActionListener(_ -> this.getActioner().addMacroEntity());
+        JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
+        addAssociation.addActionListener(_ -> this.getActioner().addMacroEntity());
 
         backgroundPopupMenu.addOption(addEntity);
         backgroundPopupMenu.addOption(addRelationship);
         backgroundPopupMenu.addOption(addDependency);
         backgroundPopupMenu.addOption(addNote);
-        backgroundPopupMenu.addOption(addMacroEntity);
+        backgroundPopupMenu.addOption(addAssociation);
 
         return backgroundPopupMenu;
     }
@@ -369,13 +369,19 @@ public class DrawingPanel extends JPanel {
 
     public boolean existsComponent(String componentName) {
 
-        for (Component component : this.componentesSeleccionadas) {
+        for (Component component : this.components) {
             if (!component.getText().isEmpty() && component.getText().equals(componentName)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public void resetLanguage() {
+
+        this.backgroundPopupMenu = this.getBackgroundPopupMenu();
+
     }
 
 }

@@ -1,4 +1,4 @@
-package com.bdd.mer.components.macroEntity;
+package com.bdd.mer.components.association;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
@@ -6,22 +6,22 @@ import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
-import org.w3c.dom.css.Rect;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MacroEntity extends Component implements Relatable {
+public class Association extends Component implements Relatable {
 
     private final RelatableImplementation relationshipsManager;
 
-    // List of components forming the MacroEntity.
+    // List of components forming the Association.
     private final Relationship relationship;
 
-    public MacroEntity(Relationship relationship) {
+    public Association(Relationship relationship) {
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
     }
@@ -32,7 +32,7 @@ public class MacroEntity extends Component implements Relatable {
         DrawingPanel drawingPanel = this.getPanelDibujo();
         PopupMenu macroEntityPopupMenu = new PopupMenu(drawingPanel);
 
-        JMenuItem deleteMacroEntity = new JMenuItem("Delete");
+        JMenuItem deleteMacroEntity = new JMenuItem(LanguageManager.getMessage("option.delete"));
         deleteMacroEntity.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
 
         macroEntityPopupMenu.addOption(deleteMacroEntity);

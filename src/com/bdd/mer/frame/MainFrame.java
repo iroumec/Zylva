@@ -1,6 +1,6 @@
 package com.bdd.mer.frame;
 
-import com.bdd.mer.actions.Actioner;
+import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.menuBar.MenuBar;
 
@@ -10,6 +10,9 @@ import java.awt.event.*;
 
 public class MainFrame extends JFrame {
 
+    private final DrawingPanel drawingPanel;
+    private final MenuBar menuBar;
+
     public MainFrame() {
 
         setUndecorated(false);  // Removing of the title bar.
@@ -18,8 +21,8 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
 
         // Creation of the drawing panel, the bar menu and the menu.
-        DrawingPanel drawingPanel = new DrawingPanel();
-        MenuBar menuBar = new MenuBar(this, drawingPanel);
+        this.drawingPanel = new DrawingPanel();
+        this.menuBar = new MenuBar(this, drawingPanel);
         JPanel menu = new JPanel();
         menu.setLayout(new BoxLayout(menu, BoxLayout.PAGE_AXIS));
         Dimension dimension = new Dimension(120, 30);
@@ -30,8 +33,8 @@ public class MainFrame extends JFrame {
         /* ---------------------------------------------------------------------------------------------------------- */
 
         // It contains the action both the drawing panel and the frame can do.
-        Actioner actioner = new Actioner(drawingPanel);
-        drawingPanel.setActioner(actioner);
+        ActionManager actionManager = new ActionManager(drawingPanel);
+        drawingPanel.setActioner(actionManager);
 
         // Chequear después
         Component.setPanelDibujo(drawingPanel);
@@ -45,7 +48,7 @@ public class MainFrame extends JFrame {
         addEntityKey.getActionMap().put("actionE", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actioner.addEntity();
+                actionManager.addEntity();
             }
         });
 
@@ -58,7 +61,7 @@ public class MainFrame extends JFrame {
         addRelationshipKey.getActionMap().put("actionR", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actioner.addRelationship();
+                actionManager.addRelationship();
             }
         });
 
@@ -71,7 +74,7 @@ public class MainFrame extends JFrame {
         addDependencyKey.getActionMap().put("actionD", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actioner.addDependency();
+                actionManager.addDependency();
             }
         });
 
@@ -85,7 +88,7 @@ public class MainFrame extends JFrame {
         addHierarchyKey.getActionMap().put("actionH", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actioner.addHierarchy();
+                actionManager.addHierarchy();
             }
         });
 
@@ -98,7 +101,7 @@ public class MainFrame extends JFrame {
         addNoteKey.getActionMap().put("actionN", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actioner.addNote();
+                actionManager.addNote();
             }
         });
 
@@ -111,20 +114,20 @@ public class MainFrame extends JFrame {
         deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Suprimir presionado");
         deleteKey.getActionMap().put("Suprimir presionado", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                actioner.deleteSelectedComponents();
+                actionManager.deleteSelectedComponents();
             }
         });
 
         /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                            Add MacroEntity Key                                             */
+        /*                                            Add Association Key                                             */
         /* ---------------------------------------------------------------------------------------------------------- */
 
         // Tecla para eliminar (en realidad, botón oculto que se activa al presionar una tecla).
-        JButton addMacroEntityKey = new JButton("Add macro-entity key");
-        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), "ActionM");
-        deleteKey.getActionMap().put("ActionM", new AbstractAction() {
+        JButton addAssociationKey = new JButton("Add association key");
+        addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), "ActionM");
+        addAssociationKey.getActionMap().put("ActionM", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                actioner.addMacroEntity();
+                actionManager.addMacroEntity();
             }
         });
 
@@ -135,13 +138,18 @@ public class MainFrame extends JFrame {
         getContentPane().add(addHierarchyKey);
         getContentPane().add(addNoteKey);
         getContentPane().add(deleteKey);
-        getContentPane().add(addMacroEntityKey);
+        getContentPane().add(addAssociationKey);
 
         // Agrega el panel de dibujo y el menú al marco
         add(drawingPanel, BorderLayout.CENTER);
         //add(menu, BorderLayout.WEST);
         // Añade la barra de menú a la ventana
         setJMenuBar(menuBar);
+    }
+
+    public void resetLanguage() {
+        this.menuBar.resetLanguage();
+        this.drawingPanel.resetLanguage();
     }
 
 }

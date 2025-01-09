@@ -4,7 +4,7 @@ import com.bdd.mer.components.atributo.*;
 import com.bdd.mer.components.atributo.symbology.AttributeArrow;
 import com.bdd.mer.components.atributo.symbology.AttributeEnding;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
-import com.bdd.mer.components.macroEntity.MacroEntity;
+import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.hierarchy.HierarchyType;
 import com.bdd.mer.components.hierarchy.TotalHierarchy;
 import com.bdd.mer.components.AttributableComponent;
@@ -18,6 +18,7 @@ import com.bdd.mer.components.relationship.cardinality.StaticCardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
+import com.bdd.mer.frame.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,11 +26,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Actioner implements Serializable {
+public final class ActionManager implements Serializable {
 
     private final DrawingPanel drawingPanel;
 
-    public Actioner(DrawingPanel drawingPanel) {
+    public ActionManager(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
     }
 
@@ -40,7 +41,7 @@ public final class Actioner implements Serializable {
     public void addEntity() {
 
         // Muestra una ventana emergente para ingresar el nombre de la entidad. La ventana está centrada en el marco principal
-        String entityName = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva entidad");
+        String entityName = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("actionManager.addEntity.dialog"));
 
         if (entityName != null) {
             if (!entityName.isEmpty()) {
@@ -50,7 +51,8 @@ public final class Actioner implements Serializable {
                     //newEntity.setPopupMenu(getGenericPop(newEntity));
                     drawingPanel.addComponent(newEntity);
                 } else {
-                    JOptionPane.showMessageDialog(this.drawingPanel, "El nombre de la entidad ya está en uso.");
+                    JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("actionManager.addEntity.nameAlreadyExists"));
+                    addEntity();
                 }
             } else {
                 JOptionPane.showMessageDialog(this.drawingPanel, "El nombre de la entidad no puede estar vacío");
@@ -66,7 +68,7 @@ public final class Actioner implements Serializable {
         boolean canceledRelationship = false;
 
         // Solo procede si se han seleccionado entre 1 y 3 entidades
-        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, MacroEntity.class) && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
+        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, Association.class) && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
             // Muestra una ventana emergente para ingresar el nombre de la relación
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva relación");
@@ -79,7 +81,7 @@ public final class Actioner implements Serializable {
 
                 for (Component component : drawingPanel.getSelectedComponents()) {
 
-                    // It's safe, due to I asked at the stat if only objects from the Entity and MacroEntity classes are selected.
+                    // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
                     Relatable castedComponent = (Relatable) component;
 
                     Cardinality cardinality = getCardinality(castedComponent);
@@ -672,9 +674,9 @@ public final class Actioner implements Serializable {
 
             Relationship relationship = (Relationship) drawingPanel.getSelectedComponents().getFirst();
 
-            MacroEntity macroEntity = new MacroEntity(relationship);
+            Association association = new Association(relationship);
 
-            drawingPanel.addComponent(macroEntity);
+            drawingPanel.addComponent(association);
             drawingPanel.repaint();
 
             drawingPanel.limpiarEntidadesSeleccionadas();

@@ -11,6 +11,9 @@ import java.awt.event.*;
 public class MenuBar extends JMenuBar {
 
     private static final Point point = new Point(); // Donde apunta el mouse
+    private final FileMenu fileMenu;
+    private final JButton cleanFrameButton;
+    private final JButton helpButton;
 
     public MenuBar(MainFrame mainFrame, DrawingPanel drawingPanel) {
 
@@ -34,15 +37,17 @@ public class MenuBar extends JMenuBar {
         });
 
         // Añado el menú de archivos
-        add(new FileMenu(mainFrame, drawingPanel, LanguageManager.getMessage("menuBar.file")));
+        this.fileMenu = new FileMenu(mainFrame, drawingPanel, LanguageManager.getMessage("menuBar.file"));
+        add(fileMenu);
 
         // Añado un botón para limpiar la ventana
-        JButton cleanFrameButton = new JButton(LanguageManager.getMessage("menuBar.clean"));
+        this.cleanFrameButton = new JButton(LanguageManager.getMessage("menuBar.clean"));
         cleanFrameButton.addActionListener(_ -> {
             drawingPanel.reset();
             drawingPanel.repaint();
         });
         add(cleanFrameButton);
+
         // Al pasar el mouse por encima, el fondo se coloca en rojo
         cleanFrameButton.setBackground(UIManager.getColor("control"));
         cleanFrameButton.addMouseListener(new MouseAdapter() {
@@ -58,7 +63,7 @@ public class MenuBar extends JMenuBar {
         cleanFrameButton.setBorderPainted(Boolean.FALSE);
 
         // Añado un botón para aprender
-        JButton tipsButton = new JButton(LanguageManager.getMessage("menuBar.help"));
+        this.helpButton = new JButton(LanguageManager.getMessage("menuBar.help"));
 
         String controls = """
                 CONTROLS: \
@@ -77,29 +82,39 @@ public class MenuBar extends JMenuBar {
                 
                 Supr: Delete all selected components""";
 
-        String credits = """
-                AUTHOR: \
+        String credits = LanguageManager.getMessage("credits.author") + """
+                \
                 
-                Zilva DERExt was made by Iñaki Roumec\
+                Zylva DERExt was made by Iñaki Roumec\
                 
                 https://github.com/iroumec""";
 
-        tipsButton.addActionListener(_ -> JOptionPane.showMessageDialog(null, controls + "\n\n" + credits));
-        add(tipsButton);
+        helpButton.addActionListener(_ -> JOptionPane.showMessageDialog(null, controls + "\n\n" + credits));
+        add(helpButton);
+
         // Al pasar el mouse por encima, el fondo se coloca en rojo
-        tipsButton.setBackground(UIManager.getColor("control"));
-        tipsButton.addMouseListener(new MouseAdapter() {
+        helpButton.setBackground(UIManager.getColor("control"));
+        helpButton.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                tipsButton.setBackground(new Color(215, 239, 249));
+                helpButton.setBackground(new Color(215, 239, 249));
             }
 
             // Cuando saco el puntero, el botón vuelve a su color original
             public void mouseExited(MouseEvent e) {
-                tipsButton.setBackground(UIManager.getColor("control"));
+                helpButton.setBackground(UIManager.getColor("control"));
             }
         });
-        tipsButton.setBorderPainted(Boolean.FALSE);
+        helpButton.setBorderPainted(Boolean.FALSE);
 
-        add(tipsButton);
+        add(helpButton);
+    }
+
+    public void resetLanguage() {
+        this.fileMenu.setText(LanguageManager.getMessage("menuBar.file"));
+        this.fileMenu.resetLanguage();
+        this.cleanFrameButton.setText(LanguageManager.getMessage("menuBar.clean"));
+        this.cleanFrameButton.repaint();
+        this.helpButton.setText(LanguageManager.getMessage("menuBar.help"));
+        this.helpButton.repaint();
     }
 }
