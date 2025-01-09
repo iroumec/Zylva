@@ -7,11 +7,10 @@ import com.bdd.mer.frame.menuBar.exportation.FileManager;
 import com.bdd.mer.frame.menuBar.exportation.ExportPNG;
 
 import javax.swing.*;
-import java.util.Arrays;
 
 public class FileMenu extends JMenu {
 
-    private JMenuItem exportPNG, saveDiagram, loadDiagram, changeLanguage;
+    private final JMenuItem exportPNG, saveDiagram, loadDiagram, changeLanguage;
 
     FileMenu(MainFrame mainFrame, DrawingPanel drawingPanel, String text) {
 
