@@ -245,11 +245,19 @@ public class DrawingPanel extends JPanel {
 
     public void replaceComponent(Component oldComponent, Component newComponent) {
 
-        int oldComponentIndex = this.components.indexOf(oldComponent);
+        if (this.components.contains(oldComponent)) {
 
-        this.components.remove(oldComponent);
+            int oldComponentIndex = this.components.indexOf(oldComponent);
 
-        this.components.add(oldComponentIndex, newComponent);
+            this.components.remove(oldComponent);
+
+            this.components.add(oldComponentIndex, newComponent);
+
+        }
+
+        for (Component component : components) {
+            component.changeReference(oldComponent, newComponent);
+        }
 
     }
 

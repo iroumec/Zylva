@@ -1,14 +1,15 @@
 package com.bdd.mer.components.relationship.cardinality;
 
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Cardinality extends Component {
@@ -26,7 +27,7 @@ public class Cardinality extends Component {
         DrawingPanel drawingPanel = this.getPanelDibujo();
         PopupMenu cardinalityPopupMenu = new PopupMenu(drawingPanel);
 
-        JMenuItem changeCardinality = new JMenuItem("Change values");
+        JMenuItem changeCardinality = new JMenuItem(LanguageManager.getMessage("option.changeValues"));
         changeCardinality.addActionListener(_ -> drawingPanel.getActioner().changeCardinality(this));
 
         cardinalityPopupMenu.addOption(changeCardinality);
@@ -34,27 +35,6 @@ public class Cardinality extends Component {
         return cardinalityPopupMenu;
 
     }
-
-//    @Override
-//    public void draw(Graphics2D g2) {
-//
-//        int x = (((Component) this.getOwner()).getX() + this.relationship.getX()) / 2;
-//        int y = (((Component) this.getOwner()).getY() + this.relationship.getY()) / 2;
-//
-//        g2.drawString(this.getText(), x + 3, y - 3);
-//        // EL +/-3 es para que no se solape la cardinalidad con la línea cuando está completamente en vertical.
-//
-//        // Calcula el ancho del texto
-//        FontMetrics fm = g2.getFontMetrics();
-//        int anchoTexto = fm.stringWidth(this.getText());
-//        int altoTexto = fm.getHeight();
-//
-//        Rectangle shape = new Rectangle(x + 3, y - 3, anchoTexto, altoTexto);
-//        this.setShape(shape);
-//
-//        // Debugging comment. Uncomment the next line to see the cardinality hitbox.
-//        g2.draw(shape);
-//    }
 
     @Override
     public void draw(Graphics2D g2) {
@@ -88,19 +68,21 @@ public class Cardinality extends Component {
 
     @Override
     public List<Component> getComponentsForRemoval() {
-        return List.of();
+        return new ArrayList<>();
     }
 
     @Override
-    public void cleanPresence() {
-
-    }
+    public void cleanPresence() {}
 
     @Override
-    public void changeReference(Entity oldEntity, Entity newEntity) {
+    public void changeReference(Component oldComponent, Component newComponent) {
 
-        if (this.owner.equals(oldEntity)) {
-            this.owner = newEntity;
+        if (newComponent instanceof Relatable) { // I don't have to check if oldComponents is intanceof Relatable due to the equals below.
+
+            if (this.owner.equals(oldComponent)) {
+                this.owner = (Relatable) newComponent;
+            }
+
         }
 
     }

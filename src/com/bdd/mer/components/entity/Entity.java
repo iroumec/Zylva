@@ -8,6 +8,7 @@ import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
@@ -25,10 +26,6 @@ public class Entity extends AttributableComponent implements Relatable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public Entity(String text) {
-        this(text, 0, 0);
-    }
-
     public Entity(String text, int x, int y) {
         super(text, x, y);
 
@@ -44,13 +41,13 @@ public class Entity extends AttributableComponent implements Relatable {
         DrawingPanel drawingPanel = this.getPanelDibujo();
         PopupMenu entityPopupMenu = new PopupMenu(drawingPanel);
 
-        JMenuItem renameEntity = new JMenuItem("Rename");
+        JMenuItem renameEntity = new JMenuItem(LanguageManager.getMessage("option.rename"));
         renameEntity.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
 
-        JMenuItem deleteEntity = new JMenuItem("Delete");
+        JMenuItem deleteEntity = new JMenuItem(LanguageManager.getMessage("option.delete"));
         deleteEntity.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
 
-        JMenuItem addComplexAttribute = new JMenuItem("Add attribute");
+        JMenuItem addComplexAttribute = new JMenuItem(LanguageManager.getMessage("option.addAttribute"));
         addComplexAttribute.addActionListener(_ -> drawingPanel.getActioner().addComplexAttribute(this));
 
         entityPopupMenu.addOption(addComplexAttribute);
@@ -127,14 +124,14 @@ public class Entity extends AttributableComponent implements Relatable {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        // If a relationship has three or more participating entities, if I delete one, it can still exists.
+        // If a relationship has three or more participating entities, if I delete one, it can still exist.
         for (Relationship relationship : this.relationshipsManager.getRelationships()) {
             if (relationship.getNumberOfEntities() <= 2) {
                 out.add(relationship);
             }
         }
 
-        // If a hierarchy has three or more children, if I delete one, it can still exists.
+        // If a hierarchy has three or more children, if I delete one, it can still exist.
         for (Hierarchy hierarchy : hierarchies) {
             if (hierarchy.isParent(this) || (hierarchy.isChild(this) && hierarchy.getNumberOfChildren() <= 2)) {
                 out.add(hierarchy);
@@ -170,7 +167,7 @@ public class Entity extends AttributableComponent implements Relatable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void changeReference(Entity oldComponent, Entity newComponent) {
+    public void changeReference(Component oldComponent, Component newComponent) {
         // Do nothing.
     }
 
@@ -218,9 +215,9 @@ public class Entity extends AttributableComponent implements Relatable {
 
     // -------------------------------------------------------------------------------------------------------------- //
 
-    public WeakEntity getWeakVersion() {
+    public WeakEntity getWeakVersion(Relationship relationship) {
 
-        WeakEntity weakVersion = new WeakEntity(this.getText(), this.getX(), this.getY());
+        WeakEntity weakVersion = new WeakEntity(this.getText(), this.getX(), this.getY(), relationship);
 
         this.copyAttributes(weakVersion);
 
@@ -268,12 +265,12 @@ public class Entity extends AttributableComponent implements Relatable {
         return out;
     }
 
-    public boolean shareHierarchicalChild(Entity entiy) {
+    public boolean shareHierarchicalChild(Entity entity) {
 
-        List<Entity> thisEntityhierarchicalChildren = this.getHierarchicalChildren();
-        List<Entity> secondEntityHierarchicalChildren = entiy.getHierarchicalChildren();
+        List<Entity> thisEntityHierarchicalChildren = this.getHierarchicalChildren();
+        List<Entity> secondEntityHierarchicalChildren = entity.getHierarchicalChildren();
 
-        for (Entity child : thisEntityhierarchicalChildren) { // It could be optimized.
+        for (Entity child : thisEntityHierarchicalChildren) { // It could be optimized.
 
             if (secondEntityHierarchicalChildren.contains(child)) {
                 return true;

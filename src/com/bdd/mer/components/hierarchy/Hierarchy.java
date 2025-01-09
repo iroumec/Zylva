@@ -127,24 +127,29 @@ public class Hierarchy extends Component {
     }
 
     @Override
-    public void changeReference(Entity oldEntity, Entity newEntity) {
+    public void changeReference(Component oldComponent, Component newComponent) {
 
-        if (this.parent.equals(oldEntity)) {
-            this.parent = newEntity;
-        }
+        if (newComponent instanceof Entity) {
 
-        boolean removeOldEntity = false;
+            if (this.parent.equals(oldComponent)) {
+                this.parent = (Entity) newComponent;
+            } else {
 
-        for (Entity child : this.childs) {
-            if (child.equals(oldEntity)) {
-                removeOldEntity = true;
-                break; // There will only be at most one coincidence.
+                boolean removeOldEntity = false;
+
+                for (Entity child : this.childs) {
+                    if (child.equals(oldComponent)) {
+                        removeOldEntity = true;
+                        break; // There will only be at most one coincidence.
+                    }
+                }
+
+                if (removeOldEntity) {
+                    this.childs.remove((Entity) oldComponent);
+                    this.childs.add((Entity) newComponent);
+                }
+
             }
-        }
-
-        if (removeOldEntity) {
-            this.childs.remove(oldEntity);
-            this.childs.add(newEntity);
         }
 
     }

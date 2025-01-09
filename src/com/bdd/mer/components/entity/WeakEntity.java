@@ -1,13 +1,19 @@
 package com.bdd.mer.components.entity;
 
+import com.bdd.mer.components.relationship.Relationship;
+
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 public class WeakEntity extends Entity {
 
-    public WeakEntity(String text, int x, int y) {
+    private final Relationship relationship;
+
+    public WeakEntity(String text, int x, int y, Relationship relationship) {
 
         super(text, x, y);
+
+        this.relationship = relationship;
     }
 
     @Override
@@ -34,6 +40,15 @@ public class WeakEntity extends Entity {
         this.copyAttributes(strongVersion);
 
         return strongVersion;
+
+    }
+
+    @Override
+    public void removeRelationship(Relationship relationship) {
+
+        if (this.relationship.equals(relationship)) {
+            this.getPanelDibujo().replaceComponent(this, this.getStrongVersion());
+        }
 
     }
 

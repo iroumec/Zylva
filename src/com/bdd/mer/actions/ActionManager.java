@@ -228,7 +228,7 @@ public final class ActionManager implements Serializable {
                 Entity entitySelected = selectWeakEntity();
 
                 if (entitySelected != null) {
-                    WeakEntity weakVersion = entitySelected.getWeakVersion();
+                    WeakEntity weakVersion = entitySelected.getWeakVersion(newRelationship);
 
                     Cardinality cardinality = null;
                     StaticCardinality staticCardinality = null;
@@ -265,7 +265,7 @@ public final class ActionManager implements Serializable {
                         drawingPanel.addComponentLast(staticCardinality);
                         drawingPanel.addComponentLast(newRelationship);
 
-                        changeEntity(entitySelected, weakVersion);
+                        drawingPanel.replaceComponent(entitySelected, weakVersion);
 
                         drawingPanel.limpiarEntidadesSeleccionadas();
                     }
@@ -684,22 +684,6 @@ public final class ActionManager implements Serializable {
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione una relación.");
         }
-    }
-
-    /*                                                                                                               */
-
-    private void changeEntity(Entity oldEntity, Entity newEntity) {
-
-        List<Component> components = this.drawingPanel.getListComponents();
-
-        for (Component component : components) {
-            component.changeReference(oldEntity, newEntity);
-        }
-
-        this.drawingPanel.replaceComponent(oldEntity, newEntity);
-
-        this.drawingPanel.repaint();
-
     }
 
 }

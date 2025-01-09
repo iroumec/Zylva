@@ -13,7 +13,7 @@ public class RelatableImplementation implements Relatable {
     private final List<Relationship> relationships;
 
     public RelatableImplementation() {
-        this.relationships = new ArrayList<Relationship>();
+        this.relationships = new ArrayList<>();
     }
 
     public void addRelationship(Relationship relationship) { this.relationships.add(relationship); }

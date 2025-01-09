@@ -1,10 +1,10 @@
 package com.bdd.mer.components.atributo;
 
 import com.bdd.mer.components.AttributableComponent;
+import com.bdd.mer.components.Component;
 import com.bdd.mer.components.atributo.symbology.AttributeArrow;
 import com.bdd.mer.components.atributo.symbology.AttributeEnding;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
-import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
@@ -13,7 +13,7 @@ import java.awt.*;
 
 public class Attribute extends AttributableComponent {
 
-    private AttributeSymbol symbol;
+    private final AttributeSymbol symbol;
     private AttributeArrow arrow;
     private AttributeEnding ending;
     private AttributableComponent owner;
@@ -120,10 +120,14 @@ public class Attribute extends AttributableComponent {
     }
 
     @Override
-    public void changeReference(Entity oldEntity, Entity newEntity) {
+    public void changeReference(Component oldComponent, Component newComponent) {
 
-        if (this.owner.equals(oldEntity)) {
-            this.owner = newEntity;
+        if (newComponent instanceof AttributableComponent) {
+
+            if (this.owner.equals(oldComponent)) {
+                this.owner = (AttributableComponent) newComponent;
+            }
+
         }
 
     }

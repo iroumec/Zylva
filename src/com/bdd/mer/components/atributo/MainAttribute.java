@@ -5,6 +5,7 @@ import com.bdd.mer.components.atributo.symbology.AttributeArrow;
 import com.bdd.mer.components.atributo.symbology.AttributeEnding;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
@@ -21,13 +22,13 @@ public class MainAttribute extends Attribute {
         DrawingPanel drawingPanel = this.getPanelDibujo();
         PopupMenu mainAttributePopupMenu = new PopupMenu(drawingPanel);
 
-        JMenuItem renameAttribute = new JMenuItem("Rename");
+        JMenuItem renameAttribute = new JMenuItem(LanguageManager.getMessage("option.rename"));
         renameAttribute.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
 
-        JMenuItem deleteAttribute = new JMenuItem("Delete");
+        JMenuItem deleteAttribute = new JMenuItem(LanguageManager.getMessage("option.delete"));
         deleteAttribute.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
 
-        JMenuItem addAttribute = new JMenuItem("Add attribute");
+        JMenuItem addAttribute = new JMenuItem(LanguageManager.getMessage("option.add"));
         addAttribute.addActionListener(_ -> drawingPanel.getActioner().addAttribute(this, AttributeSymbol.COMMON));
 
         mainAttributePopupMenu.addOption(renameAttribute);

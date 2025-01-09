@@ -107,7 +107,7 @@ public abstract class Component implements Serializable {
 
     public abstract void cleanPresence();
 
-    public abstract void changeReference(Entity oldEntity, Entity newEntity);
+    public abstract void changeReference(Component oldComponent, Component newComponent);
 
     // The color and the stroke are changed if the entity is selected.
     public void setSelectionOptions(Graphics2D graphics2D) {

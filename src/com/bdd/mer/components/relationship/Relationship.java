@@ -119,12 +119,16 @@ public class Relationship extends AttributableComponent {
     }
 
     @Override
-    public void changeReference(Entity oldEntity, Entity newEntity) {
+    public void changeReference(Component oldComponent, Component newComponent) {
 
-        for (Duplex<Relatable, Cardinality> duplex : this.participants) {
+        if (oldComponent instanceof Relatable && newComponent instanceof Relatable) {
 
-            if (duplex.getFirst().equals(oldEntity)) {
-                duplex.setFirst(newEntity);
+            for (Duplex<Relatable, Cardinality> duplex : this.participants) {
+
+                if (duplex.getFirst().equals(oldComponent)) {
+                    duplex.setFirst((Relatable) newComponent);
+                }
+
             }
 
         }
@@ -191,5 +195,17 @@ public class Relationship extends AttributableComponent {
     public void updateDiagonals(int textWidth, int textHeight, int margin) {
         horizontalDiagonal = textWidth + 2 * margin; // Diagonal horizontal basada en el ancho del texto
         verticalDiagonal = textHeight + 2 * margin; // Diagonal vertical basada en el alto del texto
+    }
+
+    @Override
+    public List<Component> getComponentsForRemoval() {
+
+        List<Component> out = super.getComponentsForRemoval();
+
+        for (Duplex<Relatable, Cardinality> duplex : this.participants) {
+            out.add(duplex.getSecond());
+        }
+
+        return out;
     }
 }

@@ -1,7 +1,6 @@
 package com.bdd.mer.components.association;
 
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
@@ -98,7 +97,7 @@ public class Association extends Component implements Relatable {
     }
 
     @Override
-    public void changeReference(Entity oldEntity, Entity newEntity) {
+    public void changeReference(Component oldComponent, Component newComponent) {
 
     }
 

@@ -1,10 +1,14 @@
 package com.bdd.mer.components.note;
 
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Note extends Component {
 
@@ -14,33 +18,48 @@ public class Note extends Component {
 
     @Override
     protected PopupMenu getGenericPopupMenu() {
-        return null;
+
+        DrawingPanel drawingPanel = this.getPanelDibujo();
+        PopupMenu pupMenu = new PopupMenu(drawingPanel);
+
+        JMenuItem changeText = new JMenuItem(LanguageManager.getMessage("option.changeText"));
+        changeText.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
+
+        JMenuItem delete = new JMenuItem(LanguageManager.getMessage("option.delete"));
+        delete.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
+
+        pupMenu.addOption(changeText);
+        pupMenu.addOption(delete);
+
+        return pupMenu;
+
     }
 
     public void draw(Graphics2D g2) {
 
-        // Calcula el ancho del texto
+        // Calcula el ancho del texto y divide en líneas si es necesario
         FontMetrics fm = g2.getFontMetrics();
-        int anchoTexto = fm.stringWidth(this.getText());
-        int altoTexto = fm.getHeight();
+        List<String> lines = wrapText(g2, this.getText()); // Ajusta el ancho máximo según lo que necesites
+        int lineHeight = fm.getHeight();
 
-        // Calcula la posición del texto para centrarlo en el recuadro
-        int xTexto = this.getX() - anchoTexto / 2;
-        int yTexto = this.getY() + altoTexto / 2;
+        // Calcula el tamaño del rectángulo según el contenido
+        int margen = 10; // Margen alrededor del texto
+        int maxWidth = 0;
+        for (String line : lines) {
+            maxWidth = Math.max(maxWidth, fm.stringWidth(line)); // Calcula el ancho máximo de las líneas
+        }
+        int rectAncho = maxWidth + 2 * margen;
+        int rectAlto = lines.size() * lineHeight + 2 * margen;
+
+        int rectX = this.getX() - rectAncho / 2;
+        int rectY = this.getY() - rectAlto / 4; // Due to the baseline of the text.
 
         // Dibuja el recuadro de la entidad
-        int margen = 10; // Margen alrededor del texto
-
-        int rectX = this.getX() - anchoTexto / 2 - margen;
-        int rectY = this.getY() - altoTexto / 2 - margen;
-        int rectAncho = anchoTexto + 2 * margen;
-        int rectAlto = altoTexto + 2 * margen;
-
-        g2.setColor(Color.YELLOW);
+        g2.setColor(new Color(244, 219, 131));
         g2.fillRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
 
         // Cambia el grosor del recuadro
-        g2.setColor(Color.black);
+        g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(1));
 
         // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
@@ -51,9 +70,14 @@ public class Note extends Component {
         g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
         this.setShape(new Rectangle(rectX, rectY, rectAncho, rectAlto));
 
-        // Name of the component.
+        // Dibuja las líneas del texto centradas
         g2.setColor(Color.BLACK);
-        g2.drawString(super.getText(), xTexto, yTexto);
+        int yTexto = rectY + margen + lineHeight;
+        for (String line : lines) {
+            int xTexto = rectX + (rectAncho - fm.stringWidth(line)) / 2;
+            g2.drawString(line, xTexto, yTexto);
+            yTexto += lineHeight;
+        }
     }
 
     @Override
@@ -62,7 +86,36 @@ public class Note extends Component {
     }
 
     @Override
-    public void changeReference(Entity oldEntity, Entity newEntity) {
+    public void changeReference(Component oldComponent, Component newComponent) {
 
+    }
+
+    /**
+     * Divide el texto en líneas según el ancho máximo disponible.
+     *
+     * @param g2       El contexto gráfico.
+     * @param text     El texto completo.
+     * @return Una lista de líneas ajustadas al ancho.
+     */
+    private List<String> wrapText(Graphics2D g2, String text) {
+        List<String> lines = new ArrayList<>();
+        FontMetrics fm = g2.getFontMetrics();
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : words) {
+            String testLine = currentLine + (currentLine.isEmpty() ? "" : " ") + word;
+            int maxWidth = 150;
+            if (fm.stringWidth(testLine) > maxWidth) {
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            } else {
+                currentLine.append(currentLine.isEmpty() ? "" : " ").append(word);
+            }
+        }
+        if (!currentLine.isEmpty()) {
+            lines.add(currentLine.toString());
+        }
+        return lines;
     }
 }
