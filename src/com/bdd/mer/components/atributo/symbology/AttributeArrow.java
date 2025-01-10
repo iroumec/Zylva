@@ -11,4 +11,4 @@ public enum AttributeArrow {
     public String getArrowBody() { return this.arrowBody; }
 }
 
-// Cambiar todo esto a dibujo
+// Maybe all this should be drawing...

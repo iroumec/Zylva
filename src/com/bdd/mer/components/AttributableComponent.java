@@ -40,7 +40,16 @@ public abstract class AttributableComponent extends Component {
 
     }
 
-    public List<Attribute> getAttributes() { return new ArrayList<>(this.attributes); }
+    public List<Attribute> getAttributes() {
+
+        List<Attribute> out = new ArrayList<>(this.attributes);
+
+        for (Attribute attribute : this.attributes) {
+            out.addAll(attribute.getAttributes());
+        }
+
+        return out;
+    }
 
     public int getNumberOfAttributes() {
 

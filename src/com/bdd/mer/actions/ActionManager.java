@@ -702,6 +702,7 @@ public final class ActionManager implements Serializable {
                 case DELETE -> actionItem.addActionListener(_ -> deleteSelectedComponents());
                 case RENAME, CHANGE_TEXT -> actionItem.addActionListener(_ -> renameComponent(component));
                 case ADD_ATTRIBUTE -> actionItem.addActionListener(_ -> addAttribute((AttributableComponent) component));
+                case ADD_ASSOCIATION -> actionItem.addActionListener(_ -> addAssociation());
                 case ADD_COMPLEX_ATTRIBUTE -> actionItem.addActionListener(_ -> addComplexAttribute((AttributableComponent) component));
                 case SWAP_MULTIVALUED -> actionItem.addActionListener(_ -> changeMultivalued((Attribute) component));
                 case SWAP_OPTIONALITY -> actionItem.addActionListener(_ -> changeOptionality((Attribute) component));

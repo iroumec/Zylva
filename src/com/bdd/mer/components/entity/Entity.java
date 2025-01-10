@@ -68,9 +68,7 @@ public class Entity extends AttributableComponent implements Relatable {
         this.drawLinesToRelationships(g2, this.getX(), this.getY());
 
         RoundRectangle2D shape = new RoundRectangle2D.Float(rectX, rectY, rectAncho, rectAlto, 10, 10);
-
-        g2.setColor(Color.WHITE);
-        g2.fill(shape);
+        this.fillShape(g2, shape);
 
         // Name of the entity.
         g2.setColor(Color.BLACK);
@@ -82,6 +80,13 @@ public class Entity extends AttributableComponent implements Relatable {
         }
 
         g2.draw(shape);
+    }
+
+    public void fillShape(Graphics2D graphics2D, RoundRectangle2D shape) {
+
+        graphics2D.setColor(Color.WHITE);
+        graphics2D.fill(shape);
+
         this.setShape(shape);
     }
 

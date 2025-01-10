@@ -132,4 +132,6 @@ public abstract class Component implements Serializable {
         this.popupMenu = this.getPopupMenu();
     }
 
+    public Shape getShape() { return this.shape; }
+
 }

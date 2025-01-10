@@ -1,7 +1,6 @@
 package com.bdd.mer;
 
 import com.bdd.mer.frame.MainFrame;
-import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;

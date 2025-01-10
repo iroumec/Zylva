@@ -18,6 +18,10 @@ public class Attribute extends AttributableComponent {
     private AttributeEnding ending;
     private AttributableComponent owner;
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                         Initializing Related Methods                                           */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public Attribute(AttributableComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending, DrawingPanel drawingPanel) {
         super(text, owner.getX(), owner.getY(), drawingPanel);
         this.owner = owner;
@@ -40,6 +44,10 @@ public class Attribute extends AttributableComponent {
 
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                            Drawing Related Methods                                             */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void draw(Graphics2D g2) {
 
         if (this.isSelected()) {
@@ -52,11 +60,9 @@ public class Attribute extends AttributableComponent {
         int y = (int) ownerBounds.getMaxY();
         int i = this.owner.getAttributePosition(this);
 
-        // Calcula la posición del atributo
-        // La posición en X es la misma que el parámetro
-        int atributoY = y + 15 + i * 16; // La posición Y del atributo
+        int atributoY = y + 15 + i * 16; // Attributes position in Y axis.
 
-        // Cambia la fuente del texto (es necesario usar una que pueda mostrar los caracteres UNICODE)
+        // It's necessary to change the font so the UNICODE chars can be shown.
         g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
 
         String nombreAMostrar = this.getArrow() + getEnding() + this.getSymbol() + this.getText();
@@ -65,20 +71,16 @@ public class Attribute extends AttributableComponent {
         // In case it is compound...
         drawComponents(g2, x, y, atributoY);
 
-        // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
         int anchoTexto = fm.stringWidth(nombreAMostrar);
         int altoTexto = fm.getHeight();
 
-        // Cálculo del recuadro del texto, para darle hitbox.
-        int rectY = atributoY - altoTexto;
 
-        //g2.drawRect(x, rectY, anchoTexto, altoTexto); Uncomment this to see the hitbox
-        // Maybe I'll need to fix this later...
+        int rectY = atributoY - altoTexto;
 
         setShape(new Rectangle(x, rectY, anchoTexto, altoTexto));
 
-        // Restablezco la fuente
+        // The font is reset.
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         g2.setColor(Color.BLACK);
