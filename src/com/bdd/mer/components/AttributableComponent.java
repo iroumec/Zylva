@@ -1,6 +1,7 @@
 package com.bdd.mer.components;
 
 import com.bdd.mer.components.atributo.Attribute;
+import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,15 +10,15 @@ public abstract class AttributableComponent extends Component {
 
     private final List<Attribute> attributes;
 
-    protected AttributableComponent(String text, int x, int y) {
-        super(text, x, y);
+    protected AttributableComponent(String text, int x, int y, DrawingPanel drawingPanel) {
+        super(text, x, y, drawingPanel);
 
         this.attributes = new ArrayList<>();
     }
 
-    public void addAttribute(Attribute attribute) { this.attributes.add(attribute); };
+    public void addAttribute(Attribute attribute) { this.attributes.add(attribute); }
 
-    public void removeAttribute(Attribute attribute) { this.attributes.remove(attribute); };
+    public void removeAttribute(Attribute attribute) { this.attributes.remove(attribute); }
 
     public int getAttributePosition(Attribute attribute) {
 
@@ -51,8 +52,6 @@ public abstract class AttributableComponent extends Component {
 
         return out;
     }
-
-    public boolean hasAttributes() { return !this.attributes.isEmpty(); }
 
     public List<Component> getComponentsForRemoval() {
 

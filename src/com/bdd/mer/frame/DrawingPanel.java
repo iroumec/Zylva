@@ -335,7 +335,7 @@ public class DrawingPanel extends JPanel {
         addNote.addActionListener(_ -> this.getActioner().addNote());
 
         JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
-        addAssociation.addActionListener(_ -> this.getActioner().addMacroEntity());
+        addAssociation.addActionListener(_ -> this.getActioner().addAssociation());
 
         backgroundPopupMenu.addOption(addEntity);
         backgroundPopupMenu.addOption(addRelationship);
@@ -389,6 +389,10 @@ public class DrawingPanel extends JPanel {
     public void resetLanguage() {
 
         this.backgroundPopupMenu = this.getBackgroundPopupMenu();
+
+        for (Component component : this.components) {
+            component.resetLanguage();
+        }
 
     }
 

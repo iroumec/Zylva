@@ -5,37 +5,24 @@ import com.bdd.mer.components.atributo.symbology.AttributeArrow;
 import com.bdd.mer.components.atributo.symbology.AttributeEnding;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
-
-import javax.swing.*;
+import com.bdd.mer.actions.Action;
 
 public class MainAttribute extends Attribute {
 
-    public MainAttribute(AttributableComponent owner, String text) {
-        super(owner, text, AttributeSymbol.MAIN, AttributeArrow.NON_OPTIONAL, AttributeEnding.NON_MULTIVALUED);
+    public MainAttribute(AttributableComponent owner, String text, DrawingPanel drawingPanel) {
+        super(owner, text, AttributeSymbol.MAIN, AttributeArrow.NON_OPTIONAL, AttributeEnding.NON_MULTIVALUED, drawingPanel);
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu mainAttributePopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem renameAttribute = new JMenuItem(LanguageManager.getMessage("option.rename"));
-        renameAttribute.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
-
-        JMenuItem deleteAttribute = new JMenuItem(LanguageManager.getMessage("option.delete"));
-        deleteAttribute.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        JMenuItem addAttribute = new JMenuItem(LanguageManager.getMessage("option.add"));
-        addAttribute.addActionListener(_ -> drawingPanel.getActioner().addAttribute(this, AttributeSymbol.COMMON));
-
-        mainAttributePopupMenu.addOption(renameAttribute);
-        mainAttributePopupMenu.addOption(deleteAttribute);
-        mainAttributePopupMenu.addOption(addAttribute);
-
-        return mainAttributePopupMenu;
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.ADD_ATTRIBUTE,
+                Action.RENAME,
+                Action.DELETE
+        );
 
     }
 

@@ -2,36 +2,27 @@ package com.bdd.mer.components.note;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
+import com.bdd.mer.actions.Action;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Note extends Component {
 
-    public Note(String text, int x, int y) {
-        super(text, x, y);
+    public Note(String text, int x, int y, DrawingPanel drawingPanel) {
+        super(text, x, y, drawingPanel);
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu pupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem changeText = new JMenuItem(LanguageManager.getMessage("option.changeText"));
-        changeText.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
-
-        JMenuItem delete = new JMenuItem(LanguageManager.getMessage("option.delete"));
-        delete.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        pupMenu.addOption(changeText);
-        pupMenu.addOption(delete);
-
-        return pupMenu;
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.RENAME,
+                Action.DELETE
+        );
 
     }
 
@@ -54,15 +45,12 @@ public class Note extends Component {
         int rectX = this.getX() - rectAncho / 2;
         int rectY = this.getY() - rectAlto / 4; // Due to the baseline of the text.
 
-        // Dibuja el recuadro de la entidad
         g2.setColor(new Color(244, 219, 131));
         g2.fillRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
 
-        // Cambia el grosor del recuadro
         g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(1));
 
-        // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }

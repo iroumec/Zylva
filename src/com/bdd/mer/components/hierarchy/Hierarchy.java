@@ -1,5 +1,6 @@
 package com.bdd.mer.components.hierarchy;
 
+import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.DrawingPanel;
@@ -15,45 +16,36 @@ public class Hierarchy extends Component {
     private int radio; // Centro del óvalo
     private HierarchyType exclusivity;
     private Entity parent;
-    private final List<Entity> childs;
+    private final List<Entity> children;
 
-    public Hierarchy(HierarchyType exclusivity, Entity parent) {
+    public Hierarchy(HierarchyType exclusivity, Entity parent, DrawingPanel drawingPanel) {
 
-        super(exclusivity.getSymbol(), parent.getX(), parent.getY() + 60);
+        super(parent.getX(), parent.getY() + 60, drawingPanel);
 
         this.exclusivity = exclusivity;
         this.parent = parent;
-        this.childs = new ArrayList<>();
+        this.children = new ArrayList<>();
     }
 
     public void addChild(Entity entity) {
-        this.childs.add(entity);
+        this.children.add(entity);
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu hierarchyPopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem deleteHierarchy = new JMenuItem("Delete");
-        deleteHierarchy.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        JMenuItem swapExclusivity = new JMenuItem("Swap exclusivity");
-        swapExclusivity.addActionListener(_ -> drawingPanel.getActioner().swapExclusivity(this));
-
-        hierarchyPopupMenu.addOption(deleteHierarchy);
-        hierarchyPopupMenu.addOption(swapExclusivity);
-
-        return hierarchyPopupMenu;
-
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.DELETE,
+                Action.SWAP_EXCLUSIVITY
+        );
     }
 
     public void draw(Graphics2D g2) {
 
         // Obtengo la fuente del texto y calculo su tamaño
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(this.getText());
+        int textWidth = fm.stringWidth(this.exclusivity.getSymbol());
         int textHeight = fm.getHeight();
 
         // Calcula el diámetro del círculo basado en el tamaño del texto
@@ -63,10 +55,10 @@ public class Hierarchy extends Component {
         // Aplica suavizado a las líneas
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        drawSuperentityLine(g2);
+        drawParentLine(g2);
 
         // Dibuja las líneas a los subtipos
-        for (Entity e : childs) {
+        for (Entity e : children) {
             g2.drawLine(this.getX(), this.getY(), e.getX(), e.getY());
         }
 
@@ -87,7 +79,7 @@ public class Hierarchy extends Component {
         // Dibuja el texto dentro del círculo
         g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(2));
-        g2.drawString(this.getText(), this.getX() - 4, this.getY() + 4);
+        g2.drawString(this.exclusivity.getSymbol(), this.getX() - 4, this.getY() + 4);
     }
 
     /*
@@ -102,11 +94,11 @@ public class Hierarchy extends Component {
     En una jerarquía exclusiva, los ejemplares de los subtipos son conjuntos disjuntos (solo pueden
     pertenecer a un subtipo a la vez).
 
-    Una jerarquía exclusiva se nota con la letra "d" (Disjunt), mientras que una jerarquía compartida
+    Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
     se nota con la letra "o" (Overlapping).
      */
 
-    protected void drawSuperentityLine(Graphics2D g2) {
+    protected void drawParentLine(Graphics2D g2) {
         g2.drawLine(this.getX(), this.getY(), parent.getX(), parent.getY());
     }
 
@@ -120,7 +112,7 @@ public class Hierarchy extends Component {
 
         this.parent.removeHierarchy(this);
 
-        for (Entity entity : this.childs) {
+        for (Entity entity : this.children) {
             entity.removeHierarchy(this);
         }
 
@@ -137,7 +129,7 @@ public class Hierarchy extends Component {
 
                 boolean removeOldEntity = false;
 
-                for (Entity child : this.childs) {
+                for (Entity child : this.children) {
                     if (child.equals(oldComponent)) {
                         removeOldEntity = true;
                         break; // There will only be at most one coincidence.
@@ -145,8 +137,8 @@ public class Hierarchy extends Component {
                 }
 
                 if (removeOldEntity) {
-                    this.childs.remove((Entity) oldComponent);
-                    this.childs.add((Entity) newComponent);
+                    this.children.remove((Entity) oldComponent);
+                    this.children.add((Entity) newComponent);
                 }
 
             }
@@ -156,10 +148,10 @@ public class Hierarchy extends Component {
 
     public Entity getParent() { return this.parent; }
 
-    public List<Entity> getChilds() { return new ArrayList<>(this.childs); }
+    public List<Entity> getChildren() { return new ArrayList<>(this.children); }
 
     public boolean isChild(Entity entity) {
-        return this.childs.contains(entity);
+        return this.children.contains(entity);
     }
 
     public boolean isParent(Entity entity) {
@@ -182,13 +174,12 @@ public class Hierarchy extends Component {
 
     public void setExclusivity(HierarchyType exclusivity) {
         this.exclusivity = exclusivity;
-        this.setText(exclusivity.getSymbol());
     }
 
     private boolean isThereMultipleInheritance() {
 
-        for (Entity firstChild : this.childs) {
-            for (Entity secondChild : this.childs) {
+        for (Entity firstChild : this.children) {
+            for (Entity secondChild : this.children) {
                 if (!firstChild.equals(secondChild) && firstChild.shareHierarchicalChild(secondChild)) {
                     return true;
                 }
@@ -200,17 +191,17 @@ public class Hierarchy extends Component {
     }
 
     public int getNumberOfChildren() {
-        return this.childs.size();
+        return this.children.size();
     }
 
     public void cleanEntity(Entity entity) {
 
         if (!isParent(entity) && (!isChild(entity) || getNumberOfChildren() > 2)) {
-            this.childs.remove(entity);
+            this.children.remove(entity);
         }
 
         // In other case, we don't have to do anything because, if cleanEntity was called, it is because
-        // the entity will be eliminated and, so, the hierarchy also if it doesn't enter in the if body.
+        // the entity will be eliminated and, so, the hierarchy also if it doesn't enter into the if statement's body.
 
     }
 

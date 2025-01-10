@@ -1,5 +1,6 @@
 package com.bdd.mer.components;
 
+import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.Duplex;
 import com.bdd.mer.frame.DrawingPanel;
@@ -23,35 +24,34 @@ public abstract class Component implements Serializable {
 
     private Shape shape;
 
-    private static DrawingPanel drawingPanel;
+    private final DrawingPanel drawingPanel;
 
     // PopupMenu of the Component.
     private PopupMenu popupMenu;
 
-    public Component() {
-        this("", 0, 0);
+    public Component(DrawingPanel drawingPanel) {
+        this("", 0, 0, drawingPanel);
     }
 
-    public Component(String text) { this(text, 0 , 0); }
+    public Component(String text, DrawingPanel drawingPanel) { this(text, 0 , 0, drawingPanel); }
 
-    public Component(int x, int y) { this("", x, y); }
+    public Component(int x, int y, DrawingPanel drawingPanel) { this("", x, y, drawingPanel); }
 
-    public Component(String text, int x, int y)  {
+    public Component(String text, int x, int y, DrawingPanel drawingPanel)  {
         this.selected = false;
         this.text = text;
         this.x = x;
         this.y = y;
 
-        this.setPopupMenu(this.getGenericPopupMenu());
+        this.drawingPanel = drawingPanel;
+        this.setPopupMenu(this.getPopupMenu());
     }
 
-    protected abstract PopupMenu getGenericPopupMenu();
+    protected abstract PopupMenu getPopupMenu();
 
     public void setPopupMenu(PopupMenu popupMenu) { this.popupMenu = popupMenu; }
 
-    public DrawingPanel getPanelDibujo() { return drawingPanel; }
-
-    public static void setPanelDibujo(DrawingPanel drawingPanel) { Component.drawingPanel = drawingPanel; }
+    public DrawingPanel getPanelDibujo() { return this.drawingPanel; }
 
     public abstract void draw(Graphics2D g2);
 
@@ -125,6 +125,12 @@ public abstract class Component implements Serializable {
         int altoTexto = fm.getHeight();
 
         return new Duplex<>(anchoTexto, altoTexto);
+    }
+
+    public ActionManager getActionManager() { return this.drawingPanel.getActioner(); }
+
+    public void resetLanguage() {
+        this.popupMenu = this.getPopupMenu();
     }
 
 }

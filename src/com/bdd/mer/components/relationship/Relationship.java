@@ -2,14 +2,13 @@ package com.bdd.mer.components.relationship;
 
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
+import com.bdd.mer.actions.Action;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +19,8 @@ public class Relationship extends AttributableComponent {
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon forma;
 
-    public Relationship(String text, int x, int y) {
-        super(text, x, y);
+    public Relationship(String text, int x, int y, DrawingPanel drawingPanel) {
+        super(text, x, y, drawingPanel);
 
         this.participants = new ArrayList<>();
 
@@ -29,29 +28,15 @@ public class Relationship extends AttributableComponent {
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu relationPopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem rename = new JMenuItem("Rename");
-        rename.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
-
-        JMenuItem delete = new JMenuItem("Delete");
-        delete.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        JMenuItem addAttribute = new JMenuItem("Add attribute");
-        addAttribute.addActionListener(_ -> drawingPanel.getActioner().addAttribute(this, AttributeSymbol.COMMON));
-
-        JMenuItem createAssociation = new JMenuItem("Create association");
-        createAssociation.addActionListener(_ -> drawingPanel.getActioner().addMacroEntity());
-
-        relationPopupMenu.addOption(addAttribute);
-        relationPopupMenu.addOption(rename);
-        relationPopupMenu.addOption(delete);
-        relationPopupMenu.addOption(createAssociation);
-
-        return relationPopupMenu;
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.ADD_ATTRIBUTE,
+                Action.ADD_ASSOCIATION,
+                Action.RENAME,
+                Action.DELETE
+        );
 
     }
 
@@ -88,8 +73,7 @@ public class Relationship extends AttributableComponent {
         // Dibuja el texto centrado
         g2.setColor(Color.BLACK);
         g2.drawString(this.getText(), xTexto, yTexto);
-
-        // Cambia el color de dibujo basándote en si la entidad está seleccionada o no
+        
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }

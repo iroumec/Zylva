@@ -19,6 +19,7 @@ import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
 import com.bdd.mer.frame.LanguageManager;
+import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,22 +41,30 @@ public final class ActionManager implements Serializable {
 
     public void addEntity() {
 
-        // Muestra una ventana emergente para ingresar el nombre de la entidad. La ventana está centrada en el marco principal
-        String entityName = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("actionManager.addEntity.dialog"));
+        // It shows an emergent window to ask the user for the entity's name.
+        String entityName = JOptionPane.showInputDialog(
+                this.drawingPanel,
+                null,
+                LanguageManager.getMessage("actionManager.addEntity.dialog"), // Title.
+                JOptionPane.QUESTION_MESSAGE // Message Type.
+        );
 
-        if (entityName != null) {
+        if (entityName != null) { // If it's null, the action was canceled.
+
             if (!entityName.isEmpty()) {
+
                 if (!this.drawingPanel.existsComponent(entityName)) {
-                    // Si el usuario ingresó un nombre, agrega una nueva entidad con ese nombre
-                    Entity newEntity = new Entity(entityName, drawingPanel.getMouseX(), drawingPanel.getMouseY());
-                    //newEntity.setPopupMenu(getGenericPop(newEntity));
+
+                    Entity newEntity = new Entity(entityName, drawingPanel.getMouseX(), drawingPanel.getMouseY(), this.drawingPanel);
                     drawingPanel.addComponent(newEntity);
                 } else {
-                    JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("actionManager.addEntity.nameAlreadyExists"));
+
+                    JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.nameDuplicated"));
                     addEntity();
                 }
             } else {
-                JOptionPane.showMessageDialog(this.drawingPanel, "El nombre de la entidad no puede estar vacío");
+
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
             }
         }
     }
@@ -65,39 +74,33 @@ public final class ActionManager implements Serializable {
     /* ---------------------------------------------------------------------------------------------------------- */
 
     public void addRelationship() {
-        boolean canceledRelationship = false;
 
-        // Solo procede si se han seleccionado entre 1 y 3 entidades
-        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, Association.class) && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
-            // Muestra una ventana emergente para ingresar el nombre de la relación
+        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, WeakEntity.class, Association.class)
+                && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
 
-            String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva relación");
+            String nombre = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.name"));
 
-            if (nombre != null && !nombre.isEmpty()) {
+            if (nombre != null) {
+                if (!nombre.isEmpty()) {
+                    Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
 
-                Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY());
+                    List<Cardinality> cardinalities = new ArrayList<>();
 
-                List<Cardinality> cardinalities = new ArrayList<>();
+                    for (Component component : drawingPanel.getSelectedComponents()) {
 
-                for (Component component : drawingPanel.getSelectedComponents()) {
+                        // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
+                        Relatable castedComponent = (Relatable) component;
 
-                    // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
-                    Relatable castedComponent = (Relatable) component;
+                        Cardinality cardinality = getCardinality(castedComponent);
 
-                    Cardinality cardinality = getCardinality(castedComponent);
-
-                    if (cardinality != null) {
+                        if (cardinality == null) {
+                            return;
+                        }
 
                         cardinalities.add(cardinality);
                         newRelationship.addParticipant(castedComponent, cardinality);
 
-                    } else {
-                        canceledRelationship = true;
-                        break;
                     }
-                }
-
-                if (!canceledRelationship) {
 
                     for (Cardinality cardinality : cardinalities) {
                         drawingPanel.addComponentLast(cardinality);
@@ -107,21 +110,25 @@ public final class ActionManager implements Serializable {
 
                     drawingPanel.limpiarEntidadesSeleccionadas();
                 }
-
+            } else {
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
             }
         } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, "Debe seleccionar entre 1 y 3 entidades para crear una relación.");
+            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.relationshipCreation"));
         }
     }
 
     private Cardinality getCardinality(Relatable relatableComponent) {
+
+        String ownerName = ((Component) relatableComponent).getText();
+
         JTextField cardinalidadMinimaCampo = new JTextField(1);
         JTextField cardinalidadMaximaCampo = new JTextField(1);
         JButton okButton = new JButton("OK");
         okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
 
         JPanel miPanel = new JPanel();
-        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ((Component) relatableComponent).getText() + ": "));
+        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ownerName + ": "));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
         miPanel.add(new JLabel("Cardinalidad mínima:"));
         miPanel.add(cardinalidadMinimaCampo);
@@ -130,10 +137,27 @@ public final class ActionManager implements Serializable {
         miPanel.add(cardinalidadMaximaCampo);
 
         // Crea un JOptionPane personalizado
+        int resultado = getResultado(miPanel, cardinalidadMinimaCampo);
+        if (resultado == JOptionPane.OK_OPTION) {
+            String cardinalidadMinima = cardinalidadMinimaCampo.getText();
+            String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
+
+            if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
+                JOptionPane.showMessageDialog(this.drawingPanel, "warning.emptyFields");
+                return getCardinality(relatableComponent);
+            } else {
+                return new Cardinality(cardinalidadMinima, cardinalidadMaxima, this.drawingPanel);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private int getResultado(JPanel miPanel, JTextField cardinalidadMinimaCampo) {
         JOptionPane optionPane = new JOptionPane(miPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
 
         // Crea el cuadro de diálogo basado en el JOptionPane
-        JDialog dialog = optionPane.createDialog("Por favor ingrese dos valores");
+        JDialog dialog = optionPane.createDialog(LanguageManager.getMessage("input.twoValues"));
 
         // Establece el foco en el campo de la cardinalidad mínima al abrir el cuadro de diálogo
         dialog.addWindowFocusListener(new java.awt.event.WindowAdapter() {
@@ -146,23 +170,15 @@ public final class ActionManager implements Serializable {
         // Muestra el cuadro de diálogo
         dialog.setVisible(true);
 
-        int resultado = (int) optionPane.getValue();
-        if (resultado == JOptionPane.OK_OPTION) {
-            String cardinalidadMinima = cardinalidadMinimaCampo.getText();
-            String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
-
-            if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Ambos campos deben tener un valor");
-                return getCardinality(relatableComponent);
-            } else {
-                return new Cardinality(String.valueOf(cardinalidadMinima.charAt(0)), String.valueOf(cardinalidadMaxima.charAt(0)));
-            }
-        } else {
-            return null;
-        }
+        return (int) optionPane.getValue();
     }
 
     public void changeCardinality(Cardinality cardinality) {
+
+        String ownerName = ((Component) cardinality.getOwner()).getText();
+
+        // What hhapens with the associations? And if there more than one association? How can I identifiy them?
+
         JTextField cardinalidadMinimaCampo = new JTextField(1);
         JTextField cardinalidadMaximaCampo = new JTextField(1);
         JButton okButton = new JButton("OK");
@@ -170,7 +186,7 @@ public final class ActionManager implements Serializable {
 
         JPanel miPanel = new JPanel();
         // Fix this then.
-        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ((Component) cardinality.getOwner()).getText() + ": "));
+        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ownerName + ": "));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
         miPanel.add(new JLabel("Cardinalidad mínima:"));
         miPanel.add(cardinalidadMinimaCampo);
@@ -178,30 +194,15 @@ public final class ActionManager implements Serializable {
         miPanel.add(new JLabel("Cardinalidad máxima:"));
         miPanel.add(cardinalidadMaximaCampo);
 
-        // Crea un JOptionPane personalizado
-        JOptionPane optionPane = new JOptionPane(miPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        int resultado = getResultado(miPanel, cardinalidadMinimaCampo);
 
-        // Crea el cuadro de diálogo basado en el JOptionPane
-        JDialog dialog = optionPane.createDialog("Por favor ingrese dos valores");
-
-        // Establece el foco en el campo de la cardinalidad mínima al abrir el cuadro de diálogo
-        dialog.addWindowFocusListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowGainedFocus(java.awt.event.WindowEvent e) {
-                cardinalidadMinimaCampo.requestFocusInWindow();
-            }
-        });
-
-        // Muestra el cuadro de diálogo
-        dialog.setVisible(true);
-
-        int resultado = (int) optionPane.getValue();
         if (resultado == JOptionPane.OK_OPTION) {
             String cardinalidadMinima = cardinalidadMinimaCampo.getText();
             String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
 
             if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Ambos campos deben tener un valor");
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyFields"));
+                changeCardinality(cardinality);
             } else {
                 cardinality.setText(Cardinality.giveFormat(cardinalidadMinima, cardinalidadMaxima));
                 this.drawingPanel.repaint();
@@ -219,11 +220,11 @@ public final class ActionManager implements Serializable {
 
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
-            String nombre = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nombre de la nueva dependencia");
+            String nombre = JOptionPane.showInputDialog(this.drawingPanel, null, LanguageManager.getMessage("actionManager.addDependency.dialog"));
 
             if (nombre != null) {
 
-                Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY());
+                Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
 
                 Entity entitySelected = selectWeakEntity();
 
@@ -253,7 +254,7 @@ public final class ActionManager implements Serializable {
 
                             // Una entidad débil solo puede estar relacionada con una entidad fuerte si
                             // esta última tiene cardinalidad 1:1
-                            staticCardinality = new StaticCardinality("1", "1");
+                            staticCardinality = new StaticCardinality("1", "1", this.drawingPanel);
                             newRelationship.addParticipant(entity, staticCardinality);
 
                         }
@@ -312,19 +313,19 @@ public final class ActionManager implements Serializable {
         // Solo procede si se ha seleccionado al menos tres entidades
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.getSelectedComponents().size() >= 3) {
 
-            Entity supertipo = seleccionarSupertipo();
+            Entity parent = selectParent();
 
-            main: if (supertipo != null && !supertipo.isAlreadyParent()) {
+            main: if (parent != null && !parent.isAlreadyParent()) {
 
-                List<Entity> subtipos = obtenerListaSubtipos(supertipo);
+                List<Entity> subtipos = obtenerListaSubtipos(parent);
 
-                Hierarchy newHierarchy = getHierarchy(supertipo);
+                Hierarchy newHierarchy = getHierarchy(parent);
 
                 if (newHierarchy == null) {
                     return;
                 }
 
-                supertipo.addHierarchy(newHierarchy);
+                parent.addHierarchy(newHierarchy);
 
                 for (Entity subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);
@@ -332,7 +333,7 @@ public final class ActionManager implements Serializable {
                     if (!subtipo.addHierarchy(newHierarchy)) {
 
                         // Acción reparadora.
-                        supertipo.removeHierarchy(newHierarchy);
+                        parent.removeHierarchy(newHierarchy);
                         for (Entity s : subtipos) {
                             s.removeHierarchy(newHierarchy);
 
@@ -363,22 +364,22 @@ public final class ActionManager implements Serializable {
         drawingPanel.repaint();
     }
 
-    public Hierarchy getHierarchy(Entity supertipo) {
+    public Hierarchy getHierarchy(Entity parent) {
 
         // Crea los radio buttons
-        JRadioButton opcionExclusiva = new JRadioButton("Exclusiva", true);
-        JRadioButton opcionCompartida = new JRadioButton("Compartida");
-        JRadioButton opcionTotal = new JRadioButton("Total", true);
-        JRadioButton opcionParcial = new JRadioButton("Parcial");
+        JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
+        JRadioButton overlapButton = new JRadioButton(LanguageManager.getMessage("hierarchy.overlap"));
+        JRadioButton totalButton = new JRadioButton(LanguageManager.getMessage("hierarchy.total"), true);
+        JRadioButton partialButton = new JRadioButton(LanguageManager.getMessage("hierarchy.partial"));
 
         // Agrupa los radio buttons para que solo se pueda seleccionar uno a la vez
         ButtonGroup groupExclusivaCompartida = new ButtonGroup();
-        groupExclusivaCompartida.add(opcionExclusiva);
-        groupExclusivaCompartida.add(opcionCompartida);
+        groupExclusivaCompartida.add(exclusiveButton);
+        groupExclusivaCompartida.add(overlapButton);
 
         ButtonGroup groupTotalExclusiva = new ButtonGroup();
-        groupTotalExclusiva.add(opcionTotal);
-        groupTotalExclusiva.add(opcionParcial);
+        groupTotalExclusiva.add(totalButton);
+        groupTotalExclusiva.add(partialButton);
 
         // Crea un panel para contener los radio buttons
         JPanel panel = new JPanel();
@@ -386,12 +387,12 @@ public final class ActionManager implements Serializable {
 
         // Crea un panel para cada grupo de radio buttons
         JPanel panelEC = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelEC.add(opcionExclusiva);
-        panelEC.add(opcionCompartida);
+        panelEC.add(exclusiveButton);
+        panelEC.add(overlapButton);
 
         JPanel panelTP = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelTP.add(opcionTotal);
-        panelTP.add(opcionParcial);
+        panelTP.add(totalButton);
+        panelTP.add(partialButton);
 
         // Agrega los pares de opciones al panel
         panel.add(panelEC);
@@ -406,20 +407,20 @@ public final class ActionManager implements Serializable {
             return null; // Cancel the process
         }
 
-        HierarchyType letter = (opcionExclusiva.isSelected()) ? HierarchyType.DISJUNCT : HierarchyType.OVERLAPPING;
+        HierarchyType letter = (exclusiveButton.isSelected()) ? HierarchyType.DISJUNCT : HierarchyType.OVERLAPPING;
 
         Hierarchy newHierarchy;
 
-        if (opcionTotal.isSelected()) {
-            newHierarchy = new TotalHierarchy(letter, supertipo);
+        if (totalButton.isSelected()) {
+            newHierarchy = new TotalHierarchy(letter, parent, this.drawingPanel);
         } else {
-            newHierarchy = new Hierarchy(letter, supertipo);
+            newHierarchy = new Hierarchy(letter, parent, this.drawingPanel);
         }
 
         return newHierarchy;
     }
 
-    public Entity seleccionarSupertipo() {
+    public Entity selectParent() {
 
         List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
         Object[] opciones = new Object[entidadesSeleccionadas.size()];
@@ -429,19 +430,19 @@ public final class ActionManager implements Serializable {
         }
 
         // Muestra el JOptionPane con los botones
-        int seleccion = JOptionPane.showOptionDialog(null, "Seleccione a la entidad supertipo", "Selección",
+        int seleccion = JOptionPane.showOptionDialog(null, LanguageManager.getMessage("hierarchy.selectParent"), "Selección",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
 
         return (entidadesSeleccionadas.get(seleccion));
 
     }
 
-    public List<Entity> obtenerListaSubtipos(Entity supertipo) {
+    public List<Entity> obtenerListaSubtipos(Entity parent) {
 
         List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
 
         List<Entity> retorno = new ArrayList<>(entidadesSeleccionadas);
-        retorno.remove((supertipo));
+        retorno.remove((parent));
 
         return retorno;
     }
@@ -467,7 +468,7 @@ public final class ActionManager implements Serializable {
         String contenido = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el contenido de la nueva nota");
         if (contenido != null) {
             // Si el usuario ingresó contenido, agrega una nueva nota con ese contenido
-            drawingPanel.addComponent(new Note(contenido, drawingPanel.getMouseX(), drawingPanel.getMouseY()));
+            drawingPanel.addComponent(new Note(contenido, drawingPanel.getMouseX(), drawingPanel.getMouseY(), this.drawingPanel));
         }
     }
 
@@ -480,8 +481,8 @@ public final class ActionManager implements Serializable {
         List<Component> selectedComponents = this.drawingPanel.getSelectedComponents();
 
         if (!selectedComponents.isEmpty()) {
-            int confirmacion = JOptionPane.showConfirmDialog(this.drawingPanel, "¿Seguro de que desea eliminar el objeto seleccionado?");
-            if (confirmacion == JOptionPane.YES_OPTION) {
+            int confirmation = JOptionPane.showConfirmDialog(this.drawingPanel, "¿Seguro de que desea eliminar el objeto seleccionado?");
+            if (confirmation == JOptionPane.YES_OPTION) {
 
                 List<Component> componentsForRemoval = new ArrayList<>();
 
@@ -537,6 +538,10 @@ public final class ActionManager implements Serializable {
     /*                                                Add Attribute                                                   */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    public void addAttribute(AttributableComponent component) {
+        addAttribute(component, AttributeSymbol.COMMON);
+    }
+
     public void addAttribute(AttributableComponent component, AttributeSymbol attributeSymbol) {
 
         // Creation of the components of the panel.
@@ -563,7 +568,7 @@ public final class ActionManager implements Serializable {
                 AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
                 AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
 
-                Attribute newAttribute = new Attribute(component, nombre, attributeSymbol, arrowBody, arrowEnding);
+                Attribute newAttribute = new Attribute(component, nombre, attributeSymbol, arrowBody, arrowEnding, this.drawingPanel);
 
                 component.addAttribute(newAttribute);
 
@@ -575,7 +580,7 @@ public final class ActionManager implements Serializable {
 
     public void addComplexAttribute(AttributableComponent component) {
 
-        AttributeSymbol attributeSymbol = selectAtributeType();
+        AttributeSymbol attributeSymbol = selectAttributeType();
 
         if (attributeSymbol.equals(AttributeSymbol.MAIN)) {
 
@@ -595,7 +600,7 @@ public final class ActionManager implements Serializable {
 
                 if (nombre != null) {
 
-                    Attribute newAttribute = new MainAttribute(component, nombre);
+                    Attribute newAttribute = new MainAttribute(component, nombre, this.drawingPanel);
 
                     component.addAttribute(newAttribute);
 
@@ -610,7 +615,7 @@ public final class ActionManager implements Serializable {
         }
     }
 
-    private AttributeSymbol selectAtributeType() {
+    private AttributeSymbol selectAttributeType() {
 
         // Crea los radio buttons
         JRadioButton commonAttributeOption = new JRadioButton("Común", true);
@@ -668,13 +673,13 @@ public final class ActionManager implements Serializable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     // There must be selected at least an entity and a relationship (unary relationship)
-    public void addMacroEntity() {
+    public void addAssociation() {
 
         if (drawingPanel.getSelectedComponents().size() == 1 && drawingPanel.onlyTheseClassesAreSelected(Relationship.class)) {
 
             Relationship relationship = (Relationship) drawingPanel.getSelectedComponents().getFirst();
 
-            Association association = new Association(relationship);
+            Association association = new Association(relationship, this.drawingPanel);
 
             drawingPanel.addComponent(association);
             drawingPanel.repaint();
@@ -684,6 +689,35 @@ public final class ActionManager implements Serializable {
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione una relación.");
         }
+    }
+
+    public PopupMenu getPopupMenu(Component component, Action ... actions) {
+
+        PopupMenu popupMenu = new PopupMenu(this.drawingPanel);
+
+        for (Action action : actions) {
+
+            JMenuItem actionitem = new JMenuItem(action.getText());
+
+            switch (action) {
+                case DELETE -> actionitem.addActionListener(_ -> deleteSelectedComponents());
+                case RENAME -> actionitem.addActionListener(_ -> renameComponent(component));
+                case ADD_ENTITY -> actionitem.addActionListener(_ -> addEntity());
+                case ADD_ATTRIBUTE -> actionitem.addActionListener(_ -> addAttribute((AttributableComponent) component));
+                case ADD_COMPLEX_ATTRIBUTE -> actionitem.addActionListener(_ -> addComplexAttribute((AttributableComponent) component));
+                case ADD_ASSOCIATION -> actionitem.addActionListener(_ -> addAssociation());
+                case ADD_RELATIONSHIP -> actionitem.addActionListener(_ -> addRelationship());
+                case SWAP_MULTIVALUED -> actionitem.addActionListener(_ -> changeMultivalued((Attribute) component));
+                case SWAP_OPTIONALITY -> actionitem.addActionListener(_ -> changeOptionality((Attribute) component));
+                case SWAP_EXCLUSIVITY -> actionitem.addActionListener(_ -> swapExclusivity((Hierarchy) component));
+                case CHANGE_CARDINALITY -> actionitem.addActionListener(_ -> changeCardinality((Cardinality) component));
+            }
+
+            popupMenu.add(actionitem);
+        }
+
+        return popupMenu;
+
     }
 
 }

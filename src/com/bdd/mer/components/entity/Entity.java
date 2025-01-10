@@ -1,5 +1,6 @@
 package com.bdd.mer.components.entity;
 
+import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.atributo.Attribute;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
@@ -8,10 +9,8 @@ import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
@@ -26,8 +25,8 @@ public class Entity extends AttributableComponent implements Relatable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public Entity(String text, int x, int y) {
-        super(text, x, y);
+    public Entity(String text, int x, int y, DrawingPanel drawingPanel) {
+        super(text, x, y, drawingPanel);
 
         relationshipsManager = new RelatableImplementation();
         hierarchies = new ArrayList<>();
@@ -36,25 +35,9 @@ public class Entity extends AttributableComponent implements Relatable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu entityPopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem renameEntity = new JMenuItem(LanguageManager.getMessage("option.rename"));
-        renameEntity.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
-
-        JMenuItem deleteEntity = new JMenuItem(LanguageManager.getMessage("option.delete"));
-        deleteEntity.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        JMenuItem addComplexAttribute = new JMenuItem(LanguageManager.getMessage("option.addAttribute"));
-        addComplexAttribute.addActionListener(_ -> drawingPanel.getActioner().addComplexAttribute(this));
-
-        entityPopupMenu.addOption(addComplexAttribute);
-        entityPopupMenu.addOption(renameEntity);
-        entityPopupMenu.addOption(deleteEntity);
-
-        return entityPopupMenu;
+        return this.getActionManager().getPopupMenu(this, Action.ADD_COMPLEX_ATTRIBUTE, Action.RENAME, Action.DELETE);
 
     }
 
@@ -217,7 +200,7 @@ public class Entity extends AttributableComponent implements Relatable {
 
     public WeakEntity getWeakVersion(Relationship relationship) {
 
-        WeakEntity weakVersion = new WeakEntity(this.getText(), this.getX(), this.getY(), relationship);
+        WeakEntity weakVersion = new WeakEntity(this.getText(), this.getX(), this.getY(), relationship, this.getPanelDibujo());
 
         this.copyAttributes(weakVersion);
 
@@ -257,7 +240,7 @@ public class Entity extends AttributableComponent implements Relatable {
 
             if (hierarchy.isParent(this)) {
 
-                out.addAll(hierarchy.getChilds());
+                out.addAll(hierarchy.getChildren());
 
             }
         }

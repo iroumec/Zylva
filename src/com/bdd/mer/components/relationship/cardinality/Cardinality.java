@@ -1,13 +1,12 @@
 package com.bdd.mer.components.relationship.cardinality;
 
+import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,22 +16,15 @@ public class Cardinality extends Component {
     private Relatable owner;
     private Relationship relationship;
 
-    public Cardinality(String firstValue, String secondValue) {
+    public Cardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
+        super(drawingPanel);
         this.setText(giveFormat(firstValue, secondValue));
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu cardinalityPopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem changeCardinality = new JMenuItem(LanguageManager.getMessage("option.changeValues"));
-        changeCardinality.addActionListener(_ -> drawingPanel.getActioner().changeCardinality(this));
-
-        cardinalityPopupMenu.addOption(changeCardinality);
-
-        return cardinalityPopupMenu;
+        return this.getActionManager().getPopupMenu(this, Action.CHANGE_CARDINALITY);
 
     }
 
@@ -77,7 +69,7 @@ public class Cardinality extends Component {
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
 
-        if (newComponent instanceof Relatable) { // I don't have to check if oldComponents is intanceof Relatable due to the equals below.
+        if (newComponent instanceof Relatable) { // I don't have to check if oldComponents is instance of Relatable due to the equals below.
 
             if (this.owner.equals(oldComponent)) {
                 this.owner = (Relatable) newComponent;

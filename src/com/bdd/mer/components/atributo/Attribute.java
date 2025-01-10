@@ -1,5 +1,6 @@
 package com.bdd.mer.components.atributo;
 
+import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.atributo.symbology.AttributeArrow;
@@ -8,7 +9,6 @@ import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.PopupMenu;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class Attribute extends AttributableComponent {
@@ -18,8 +18,8 @@ public class Attribute extends AttributableComponent {
     private AttributeEnding ending;
     private AttributableComponent owner;
 
-    public Attribute(AttributableComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending) {
-        super(text, owner.getX(), owner.getY());
+    public Attribute(AttributableComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending, DrawingPanel drawingPanel) {
+        super(text, owner.getX(), owner.getY(), drawingPanel);
         this.owner = owner;
         this.symbol = symbol;
         this.arrow = arrow;
@@ -27,33 +27,16 @@ public class Attribute extends AttributableComponent {
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu attributePopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem renameAttribute = new JMenuItem("Rename");
-        renameAttribute.addActionListener(_ -> drawingPanel.getActioner().renameComponent(this));
-
-        JMenuItem deleteAttribute = new JMenuItem("Delete");
-        deleteAttribute.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        JMenuItem addAttribute = new JMenuItem("Add attribute");
-        addAttribute.addActionListener(_ -> drawingPanel.getActioner().addAttribute(this, AttributeSymbol.COMMON));
-
-        JMenuItem swapOptionality = new JMenuItem("Swap optionality");
-        swapOptionality.addActionListener(_ -> drawingPanel.getActioner().changeOptionality(this));
-
-        JMenuItem swapMultivalued = new JMenuItem("Swap multivalued");
-        swapMultivalued.addActionListener(_ -> drawingPanel.getActioner().changeMultivalued(this));
-
-        attributePopupMenu.addOption(renameAttribute);
-        attributePopupMenu.addOption(deleteAttribute);
-        attributePopupMenu.addOption(addAttribute);
-        attributePopupMenu.addOption(swapOptionality);
-        attributePopupMenu.addOption(swapMultivalued);
-
-        return attributePopupMenu;
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.ADD_ATTRIBUTE,
+                Action.SWAP_OPTIONALITY,
+                Action.SWAP_MULTIVALUED,
+                Action.RENAME,
+                Action.DELETE
+        );
 
     }
 

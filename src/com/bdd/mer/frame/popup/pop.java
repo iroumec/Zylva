@@ -184,8 +184,8 @@
 //        /*                                         Add Macro-entity                                                   */
 //        /* ---------------------------------------------------------------------------------------------------------- */
 //
-//        JMenuItem addMacroEntity = new JMenuItem("Agregar macro-entidad");
-//        addMacroEntity.addActionListener(_ -> {
+//        JMenuItem addAssociation = new JMenuItem("Agregar macro-entidad");
+//        addAssociation.addActionListener(_ -> {
 //            // There must be selected at least an entity and a relationship (unary relationship)
 //            if (drawingPanel.getSelectedComponents().size() >= 2 && drawingPanel.oneRelationshipAndEntities()) {
 //                String text = JOptionPane.showInputDialog(this, "Ingrese el nombre de la macro-entidad");
@@ -209,7 +209,7 @@
 //                JOptionPane.showMessageDialog(this, "Seleccione al menos dos componentes, entre las que se halle una relación.");
 //            }
 //        });
-//        add(addMacroEntity);
+//        add(addAssociation);
 //
 //        /* ---------------------------------------------------------------------------------------------------------- */
 //        /*                                             Add Note                                                       */

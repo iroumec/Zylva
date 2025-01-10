@@ -1,14 +1,13 @@
 package com.bdd.mer.components.association;
 
+import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
 import com.bdd.mer.frame.PopupMenu;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,23 +19,19 @@ public class Association extends Component implements Relatable {
     // List of components forming the Association.
     private final Relationship relationship;
 
-    public Association(Relationship relationship) {
+    public Association(Relationship relationship, DrawingPanel drawingPanel) {
+        super(drawingPanel);
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-        PopupMenu macroEntityPopupMenu = new PopupMenu(drawingPanel);
-
-        JMenuItem deleteMacroEntity = new JMenuItem(LanguageManager.getMessage("option.delete"));
-        deleteMacroEntity.addActionListener(_ -> drawingPanel.getActioner().deleteSelectedComponents());
-
-        macroEntityPopupMenu.addOption(deleteMacroEntity);
-
-        return macroEntityPopupMenu;
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.DELETE
+        );
 
     }
 

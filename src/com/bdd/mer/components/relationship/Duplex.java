@@ -23,7 +23,6 @@ public class Duplex<T, U> implements Serializable {
         this.first = newFirst;
     }
 
-    public void setSecond(U newSecond) {
-        this.second = newSecond;
-    }
+    @SuppressWarnings("unused")
+    public void setSecond(U newSecond) { this.second = newSecond; }
 }

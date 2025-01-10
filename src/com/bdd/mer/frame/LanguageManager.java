@@ -54,7 +54,7 @@ public class LanguageManager {
                 String selectedAcronym = languages.get(selectedDisplayLanguage);
                 applyLanguage(selectedAcronym, mainFrame);
                 frame.dispose();
-                JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged") + " " + selectedDisplayLanguage);
+                JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged"));
             } else {
                 JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.noLanguageSelected"));
             }

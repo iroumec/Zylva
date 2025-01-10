@@ -5,16 +5,14 @@ import com.bdd.mer.frame.PopupMenu;
 
 public class StaticCardinality extends Cardinality {
 
-    public StaticCardinality(String firstValue, String secondValue) {
-        super(firstValue, secondValue);
+    public StaticCardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
+        super(firstValue, secondValue, drawingPanel);
     }
 
     @Override
-    protected PopupMenu getGenericPopupMenu() {
+    protected PopupMenu getPopupMenu() {
 
-        DrawingPanel drawingPanel = this.getPanelDibujo();
-
-        return new PopupMenu(drawingPanel);
+        return this.getActionManager().getPopupMenu(this);
 
     }
 

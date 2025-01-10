@@ -1,7 +1,6 @@
 package com.bdd.mer.frame;
 
 import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.menuBar.MenuBar;
 
 import javax.swing.*;
@@ -35,9 +34,6 @@ public class MainFrame extends JFrame {
         // It contains the action both the drawing panel and the frame can do.
         ActionManager actionManager = new ActionManager(drawingPanel);
         drawingPanel.setActioner(actionManager);
-
-        // Chequear después
-        Component.setPanelDibujo(drawingPanel);
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                         Add Entity Key                                                     */
@@ -127,7 +123,7 @@ public class MainFrame extends JFrame {
         addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), "ActionM");
         addAssociationKey.getActionMap().put("ActionM", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                actionManager.addMacroEntity();
+                actionManager.addAssociation();
             }
         });
 
