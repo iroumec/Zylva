@@ -6,8 +6,8 @@ import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class Association extends Component implements Relatable {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(
                 this,

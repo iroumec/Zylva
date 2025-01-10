@@ -5,8 +5,8 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class Cardinality extends Component {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(this, Action.CHANGE_CARDINALITY);
 

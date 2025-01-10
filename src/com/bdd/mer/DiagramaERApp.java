@@ -1,6 +1,7 @@
 package com.bdd.mer;
 
 import com.bdd.mer.frame.MainFrame;
+import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
@@ -10,9 +11,9 @@ public class DiagramaERApp {
 
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception e) {
-            // Si FlatLightLaf no está disponible, puedes configurar otro look and feel.
+        } catch (Exception _) {
         }
+
         MainFrame frame = new MainFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);

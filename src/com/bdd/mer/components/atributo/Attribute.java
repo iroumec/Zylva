@@ -7,8 +7,8 @@ import com.bdd.mer.components.atributo.symbology.AttributeArrow;
 import com.bdd.mer.components.atributo.symbology.AttributeEnding;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class Attribute extends AttributableComponent {
@@ -27,7 +27,7 @@ public class Attribute extends AttributableComponent {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(
                 this,

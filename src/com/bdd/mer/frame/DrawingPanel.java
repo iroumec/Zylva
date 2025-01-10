@@ -19,7 +19,7 @@ public class DrawingPanel extends JPanel {
     private final Rectangle selectionArea;
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
-    private PopupMenu backgroundPopupMenu;
+    private JPopupMenu backgroundPopupMenu;
 
     // Me sirve para cuando coloco componentes apretando una combinación de teclas
     private int mouseX, mouseY;
@@ -318,9 +318,9 @@ public class DrawingPanel extends JPanel {
 
     public void setActioner(ActionManager actionManager) { this.actionManager = actionManager; }
 
-    private PopupMenu getBackgroundPopupMenu() {
+    private JPopupMenu getBackgroundPopupMenu() {
 
-        PopupMenu backgroundPopupMenu = new PopupMenu(this);
+        JPopupMenu backgroundPopupMenu = new JPopupMenu();
 
         JMenuItem addEntity = new JMenuItem(LanguageManager.getMessage("option.addEntity"));
         addEntity.addActionListener(_ -> this.getActioner().addEntity());
@@ -337,11 +337,11 @@ public class DrawingPanel extends JPanel {
         JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
         addAssociation.addActionListener(_ -> this.getActioner().addAssociation());
 
-        backgroundPopupMenu.addOption(addEntity);
-        backgroundPopupMenu.addOption(addRelationship);
-        backgroundPopupMenu.addOption(addDependency);
-        backgroundPopupMenu.addOption(addNote);
-        backgroundPopupMenu.addOption(addAssociation);
+        backgroundPopupMenu.add(addEntity);
+        backgroundPopupMenu.add(addRelationship);
+        backgroundPopupMenu.add(addDependency);
+        backgroundPopupMenu.add(addNote);
+        backgroundPopupMenu.add(addAssociation);
 
         return backgroundPopupMenu;
     }

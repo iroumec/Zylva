@@ -9,8 +9,8 @@ import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class Entity extends AttributableComponent implements Relatable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(this, Action.ADD_COMPLEX_ATTRIBUTE, Action.RENAME, Action.DELETE);
 
@@ -83,9 +83,6 @@ public class Entity extends AttributableComponent implements Relatable {
 
         g2.draw(shape);
         this.setShape(shape);
-
-        g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.BLACK);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -155,7 +152,7 @@ public class Entity extends AttributableComponent implements Relatable {
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-
+    /*                                        Hierarchies Related Methods                                             */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public boolean addHierarchy(Hierarchy newHierarchy) {
@@ -174,12 +171,77 @@ public class Entity extends AttributableComponent implements Relatable {
         return true;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void removeHierarchy(Hierarchy hierarchy) {
         hierarchies.remove(hierarchy);
     }
 
+    public boolean isAlreadyParent() {
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+            if (hierarchy.isParent(this)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                         Attribute Related Methods                                              */
+
+    private boolean hasAHierarchyInCommon(Entity entity) {
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+            if (hierarchy.isChild(this) && hierarchy.isChild(entity)) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    private List<Entity> getHierarchicalChildren() {
+
+        List<Entity> out = new ArrayList<>();
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+
+            if (hierarchy.isParent(this)) {
+
+                out.addAll(hierarchy.getChildren());
+
+            }
+        }
+
+        return out;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public boolean shareHierarchicalChild(Entity entity) {
+
+        List<Entity> thisEntityHierarchicalChildren = this.getHierarchicalChildren();
+        List<Entity> secondEntityHierarchicalChildren = entity.getHierarchicalChildren();
+
+        for (Entity child : thisEntityHierarchicalChildren) { // It could be optimized.
+
+            if (secondEntityHierarchicalChildren.contains(child)) {
+                return true;
+            }
+
+        }
+
+        return false;
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                        Attributes Related Methods                                              */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -208,63 +270,6 @@ public class Entity extends AttributableComponent implements Relatable {
 
     }
 
-    public boolean isAlreadyParent() {
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-            if (hierarchy.isParent(this)) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    private boolean hasAHierarchyInCommon(Entity entity) {
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-            if (hierarchy.isChild(this) && hierarchy.isChild(entity)) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    private List<Entity> getHierarchicalChildren() {
-
-        List<Entity> out = new ArrayList<>();
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-
-            if (hierarchy.isParent(this)) {
-
-                out.addAll(hierarchy.getChildren());
-
-            }
-        }
-
-        return out;
-    }
-
-    public boolean shareHierarchicalChild(Entity entity) {
-
-        List<Entity> thisEntityHierarchicalChildren = this.getHierarchicalChildren();
-        List<Entity> secondEntityHierarchicalChildren = entity.getHierarchicalChildren();
-
-        for (Entity child : thisEntityHierarchicalChildren) { // It could be optimized.
-
-            if (secondEntityHierarchicalChildren.contains(child)) {
-                return true;
-            }
-
-        }
-
-        return false;
-
-    }
-
     protected void copyAttributes(Entity entity) {
 
         for (Relationship relationship : this.relationshipsManager.getRelationships()) {
@@ -284,6 +289,10 @@ public class Entity extends AttributableComponent implements Relatable {
         entity.setShape(this.getBounds());
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                        Relationships Related Methods                                           */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void addRelationship(Relationship relationship) {

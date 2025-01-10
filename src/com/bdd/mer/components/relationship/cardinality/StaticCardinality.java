@@ -1,7 +1,8 @@
 package com.bdd.mer.components.relationship.cardinality;
 
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
+
+import javax.swing.*;
 
 public class StaticCardinality extends Cardinality {
 
@@ -10,7 +11,7 @@ public class StaticCardinality extends Cardinality {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(this);
 

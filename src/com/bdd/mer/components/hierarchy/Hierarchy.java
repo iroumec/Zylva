@@ -4,7 +4,6 @@ import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +31,7 @@ public class Hierarchy extends Component {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(
                 this,

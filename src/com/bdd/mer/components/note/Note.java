@@ -2,9 +2,9 @@ package com.bdd.mer.components.note;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 import com.bdd.mer.actions.Action;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,11 @@ public class Note extends Component {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(
                 this,
-                Action.RENAME,
+                Action.CHANGE_TEXT,
                 Action.DELETE
         );
 

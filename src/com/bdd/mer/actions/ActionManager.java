@@ -19,7 +19,6 @@ import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
 import com.bdd.mer.frame.LanguageManager;
-import com.bdd.mer.frame.PopupMenu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -519,11 +518,11 @@ public final class ActionManager implements Serializable {
         String newText;
 
         do {
-            newText = JOptionPane.showInputDialog(null, "Ingrese el nuevo texto: ");
+            newText = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nuevo texto: ");
 
             // "newText" can be null when the user pressed "cancel"
             if (newText != null && newText.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Ingrese al menos un carácter");
+                JOptionPane.showMessageDialog(this.drawingPanel, "Ingrese al menos un carácter");
             }
         } while (newText != null && newText.isEmpty());
 
@@ -691,29 +690,26 @@ public final class ActionManager implements Serializable {
         }
     }
 
-    public PopupMenu getPopupMenu(Component component, Action ... actions) {
+    public JPopupMenu getPopupMenu(Component component, Action ... actions) {
 
-        PopupMenu popupMenu = new PopupMenu(this.drawingPanel);
+        JPopupMenu popupMenu = new JPopupMenu();
 
         for (Action action : actions) {
 
-            JMenuItem actionitem = new JMenuItem(action.getText());
+            JMenuItem actionItem = new JMenuItem(action.getText());
 
             switch (action) {
-                case DELETE -> actionitem.addActionListener(_ -> deleteSelectedComponents());
-                case RENAME -> actionitem.addActionListener(_ -> renameComponent(component));
-                case ADD_ENTITY -> actionitem.addActionListener(_ -> addEntity());
-                case ADD_ATTRIBUTE -> actionitem.addActionListener(_ -> addAttribute((AttributableComponent) component));
-                case ADD_COMPLEX_ATTRIBUTE -> actionitem.addActionListener(_ -> addComplexAttribute((AttributableComponent) component));
-                case ADD_ASSOCIATION -> actionitem.addActionListener(_ -> addAssociation());
-                case ADD_RELATIONSHIP -> actionitem.addActionListener(_ -> addRelationship());
-                case SWAP_MULTIVALUED -> actionitem.addActionListener(_ -> changeMultivalued((Attribute) component));
-                case SWAP_OPTIONALITY -> actionitem.addActionListener(_ -> changeOptionality((Attribute) component));
-                case SWAP_EXCLUSIVITY -> actionitem.addActionListener(_ -> swapExclusivity((Hierarchy) component));
-                case CHANGE_CARDINALITY -> actionitem.addActionListener(_ -> changeCardinality((Cardinality) component));
+                case DELETE -> actionItem.addActionListener(_ -> deleteSelectedComponents());
+                case RENAME, CHANGE_TEXT -> actionItem.addActionListener(_ -> renameComponent(component));
+                case ADD_ATTRIBUTE -> actionItem.addActionListener(_ -> addAttribute((AttributableComponent) component));
+                case ADD_COMPLEX_ATTRIBUTE -> actionItem.addActionListener(_ -> addComplexAttribute((AttributableComponent) component));
+                case SWAP_MULTIVALUED -> actionItem.addActionListener(_ -> changeMultivalued((Attribute) component));
+                case SWAP_OPTIONALITY -> actionItem.addActionListener(_ -> changeOptionality((Attribute) component));
+                case SWAP_EXCLUSIVITY -> actionItem.addActionListener(_ -> swapExclusivity((Hierarchy) component));
+                case CHANGE_CARDINALITY -> actionItem.addActionListener(_ -> changeCardinality((Cardinality) component));
             }
 
-            popupMenu.add(actionitem);
+            popupMenu.add(actionItem);
         }
 
         return popupMenu;

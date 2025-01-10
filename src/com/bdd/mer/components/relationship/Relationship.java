@@ -6,9 +6,9 @@ import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 import com.bdd.mer.actions.Action;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Relationship extends AttributableComponent {
     }
 
     @Override
-    protected PopupMenu getPopupMenu() {
+    protected JPopupMenu getPopupMenu() {
 
         return this.getActionManager().getPopupMenu(
                 this,
@@ -73,7 +73,7 @@ public class Relationship extends AttributableComponent {
         // Dibuja el texto centrado
         g2.setColor(Color.BLACK);
         g2.drawString(this.getText(), xTexto, yTexto);
-        
+
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }

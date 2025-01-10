@@ -4,8 +4,8 @@ import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.relationship.Duplex;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.PopupMenu;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public abstract class Component implements Serializable {
     private final DrawingPanel drawingPanel;
 
     // PopupMenu of the Component.
-    private PopupMenu popupMenu;
+    private JPopupMenu popupMenu;
 
     public Component(DrawingPanel drawingPanel) {
         this("", 0, 0, drawingPanel);
@@ -47,9 +47,9 @@ public abstract class Component implements Serializable {
         this.setPopupMenu(this.getPopupMenu());
     }
 
-    protected abstract PopupMenu getPopupMenu();
+    protected abstract JPopupMenu getPopupMenu();
 
-    public void setPopupMenu(PopupMenu popupMenu) { this.popupMenu = popupMenu; }
+    public void setPopupMenu(JPopupMenu popupMenu) { this.popupMenu = popupMenu; }
 
     public DrawingPanel getPanelDibujo() { return this.drawingPanel; }
 
@@ -90,7 +90,6 @@ public abstract class Component implements Serializable {
     public int getY() { return this.y; }
 
     public void showPopupMenu(java.awt.Component origin, int x, int y) {
-        this.popupMenu.setComponent(this);
         this.popupMenu.show(origin, x, y);
     }
 
