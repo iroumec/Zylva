@@ -75,7 +75,6 @@ public class Attribute extends AttributableComponent {
         int anchoTexto = fm.stringWidth(nombreAMostrar);
         int altoTexto = fm.getHeight();
 
-
         int rectY = atributoY - altoTexto;
 
         setShape(new Rectangle(x, rectY, anchoTexto, altoTexto));

@@ -13,7 +13,8 @@ public class MenuBar extends JMenuBar {
     private static final Point point = new Point(); // Donde apunta el mouse
     private final FileMenu fileMenu;
     private final JButton cleanFrameButton;
-    private final JButton helpButton;
+    private JButton helpButton;
+    private String controls, credits;
 
     public MenuBar(MainFrame mainFrame, DrawingPanel drawingPanel) {
 
@@ -38,6 +39,20 @@ public class MenuBar extends JMenuBar {
 
         // Añado el menú de archivos
         this.fileMenu = new FileMenu(mainFrame, drawingPanel, LanguageManager.getMessage("menuBar.file"));
+
+        fileMenu.setBackground(UIManager.getColor("control"));
+        fileMenu.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                fileMenu.setBackground(new Color(215, 239, 249));
+            }
+
+            // Cuando saco el puntero, el botón vuelve a su color original
+            public void mouseExited(MouseEvent e) {
+                fileMenu.setBackground(UIManager.getColor("control"));
+            }
+        });
+        fileMenu.setBorderPainted(Boolean.FALSE);
+
         add(fileMenu);
 
         // Añado un botón para limpiar la ventana
@@ -62,37 +77,30 @@ public class MenuBar extends JMenuBar {
         });
         cleanFrameButton.setBorderPainted(Boolean.FALSE);
 
-        // Añado un botón para aprender
-        this.helpButton = new JButton(LanguageManager.getMessage("menuBar.help"));
+        this.setHelpButton();
 
-        String controls = """
-                CONTROLS: \
-                
-                Ctrl + E: Add a new entity\
-                
-                Ctrl + R: Add a new relationship\
-                
-                Ctrl + D: Add a new dependency\
-                
-                Ctrl + H: Add a new hierarchy\
-                
-                Ctrl + N: Add a new note\
-                
-                Ctrl + A: Add a new association\
-                
-                Supr: Delete all selected components""";
-
-        String credits = LanguageManager.getMessage("credits.author") + """
-                \
-                
-                Zylva DERExt was made by Iñaki Roumec\
-                
-                https://github.com/iroumec""";
-
-        helpButton.addActionListener(_ -> JOptionPane.showMessageDialog(null, controls + "\n\n" + credits));
         add(helpButton);
+    }
 
-        // Al pasar el mouse por encima, el fondo se coloca en rojo
+    private void setHelpButton() {
+
+        this.controls = LanguageManager.getMessage("menuBar.controls") + ": "
+                + "\nCtrl + E: " + LanguageManager.getMessage("add.entity")
+                + "\nCtrl + R: " + LanguageManager.getMessage("add.relationship")
+                + "\nCtrl + D: " + LanguageManager.getMessage("add.dependency")
+                + "\nCtrl + H: " + LanguageManager.getMessage("add.hierarchy")
+                + "\nCtrl + N: " + LanguageManager.getMessage("add.note")
+                + "\nCtrl + A: " + LanguageManager.getMessage("add.association")
+                + "\nSupr: " + LanguageManager.getMessage("menuBar.delete");
+
+        this.credits = LanguageManager.getMessage("credits.author")
+                + '\n' + LanguageManager.getMessage("credits.credits")
+                + "\nhttps://github.com/iroumec";
+
+        helpButton = new JButton(LanguageManager.getMessage("menuBar.help"));
+        helpButton.addActionListener(_ -> JOptionPane.showMessageDialog(null, controls + "\n\n" + credits));
+
+        // Al pasar el mouse por encima, el botón se vuelve azulito..
         helpButton.setBackground(UIManager.getColor("control"));
         helpButton.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
@@ -106,7 +114,6 @@ public class MenuBar extends JMenuBar {
         });
         helpButton.setBorderPainted(Boolean.FALSE);
 
-        add(helpButton);
     }
 
     public void resetLanguage() {
@@ -114,7 +121,11 @@ public class MenuBar extends JMenuBar {
         this.fileMenu.resetLanguage();
         this.cleanFrameButton.setText(LanguageManager.getMessage("menuBar.clean"));
         this.cleanFrameButton.repaint();
+        this.setHelpButton(); // The only way I found to change the language of the message is to create it again.
+        System.out.println(LanguageManager.getMessage("menuBar.help"));
         this.helpButton.setText(LanguageManager.getMessage("menuBar.help"));
+        System.out.println(LanguageManager.getMessage("menuBar.help"));
+        System.out.println(this.helpButton.getText());
         this.helpButton.repaint();
     }
 }

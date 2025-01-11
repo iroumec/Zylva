@@ -129,10 +129,10 @@ public final class ActionManager implements Serializable {
         JPanel miPanel = new JPanel();
         miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ownerName + ": "));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
-        miPanel.add(new JLabel("Cardinalidad mínima:"));
+        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.minimum")));
         miPanel.add(cardinalidadMinimaCampo);
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
-        miPanel.add(new JLabel("Cardinalidad máxima:"));
+        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.maximum")));
         miPanel.add(cardinalidadMaximaCampo);
 
         // Crea un JOptionPane personalizado
@@ -176,7 +176,7 @@ public final class ActionManager implements Serializable {
 
         String ownerName = ((Component) cardinality.getOwner()).getText();
 
-        // What hhapens with the associations? And if there more than one association? How can I identifiy them?
+        // What happens with the associations? And if there are more than one association? How can I identify them?
 
         JTextField cardinalidadMinimaCampo = new JTextField(1);
         JTextField cardinalidadMaximaCampo = new JTextField(1);
@@ -187,10 +187,10 @@ public final class ActionManager implements Serializable {
         // Fix this then.
         miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ownerName + ": "));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
-        miPanel.add(new JLabel("Cardinalidad mínima:"));
+        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.minimum")));
         miPanel.add(cardinalidadMinimaCampo);
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
-        miPanel.add(new JLabel("Cardinalidad máxima:"));
+        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.maximum")));
         miPanel.add(cardinalidadMaximaCampo);
 
         int resultado = getResultado(miPanel, cardinalidadMinimaCampo);
@@ -219,7 +219,7 @@ public final class ActionManager implements Serializable {
 
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
-            String nombre = JOptionPane.showInputDialog(this.drawingPanel, null, LanguageManager.getMessage("actionManager.addDependency.dialog"));
+            String nombre = JOptionPane.showInputDialog(this.drawingPanel, null, LanguageManager.getMessage("input.name"));
 
             if (nombre != null) {
 
@@ -273,7 +273,7 @@ public final class ActionManager implements Serializable {
 
             }
         } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, "Debe seleccionar 2 entidades para crear una dependencia.");
+            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.dependencyCreation"));
         }
     }
 
@@ -284,7 +284,7 @@ public final class ActionManager implements Serializable {
                 drawingPanel.getSelectedEntities().getLast().getText()};
 
         // Muestra el JOptionPane con los botones
-        int seleccion = JOptionPane.showOptionDialog(
+        int selection = JOptionPane.showOptionDialog(
                 this.drawingPanel,
                 "Seleccione la entidad débil de la relación",
                 "Selección",
@@ -294,7 +294,7 @@ public final class ActionManager implements Serializable {
                 opciones,
                 opciones[0]);
 
-        return switch (seleccion) {
+        return switch (selection) {
             case 0 -> (drawingPanel.getSelectedEntities().getFirst());
             case 1 -> (drawingPanel.getSelectedEntities().getLast());
             default -> {
@@ -429,10 +429,10 @@ public final class ActionManager implements Serializable {
         }
 
         // Muestra el JOptionPane con los botones
-        int seleccion = JOptionPane.showOptionDialog(null, LanguageManager.getMessage("hierarchy.selectParent"), "Selección",
+        int selection = JOptionPane.showOptionDialog(null, LanguageManager.getMessage("hierarchy.selectParent"), "Selección",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
 
-        return (entidadesSeleccionadas.get(seleccion));
+        return (entidadesSeleccionadas.get(selection));
 
     }
 
@@ -581,16 +581,20 @@ public final class ActionManager implements Serializable {
 
         AttributeSymbol attributeSymbol = selectAttributeType();
 
+        if (attributeSymbol == null) {
+            return; // The option was canceled.
+        }
+
         if (attributeSymbol.equals(AttributeSymbol.MAIN)) {
 
             if (component.hasMainAttribute()) {
-                JOptionPane.showMessageDialog(null, "The component can only have one main attribute.");
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.mainAttribute"));
                 return;
             }
 
             JTextField fieldNombre = new JTextField(10);
 
-            int option = JOptionPane.showConfirmDialog(null, fieldNombre, "Ingrese el nombre del atributo:", JOptionPane.OK_CANCEL_OPTION);
+            int option = JOptionPane.showConfirmDialog(null, fieldNombre, LanguageManager.getMessage("input.name"), JOptionPane.OK_CANCEL_OPTION);
 
             // Muestra una ventana emergente para ingresar el nombre del atributo y seleccionar las opciones
             if (option == JOptionPane.OK_OPTION) {
@@ -617,15 +621,15 @@ public final class ActionManager implements Serializable {
     private AttributeSymbol selectAttributeType() {
 
         // Crea los radio buttons
-        JRadioButton commonAttributeOption = new JRadioButton("Común", true);
-        JRadioButton alternativeAttributeOption = new JRadioButton("Alternativo");
-        JRadioButton mainAttributeOption = new JRadioButton("Principal");
+        JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
+        JRadioButton alternativeAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.alternative"));
+        JRadioButton mainAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.main"));
 
         // Agrupa los radio buttons para que solo se pueda seleccionar uno a la vez
         ButtonGroup group = new ButtonGroup();
-        group.add(commonAttributeOption);
-        group.add(alternativeAttributeOption);
         group.add(mainAttributeOption);
+        group.add(alternativeAttributeOption);
+        group.add(commonAttributeOption);
 
         // Crea un panel para contener los radio buttons
         JPanel panel = new JPanel();
@@ -633,16 +637,21 @@ public final class ActionManager implements Serializable {
 
         // Crea un panel para el grupo de radio buttons
         JPanel panelAttribute = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelAttribute.add(commonAttributeOption);
-        panelAttribute.add(alternativeAttributeOption);
         panelAttribute.add(mainAttributeOption);
+        panelAttribute.add(alternativeAttributeOption);
+        panelAttribute.add(commonAttributeOption);
 
         // Agrega los pares de opciones al panel
         panel.add(panelAttribute);
 
         // Muestra el panel en un JOptionPane
-        JOptionPane.showOptionDialog(null, panel, "Tipo de atributo: ",
+        int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.attributeType"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+
+        // In case the user closes the dialog...
+        if (result != JOptionPane.OK_OPTION) {
+            return null;
+        }
 
         if (commonAttributeOption.isSelected()) {
             return AttributeSymbol.COMMON;
