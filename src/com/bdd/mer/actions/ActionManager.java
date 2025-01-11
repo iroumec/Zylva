@@ -107,7 +107,7 @@ public final class ActionManager implements Serializable {
 
                     drawingPanel.addComponentLast(newRelationship);
 
-                    drawingPanel.limpiarEntidadesSeleccionadas();
+                    drawingPanel.cleanSelectedComponents();
                 }
             } else {
                 JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
@@ -267,7 +267,7 @@ public final class ActionManager implements Serializable {
 
                         drawingPanel.replaceComponent(entitySelected, weakVersion);
 
-                        drawingPanel.limpiarEntidadesSeleccionadas();
+                        drawingPanel.cleanSelectedComponents();
                     }
                 }
 
@@ -359,7 +359,7 @@ public final class ActionManager implements Serializable {
         }
 
         // Desactiva el modo de selección
-        drawingPanel.limpiarEntidadesSeleccionadas();
+        drawingPanel.cleanSelectedComponents();
         drawingPanel.repaint();
     }
 
@@ -506,7 +506,7 @@ public final class ActionManager implements Serializable {
         }
 
         // Desactiva el modo de selección
-        drawingPanel.limpiarEntidadesSeleccionadas();
+        drawingPanel.cleanSelectedComponents();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -692,7 +692,7 @@ public final class ActionManager implements Serializable {
             drawingPanel.addComponent(association);
             drawingPanel.repaint();
 
-            drawingPanel.limpiarEntidadesSeleccionadas();
+            drawingPanel.cleanSelectedComponents();
 
         } else {
             JOptionPane.showMessageDialog(null, "Seleccione una relación.");

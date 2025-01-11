@@ -24,6 +24,9 @@ public class DrawingPanel extends JPanel {
     // Me sirve para cuando coloco componentes apretando una combinación de teclas
     private int mouseX, mouseY;
 
+    // Useful to save the difference between the component position and the mouse position.
+    private int offsetX, offsetY;
+
     public DrawingPanel() {
 
         this.setOpaque(Boolean.TRUE);
@@ -55,7 +58,7 @@ public class DrawingPanel extends JPanel {
                     if (!e.isPopupTrigger()) {
                         if (!e.isControlDown()) {
                             // Si el mouse se suelta y el área de selección es nula
-                            limpiarEntidadesSeleccionadas();
+                            cleanSelectedComponents();
                         }
                     }
                 }
@@ -89,7 +92,6 @@ public class DrawingPanel extends JPanel {
 
         backgroundPopupMenu = this.getBackgroundPopupMenu();
 
-
         // Agrega un controlador de eventos de mouse
         addMouseListener(new MouseAdapter() {
             @Override
@@ -109,6 +111,8 @@ public class DrawingPanel extends JPanel {
                     for (Component component : components) {
                         if (component.getBounds().contains(e.getPoint())) {
                             componenteArrastrada = component;
+                            offsetX = e.getX() - componenteArrastrada.getX();
+                            offsetY = e.getY() - componenteArrastrada.getY();
                             componenteArrastrada.setSelected(Boolean.TRUE);
                             break;
                         }
@@ -136,7 +140,7 @@ public class DrawingPanel extends JPanel {
 
                     for (Component component : getListComponents().reversed()) {
                         if (component.getBounds().contains(e.getPoint())) {
-                            limpiarEntidadesSeleccionadas();
+                            cleanSelectedComponents();
                             componentesSeleccionadas.add(component);
                             component.showPopupMenu(e.getComponent(), e.getX(), e.getY());
                             componentClicked = Boolean.TRUE;
@@ -146,7 +150,6 @@ public class DrawingPanel extends JPanel {
                     }
 
                     if (!componentClicked) {
-                        //limpiarEntidadesSeleccionadas();
                         backgroundPopupMenu.show(e.getComponent(), e.getX(), e.getY());
                         repaint();
                     }
@@ -156,13 +159,15 @@ public class DrawingPanel extends JPanel {
         });
 
         addMouseMotionListener(new MouseMotionAdapter() {
+
             @Override
             public void mouseDragged(MouseEvent e) {
-                // Cuando se arrastra el mouse, mueve la entidad arrastrada
-                // solo si no estamos en modo de selección
+
+                // In case we're not in selection mode, the component is dragged with the mouse.
                 if (!e.isControlDown() && componenteArrastrada != null) {
-                    componenteArrastrada.setX(e.getX());
-                    componenteArrastrada.setY(e.getY());
+                    // We subtract the offset with the objective of making the animation smooth.
+                    componenteArrastrada.setX(e.getX() - offsetX);
+                    componenteArrastrada.setY(e.getY() - offsetY);
                     repaint();
                 }
             }
@@ -269,14 +274,14 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void limpiarEntidadesSeleccionadas() {
+    public void cleanSelectedComponents() {
         for (Component a : componentesSeleccionadas) {
            a.setSelected(Boolean.FALSE);
         }
 
-        // Si hago un clear, borro las referencias a las entidades y no
-        // se dibujan las líneas
-        componentesSeleccionadas = new HashSet<>();
+        // If I use clear instead, the references to the entities are deleted.
+        componentesSeleccionadas.clear();
+        //componentesSeleccionadas = new HashSet<>();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
