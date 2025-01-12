@@ -7,6 +7,7 @@ import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
+import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class Relationship extends AttributableComponent {
 
-    private final List<Duplex<Relatable, Cardinality>> participants; // I use a Duplex and not a HashMap because I cannot change dynamically an entity in it
+    private final List<Pair<Relatable, Cardinality>> participants; // I use a Pair and not a HashMap because I cannot change dynamically an entity in it
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon forma;
 
@@ -42,7 +43,7 @@ public class Relationship extends AttributableComponent {
 
     public void draw(Graphics2D g2) {
 
-        Duplex<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
+        Pair<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
 
         int anchoTexto = fontMetrics.getFirst();
         int altoTexto = fontMetrics.getSecond();
@@ -96,8 +97,8 @@ public class Relationship extends AttributableComponent {
     public void cleanPresence() {
 
         // We break the bound between the relationship and their participants.
-        for (Duplex<Relatable, Cardinality> duplex : this.participants) {
-            duplex.getFirst().removeRelationship(this);
+        for (Pair<Relatable, Cardinality> pair : this.participants) {
+            pair.getFirst().removeRelationship(this);
         }
 
     }
@@ -107,10 +108,10 @@ public class Relationship extends AttributableComponent {
 
         if (oldComponent instanceof Relatable && newComponent instanceof Relatable) {
 
-            for (Duplex<Relatable, Cardinality> duplex : this.participants) {
+            for (Pair<Relatable, Cardinality> pair : this.participants) {
 
-                if (duplex.getFirst().equals(oldComponent)) {
-                    duplex.setFirst((Relatable) newComponent);
+                if (pair.getFirst().equals(oldComponent)) {
+                    pair.setFirst((Relatable) newComponent);
                 }
 
             }
@@ -120,7 +121,7 @@ public class Relationship extends AttributableComponent {
     }
 
     public void addParticipant(Relatable relatableComponent, Cardinality cardinality) {
-        this.participants.add(new Duplex<>(relatableComponent, cardinality));
+        this.participants.add(new Pair<>(relatableComponent, cardinality));
         relatableComponent.addRelationship(this);
         cardinality.setOwner(relatableComponent);
         cardinality.setRelationship(this);
@@ -128,9 +129,9 @@ public class Relationship extends AttributableComponent {
 
     public void removeEntity(Entity entity) {
 
-        for (Duplex<Relatable, Cardinality> duplex : this.participants) {
-            if (duplex.getFirst().equals(entity)) {
-                this.participants.remove(duplex);
+        for (Pair<Relatable, Cardinality> pair : this.participants) {
+            if (pair.getFirst().equals(entity)) {
+                this.participants.remove(pair);
                 break;
             }
         }
@@ -141,9 +142,9 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = new ArrayList<>(this.getAttributes());
 
-        for (Duplex<Relatable, Cardinality> duplex : this.participants) {
+        for (Pair<Relatable, Cardinality> pair : this.participants) {
 
-            if (duplex.getFirst() instanceof Component relatable) {
+            if (pair.getFirst() instanceof Component relatable) {
 
                 out.add(relatable);
 
@@ -152,7 +153,7 @@ public class Relationship extends AttributableComponent {
                     out.addAll(attributable.getAttributes());
                 }
 
-                out.add(duplex.getSecond());
+                out.add(pair.getSecond());
 
             }
         }
@@ -186,8 +187,8 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        for (Duplex<Relatable, Cardinality> duplex : this.participants) {
-            out.add(duplex.getSecond());
+        for (Pair<Relatable, Cardinality> pair : this.participants) {
+            out.add(pair.getSecond());
         }
 
         return out;

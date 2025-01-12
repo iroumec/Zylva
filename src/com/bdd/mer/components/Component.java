@@ -2,7 +2,7 @@ package com.bdd.mer.components;
 
 import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.entity.Entity;
-import com.bdd.mer.components.relationship.Duplex;
+import com.bdd.mer.structures.Pair;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -116,14 +116,14 @@ public abstract class Component implements Serializable {
 
     public boolean canBeDeleted() { return true; }
 
-    public Duplex<Integer, Integer> getFontMetrics(Graphics2D graphics2D) {
+    public Pair<Integer, Integer> getFontMetrics(Graphics2D graphics2D) {
 
         FontMetrics fm = graphics2D.getFontMetrics();
 
         int anchoTexto = fm.stringWidth(this.getText());
         int altoTexto = fm.getHeight();
 
-        return new Duplex<>(anchoTexto, altoTexto);
+        return new Pair<>(anchoTexto, altoTexto);
     }
 
     public ActionManager getActionManager() { return this.drawingPanel.getActioner(); }
