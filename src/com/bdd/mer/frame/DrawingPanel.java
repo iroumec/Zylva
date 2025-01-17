@@ -3,6 +3,7 @@ package com.bdd.mer.frame;
 import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
+import groovyjarjarantlr4.v4.runtime.misc.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,10 +22,14 @@ public class DrawingPanel extends JPanel {
     private boolean selectingArea;
     private JPopupMenu backgroundPopupMenu;
 
-    // Me sirve para cuando coloco componentes apretando una combinación de teclas
+    /**
+     * Mouse x and y coordinates. This is useful for when a combination of keys are pressed.
+     */
     private int mouseX, mouseY;
 
-    // Useful to save the difference between the component position and the mouse position.
+    /**
+     * Useful to save the difference between the component position and the mouse position.
+     */
     private int offsetX, offsetY;
 
     public DrawingPanel() {
@@ -37,7 +42,7 @@ public class DrawingPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (noComponenteThere(e.getX(), e.getY())) {
-                    // Inicia la selección en el punto donde se presionó el mouse
+                    // The selection starts at the point where the mouse was pressed.
                     selectionAreaStartX = e.getX();
                     selectionAreaStartY = e.getY();
                     selectionArea.setBounds(selectionAreaStartX, selectionAreaStartY, 0, 0);
@@ -49,7 +54,7 @@ public class DrawingPanel extends JPanel {
             }
 
             public void mouseReleased(MouseEvent e) {
-                // Finaliza la selección cuando se suelta el mouse
+                // When the mouse is released, the selection finishes.
                 if (selectionArea.width != 0 || selectionArea.height != 0) {
                     selectComponents();
                     selectionArea.setBounds(0, 0, 0, 0);
@@ -57,7 +62,7 @@ public class DrawingPanel extends JPanel {
                 } else {
                     if (!e.isPopupTrigger()) {
                         if (!e.isControlDown()) {
-                            // Si el mouse se suelta y el área de selección es nula
+                            // If the mouse is released and the selection area is nonexistent.
                             cleanSelectedComponents();
                         }
                     }
@@ -65,11 +70,11 @@ public class DrawingPanel extends JPanel {
             }
         });
 
-        // Eventos en los que el mouse se mueve
+        // Events where the mouse moves.
         addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 if (selectingArea) {
-                    // Actualiza el tamaño del área de selección mientras se arrastra el mouse
+                    // The selection area size is updated according to the mouse dragging.
                     selectionArea.setBounds(
                             Math.min(e.getX(), selectionAreaStartX),
                             Math.min(e.getY(), selectionAreaStartY),
@@ -80,7 +85,9 @@ public class DrawingPanel extends JPanel {
                 }
             }
 
-            // It gets the mouse position in the DrawPanel
+            /**
+             * This method gets the mouse position in the drawing panel.
+             */
             @Override
             public void mouseMoved(MouseEvent e) {
                 if (DrawingPanel.this.getBounds().contains(e.getX(), e.getY())) {
@@ -123,7 +130,7 @@ public class DrawingPanel extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                // Cuando se suelta el mouse, deselecciona la entidad y detiene el arrastre
+                // When the mouse is released, the component dragged is unselected and the dragging stops.
                 if (componenteArrastrada != null) {
                     componenteArrastrada.setSelected(Boolean.FALSE);
                 }
@@ -244,17 +251,7 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void removeComponent(Component componentToRemove) {
-
-//        List<Component> componentsForRemoval = new ArrayList<>(componentToRemove.getComponentsForRemoval());
-//
-//        componentsForRemoval.add(componentToRemove);
-//
-//        for (Component component : componentsForRemoval ) {
-//            component.cleanPresence();
-//            this.components.remove(component);
-//        }
-
+    public void removeComponent(@NotNull Component componentToRemove) {
         componentToRemove.cleanPresence();
         this.components.remove(componentToRemove);
 
@@ -263,7 +260,7 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void replaceComponent(Component oldComponent, Component newComponent) {
+    public void replaceComponent(@NotNull Component oldComponent, @NotNull Component newComponent) {
 
         if (this.components.contains(oldComponent)) {
 
@@ -339,34 +336,38 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public ActionManager getActioner() { return this.actionManager; }
+    public ActionManager getActionManager() { return this.actionManager; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void setActioner(ActionManager actionManager) { this.actionManager = actionManager; }
+    public void setActionManager(ActionManager actionManager) { this.actionManager = actionManager; }
 
     private JPopupMenu getBackgroundPopupMenu() {
 
         JPopupMenu backgroundPopupMenu = new JPopupMenu();
 
         JMenuItem addEntity = new JMenuItem(LanguageManager.getMessage("option.addEntity"));
-        addEntity.addActionListener(_ -> this.getActioner().addEntity());
+        addEntity.addActionListener(_ -> this.getActionManager().addEntity());
 
         JMenuItem addRelationship = new JMenuItem(LanguageManager.getMessage("option.addRelationship"));
-        addRelationship.addActionListener(_ -> this.getActioner().addRelationship());
+        addRelationship.addActionListener(_ -> this.getActionManager().addRelationship());
 
         JMenuItem addDependency = new JMenuItem(LanguageManager.getMessage("option.addDependency"));
-        addDependency.addActionListener(_ -> this.getActioner().addDependency());
+        addDependency.addActionListener(_ -> this.getActionManager().addDependency());
+
+        JMenuItem addHierarchy = new JMenuItem(LanguageManager.getMessage("option.addHierarchy"));
+        addHierarchy.addActionListener(_ -> this.getActionManager().addHierarchy());
 
         JMenuItem addNote = new JMenuItem(LanguageManager.getMessage("option.addNote"));
-        addNote.addActionListener(_ -> this.getActioner().addNote());
+        addNote.addActionListener(_ -> this.getActionManager().addNote());
 
         JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
-        addAssociation.addActionListener(_ -> this.getActioner().addAssociation());
+        addAssociation.addActionListener(_ -> this.getActionManager().addAssociation());
 
         backgroundPopupMenu.add(addEntity);
         backgroundPopupMenu.add(addRelationship);
         backgroundPopupMenu.add(addDependency);
+        backgroundPopupMenu.add(addHierarchy);
         backgroundPopupMenu.add(addNote);
         backgroundPopupMenu.add(addAssociation);
 

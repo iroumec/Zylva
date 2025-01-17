@@ -33,7 +33,7 @@ public class MainFrame extends JFrame {
 
         // It contains the action both the drawing panel and the frame can do.
         ActionManager actionManager = new ActionManager(drawingPanel);
-        drawingPanel.setActioner(actionManager);
+        drawingPanel.setActionManager(actionManager);
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                         Add Entity Key                                                     */

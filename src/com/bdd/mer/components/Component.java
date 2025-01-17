@@ -189,7 +189,7 @@ public abstract class Component implements Serializable {
         return new Pair<>(anchoTexto, altoTexto);
     }
 
-    public ActionManager getActionManager() { return this.drawingPanel.getActioner(); }
+    public ActionManager getActionManager() { return this.drawingPanel.getActionManager(); }
 
     public void resetLanguage() {
         this.popupMenu = this.getPopupMenu();

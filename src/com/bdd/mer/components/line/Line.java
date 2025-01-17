@@ -12,7 +12,7 @@ public class Line extends Component {
 
     private Component firstComponent;
     private Component secondComponent;
-    private LineShape lineShape;
+    private final LineShape lineShape;
     private final LineMultiplicity lineMultiplicity;
 
     public Line(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, LineShape lineShape, LineMultiplicity lineMultiplicity) {

@@ -2,6 +2,7 @@ package com.bdd.mer.frame.menuBar.exportation;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -11,52 +12,68 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class ExportPNG {
 
+    private static final Logger logger = Logger.getLogger(ExportPNG.class.getName());
+
     public static void exportToPng(DrawingPanel drawingPanel) {
+
+        // The minimal area of exportation is calculated.
+        Rectangle exportArea = getMinimalExportationArea(drawingPanel);
+        if (exportArea.width <= 0 || exportArea.height <= 0) {
+            JOptionPane.showMessageDialog(drawingPanel, LanguageManager.getMessage("warning.noComponentsToExport"));
+            return;
+        }
+
+        // The scale factor is set for higher resolution.
+        double scaleFactor = 2.0;
+
+        int width = (int) (exportArea.width * scaleFactor);
+        int height = (int) (exportArea.height * scaleFactor);
+
         try {
-            // Set the scale factor for higher resolution
-            double scaleFactor = 2.0; // Adjust as needed for higher quality
 
-            int width = (int) (drawingPanel.getWidth() * scaleFactor);
-            int height = (int) (drawingPanel.getHeight() * scaleFactor);
-
-            // Create a high-resolution image
+            // Create a high-resolution image.
             BufferedImage imagen = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = imagen.createGraphics();
 
-            // Set high-quality rendering hints
+            // Set high-quality rendering hints.
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-            // Scale the graphics to the desired resolution
+            // Scale the graphics to the desired resolution.
             g.scale(scaleFactor, scaleFactor);
 
-            // Paint the panel onto the high-resolution image
+            // A translation is applied to centre the content in the image.
+            g.translate(-exportArea.x, -exportArea.y);
+
+            // The panel is painted onto the high-resolution image.
             drawingPanel.paint(g);
             g.dispose();
 
-            // Create a JFileChooser
+            // A JFileChooser is created.
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Specify a file to save");
+            fileChooser.setDialogTitle(LanguageManager.getMessage("input.PNGExport"));
 
             fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Image Files", "png"));
 
-            // Show the save file dialog
+            // The save file dialog is shown.
             int userSelection = fileChooser.showSaveDialog(null);
 
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
 
-                // Write the high-resolution image to a file
+                // The high-resolution image is written to a file.
                 ImageIO.write(imagen, "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
 
-                JOptionPane.showMessageDialog(null, "The image was successfully saved to " + fileToSave.getAbsolutePath() + ".png.");
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.imageSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, LanguageManager.getMessage("error.PNGExport"), e);
         }
     }
 
@@ -67,7 +84,8 @@ public final class ExportPNG {
      * @param drawingPanel The drawing panel to export.
      * @return The minimal rectangle enclosing the components in the drawing panel.
      */
-    private Rectangle exportationArea(DrawingPanel drawingPanel) {
+    @SuppressWarnings("Duplicates")
+    private static Rectangle getMinimalExportationArea(DrawingPanel drawingPanel) {
 
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
@@ -94,12 +112,5 @@ public final class ExportPNG {
 
         return new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
     }
-
-    /*
-
-    Sería idea que el área que se exporte sea, parecido al cálculo que se realiza con la agregación, únicamente el que
-    incluya a las entidades.
-
-     */
 
 }
