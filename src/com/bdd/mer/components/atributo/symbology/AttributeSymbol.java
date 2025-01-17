@@ -1,6 +1,8 @@
 package com.bdd.mer.components.atributo.symbology;
 
-public enum AttributeSymbol {
+import java.io.Serializable;
+
+public enum AttributeSymbol implements Serializable {
     MAIN("● "),
     ALTERNATIVE("◐ "),
     COMMON("○ ");

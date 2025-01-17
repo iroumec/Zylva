@@ -105,10 +105,9 @@ public class MainFrame extends JFrame {
         /*                                              Delete Key                                                    */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        // Tecla para eliminar (en realidad, botón oculto que se activa al presionar una tecla).
         JButton deleteKey = new JButton("Delete key");
-        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Suprimir presionado");
-        deleteKey.getActionMap().put("Suprimir presionado", new AbstractAction() {
+        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
+        deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 actionManager.deleteSelectedComponents();
             }
@@ -118,10 +117,9 @@ public class MainFrame extends JFrame {
         /*                                            Add Association Key                                             */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        // Tecla para eliminar (en realidad, botón oculto que se activa al presionar una tecla).
         JButton addAssociationKey = new JButton("Add association key");
-        addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK), "ActionM");
-        addAssociationKey.getActionMap().put("ActionM", new AbstractAction() {
+        addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "ActionA");
+        addAssociationKey.getActionMap().put("ActionA", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 actionManager.addAssociation();
             }
@@ -136,10 +134,7 @@ public class MainFrame extends JFrame {
         getContentPane().add(deleteKey);
         getContentPane().add(addAssociationKey);
 
-        // Agrega el panel de dibujo y el menú al marco
         add(drawingPanel, BorderLayout.CENTER);
-        //add(menu, BorderLayout.WEST);
-        // Añade la barra de menú a la ventana
         setJMenuBar(menuBar);
     }
 

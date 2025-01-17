@@ -1,6 +1,8 @@
 package com.bdd.mer.components.hierarchy;
 
-public enum HierarchyExclusivity {
+import java.io.Serializable;
+
+public enum HierarchyExclusivity implements Serializable {
 
     DISJUNCT("d"),
     OVERLAPPING("o");

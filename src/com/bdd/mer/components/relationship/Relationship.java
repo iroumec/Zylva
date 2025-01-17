@@ -3,7 +3,6 @@ package com.bdd.mer.components.relationship;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.association.Association;
-import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
@@ -22,12 +21,16 @@ public class Relationship extends AttributableComponent {
     private final Polygon forma;
     private Association association;
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public Relationship(String text, int x, int y, DrawingPanel drawingPanel) {
         super(text, x, y, drawingPanel);
 
         this.participants = new ArrayList<>();
         forma = new Polygon();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected JPopupMenu getPopupMenu() {
@@ -50,6 +53,8 @@ public class Relationship extends AttributableComponent {
         }
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void draw(Graphics2D g2) {
 
@@ -85,16 +90,9 @@ public class Relationship extends AttributableComponent {
         }
 
         g2.drawPolygon(forma);
+        this.setShape(forma);
     }
 
-
-    public Rectangle getBounds() {
-
-        return this.forma.getBounds();
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                         Attribute Related Methods                                              */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -106,6 +104,8 @@ public class Relationship extends AttributableComponent {
         }
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
@@ -129,6 +129,8 @@ public class Relationship extends AttributableComponent {
 
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void addParticipant(Relatable relatableComponent, Line line) {
 
         for (Pair<Relatable, List<Line>> pair : this.participants) {
@@ -146,6 +148,8 @@ public class Relationship extends AttributableComponent {
         relatableComponent.addRelationship(this);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void removeParticipant(Relatable relatable) {
 
         for (Pair<Relatable, List<Line>> pair : this.participants) {
@@ -161,6 +165,8 @@ public class Relationship extends AttributableComponent {
         }
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<Component> getRelatedComponents() {
 
@@ -186,9 +192,18 @@ public class Relationship extends AttributableComponent {
 
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * This method let you know the number of participants in the relationship.
+     *
+     * @return The number of participants in the relationship.
+     */
     public int getNumberOfParticipants() {
         return this.participants.size();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void cleanRelatable(Relatable relatable) {
 
@@ -196,15 +211,26 @@ public class Relationship extends AttributableComponent {
             this.removeParticipant(relatable);
         }
 
-        // In other case, we don't have to do anything because, if cleanEntity was called, it is because
+        // In other case, we don't have to do anything because, if cleanRelatable was called, it is because
         // the entity will be eliminated and, so, the relationship also if it doesn't enter the if statement's body.
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void updateDiagonals(int textWidth, int textHeight, int margin) {
         horizontalDiagonal = textWidth + 2 * margin; // Diagonal horizontal basada en el ancho del texto
         verticalDiagonal = textHeight + 2 * margin; // Diagonal vertical basada en el alto del texto
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void setAssociation(Association association) {
+        this.association = association;
+        this.resetPopupMenu();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<Component> getComponentsForRemoval() {
@@ -224,10 +250,5 @@ public class Relationship extends AttributableComponent {
         out.add(this.association);
 
         return out;
-    }
-
-    public void setAssociation(Association association) {
-        this.association = association;
-        this.resetPopupMenu();
     }
 }

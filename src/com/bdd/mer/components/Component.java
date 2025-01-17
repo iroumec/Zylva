@@ -13,30 +13,81 @@ import java.awt.*;
 
 public abstract class Component implements Serializable {
 
-    // Is the component being selected?
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                  Attributes                                                    */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * This attribute indicate if the component is being selected or not.
+     */
     private boolean selected;
 
-    // Text shown in the component.
+    /**
+     * The text shown in the component.
+     */
     private String text;
 
-    // Position of the component.
+    /**
+     * Position of the component.
+     */
     private int x, y;
 
+    /**
+     * Shape of the component.
+     */
     private Shape shape;
 
+    /**
+     * Drawing panel where the component lives.
+     */
     private final DrawingPanel drawingPanel;
 
-    // PopupMenu of the Component.
+    /**
+     * JPopupMenu of the component.
+     */
     private JPopupMenu popupMenu;
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                Constructors                                                    */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Constructs a <code>Component</code> with an empty text and coordinates in (0, 0). This constructor is useful
+     * for those components which don't have a text nor their coordinates matter or are calculated.
+     *
+     * @param drawingPanel The drawing panel where the component lives.
+     */
     public Component(DrawingPanel drawingPanel) {
         this("", 0, 0, drawingPanel);
     }
 
+    /**
+     * Constructs a <code>Component</code> with coordinates in (0, 0). This constructor is useful for those components
+     * which don't have a text.
+     *
+     * @param text The text of the component.
+     * @param drawingPanel The drawing panel where the component lives.
+     */
     public Component(String text, DrawingPanel drawingPanel) { this(text, 0 , 0, drawingPanel); }
 
+    /**
+     * Constructs a <code>Component</code> with an empty text. This constructor is useful for those components
+     * which don't have a text.
+     *
+     * @param x The x coordinate of the component in the drawing panel.
+     * @param y The y coordinate of the component in the drawing panel.
+     * @param drawingPanel The drawing panel where the component lives.
+     */
     public Component(int x, int y, DrawingPanel drawingPanel) { this("", x, y, drawingPanel); }
 
+    /**
+     * Constructs a <code>Component</code>.
+     *
+     * @param text The text of the component.
+     * @param x The x coordinate of the component in the drawing panel.
+     * @param y The y coordinate of the component in the drawing panel.
+     * @param drawingPanel The drawing panel where the component lives.
+     */
     public Component(String text, int x, int y, DrawingPanel drawingPanel)  {
         this.selected = false;
         this.text = text;
@@ -46,6 +97,10 @@ public abstract class Component implements Serializable {
         this.drawingPanel = drawingPanel;
         this.setPopupMenu(this.getPopupMenu());
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                  Method                                                        */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     protected abstract JPopupMenu getPopupMenu();
 

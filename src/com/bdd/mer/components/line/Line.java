@@ -23,18 +23,6 @@ public class Line extends Component {
         this.lineMultiplicity = lineMultiplicity;
     }
 
-    public LineShape getLineShape() { return this.lineShape; }
-
-    public void setLineShape(LineShape lineShape) { this.lineShape = lineShape; }
-
-    public void changeComponentsOrder() {
-
-        Component auxiliarComponent = this.firstComponent;
-        this.firstComponent = secondComponent;
-        this.secondComponent = auxiliarComponent;
-
-    }
-
     @Override
     protected JPopupMenu getPopupMenu() {
         return null;

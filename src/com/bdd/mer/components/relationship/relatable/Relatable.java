@@ -2,7 +2,6 @@ package com.bdd.mer.components.relationship.relatable;
 
 import com.bdd.mer.components.relationship.Relationship;
 
-import java.awt.*;
 import java.io.Serializable;
 
 public interface Relatable extends Serializable {

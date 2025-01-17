@@ -1,6 +1,8 @@
 package com.bdd.mer.components.atributo.symbology;
 
-public enum AttributeArrow {
+import java.io.Serializable;
+
+public enum AttributeArrow implements Serializable {
     OPTIONAL("- - - "),
     NON_OPTIONAL("------");
 

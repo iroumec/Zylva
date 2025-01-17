@@ -1,8 +1,9 @@
 package com.bdd.mer.components.line.lineShape;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public interface LineShape {
+public interface LineShape extends Serializable {
 
     void draw(Graphics2D g2, int x1, int y1, int x2, int y2);
 

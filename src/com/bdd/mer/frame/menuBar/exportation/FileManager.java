@@ -68,6 +68,7 @@ public final class FileManager {
                 FileInputStream fileIn = new FileInputStream(fileToLoad);
                 ObjectInputStream in = new ObjectInputStream(fileIn);
 
+                @SuppressWarnings("unchecked")
                 List<Component> components = (List<Component>) in.readObject();
 
                 for (Component component : components.reversed()) {

@@ -1,5 +1,6 @@
 package com.bdd.mer.frame.menuBar.exportation;
 
+import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.imageio.ImageIO;
@@ -8,6 +9,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class ExportPNG {
 
@@ -55,6 +58,41 @@ public final class ExportPNG {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * With the objective of the PNG not containing too much empty space, only the minimal area containing the
+     * components is exported.
+     *
+     * @param drawingPanel The drawing panel to export.
+     * @return The minimal rectangle enclosing the components in the drawing panel.
+     */
+    private Rectangle exportationArea(DrawingPanel drawingPanel) {
+
+        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
+
+        List<Component> components = new ArrayList<>(drawingPanel.getListComponents());
+
+        for (Component component : components) {
+            Rectangle bounds = component.getBounds();
+
+            minX = Math.min(minX, (int) bounds.getMinX());
+            minY = Math.min(minY, (int) bounds.getMinY());
+            maxX = Math.max(maxX, (int) bounds.getMaxX());
+            maxY = Math.max(maxY, (int) bounds.getMaxY());
+        }
+
+        if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || maxX == Integer.MIN_VALUE || maxY == Integer.MIN_VALUE) {
+            return new Rectangle(0, 0, 0, 0); // There are no components.
+        }
+
+        int margin = 5;
+
+        int rectWidth = (maxX - minX) + 2 * margin;
+        int rectHeight = (maxY - minY) + 2 * margin;
+
+        return new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
     }
 
     /*

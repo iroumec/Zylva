@@ -11,9 +11,18 @@ import java.util.List;
 
 public class Note extends Component {
 
+    /**
+     * Constructor of the class.
+     * @param text  The text that will appear in the note.
+     * @param x The x coordinate in the panel.
+     * @param y The y coordinate in the panel.
+     * @param drawingPanel The drawing panel where the note lives.
+     */
     public Note(String text, int x, int y, DrawingPanel drawingPanel) {
         super(text, x, y, drawingPanel);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected JPopupMenu getPopupMenu() {
@@ -26,21 +35,21 @@ public class Note extends Component {
 
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void draw(Graphics2D g2) {
 
-        // Calcula el ancho del texto y divide en líneas si es necesario
         FontMetrics fm = g2.getFontMetrics();
-        List<String> lines = wrapText(g2, this.getText()); // Ajusta el ancho máximo según lo que necesites
+        List<String> lines = wrapText(g2, this.getText());
         int lineHeight = fm.getHeight();
 
-        // Calcula el tamaño del rectángulo según el contenido
-        int margen = 10; // Margen alrededor del texto
+        int margin = 10;
         int maxWidth = 0;
         for (String line : lines) {
-            maxWidth = Math.max(maxWidth, fm.stringWidth(line)); // Calcula el ancho máximo de las líneas
+            maxWidth = Math.max(maxWidth, fm.stringWidth(line)); // The max width of the lines is calculated.
         }
-        int rectAncho = maxWidth + 2 * margen;
-        int rectAlto = lines.size() * lineHeight + 2 * margen;
+        int rectAncho = maxWidth + 2 * margin;
+        int rectAlto = lines.size() * lineHeight + 2 * margin;
 
         int rectX = this.getX() - rectAncho / 2;
         int rectY = this.getY() - rectAlto / 4; // Due to the baseline of the text.
@@ -58,9 +67,9 @@ public class Note extends Component {
         g2.drawRoundRect(rectX, rectY, rectAncho, rectAlto, 2, 2);
         this.setShape(new Rectangle(rectX, rectY, rectAncho, rectAlto));
 
-        // Dibuja las líneas del texto centradas
+        // The text is drawn centred.
         g2.setColor(Color.BLACK);
-        int yTexto = rectY + margen + lineHeight;
+        int yTexto = rectY + margin + lineHeight;
         for (String line : lines) {
             int xTexto = rectX + (rectAncho - fm.stringWidth(line)) / 2;
             g2.drawString(line, xTexto, yTexto);
@@ -70,20 +79,20 @@ public class Note extends Component {
 
     @Override
     public void cleanPresence() {
-
+        // Do nothing.
     }
 
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
-
+        // Do nothing.
     }
 
     /**
-     * Divide el texto en líneas según el ancho máximo disponible.
+     * The lines in the text are divided according to the max width.
      *
-     * @param g2       El contexto gráfico.
-     * @param text     El texto completo.
-     * @return Una lista de líneas ajustadas al ancho.
+     * @param g2       The graphic context.
+     * @param text     The complete text.
+     * @return A list of strings adjusted according the width.
      */
     private List<String> wrapText(Graphics2D g2, String text) {
         List<String> lines = new ArrayList<>();

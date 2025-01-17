@@ -1,6 +1,8 @@
 package com.bdd.mer.components.atributo.symbology;
 
-public enum AttributeEnding {
+import java.io.Serializable;
+
+public enum AttributeEnding implements Serializable {
     MULTIVALUED(">"),
     NON_MULTIVALUED("-");
 

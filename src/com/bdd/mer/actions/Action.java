@@ -2,7 +2,9 @@ package com.bdd.mer.actions;
 
 import com.bdd.mer.frame.LanguageManager;
 
-public enum Action {
+import java.io.Serializable;
+
+public enum Action implements Serializable {
 
     DELETE("option.delete"),
     RENAME("option.rename"),

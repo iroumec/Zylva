@@ -255,6 +255,7 @@ public class DrawingPanel extends JPanel {
 //            this.components.remove(component);
 //        }
 
+        componentToRemove.cleanPresence();
         this.components.remove(componentToRemove);
 
         repaint();

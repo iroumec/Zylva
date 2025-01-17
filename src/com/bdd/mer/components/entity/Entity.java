@@ -281,6 +281,8 @@ public class Entity extends AttributableComponent implements Relatable {
 
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     protected void copyAttributes(Entity entity) {
 
         for (Relationship relationship : this.relationshipsManager.getRelationships()) {
