@@ -31,11 +31,20 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public final class ActionManager implements Serializable {
 
+    /**
+     * <Code>DrawingPanel</Code> bounded to the <Code>ActionManager</Code>.
+     */
     private final DrawingPanel drawingPanel;
 
+    /**
+     * Constructs an <Code>ActionManager</Code>.
+     *
+     * @param drawingPanel <Code>DrawingPanel</Code> bounded to the <Code>ActionManager</Code>.
+     */
     public ActionManager(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
     }
@@ -44,6 +53,9 @@ public final class ActionManager implements Serializable {
     /*                                              Add Entity                                                    */
     /* ---------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Adds a new <Code>Entity</Code> to the <Code>DrawingPanel</Code>.
+     */
     public void addEntity() {
 
         // It shows an emergent window to ask the user for the entity's name.
@@ -78,6 +90,11 @@ public final class ActionManager implements Serializable {
     /*                                           Add Relationship                                                 */
     /* ---------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Adds a new <Code>Relationship</Code> to the <Code>DrawingPanel</Code>.
+     * <p></p>
+     * Between 1 and 3 entities (strong or weak) or associations must be selected.
+     */
     public void addRelationship() {
 
         int selectedComponents = this.drawingPanel.getSelectedComponents().size();
@@ -161,55 +178,100 @@ public final class ActionManager implements Serializable {
         }
     }
 
-    private int getResultado(JPanel miPanel, JTextField cardinalidadMinimaCampo) {
-        JOptionPane optionPane = new JOptionPane(miPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
-
-        // Crea el cuadro de diálogo basado en el JOptionPane
-        JDialog dialog = optionPane.createDialog(LanguageManager.getMessage("input.twoValues"));
-
-        // Establece el foco en el campo de la cardinalidad mínima al abrir el cuadro de diálogo
-        dialog.addWindowFocusListener(new java.awt.event.WindowAdapter() {
-            @Override
-            public void windowGainedFocus(java.awt.event.WindowEvent e) {
-                cardinalidadMinimaCampo.requestFocusInWindow();
-            }
-        });
-
-        // Muestra el cuadro de diálogo
-        dialog.setVisible(true);
-
-        return (int) optionPane.getValue();
-    }
-
+    /**
+     * Given a cardinality, changes its values.
+     *
+     * @param cardinality <Code>Cardinality</Code> whose values will be changed.
+     */
     public void changeCardinality(Cardinality cardinality) {
 
-        JTextField cardinalidadMinimaCampo = new JTextField(1);
-        JTextField cardinalidadMaximaCampo = new JTextField(1);
-        JButton okButton = new JButton("OK");
-        okButton.setEnabled(false); // OK button is not enabled
+        JTextField cardinalidadMinimaCampo = new JTextField(3);
+        JTextField cardinalidadMaximaCampo = new JTextField(3);
 
-        JPanel miPanel = new JPanel();
-        miPanel.add(new JLabel(LanguageManager.getMessage("input.twoValues")));
-        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
+        JPanel miPanel = new JPanel(new GridLayout(2, 2, 5, 5));
         miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.minimum")));
         miPanel.add(cardinalidadMinimaCampo);
-        miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
         miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.maximum")));
         miPanel.add(cardinalidadMaximaCampo);
 
-        int resultado = getResultado(miPanel, cardinalidadMinimaCampo);
+        int resultado = JOptionPane.showConfirmDialog(null, miPanel, LanguageManager.getMessage("input.twoValues"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (resultado == JOptionPane.OK_OPTION) {
-            String cardinalidadMinima = cardinalidadMinimaCampo.getText();
-            String cardinalidadMaxima = cardinalidadMaximaCampo.getText();
+            String minText = cardinalidadMinimaCampo.getText().trim();
+            String maxText = cardinalidadMaximaCampo.getText().trim();
 
-            if (cardinalidadMinima.isEmpty() || cardinalidadMaxima.isEmpty()) {
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyFields"));
-                changeCardinality(cardinality);
-            } else {
-                cardinality.setText(Cardinality.giveFormat(cardinalidadMinima, cardinalidadMaxima));
-                this.drawingPanel.repaint();
+            Optional<Integer> minValue = parseInteger(minText);
+
+            // Validates if the fields are not empty.
+            if (minText.isEmpty() || maxText.isEmpty()) {
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.emptyFields"), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            // Validates if the minimum cardinality is a valid number.
+            if (minValue.isEmpty() || minValue.get() < 0) {
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMinimum"), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validates if the maximum cardinality is a valid number or a letter.
+            if (!isIntegerOrLetter(maxText) || (isInteger(maxText) && Integer.parseInt(maxText) < 0)) {
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMaximum"), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // If the maximum cardinality is a number, it must be greater than the minimum cardinality.
+            if (isInteger(maxText)) {
+                int maxValue = Integer.parseInt(maxText);
+                if (minValue.get() > maxValue) {
+                    JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidRange"), "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // If everything is valid, the cardinality is updated.
+            cardinality.setText(Cardinality.giveFormat(minText, maxText));
+            this.drawingPanel.repaint();
+        }
+    }
+
+    /**
+     * It parses a text to <Code>Integer</Code> if it's possible.
+     *
+     * @param text Text to be parsed.
+     * @return {@code Optional<Integer>} containing the parsed text if it was possible.
+     */
+    private Optional<Integer> parseInteger(String text) {
+        try {
+            return Optional.of(Integer.parseInt(text));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Validates if a text is an integer xor a letter.
+     *
+     * @param text Text to be checked.
+     * @return <Code>TRUE</Code> if the text is an integer xor a letter. It returns <Code>FALSE</Code> in any other
+     * case.
+     */
+    private boolean isIntegerOrLetter(String text) {
+        return text.matches("\\d+") || text.matches("[a-zA-Z]");
+    }
+
+    /**
+     * Validates if a text is strictly a number.
+     *
+     * @param text Text to be checked.
+     * @return <Code>TRUE</Code> if the text is an integer. It returns <Code>FALSE</Code> in any other case.
+     */
+    private boolean isInteger(String text) {
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
@@ -217,6 +279,11 @@ public final class ActionManager implements Serializable {
     /*                                           Add Dependency                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Adds a new <Code>Dependency</Code> to the <Code>DrawingPanel</Code>.
+     * <p></p>
+     * 2 strong entities must be selected.
+     */
     public void addDependency() {
 
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
@@ -275,6 +342,11 @@ public final class ActionManager implements Serializable {
         }
     }
 
+    /**
+     * From the list of selected entities, allows the user to select the weak entity.
+     *
+     * @return {@code Entity} to be the weak entity of the dependency.
+     */
     private Entity selectWeakEntity() {
 
         Object[] opciones = {drawingPanel.getSelectedEntities().getFirst().getText(),
@@ -305,6 +377,11 @@ public final class ActionManager implements Serializable {
     /*                                            Add Hierarchy                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Adds a new <Code>Hierarchy</Code> to the <Code>DrawingPanel</Code>.
+     * <p></p>
+     * At least three strong or weak entities must be selected.
+     */
     public void addHierarchy() {
 
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, WeakEntity.class) && drawingPanel.getSelectedComponents().size() >= 3) {
@@ -313,7 +390,7 @@ public final class ActionManager implements Serializable {
 
             main: if (parent != null && !parent.isAlreadyParent()) {
 
-                List<Entity> subtipos = obtenerListaSubtipos(parent);
+                List<Entity> subtipos = getChildrenList(parent);
 
                 Hierarchy newHierarchy = getHierarchy(parent);
 
@@ -430,7 +507,7 @@ public final class ActionManager implements Serializable {
 
     }
 
-    public List<Entity> obtenerListaSubtipos(Entity parent) {
+    public List<Entity> getChildrenList(Entity parent) {
 
         List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
 
@@ -531,27 +608,36 @@ public final class ActionManager implements Serializable {
     /*                                                Add Attribute                                                   */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Given an attributable component, this method adds it a common attribute.
+     *
+     * @param component The attributable component owner of the attribute.
+     */
     public void addAttribute(AttributableComponent component) {
         addAttribute(component, AttributeSymbol.COMMON);
     }
 
+    /**
+     * Given an attributable component, this method adds it an attribute according to the specified symbol.
+     *
+     * @param component The attributable component owner of the attribute.
+     * @param attributeSymbol The type of the attribute.
+     */
     public void addAttribute(AttributableComponent component, AttributeSymbol attributeSymbol) {
 
         // Creation of the components of the panel.
         JTextField fieldNombre = new JTextField(10);
-        JCheckBox boxOptional = new JCheckBox("Optional");
-        JCheckBox boxMultivalued = new JCheckBox("Multivalued");
+        JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
+        JCheckBox boxMultivalued = new JCheckBox(LanguageManager.getMessage("attribute.multivalued"));
 
-        // Crea un array de los componentes
+        // Array of the components of the panel.
         Object[] message = {
-                "Ingrese el nombre del atributo:", fieldNombre,
-                "Seleccione las opciones:", boxOptional, boxMultivalued
+                LanguageManager.getMessage("input.name"), fieldNombre,
+                LanguageManager.getMessage("input.selectOptions"), boxOptional, boxMultivalued
         };
 
-        // Muestra el JOptionPane
-        int option = JOptionPane.showConfirmDialog(null, message, "Ingrese la información del atributo", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, message, LanguageManager.getMessage("input.attributeInformation"), JOptionPane.OK_CANCEL_OPTION);
 
-        // Muestra una ventana emergente para ingresar el nombre del atributo y seleccionar las opciones
         if (option == JOptionPane.OK_OPTION) {
 
             String nombre = fieldNombre.getText();
@@ -571,6 +657,11 @@ public final class ActionManager implements Serializable {
 
     }
 
+    /**
+     * Given an attributable component, this method allows to select a type of attribute so it can be added later.
+     *
+     * @param component The attributable component owner of the attribute.
+     */
     public void addComplexAttribute(AttributableComponent component) {
 
         AttributeSymbol attributeSymbol = selectAttributeType();
@@ -590,7 +681,6 @@ public final class ActionManager implements Serializable {
 
             int option = JOptionPane.showConfirmDialog(null, fieldNombre, LanguageManager.getMessage("input.name"), JOptionPane.OK_CANCEL_OPTION);
 
-            // Muestra una ventana emergente para ingresar el nombre del atributo y seleccionar las opciones
             if (option == JOptionPane.OK_OPTION) {
 
                 String nombre = fieldNombre.getText();
@@ -612,33 +702,38 @@ public final class ActionManager implements Serializable {
         }
     }
 
+    /**
+     * This method allows the user to select an attribute type.
+     *
+     * @return The attribute symbol selected.
+     */
+    @SuppressWarnings("Duplicates")
     private AttributeSymbol selectAttributeType() {
 
-        // Crea los radio buttons
+        // The radio buttons are created.
         JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
         JRadioButton alternativeAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.alternative"));
         JRadioButton mainAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.main"));
 
-        // Agrupa los radio buttons para que solo se pueda seleccionar uno a la vez
+        // The radio buttons are grouped so only one can be selected at the same time.
         ButtonGroup group = new ButtonGroup();
         group.add(mainAttributeOption);
         group.add(alternativeAttributeOption);
         group.add(commonAttributeOption);
 
-        // Crea un panel para contener los radio buttons
+        // A panel for containing the radio buttons is created.
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Añade un BoxLayout al panel
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        // Crea un panel para el grupo de radio buttons
+        // A panel for the group of radio buttons is created.
         JPanel panelAttribute = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelAttribute.add(mainAttributeOption);
         panelAttribute.add(alternativeAttributeOption);
         panelAttribute.add(commonAttributeOption);
 
-        // Agrega los pares de opciones al panel
+        // The pair of options are added to the panel.
         panel.add(panelAttribute);
 
-        // Muestra el panel en un JOptionPane
         int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.attributeType"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
@@ -656,6 +751,11 @@ public final class ActionManager implements Serializable {
         }
     }
 
+    /**
+     * This method allows the user to change an attribute optionality.
+     *
+     * @param attribute The attribute whose optionality will be changed.
+     */
     public void changeOptionality(Attribute attribute) {
 
         attribute.changeOptionality();
@@ -663,6 +763,11 @@ public final class ActionManager implements Serializable {
 
     }
 
+    /**
+     * This method allows the user to change the number of values an attribute can take.
+     *
+     * @param attribute The attribute whose number of possible values will be changed.
+     */
     public void changeMultivalued(Attribute attribute) {
 
         attribute.changeMultivalued();
@@ -671,9 +776,14 @@ public final class ActionManager implements Serializable {
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                             Add Macro-Entity                                                   */
+    /*                                              Add Association                                                   */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Add an association to the drawing panel.
+     * <p></p>
+     * There must be selected a relationship.
+     */
     // There must be selected at least an entity and a relationship (unary relationship)
     public void addAssociation() {
 
@@ -689,9 +799,22 @@ public final class ActionManager implements Serializable {
             drawingPanel.cleanSelectedComponents();
 
         } else {
-            JOptionPane.showMessageDialog(null, "Seleccione una relación.");
+            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("input.selectRelationship"));
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                Get JPopupMenu                                                  */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Given a list of actions, it returns a JPopupMenu that allows the component to perform all
+     * the specified actions.
+     *
+     * @param component The component owner of the actions.
+     * @param actions An infinite list of actions we want to add to the panel.
+     * @return A <code>JPopupMenu</code> containing all the specified options.
+     */
 
     public JPopupMenu getPopupMenu(Component component, Action ... actions) {
 

@@ -4,6 +4,7 @@ import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -161,7 +162,7 @@ public class Hierarchy extends Component {
 
         if (isThereMultipleInheritance()) {
 
-            JOptionPane.showMessageDialog(null, "La jerarquía no puede eliminarse puesto a que existe una herencia múltiple que depende de ella.");
+            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.multipleInheritance"));
             return false;
         }
 
