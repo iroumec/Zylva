@@ -8,18 +8,45 @@ import java.util.List;
 
 public abstract class AttributableComponent extends Component {
 
+    /**
+     * List of {@code Attribute} of the component.
+     */
     private final List<Attribute> attributes;
 
+    /**
+     * Constructs an {@code AttributableComponent}.
+     *
+     * @param text Component's name.
+     * @param x X coordinate value in the {@code DrawingPanel}.
+     * @param y Y coordinate value in the {@code DrawingPanel}.
+     * @param drawingPanel {@code DrawingPanel} where the component lives.
+     */
     protected AttributableComponent(String text, int x, int y, DrawingPanel drawingPanel) {
         super(text, x, y, drawingPanel);
 
         this.attributes = new ArrayList<>();
     }
 
+    /**
+     * Adds an {@code Attribute} to the component.
+     *
+     * @param attribute {@code Attribute} to be added.
+     */
     public void addAttribute(Attribute attribute) { this.attributes.add(attribute); }
 
+    /**
+     * Removes an {@code Attribute} from the component.
+     *
+     * @param attribute {@code Attribute} to be removed.
+     */
     public void removeAttribute(Attribute attribute) { this.attributes.remove(attribute); }
 
+    /**
+     * @param attribute {@code Attribute} whose position is wanted to be known.
+     * @return Position of the attribute in the hierarchy.
+     *
+     * This allows complex trees of attributes to bee drawn.
+     */
     public int getAttributePosition(Attribute attribute) {
 
         int out = 0;
@@ -40,6 +67,10 @@ public abstract class AttributableComponent extends Component {
 
     }
 
+    /**
+     *
+     * @return {@code List<Attribute>} containing all the attributes of the component.
+     */
     public List<Attribute> getAttributes() {
 
         List<Attribute> out = new ArrayList<>(this.attributes);
@@ -51,6 +82,10 @@ public abstract class AttributableComponent extends Component {
         return out;
     }
 
+    /**
+     *
+     * @return The number of attributes of the component.
+     */
     public int getNumberOfAttributes() {
 
         int out = this.attributes.size();
@@ -62,6 +97,15 @@ public abstract class AttributableComponent extends Component {
         return out;
     }
 
+    /**
+     *
+     * @return {@code TRUE} if the component has a {@code MainAttribute}. {@code FALSE} in any other case.
+     */
+    public boolean hasMainAttribute() {
+        return false;
+    }
+
+    @Override
     public List<Component> getComponentsForRemoval() {
 
         List<Component> out = super.getComponentsForRemoval();
@@ -73,6 +117,7 @@ public abstract class AttributableComponent extends Component {
         return out;
     }
 
+    @Override
     public void setSelected(boolean isSelected) {
 
         super.setSelected(isSelected);
@@ -81,10 +126,6 @@ public abstract class AttributableComponent extends Component {
             attribute.setSelected(isSelected);
         }
 
-    }
-
-    public boolean hasMainAttribute() {
-        return false;
     }
 
 }

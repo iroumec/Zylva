@@ -237,7 +237,6 @@ public class DrawingPanel extends JPanel {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void addComponent(Component component) {
-
         this.components.addFirst(component);
         this.repaint();
     }
@@ -254,7 +253,6 @@ public class DrawingPanel extends JPanel {
     public void removeComponent(@NotNull Component componentToRemove) {
         componentToRemove.cleanPresence();
         this.components.remove(componentToRemove);
-
         repaint();
     }
 
@@ -278,6 +276,8 @@ public class DrawingPanel extends JPanel {
             component.changeReference(oldComponent, newComponent);
         }
 
+        repaint();
+
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -295,6 +295,7 @@ public class DrawingPanel extends JPanel {
         }
 
         componentesSeleccionadas.clear();
+        repaint();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -303,6 +304,7 @@ public class DrawingPanel extends JPanel {
         this.components = new ArrayList<>();
         this.componenteArrastrada = null;
         this.componentesSeleccionadas = new HashSet<>();
+        repaint();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

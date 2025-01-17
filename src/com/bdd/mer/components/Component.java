@@ -102,19 +102,42 @@ public abstract class Component implements Serializable {
     /*                                                  Method                                                        */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * @return A {@code JPopupMenu} loaded with the actions the component can do.
+     */
     protected abstract JPopupMenu getPopupMenu();
 
+    /**
+     * Changes the current {@code JPopupMenu} to a new one.
+     *
+     * @param popupMenu New {@code JPopupMenu}.
+     */
     public void setPopupMenu(JPopupMenu popupMenu) { this.popupMenu = popupMenu; }
 
+    /**
+     * Resets the current {@code JPopupMenu}. This method is useful in cases where the {@code JPopupMenu} obtained
+     * depends on another variable.
+     */
     public void resetPopupMenu() { this.popupMenu = getPopupMenu(); }
 
+    /**
+     * @return The {@code DrawingPanel} where the component lives.
+     */
     public DrawingPanel getPanelDibujo() { return this.drawingPanel; }
 
+    /**
+     * Draws the component.
+     *
+     * @param g2 Graphics context.
+     */
     public abstract void draw(Graphics2D g2);
 
+    /**
+     *
+     * @return {@code Rectangle} containing the component.
+     */
     public Rectangle getBounds() {
 
-        // Check this later.
         if (this.shape == null) {
             return new Rectangle(0, 0, 0, 0);
         }
@@ -122,16 +145,44 @@ public abstract class Component implements Serializable {
         return this.shape.getBounds();
     }
 
+    /**
+     * Updates the {@code Shape} of the component.
+     *
+     * @param shape New {@code Shape}.
+     */
     public void setShape(Shape shape) { this.shape = shape; }
 
+    /**
+     * Changes the selection state of the component.
+     *
+     * @param isSelected New selection state.
+     */
     public void setSelected(boolean isSelected) { this.selected = isSelected; }
 
+    /**
+     *
+     * @return {@code TRUE} if the entity is being selected.
+     */
     public boolean isSelected() { return this.selected; }
 
+    /**
+     * Updates the text of the component.
+     *
+     * @param text New text.
+     */
     public void setText(String text) { this.text = text; }
 
+    /**
+     *
+     * @return The text or name of the component.
+     */
     public String getText() { return this.text; }
 
+    /**
+     * Updates the x coordinate value of the component.
+     *
+     * @param x New x coordinate value.
+     */
     public void setX(int x) {
 
         if (x >= 0) {
@@ -140,6 +191,11 @@ public abstract class Component implements Serializable {
 
     }
 
+    /**
+     * Updates the y coordinate value of the component.
+     *
+     * @param y New y coordinate value.
+     */
     public void setY(int y) {
 
         if (y >= 0) {
@@ -148,14 +204,30 @@ public abstract class Component implements Serializable {
 
     }
 
+    /**
+     *
+     * @return X coordinate value of the component.
+     */
     public int getX() { return this.x; }
 
+    /**
+     *
+     * @return y coordinate value of the component.
+     */
     public int getY() { return this.y; }
 
+    /**
+     * Shows the {@code JPopupMenu} of the component.
+     *
+     * @param origin {@code java.awt.Component} necessary to show the menu.
+     * @param x X coordinate value where the {@code JPopupMenu} will be shown.
+     * @param y Y coordinate value where the {@code JPopupMenu} will be shown.
+     */
     public void showPopupMenu(java.awt.Component origin, int x, int y) {
         this.popupMenu.show(origin, x, y);
     }
 
+    // This method needs to be changed.
     public List<Entity> getEntities() { return new ArrayList<>(); }
 
     public List<Component> getComponentsForRemoval() {

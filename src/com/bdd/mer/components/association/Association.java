@@ -16,9 +16,17 @@ public class Association extends Component implements Relatable {
 
     private final RelatableImplementation relationshipsManager;
 
-    // Relationship forming the association.
+    /**
+     * Core {@code Relationship} forming the association.
+     */
     private final Relationship relationship;
 
+    /**
+     * Constructs an {@code Association}.
+     *
+     * @param relationship Core {@code Relationship} forming the association.
+     * @param drawingPanel {@code DrawingPanel} where the Association lives.
+     */
     public Association(Relationship relationship, DrawingPanel drawingPanel) {
         super(drawingPanel);
         this.relationshipsManager = new RelatableImplementation();
@@ -26,17 +34,11 @@ public class Association extends Component implements Relatable {
         this.relationship.setAssociation(this);
     }
 
-    @Override
-    protected JPopupMenu getPopupMenu() {
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.ADD_REFLEXIVE_RELATIONSHIP,
-                Action.DELETE
-        );
-
-    }
-
+    @SuppressWarnings("Duplicates")
     @Override
     public void draw(Graphics2D g2) {
 
@@ -79,6 +81,20 @@ public class Association extends Component implements Relatable {
         this.setShape(shape);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected JPopupMenu getPopupMenu() {
+
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.ADD_REFLEXIVE_RELATIONSHIP,
+                Action.DELETE
+        );
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void cleanPresence() {
@@ -91,6 +107,8 @@ public class Association extends Component implements Relatable {
         }
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<Component> getComponentsForRemoval() {
@@ -108,15 +126,21 @@ public class Association extends Component implements Relatable {
         return out;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
         // Do nothing, due to a relationship is not able to change.
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void addRelationship(Relationship relationship) {
         this.relationshipsManager.addRelationship(relationship);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void removeRelationship(Relationship relationship) {

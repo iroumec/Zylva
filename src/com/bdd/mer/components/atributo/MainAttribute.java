@@ -11,9 +11,20 @@ import javax.swing.*;
 
 public class MainAttribute extends Attribute {
 
+    /**
+     * Constructs a {@code MainAttribute}.
+     *
+     * @param owner {@code Attribute}'s owner.
+     * @param text {@code Attributes}'s text.
+     * @param drawingPanel {@code DrawingPanel} where the {@code Attribute} lives.
+     */
     public MainAttribute(AttributableComponent owner, String text, DrawingPanel drawingPanel) {
         super(owner, text, AttributeSymbol.MAIN, AttributeArrow.NON_OPTIONAL, AttributeEnding.NON_MULTIVALUED, drawingPanel);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected JPopupMenu getPopupMenu() {

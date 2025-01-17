@@ -405,19 +405,19 @@ public final class ActionManager implements Serializable {
 
                     if (!subtipo.addHierarchy(newHierarchy)) {
 
-                        // Acción reparadora.
+                        // Repairing action.
                         parent.removeHierarchy(newHierarchy);
                         for (Entity s : subtipos) {
                             s.removeHierarchy(newHierarchy);
 
-                            String message = "La entidad "
+                            String message = LanguageManager.getMessage("warning.theEntity") + " "
                                     + '\"' + subtipo.getText() + '\"'
-                                    + " ya participa de una jerarquía. "
-                                    + "La herencia múltiple solamente es permitida si se tiene el mismo padre.";
+                                    + " " + LanguageManager.getMessage("warning.alreadyParticipatesInHierarchy") + " "
+                                    + LanguageManager.getMessage("warning.multipleInheritanceOnlyAllowed");
 
                             JOptionPane.showMessageDialog(this.drawingPanel, message);
 
-                            // Salida
+                            // Exit.
                             break main;
                         }
                     }
@@ -426,7 +426,7 @@ public final class ActionManager implements Serializable {
                 drawingPanel.addComponent(newHierarchy);
 
                 } else {
-                    JOptionPane.showMessageDialog(this.drawingPanel, "La entidad seleccionada ya participa en otra jerarquía.");
+                    JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.alreadyParent"));
                 }
         } else {
             JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.threeEntities"));
@@ -436,6 +436,12 @@ public final class ActionManager implements Serializable {
         drawingPanel.cleanSelectedComponents();
     }
 
+    /**
+     * Creates a {@code Hierarchy} according to the options selected by the user.
+     *
+     * @param parent Entity parent of the hierarchy.
+     * @return {@code Hierarchy} according to the options selected by the user.
+     */
     public Hierarchy getHierarchy(Entity parent) {
 
         // The radio buttons are created.
@@ -469,12 +475,12 @@ public final class ActionManager implements Serializable {
         panel.add(panelEC);
         panel.add(panelTP);
 
-        int option = JOptionPane.showOptionDialog(null, panel, "Elige una opción",
+        int option = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.option"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
-        // If the user clicked Cancel or closed the window
+        // If the user clicked "Cancel" or closed the window.
         if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
-            return null; // Cancel the process
+            return null; // The process is cancelled.
         }
 
         HierarchyExclusivity letter = (exclusiveButton.isSelected()) ? HierarchyExclusivity.DISJUNCT : HierarchyExclusivity.OVERLAPPING;
@@ -490,6 +496,11 @@ public final class ActionManager implements Serializable {
         return newHierarchy;
     }
 
+    /**
+     * Allows the user to select, from the selected entities, an {@code Entity} to be the parent.
+     *
+     * @return {@code Hierarchy} selected to be the parent of the {@code Hierarchy}.
+     */
     public Entity selectParent() {
 
         List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
@@ -507,6 +518,12 @@ public final class ActionManager implements Serializable {
 
     }
 
+    /**
+     * Given the parent of the hierarchy, it returns a list containing its children.
+     *
+     * @param parent {@code Entity} chosen as the parent of the hierarchy.
+     * @return {@code List<Entity>} containing the children entities of the hierarchy.
+     */
     public List<Entity> getChildrenList(Entity parent) {
 
         List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
@@ -517,6 +534,11 @@ public final class ActionManager implements Serializable {
         return retorno;
     }
 
+    /**
+     * Given a hierarchy, swaps its exclusivity.
+     *
+     * @param hierarchy {@code Hierarchy} whose exclusivity will be swapped.
+     */
     public void swapExclusivity(Hierarchy hierarchy) {
 
         if (hierarchy.getExclusivity().equals(HierarchyExclusivity.DISJUNCT)) {
@@ -533,6 +555,11 @@ public final class ActionManager implements Serializable {
     /*                                                 Add Note                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Adds a new <Code>Note</Code> to the <Code>DrawingPanel</Code>.
+     * <p></p>
+     * At least three strong or weak entities must be selected.
+     */
     public void addNote() {
 
         String text = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.text"));
@@ -546,12 +573,17 @@ public final class ActionManager implements Serializable {
     /*                                         Delete Selected Components                                             */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Deletes all the selected components and their close related components.
+     * <p></p>
+     * At least one component must be selected.
+     */
     public void deleteSelectedComponents() {
 
         List<Component> selectedComponents = this.drawingPanel.getSelectedComponents();
 
         if (!selectedComponents.isEmpty()) {
-            int confirmation = JOptionPane.showConfirmDialog(this.drawingPanel, "¿Seguro de que desea eliminar el objeto seleccionado?");
+            int confirmation = JOptionPane.showConfirmDialog(this.drawingPanel, LanguageManager.getMessage("input.delete"));
             if (confirmation == JOptionPane.YES_OPTION) {
 
                 List<Component> componentsForRemoval = new ArrayList<>();
@@ -573,7 +605,7 @@ public final class ActionManager implements Serializable {
 
             this.drawingPanel.repaint();
         } else {
-            JOptionPane.showMessageDialog(null, "Debe seleccionar al menos un elemento.");
+            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.delete"));
         }
 
         // Desactiva el modo de selección
@@ -584,16 +616,19 @@ public final class ActionManager implements Serializable {
     /*                                               Rename Component                                                 */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Renames a {@code Component}.
+     */
     public void renameComponent(Component component) {
 
         String newText;
 
         do {
-            newText = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el nuevo texto: ");
+            newText = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.newText"));
 
             // "newText" can be null when the user pressed "cancel"
             if (newText != null && newText.isEmpty()) {
-                JOptionPane.showMessageDialog(this.drawingPanel, "Ingrese al menos un carácter");
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.oneCharacter"));
             }
         } while (newText != null && newText.isEmpty());
 
