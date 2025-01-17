@@ -2,8 +2,6 @@ package com.bdd.mer.components.line;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.line.lineMultiplicity.LineMultiplicity;
-import com.bdd.mer.components.line.lineMultiplicity.SingleLine;
-import com.bdd.mer.components.line.lineShape.DirectLine;
 import com.bdd.mer.components.line.lineShape.LineShape;
 import com.bdd.mer.frame.DrawingPanel;
 
@@ -12,18 +10,10 @@ import java.awt.*;
 
 public class Line extends Component {
 
-    private final Component firstComponent;
-    private final Component secondComponent;
+    private Component firstComponent;
+    private Component secondComponent;
     private LineShape lineShape;
     private final LineMultiplicity lineMultiplicity;
-
-    public Line(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent) {
-        this(drawingPanel, firstComponent, secondComponent, new DirectLine());
-    }
-
-    public Line(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, LineShape lineShape) {
-        this(drawingPanel, firstComponent, secondComponent, lineShape, new SingleLine());
-    }
 
     public Line(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, LineShape lineShape, LineMultiplicity lineMultiplicity) {
         super(drawingPanel);
@@ -36,6 +26,14 @@ public class Line extends Component {
     public LineShape getLineShape() { return this.lineShape; }
 
     public void setLineShape(LineShape lineShape) { this.lineShape = lineShape; }
+
+    public void changeComponentsOrder() {
+
+        Component auxiliarComponent = this.firstComponent;
+        this.firstComponent = secondComponent;
+        this.secondComponent = auxiliarComponent;
+
+    }
 
     @Override
     protected JPopupMenu getPopupMenu() {
@@ -62,5 +60,29 @@ public class Line extends Component {
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
 
+        if (firstComponent.equals(oldComponent)) {
+            firstComponent = newComponent;
+        }
+
+        if (secondComponent.equals(oldComponent)) {
+            secondComponent = newComponent;
+        }
+
     }
+
+    public Point getCenterPoint() {
+
+        return this.lineShape.getCenterPoint(firstComponent.getX(), firstComponent.getY(), secondComponent.getX(), secondComponent.getY());
+
+    }
+
+    @Override
+    public Rectangle getBounds() {
+
+        Point centerPoint = this.getCenterPoint();
+
+        return new Rectangle(centerPoint.x, centerPoint.y, 0, 0);
+
+    }
+
 }

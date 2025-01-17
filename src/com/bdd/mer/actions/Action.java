@@ -16,6 +16,7 @@ public enum Action {
     SWAP_MULTIVALUED("option.swapMultivalued"),
     SWAP_EXCLUSIVITY("option.swapExclusivity"),
     CHANGE_CARDINALITY("option.changeValues"),
+    ADD_REFLEXIVE_RELATIONSHIP("option.addReflexiveRelationship"),
     ADD_NOTE("option.addNote"),
     CHANGE_TEXT("option.changeText");
 

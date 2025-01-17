@@ -51,11 +51,19 @@ public abstract class Component implements Serializable {
 
     public void setPopupMenu(JPopupMenu popupMenu) { this.popupMenu = popupMenu; }
 
+    public void resetPopupMenu() { this.popupMenu = getPopupMenu(); }
+
     public DrawingPanel getPanelDibujo() { return this.drawingPanel; }
 
     public abstract void draw(Graphics2D g2);
 
     public Rectangle getBounds() {
+
+        // Check this later.
+        if (this.shape == null) {
+            return new Rectangle(0, 0, 0, 0);
+        }
+
         return this.shape.getBounds();
     }
 

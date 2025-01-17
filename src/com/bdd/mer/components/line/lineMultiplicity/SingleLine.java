@@ -1,6 +1,5 @@
 package com.bdd.mer.components.line.lineMultiplicity;
 
-import com.bdd.mer.components.Component;
 import com.bdd.mer.components.line.lineShape.LineShape;
 
 import java.awt.*;

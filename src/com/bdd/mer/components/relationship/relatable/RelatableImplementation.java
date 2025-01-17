@@ -20,14 +20,6 @@ public class RelatableImplementation implements Relatable {
 
     public void removeRelationship(Relationship relationship) { this.relationships.remove(relationship); }
 
-    @Override
-    public void drawLinesToRelationships(Graphics2D graphics2D, int x, int y) {
-
-        for (Relationship relationship : relationships) {
-            graphics2D.drawLine(relationship.getX(), relationship.getY(), x, y);
-        }
-    }
-
     public List<Relationship> getRelationships() { return new ArrayList<>(this.relationships); }
 
 }

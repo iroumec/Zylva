@@ -2,8 +2,7 @@ package com.bdd.mer.components.relationship.cardinality;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.relationship.Relationship;
-import com.bdd.mer.components.relationship.relatable.Relatable;
+import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -13,8 +12,7 @@ import java.util.List;
 
 public class Cardinality extends Component {
 
-    private Relatable owner;
-    private Relationship relationship;
+    private GuardedLine guardedLine;
 
     public Cardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
         super(drawingPanel);
@@ -24,36 +22,40 @@ public class Cardinality extends Component {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(this, Action.CHANGE_CARDINALITY);
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.CHANGE_CARDINALITY
+        );
 
     }
 
     @Override
     public void draw(Graphics2D g2) {
 
-        int x = (((Component) this.getOwner()).getX() + this.relationship.getX()) / 2;
-        int y = (((Component) this.getOwner()).getY() + this.relationship.getY()) / 2;
+        Point point = this.guardedLine.getCenterPoint();
 
-        // Calcula el ancho y alto del texto
+        int x = point.x;
+        int y = point.y;
+
         FontMetrics fm = g2.getFontMetrics();
-        int anchoTexto = fm.stringWidth(this.getText());
-        int altoTexto = fm.getHeight();
+        int textWidth = fm.stringWidth(this.getText());
+        int textHeight = fm.getHeight();
 
-        // Ajusta las coordenadas para que el rectángulo encierre el texto correctamente
-        int rectX = x - anchoTexto / 2; // Centra el texto horizontalmente
-        int rectY = y - altoTexto / 2;  // Centra el texto verticalmente
+        // The coordinates are adjusted so that the text is enclosed correctly.
+        int rectX = x - textWidth / 2; // The text is horizontally centred.
+        int rectY = y - textHeight / 2;  // The text is vertically centred.
 
-        // Crea y dibuja el rectángulo que encierra el texto
-        Rectangle shape = new Rectangle(rectX, rectY, anchoTexto, altoTexto);
+        // The rectangle enclosing the text is created and rendered.
+        Rectangle shape = new Rectangle(rectX, rectY, textWidth, textHeight);
         g2.setColor(Color.WHITE);
         g2.fill(shape);
         this.setShape(shape);
 
-        // Dibuja el texto
+        // The text is drawn.
         g2.setColor(Color.BLACK);
-        g2.drawString(this.getText(), x - anchoTexto / 2, y + altoTexto / 4);
+        g2.drawString(this.getText(), x - textWidth / 2, y + textHeight / 4);
 
-        // Debugging: Dibuja el rectángulo
+        // Debugging: the shape is drawn.
         //g2.draw(shape);
     }
 
@@ -69,22 +71,22 @@ public class Cardinality extends Component {
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
 
-        if (newComponent instanceof Relatable) { // I don't have to check if oldComponents is instance of Relatable due to the equals below.
+        if (newComponent instanceof GuardedLine) {
 
-            if (this.owner.equals(oldComponent)) {
-                this.owner = (Relatable) newComponent;
+            if (this.guardedLine.equals(oldComponent)) {
+                this.guardedLine = (GuardedLine) newComponent;
             }
-
         }
 
+        this.guardedLine.changeReference(oldComponent, newComponent);
+
+    }
+
+    public void setLine(GuardedLine guardedLine) {
+        this.guardedLine = guardedLine;
     }
 
     public static String giveFormat(String firstValue, String secondValue) {
         return "(" + firstValue + ", " + secondValue + ")";
     }
-
-    public Relatable getOwner() { return this.owner; }
-
-    public void setOwner(Relatable relatableComponent) { this.owner = relatableComponent; }
-    public void setRelationship(Relationship relationship) { this.relationship = relationship; }
 }

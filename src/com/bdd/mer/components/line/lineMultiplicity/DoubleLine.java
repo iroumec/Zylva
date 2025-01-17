@@ -6,7 +6,7 @@ import java.awt.*;
 
 public class DoubleLine implements LineMultiplicity {
 
-    // Separation among the lines.
+    // Separation between the lines.
     private final int separation;
 
     public DoubleLine(int separation) {

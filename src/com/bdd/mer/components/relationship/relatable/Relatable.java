@@ -11,6 +11,4 @@ public interface Relatable extends Serializable {
 
     void removeRelationship(Relationship relationship);
 
-    void drawLinesToRelationships(Graphics2D graphics2D, int x, int y);
-
 }

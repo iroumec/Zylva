@@ -2,8 +2,9 @@ package com.bdd.mer.components.relationship;
 
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
+import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.entity.Entity;
-import com.bdd.mer.components.relationship.cardinality.Cardinality;
+import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
@@ -16,28 +17,37 @@ import java.util.List;
 
 public class Relationship extends AttributableComponent {
 
-    private final List<Pair<Relatable, Cardinality>> participants; // I use a Pair and not a HashMap because I cannot change dynamically an entity in it
+    private final List<Pair<Relatable, List<Line>>> participants; // I use a Pair and not a HashMap because I cannot change dynamically an entity in it
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon forma;
+    private Association association;
 
     public Relationship(String text, int x, int y, DrawingPanel drawingPanel) {
         super(text, x, y, drawingPanel);
 
         this.participants = new ArrayList<>();
-
         forma = new Polygon();
     }
 
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.ADD_ATTRIBUTE,
-                Action.ADD_ASSOCIATION,
-                Action.RENAME,
-                Action.DELETE
-        );
+        if (association == null) {
+            return this.getActionManager().getPopupMenu(
+                    this,
+                    Action.ADD_ATTRIBUTE,
+                    Action.ADD_ASSOCIATION,
+                    Action.RENAME,
+                    Action.DELETE
+            );
+        } else {
+            return this.getActionManager().getPopupMenu(
+                    this,
+                    Action.ADD_ATTRIBUTE,
+                    Action.RENAME,
+                    Action.DELETE
+            );
+        }
 
     }
 
@@ -48,30 +58,25 @@ public class Relationship extends AttributableComponent {
         int anchoTexto = fontMetrics.getFirst();
         int altoTexto = fontMetrics.getSecond();
 
-        // Posición centrada del texto en la diagonal del rombo
         int xTexto = getX() - anchoTexto / 2;
-        int yTexto = getY() + altoTexto / 4; // Dividir alto por 4 para compensar el baseline del texto
+        int yTexto = getY() + altoTexto / 4; // It's divided by four to compensate the text baseline.
 
-        // Cambia el grosor del recuadro
         g2.setStroke(new BasicStroke(1));
 
-        // Dibuja el recuadro de la entidad
-        int margen = 15; // Margen alrededor del texto
+        int margin = 15; // Margin around the text.
 
         // It is not necessary to do this all the time. Only if the text is changed.
-        this.updateDiagonals(anchoTexto, altoTexto, margen);
+        this.updateDiagonals(anchoTexto, altoTexto, margin);
 
         forma.reset();
-        forma.addPoint(getX(), getY() - verticalDiagonal / 2); // Punto superior
-        forma.addPoint(getX() + horizontalDiagonal / 2, getY()); // Punto derecho
-        forma.addPoint(getX(), getY() + verticalDiagonal / 2); // Punto inferior
-        forma.addPoint(getX() - horizontalDiagonal / 2, getY()); // Punto izquierdo
+        forma.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
+        forma.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
+        forma.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
+        forma.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
 
-        // Rellena el polígono
         g2.setColor(Color.WHITE);
         g2.fillPolygon(forma);
 
-        // Dibuja el texto centrado
         g2.setColor(Color.BLACK);
         g2.drawString(this.getText(), xTexto, yTexto);
 
@@ -79,7 +84,6 @@ public class Relationship extends AttributableComponent {
             this.setSelectionOptions(g2);
         }
 
-        // Dibuja el rombo
         g2.drawPolygon(forma);
     }
 
@@ -97,7 +101,7 @@ public class Relationship extends AttributableComponent {
     public void cleanPresence() {
 
         // We break the bound between the relationship and their participants.
-        for (Pair<Relatable, Cardinality> pair : this.participants) {
+        for (Pair<Relatable, List<Line>> pair : this.participants) {
             pair.getFirst().removeRelationship(this);
         }
 
@@ -106,13 +110,18 @@ public class Relationship extends AttributableComponent {
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
 
-        if (oldComponent instanceof Relatable && newComponent instanceof Relatable) {
+        if (newComponent instanceof Relatable || newComponent instanceof Line) {
 
-            for (Pair<Relatable, Cardinality> pair : this.participants) {
+            for (Pair<Relatable, List<Line>> pair : this.participants) {
 
                 if (pair.getFirst().equals(oldComponent)) {
+                    assert newComponent instanceof Relatable;
                     pair.setFirst((Relatable) newComponent);
                 }
+
+                List<Line> lines = pair.getSecond();
+
+                lines.replaceAll(line -> line.equals(oldComponent) ? (Line) newComponent : line);
 
             }
 
@@ -120,18 +129,33 @@ public class Relationship extends AttributableComponent {
 
     }
 
-    public void addParticipant(Relatable relatableComponent, Cardinality cardinality) {
-        this.participants.add(new Pair<>(relatableComponent, cardinality));
+    public void addParticipant(Relatable relatableComponent, Line line) {
+
+        for (Pair<Relatable, List<Line>> pair : this.participants) {
+            if (pair.getFirst().equals(relatableComponent)) {
+                pair.getSecond().add(line);
+                return;
+            }
+        }
+
+        List<Line> lines = new ArrayList<>();
+        lines.add(line);
+
+        this.participants.add(new Pair<>(relatableComponent, lines));
+
         relatableComponent.addRelationship(this);
-        cardinality.setOwner(relatableComponent);
-        cardinality.setRelationship(this);
     }
 
-    public void removeEntity(Entity entity) {
+    public void removeParticipant(Relatable relatable) {
 
-        for (Pair<Relatable, Cardinality> pair : this.participants) {
-            if (pair.getFirst().equals(entity)) {
+        for (Pair<Relatable, List<Line>> pair : this.participants) {
+            if (pair.getFirst().equals(relatable)) {
                 this.participants.remove(pair);
+
+                for (Line line : pair.getSecond()) {
+                    this.getPanelDibujo().removeComponent(line);
+                }
+
                 break;
             }
         }
@@ -142,7 +166,7 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = new ArrayList<>(this.getAttributes());
 
-        for (Pair<Relatable, Cardinality> pair : this.participants) {
+        for (Pair<Relatable, List<Line>> pair : this.participants) {
 
             if (pair.getFirst() instanceof Component relatable) {
 
@@ -153,7 +177,7 @@ public class Relationship extends AttributableComponent {
                     out.addAll(attributable.getAttributes());
                 }
 
-                out.add(pair.getSecond());
+                out.addAll(pair.getSecond());
 
             }
         }
@@ -162,14 +186,14 @@ public class Relationship extends AttributableComponent {
 
     }
 
-    public int getNumberOfEntities() {
+    public int getNumberOfParticipants() {
         return this.participants.size();
     }
 
-    public void cleanEntity(Entity entity) {
+    public void cleanRelatable(Relatable relatable) {
 
-        if (getNumberOfEntities() > 2) {
-            this.removeEntity(entity);
+        if (getNumberOfParticipants() > 2) {
+            this.removeParticipant(relatable);
         }
 
         // In other case, we don't have to do anything because, if cleanEntity was called, it is because
@@ -187,10 +211,23 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        for (Pair<Relatable, Cardinality> pair : this.participants) {
-            out.add(pair.getSecond());
+        for (Pair<Relatable, List<Line>> pair : this.participants) {
+
+            List<Line> lines = pair.getSecond();
+
+            for (Line line : lines) {
+                out.addAll(line.getComponentsForRemoval());
+                out.add(line);
+            }
         }
 
+        out.add(this.association);
+
         return out;
+    }
+
+    public void setAssociation(Association association) {
+        this.association = association;
+        this.resetPopupMenu();
     }
 }

@@ -16,13 +16,14 @@ public class Association extends Component implements Relatable {
 
     private final RelatableImplementation relationshipsManager;
 
-    // List of components forming the Association.
+    // Relationship forming the association.
     private final Relationship relationship;
 
     public Association(Relationship relationship, DrawingPanel drawingPanel) {
         super(drawingPanel);
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
+        this.relationship.setAssociation(this);
     }
 
     @Override
@@ -30,6 +31,7 @@ public class Association extends Component implements Relatable {
 
         return this.getActionManager().getPopupMenu(
                 this,
+                Action.ADD_REFLEXIVE_RELATIONSHIP,
                 Action.DELETE
         );
 
@@ -41,11 +43,9 @@ public class Association extends Component implements Relatable {
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
-        // Crea una copia de la lista para no modificar la original
         List<Component> components = new ArrayList<>(this.relationship.getRelatedComponents());
         components.add(relationship);
 
-        // Calcula los límites del rectángulo que engloba todos los componentes
         for (Component component : components) {
             Rectangle bounds = component.getBounds();
 
@@ -55,33 +55,27 @@ public class Association extends Component implements Relatable {
             maxY = Math.max(maxY, (int) bounds.getMaxY());
         }
 
-        int margen = 5;
+        int margin = 5;
 
-        // Calcula el ancho y alto del rectángulo correctamente
-        int rectWidth = (maxX - minX) + 2 * margen;
-        int rectHeight = (maxY - minY) + 2 * margen;
+        int rectWidth = (maxX - minX) + 2 * margin;
+        int rectHeight = (maxY - minY) + 2 * margin;
 
         this.setX((maxX + minX) / 2);
         this.setY((maxY + minY) / 2);
 
-        this.drawLinesToRelationships(g2, this.getX(), this.getY());
-
-        Rectangle shape = new Rectangle(minX - margen, minY - margen, rectWidth, rectHeight);
+        Rectangle shape = new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
         g2.setColor(Color.WHITE);
         g2.fill(shape);
 
         g2.setStroke(new BasicStroke(1));
         g2.setColor(Color.BLACK);
 
-        // Cambia el color y grosor del borde si está seleccionado
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }
 
-        // Dibuja el rectángulo
         g2.draw(shape);
 
-        // Actualiza la forma de la entidad
         this.setShape(shape);
     }
 
@@ -89,11 +83,34 @@ public class Association extends Component implements Relatable {
     @Override
     public void cleanPresence() {
 
+        this.relationship.setAssociation(null);
+
+        // This is important in case the relationship has three or more children.
+        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
+            relationship.cleanRelatable(this);
+        }
+
+    }
+
+    @Override
+    public List<Component> getComponentsForRemoval() {
+
+        List<Component> out = super.getComponentsForRemoval();
+
+        // If a relationship has three or more participating entities, if I delete one, it can still exist.
+        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
+            if (relationship.getNumberOfParticipants() <= 2) {
+                out.addAll(relationship.getComponentsForRemoval());
+                out.add(relationship);
+            }
+        }
+
+        return out;
     }
 
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
-
+        // Do nothing, due to a relationship is not able to change.
     }
 
     @Override
@@ -104,10 +121,5 @@ public class Association extends Component implements Relatable {
     @Override
     public void removeRelationship(Relationship relationship) {
         this.relationshipsManager.removeRelationship(relationship);
-    }
-
-    @Override
-    public void drawLinesToRelationships(Graphics2D graphics2D, int x, int y) {
-        this.relationshipsManager.drawLinesToRelationships(graphics2D, x, y);
     }
 }

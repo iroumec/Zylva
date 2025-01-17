@@ -134,7 +134,8 @@ public class DrawingPanel extends JPanel {
             }
 
             private void mostrarMenu(MouseEvent e) {
-                // Si se presiona el click derecho
+
+                // If right click is pressed...
                 if (e.isPopupTrigger()) {
                     boolean componentClicked = false;
 
@@ -163,9 +164,10 @@ public class DrawingPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
 
-                // In case we're not in selection mode, the component is dragged with the mouse.
+                // In case selection mode is not activated, the component is dragged with the mouse.
                 if (!e.isControlDown() && componenteArrastrada != null) {
-                    // We subtract the offset with the objective of making the animation smooth.
+
+                    // Offset is subtracted with the objective of making the animation smooth.
                     componenteArrastrada.setX(e.getX() - offsetX);
                     componenteArrastrada.setY(e.getY() - offsetY);
                     repaint();
@@ -242,17 +244,31 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void removeComponent(Component component) {
-        component.cleanPresence();
-        this.components.remove(component);
+    public void removeComponent(Component componentToRemove) {
+
+//        List<Component> componentsForRemoval = new ArrayList<>(componentToRemove.getComponentsForRemoval());
+//
+//        componentsForRemoval.add(componentToRemove);
+//
+//        for (Component component : componentsForRemoval ) {
+//            component.cleanPresence();
+//            this.components.remove(component);
+//        }
+
+        this.components.remove(componentToRemove);
+
         repaint();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void replaceComponent(Component oldComponent, Component newComponent) {
 
         if (this.components.contains(oldComponent)) {
 
             int oldComponentIndex = this.components.indexOf(oldComponent);
+
+            this.components.set(oldComponentIndex, newComponent);
 
             this.components.remove(oldComponent);
 
@@ -275,13 +291,12 @@ public class DrawingPanel extends JPanel {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void cleanSelectedComponents() {
+
         for (Component a : componentesSeleccionadas) {
            a.setSelected(Boolean.FALSE);
         }
 
-        // If I use clear instead, the references to the entities are deleted.
         componentesSeleccionadas.clear();
-        //componentesSeleccionadas = new HashSet<>();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -317,9 +332,15 @@ public class DrawingPanel extends JPanel {
         return this.mouseY;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public List<Component> getListComponents() { return new ArrayList<>(this.components); }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public ActionManager getActioner() { return this.actionManager; }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void setActioner(ActionManager actionManager) { this.actionManager = actionManager; }
 

@@ -5,13 +5,19 @@ import com.bdd.mer.components.atributo.symbology.AttributeArrow;
 import com.bdd.mer.components.atributo.symbology.AttributeEnding;
 import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
 import com.bdd.mer.components.association.Association;
-import com.bdd.mer.components.hierarchy.HierarchyType;
+import com.bdd.mer.components.hierarchy.HierarchyExclusivity;
 import com.bdd.mer.components.hierarchy.TotalHierarchy;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.components.entity.WeakEntity;
 import com.bdd.mer.components.hierarchy.Hierarchy;
+import com.bdd.mer.components.line.GuardedLine;
+import com.bdd.mer.components.line.Line;
+import com.bdd.mer.components.line.lineMultiplicity.DoubleLine;
+import com.bdd.mer.components.line.lineMultiplicity.SingleLine;
+import com.bdd.mer.components.line.lineShape.DirectLine;
+import com.bdd.mer.components.line.lineShape.SquaredLine;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.cardinality.StaticCardinality;
@@ -74,6 +80,8 @@ public final class ActionManager implements Serializable {
 
     public void addRelationship() {
 
+        int selectedComponents = this.drawingPanel.getSelectedComponents().size();
+
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, WeakEntity.class, Association.class)
                 && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
 
@@ -81,33 +89,78 @@ public final class ActionManager implements Serializable {
 
             if (nombre != null) {
                 if (!nombre.isEmpty()) {
+
                     Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
 
                     List<Cardinality> cardinalities = new ArrayList<>();
 
-                    for (Component component : drawingPanel.getSelectedComponents()) {
+                    List<Line> lines = new ArrayList<>();
 
-                        // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
-                        Relatable castedComponent = (Relatable) component;
+                    if (selectedComponents >= 2 && selectedComponents <= 3) {
 
-                        Cardinality cardinality = getCardinality(castedComponent);
+                        for (Component component : drawingPanel.getSelectedComponents()) {
 
-                        if (cardinality == null) {
+                            // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
+                            Relatable castedComponent = (Relatable) component;
+
+                            Cardinality cardinality = new Cardinality("0", "N", this.drawingPanel);
+
+                            cardinalities.add(cardinality);
+
+                            GuardedLine guardedLine = new GuardedLine(
+                                    this.drawingPanel,
+                                    (Component) castedComponent,
+                                    newRelationship, new DirectLine(),
+                                    new SingleLine(),
+                                    cardinality
+                            );
+
+                            lines.add(guardedLine);
+
+                            newRelationship.addParticipant(castedComponent, guardedLine);
+
+                        }
+
+                    } else if (selectedComponents == 1) {
+
+                        Relatable castedComponent = (Relatable) this.drawingPanel.getSelectedComponents().getFirst();
+
+                        Cardinality firstCardinality = getCardinality(castedComponent);
+
+                        if (firstCardinality == null) {
                             return;
                         }
 
-                        cardinalities.add(cardinality);
-                        newRelationship.addParticipant(castedComponent, cardinality);
+                        Cardinality secondCardinality = getCardinality(castedComponent);
 
+                        if (secondCardinality == null) {
+                            return;
+                        }
+
+                        Line firstCardinalityLine = new GuardedLine(this.drawingPanel, (Component) castedComponent, newRelationship, new SquaredLine(), new SingleLine(), firstCardinality);
+                        lines.add(firstCardinalityLine);
+                        Line secondCardinalityLine = new GuardedLine(this.drawingPanel, newRelationship, (Component) castedComponent, new SquaredLine(), new SingleLine(), secondCardinality);
+                        lines.add(secondCardinalityLine);
+
+                        cardinalities.add(firstCardinality);
+                        cardinalities.add(secondCardinality);
+
+                        newRelationship.addParticipant(castedComponent, firstCardinalityLine);
+                        newRelationship.addParticipant(castedComponent, secondCardinalityLine);
                     }
 
                     for (Cardinality cardinality : cardinalities) {
                         drawingPanel.addComponentLast(cardinality);
                     }
 
+                    for (Line line : lines) {
+                        drawingPanel.addComponent(line);
+                    }
+
                     drawingPanel.addComponentLast(newRelationship);
 
                     drawingPanel.cleanSelectedComponents();
+
                 }
             } else {
                 JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
@@ -174,18 +227,13 @@ public final class ActionManager implements Serializable {
 
     public void changeCardinality(Cardinality cardinality) {
 
-        String ownerName = ((Component) cardinality.getOwner()).getText();
-
-        // What happens with the associations? And if there are more than one association? How can I identify them?
-
         JTextField cardinalidadMinimaCampo = new JTextField(1);
         JTextField cardinalidadMaximaCampo = new JTextField(1);
         JButton okButton = new JButton("OK");
-        okButton.setEnabled(false); // Deshabilita el botón OK inicialmente
+        okButton.setEnabled(false); // OK button is not enabled
 
         JPanel miPanel = new JPanel();
-        // Fix this then.
-        miPanel.add(new JLabel("Ingrese las cardinalidad para la entidad " + ownerName + ": "));
+        miPanel.add(new JLabel(LanguageManager.getMessage("input.twoValues")));
         miPanel.add(Box.createHorizontalStrut(15)); // Espaciador
         miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.minimum")));
         miPanel.add(cardinalidadMinimaCampo);
@@ -215,8 +263,6 @@ public final class ActionManager implements Serializable {
 
     public void addDependency() {
 
-        boolean canceledRelationship = false;
-
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
             String nombre = JOptionPane.showInputDialog(this.drawingPanel, null, LanguageManager.getMessage("input.name"));
@@ -228,47 +274,43 @@ public final class ActionManager implements Serializable {
                 Entity entitySelected = selectWeakEntity();
 
                 if (entitySelected != null) {
+
                     WeakEntity weakVersion = entitySelected.getWeakVersion(newRelationship);
 
-                    Cardinality cardinality = null;
-                    StaticCardinality staticCardinality = null;
+                    Cardinality cardinality = null, staticCardinality = null;
+                    Line strongLine = null, weakLine = null;
 
                     for (Entity entity : drawingPanel.getSelectedEntities()) {
 
                         if (entity.equals(entitySelected)) {
 
-                            cardinality = getCardinality(entity);
+                            cardinality = new Cardinality("0", "N", this.drawingPanel);
 
-                            if (cardinality != null) {
+                            strongLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new SingleLine(), cardinality);
+                            newRelationship.addParticipant(entity, strongLine);
 
-                                newRelationship.addParticipant(entity, cardinality);
-
-                            } else {
-
-                                canceledRelationship = true;
-                                break;
-
-                            }
                         } else {
 
-                            // Una entidad débil solo puede estar relacionada con una entidad fuerte si
-                            // esta última tiene cardinalidad 1:1
+                            // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
                             staticCardinality = new StaticCardinality("1", "1", this.drawingPanel);
-                            newRelationship.addParticipant(entity, staticCardinality);
 
+                            weakLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new DoubleLine(3), staticCardinality);
+
+                            newRelationship.addParticipant(entity, weakLine);
                         }
                     }
 
-                    if (!canceledRelationship) {
+                    drawingPanel.addComponent(weakLine);
+                    drawingPanel.addComponent(strongLine);
 
-                        drawingPanel.addComponentLast(cardinality);
-                        drawingPanel.addComponentLast(staticCardinality);
-                        drawingPanel.addComponentLast(newRelationship);
+                    drawingPanel.addComponentLast(cardinality);
+                    drawingPanel.addComponentLast(staticCardinality);
 
-                        drawingPanel.replaceComponent(entitySelected, weakVersion);
+                    drawingPanel.addComponentLast(newRelationship);
 
-                        drawingPanel.cleanSelectedComponents();
-                    }
+                    drawingPanel.replaceComponent(entitySelected, weakVersion);
+
+                    drawingPanel.cleanSelectedComponents();
                 }
 
             }
@@ -406,7 +448,7 @@ public final class ActionManager implements Serializable {
             return null; // Cancel the process
         }
 
-        HierarchyType letter = (exclusiveButton.isSelected()) ? HierarchyType.DISJUNCT : HierarchyType.OVERLAPPING;
+        HierarchyExclusivity letter = (exclusiveButton.isSelected()) ? HierarchyExclusivity.DISJUNCT : HierarchyExclusivity.OVERLAPPING;
 
         Hierarchy newHierarchy;
 
@@ -448,10 +490,10 @@ public final class ActionManager implements Serializable {
 
     public void swapExclusivity(Hierarchy hierarchy) {
 
-        if (hierarchy.getExclusivity().equals(HierarchyType.DISJUNCT)) {
-            hierarchy.setExclusivity(HierarchyType.OVERLAPPING);
+        if (hierarchy.getExclusivity().equals(HierarchyExclusivity.DISJUNCT)) {
+            hierarchy.setExclusivity(HierarchyExclusivity.OVERLAPPING);
         } else {
-            hierarchy.setExclusivity(HierarchyType.DISJUNCT);
+            hierarchy.setExclusivity(HierarchyExclusivity.DISJUNCT);
         }
 
         this.drawingPanel.repaint();
@@ -464,7 +506,7 @@ public final class ActionManager implements Serializable {
 
     public void addNote() {
         // Muestra una ventana emergente para ingresar el contenido de la nota
-        String contenido = JOptionPane.showInputDialog(this.drawingPanel, "Ingrese el contenido de la nueva nota");
+        String contenido = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.text"));
         if (contenido != null) {
             // Si el usuario ingresó contenido, agrega una nueva nota con ese contenido
             drawingPanel.addComponent(new Note(contenido, drawingPanel.getMouseX(), drawingPanel.getMouseY(), this.drawingPanel));
@@ -717,6 +759,7 @@ public final class ActionManager implements Serializable {
                 case SWAP_OPTIONALITY -> actionItem.addActionListener(_ -> changeOptionality((Attribute) component));
                 case SWAP_EXCLUSIVITY -> actionItem.addActionListener(_ -> swapExclusivity((Hierarchy) component));
                 case CHANGE_CARDINALITY -> actionItem.addActionListener(_ -> changeCardinality((Cardinality) component));
+                case ADD_REFLEXIVE_RELATIONSHIP -> actionItem.addActionListener(_ -> addRelationship());
             }
 
             popupMenu.add(actionItem);

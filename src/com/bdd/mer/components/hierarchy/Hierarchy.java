@@ -13,11 +13,11 @@ import java.util.List;
 public class Hierarchy extends Component {
 
     private int radio; // Centro del óvalo
-    private HierarchyType exclusivity;
+    private HierarchyExclusivity exclusivity;
     private Entity parent;
     private final List<Entity> children;
 
-    public Hierarchy(HierarchyType exclusivity, Entity parent, DrawingPanel drawingPanel) {
+    public Hierarchy(HierarchyExclusivity exclusivity, Entity parent, DrawingPanel drawingPanel) {
 
         super(parent.getX(), parent.getY() + 60, drawingPanel);
 
@@ -56,7 +56,7 @@ public class Hierarchy extends Component {
 
         drawParentLine(g2);
 
-        // Dibuja las líneas a los subtipos
+        // Child lines.
         for (Entity e : children) {
             g2.drawLine(this.getX(), this.getY(), e.getX(), e.getY());
         }
@@ -169,9 +169,9 @@ public class Hierarchy extends Component {
 
     }
 
-    public HierarchyType getExclusivity() { return this.exclusivity; }
+    public HierarchyExclusivity getExclusivity() { return this.exclusivity; }
 
-    public void setExclusivity(HierarchyType exclusivity) {
+    public void setExclusivity(HierarchyExclusivity exclusivity) {
         this.exclusivity = exclusivity;
     }
 

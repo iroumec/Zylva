@@ -40,8 +40,8 @@ public class WeakEntity extends Entity {
     @Override
     public void draw(Graphics2D g2) {
 
-        g2.drawLine(this.getX() - 3, this.getY() - 3, this.relationship.getX() - 3, this.relationship.getY() - 3);
-        g2.drawLine(this.getX() + 3, this.getY() + 3, this.relationship.getX() + 3, this.relationship.getY() + 3);
+//        g2.drawLine(this.getX() - 3, this.getY() - 3, this.relationship.getX() - 3, this.relationship.getY() - 3);
+//        g2.drawLine(this.getX() + 3, this.getY() + 3, this.relationship.getX() + 3, this.relationship.getY() + 3);
 
         super.draw(g2);
 

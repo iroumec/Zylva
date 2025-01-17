@@ -7,7 +7,7 @@ import java.awt.*;
 
 public class TotalHierarchy extends Hierarchy {
 
-    public TotalHierarchy(HierarchyType exclusivity, Entity parent, DrawingPanel drawingPanel) {
+    public TotalHierarchy(HierarchyExclusivity exclusivity, Entity parent, DrawingPanel drawingPanel) {
         super(exclusivity, parent, drawingPanel);
     }
 
