@@ -18,6 +18,11 @@ public abstract class Component implements Serializable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
+     * Drawing priority of the component.
+     */
+    private int drawingPriority = 0;
+
+    /**
      * This attribute indicate if the component is being selected or not.
      */
     private boolean selected;
@@ -139,7 +144,7 @@ public abstract class Component implements Serializable {
     public Rectangle getBounds() {
 
         if (this.shape == null) {
-            return new Rectangle(0, 0, 0, 0);
+            return new Rectangle(x, y, 0, 0);
         }
 
         return this.shape.getBounds();
@@ -232,11 +237,8 @@ public abstract class Component implements Serializable {
 
     public List<Component> getComponentsForRemoval() {
 
-        List<Component> out = new ArrayList<>();
+        return new ArrayList<>();
 
-        out.add(this);
-
-        return out;
     }
 
     public abstract void cleanPresence();
@@ -268,5 +270,11 @@ public abstract class Component implements Serializable {
     }
 
     public Shape getShape() { return this.shape; }
+
+    public final int getDrawingPriority() {
+        return this.drawingPriority;
+    }
+
+    public void setDrawingPriority(int priority) { this.drawingPriority = priority; }
 
 }

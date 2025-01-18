@@ -32,6 +32,8 @@ public class Association extends Component implements Relatable {
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
         this.relationship.setAssociation(this);
+
+        setDrawingPriority(1);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

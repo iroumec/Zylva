@@ -187,12 +187,14 @@ public class DrawingPanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+
         super.paintComponent(g);
 
         // It draws the selection area.
         Graphics2D g2d = (Graphics2D) g;
 
-        // Aplicación de suavizado a las líneas.
+        // Antialiasing in the lines.
+        // Maybe it is a good idea to be able to deactivate or activate it.
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -236,15 +238,17 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void addComponent(Component component) {
-        this.components.addFirst(component);
-        this.repaint();
-    }
+    public void addComponent(@NotNull Component component) {
+        int index = Collections.binarySearch(
+                this.components,
+                component,
+                Comparator.comparing(Component::getDrawingPriority) // Cambiado aquí
+        );
+        if (index < 0) {
+            index = -index - 1;
+        }
+        this.components.add(index, component);
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public void addComponentLast(Component component) {
-        this.components.addLast(component);
         this.repaint();
     }
 
@@ -276,7 +280,7 @@ public class DrawingPanel extends JPanel {
             component.changeReference(oldComponent, newComponent);
         }
 
-        repaint();
+        this.repaint();
 
     }
 

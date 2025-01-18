@@ -15,6 +15,10 @@ public class StaticCardinality extends Cardinality {
         super(firstValue, secondValue, drawingPanel);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     protected JPopupMenu getPopupMenu() {
 

@@ -8,16 +8,49 @@ import com.bdd.mer.frame.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
+de los subtipos.
+
+Una jerarquía exclusiva se nota con una doble línea del supertipo al ícono de jerarquía.
+Por otro lado, si la jerarquía es parcial, se utiliza una única línea.
+ */
+
+/*
+En una jerarquía exclusiva, los ejemplares de los subtipos son conjuntos disjuntos (solo pueden
+pertenecer a un subtipo a la vez).
+
+Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
+se nota con la letra "o" (Overlapping).
+ */
 public class Hierarchy extends Component {
 
-    private int radio; // Centro del óvalo
+    /**
+     * The exclusivity of the hierarchy.
+     */
     private HierarchyExclusivity exclusivity;
+
+    /**
+     * The parent entity in the hierarchy.
+     */
     private Entity parent;
+
+    /**
+     * List of children entities in the hierarchy.
+     */
     private final List<Entity> children;
 
+    /**
+     * Constructs a {@code Hierarchy}.
+     *
+     * @param exclusivity {@code Hierarchy}'s exclusivity.
+     * @param parent {@code Hierarchy}'s parent entity.
+     * @param drawingPanel {@code DrawingPanel} where the {@code Hierarchy} lives.
+     */
     public Hierarchy(HierarchyExclusivity exclusivity, Entity parent, DrawingPanel drawingPanel) {
 
         super(parent.getX(), parent.getY() + 60, drawingPanel);
@@ -25,11 +58,118 @@ public class Hierarchy extends Component {
         this.exclusivity = exclusivity;
         this.parent = parent;
         this.children = new ArrayList<>();
+
+        setDrawingPriority(5);
     }
 
+    /**
+     * Adds a child to the hierarchy.
+     *
+     * @param entity Child to be added.
+     */
     public void addChild(Entity entity) {
         this.children.add(entity);
     }
+
+    /**
+     * Draws a line to the parent.
+     *
+     * @param g2 Graphics context.
+     */
+    protected void drawParentLine(Graphics2D g2) {
+        g2.drawLine(this.getX(), this.getY(), parent.getX(), parent.getY());
+    }
+
+    /**
+     *
+     * @return The parent of the hierarchy.
+     */
+    public Entity getParent() { return this.parent; }
+
+    /**
+     *
+     * @return A list containing the children of the hierarchy.
+     */
+    public List<Entity> getChildren() { return new ArrayList<>(this.children); }
+
+    /**
+     *
+     * @param entity Entity to be checked.
+     * @return {@code TRUE} if the entity is a children in the hierarchy.
+     */
+    public boolean isChild(Entity entity) {
+        return this.children.contains(entity);
+    }
+
+    /**
+     *
+     * @param entity Entity to be checked.
+     * @return {@code TRUE} if the entity is the parent of the hierarchy.
+     */
+    public boolean isParent(Entity entity) {
+        return this.parent.equals(entity);
+    }
+
+    /**
+     *
+     * @return The exclusivity of the hierarchy.
+     */
+    public HierarchyExclusivity getExclusivity() { return this.exclusivity; }
+
+    /**
+     * Changes the hierarchy's exclusivity.
+     *
+     * @param exclusivity New exclusivity.
+     */
+    public void setExclusivity(HierarchyExclusivity exclusivity) {
+        this.exclusivity = exclusivity;
+    }
+
+    /**
+     *
+     * @return {@code TRUE} if the hierarchy is affected by multiple inheritance.
+     */
+    private boolean isThereMultipleInheritance() {
+
+        for (Entity firstChild : this.children) {
+            for (Entity secondChild : this.children) {
+                if (!firstChild.equals(secondChild) && firstChild.shareHierarchicalChild(secondChild)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     *
+     * @return Number of children in the hierarchy.
+     */
+    public int getNumberOfChildren() {
+        return this.children.size();
+    }
+
+    /**
+     * Clean all the references to an entity.
+     *
+     * @param entity Entity to be cleaned.
+     */
+    public void cleanEntity(Entity entity) {
+
+        if (!isParent(entity) && (!isChild(entity) || getNumberOfChildren() > 2)) {
+            this.children.remove(entity);
+        }
+
+        // In other case, we don't have to do anything because, if cleanEntity was called, it is because
+        // the entity will be eliminated and, so, the hierarchy also if it doesn't enter into the if statement's body.
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected JPopupMenu getPopupMenu() {
@@ -41,19 +181,20 @@ public class Hierarchy extends Component {
         );
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
     public void draw(Graphics2D g2) {
 
-        // Obtengo la fuente del texto y calculo su tamaño
         FontMetrics fm = g2.getFontMetrics();
         int textWidth = fm.stringWidth(this.exclusivity.getSymbol());
         int textHeight = fm.getHeight();
 
-        // Calcula el diámetro del círculo basado en el tamaño del texto
+        // The diameter is calculated according to the text size.
         int diameter = Math.max(textWidth, textHeight) + 10;
-        this.radio = diameter/2;
 
-        // Aplica suavizado a las líneas
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // Radio of the oval.
+        int radio = diameter / 2;
 
         drawParentLine(g2);
 
@@ -62,50 +203,31 @@ public class Hierarchy extends Component {
             g2.drawLine(this.getX(), this.getY(), e.getX(), e.getY());
         }
 
-        // Rellena el círculo
+        Ellipse2D.Double ovalShape = new Ellipse2D.Double(
+                this.getX() - radio,
+                this.getY() - radio,
+                diameter,
+                diameter
+        );
+        this.setShape(ovalShape);
+
         g2.setColor(Color.WHITE);
-        g2.fillOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
+        g2.fill(ovalShape);
 
         g2.setColor(Color.BLACK);
 
-        // Si la jerarquía es seleccionada, se pinta de CYAN
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }
 
-        // Dibuja el círculo adaptado al tamaño del texto
-        g2.drawOval(this.getX() - radio, this.getY() - radio, diameter, diameter);
+        g2.draw(ovalShape);
 
-        // Dibuja el texto dentro del círculo
         g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(2));
         g2.drawString(this.exclusivity.getSymbol(), this.getX() - 4, this.getY() + 4);
     }
 
-    /*
-    En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
-    de los subtipos.
-
-    Una jerarquía exclusiva se nota con una doble línea del supertipo al ícono de jerarquía.
-    Por otro lado, si la jerarquía es parcial, se utiliza una única línea.
-     */
-
-    /*
-    En una jerarquía exclusiva, los ejemplares de los subtipos son conjuntos disjuntos (solo pueden
-    pertenecer a un subtipo a la vez).
-
-    Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
-    se nota con la letra "o" (Overlapping).
-     */
-
-    protected void drawParentLine(Graphics2D g2) {
-        g2.drawLine(this.getX(), this.getY(), parent.getX(), parent.getY());
-    }
-
-    @Override
-    public Rectangle getBounds() {
-        return new Rectangle(getX() - radio, getY() - radio, radio * 2, radio * 2);
-    }
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void cleanPresence() {
@@ -117,6 +239,8 @@ public class Hierarchy extends Component {
         }
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
@@ -146,18 +270,9 @@ public class Hierarchy extends Component {
 
     }
 
-    public Entity getParent() { return this.parent; }
+    /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Entity> getChildren() { return new ArrayList<>(this.children); }
-
-    public boolean isChild(Entity entity) {
-        return this.children.contains(entity);
-    }
-
-    public boolean isParent(Entity entity) {
-        return this.parent.equals(entity);
-    }
-
+    @Override
     public boolean canBeDeleted() {
 
         if (isThereMultipleInheritance()) {
@@ -167,41 +282,6 @@ public class Hierarchy extends Component {
         }
 
         return true;
-
-    }
-
-    public HierarchyExclusivity getExclusivity() { return this.exclusivity; }
-
-    public void setExclusivity(HierarchyExclusivity exclusivity) {
-        this.exclusivity = exclusivity;
-    }
-
-    private boolean isThereMultipleInheritance() {
-
-        for (Entity firstChild : this.children) {
-            for (Entity secondChild : this.children) {
-                if (!firstChild.equals(secondChild) && firstChild.shareHierarchicalChild(secondChild)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-
-    }
-
-    public int getNumberOfChildren() {
-        return this.children.size();
-    }
-
-    public void cleanEntity(Entity entity) {
-
-        if (!isParent(entity) && (!isChild(entity) || getNumberOfChildren() > 2)) {
-            this.children.remove(entity);
-        }
-
-        // In other case, we don't have to do anything because, if cleanEntity was called, it is because
-        // the entity will be eliminated and, so, the hierarchy also if it doesn't enter into the if statement's body.
 
     }
 

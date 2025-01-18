@@ -7,8 +7,6 @@ import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Cardinality extends Component {
 
@@ -17,7 +15,21 @@ public class Cardinality extends Component {
     public Cardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
         super(drawingPanel);
         this.setText(giveFormat(firstValue, secondValue));
+
+        setDrawingPriority(3);
     }
+
+    public void setLine(GuardedLine guardedLine) {
+        this.guardedLine = guardedLine;
+    }
+
+    public static String giveFormat(String firstValue, String secondValue) {
+        return "(" + firstValue + ", " + secondValue + ")";
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected JPopupMenu getPopupMenu() {
@@ -28,6 +40,8 @@ public class Cardinality extends Component {
         );
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void draw(Graphics2D g2) {
@@ -59,14 +73,12 @@ public class Cardinality extends Component {
         //g2.draw(shape);
     }
 
-
-    @Override
-    public List<Component> getComponentsForRemoval() {
-        return new ArrayList<>();
-    }
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void cleanPresence() {}
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
@@ -82,11 +94,4 @@ public class Cardinality extends Component {
 
     }
 
-    public void setLine(GuardedLine guardedLine) {
-        this.guardedLine = guardedLine;
-    }
-
-    public static String giveFormat(String firstValue, String secondValue) {
-        return "(" + firstValue + ", " + secondValue + ")";
-    }
 }

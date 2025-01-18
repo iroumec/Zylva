@@ -53,6 +53,8 @@ public class Attribute extends AttributableComponent {
         this.symbol = symbol;
         this.arrow = arrow;
         this.ending = ending;
+
+        setDrawingPriority(4);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -132,9 +134,6 @@ public class Attribute extends AttributableComponent {
         String nombreAMostrar = this.getArrow() + getEnding() + this.getSymbol() + this.getText();
         g2.drawString(nombreAMostrar, x, atributoY);
 
-        // Draw a line to the owner.
-        g2.drawLine(x, y, x, atributoY);
-
         FontMetrics fm = g2.getFontMetrics();
         int anchoTexto = fm.stringWidth(nombreAMostrar);
         int altoTexto = fm.getHeight();
@@ -142,6 +141,9 @@ public class Attribute extends AttributableComponent {
         int rectY = atributoY - altoTexto;
 
         setShape(new Rectangle(x, rectY, anchoTexto, altoTexto));
+
+        // Draw a line to the owner.
+        g2.drawLine(x, y, x, atributoY);
 
         // The font is reset.
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));

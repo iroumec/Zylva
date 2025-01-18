@@ -41,6 +41,8 @@ public class Entity extends AttributableComponent implements Relatable {
 
         relationshipsManager = new RelatableImplementation();
         hierarchies = new ArrayList<>();
+
+        setDrawingPriority(7);
     }
 
     /**

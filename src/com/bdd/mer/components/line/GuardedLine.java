@@ -19,6 +19,10 @@ public class GuardedLine extends Line {
         guard.setLine(this);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public List<Component> getComponentsForRemoval() {
 

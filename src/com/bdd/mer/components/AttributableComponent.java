@@ -105,6 +105,10 @@ public abstract class AttributableComponent extends Component {
         return false;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public List<Component> getComponentsForRemoval() {
 

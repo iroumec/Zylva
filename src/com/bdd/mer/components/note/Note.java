@@ -20,8 +20,40 @@ public class Note extends Component {
      */
     public Note(String text, int x, int y, DrawingPanel drawingPanel) {
         super(text, x, y, drawingPanel);
+        setDrawingPriority(8);
     }
 
+    /**
+     * The lines in the text are divided according to the max width.
+     *
+     * @param g2       The graphic context.
+     * @param text     The complete text.
+     * @return A list of strings adjusted according the width.
+     */
+    private List<String> wrapText(Graphics2D g2, String text) {
+        List<String> lines = new ArrayList<>();
+        FontMetrics fm = g2.getFontMetrics();
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+
+        for (String word : words) {
+            String testLine = currentLine + (currentLine.isEmpty() ? "" : " ") + word;
+            int maxWidth = 150;
+            if (fm.stringWidth(testLine) > maxWidth) {
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder(word);
+            } else {
+                currentLine.append(currentLine.isEmpty() ? "" : " ").append(word);
+            }
+        }
+        if (!currentLine.isEmpty()) {
+            lines.add(currentLine.toString());
+        }
+        return lines;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -37,6 +69,7 @@ public class Note extends Component {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    @Override
     public void draw(Graphics2D g2) {
 
         FontMetrics fm = g2.getFontMetrics();
@@ -77,42 +110,17 @@ public class Note extends Component {
         }
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void cleanPresence() {
         // Do nothing.
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void changeReference(Component oldComponent, Component newComponent) {
         // Do nothing.
-    }
-
-    /**
-     * The lines in the text are divided according to the max width.
-     *
-     * @param g2       The graphic context.
-     * @param text     The complete text.
-     * @return A list of strings adjusted according the width.
-     */
-    private List<String> wrapText(Graphics2D g2, String text) {
-        List<String> lines = new ArrayList<>();
-        FontMetrics fm = g2.getFontMetrics();
-        String[] words = text.split(" ");
-        StringBuilder currentLine = new StringBuilder();
-
-        for (String word : words) {
-            String testLine = currentLine + (currentLine.isEmpty() ? "" : " ") + word;
-            int maxWidth = 150;
-            if (fm.stringWidth(testLine) > maxWidth) {
-                lines.add(currentLine.toString());
-                currentLine = new StringBuilder(word);
-            } else {
-                currentLine.append(currentLine.isEmpty() ? "" : " ").append(word);
-            }
-        }
-        if (!currentLine.isEmpty()) {
-            lines.add(currentLine.toString());
-        }
-        return lines;
     }
 }

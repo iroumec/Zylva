@@ -28,106 +28,14 @@ public class Relationship extends AttributableComponent {
 
         this.participants = new ArrayList<>();
         forma = new Polygon();
+
+        setDrawingPriority(6);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    @Override
-    protected JPopupMenu getPopupMenu() {
-
-        if (association == null) {
-            return this.getActionManager().getPopupMenu(
-                    this,
-                    Action.ADD_ATTRIBUTE,
-                    Action.ADD_ASSOCIATION,
-                    Action.RENAME,
-                    Action.DELETE
-            );
-        } else {
-            return this.getActionManager().getPopupMenu(
-                    this,
-                    Action.ADD_ATTRIBUTE,
-                    Action.RENAME,
-                    Action.DELETE
-            );
-        }
-
-    }
-
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void draw(Graphics2D g2) {
-
-        Pair<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
-
-        int anchoTexto = fontMetrics.getFirst();
-        int altoTexto = fontMetrics.getSecond();
-
-        int xTexto = getX() - anchoTexto / 2;
-        int yTexto = getY() + altoTexto / 4; // It's divided by four to compensate the text baseline.
-
-        g2.setStroke(new BasicStroke(1));
-
-        int margin = 15; // Margin around the text.
-
-        // It is not necessary to do this all the time. Only if the text is changed.
-        this.updateDiagonals(anchoTexto, altoTexto, margin);
-
-        forma.reset();
-        forma.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
-        forma.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
-        forma.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
-        forma.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
-
-        g2.setColor(Color.WHITE);
-        g2.fillPolygon(forma);
-
-        g2.setColor(Color.BLACK);
-        g2.drawString(this.getText(), xTexto, yTexto);
-
-        if (this.isSelected()) {
-            this.setSelectionOptions(g2);
-        }
-
-        g2.drawPolygon(forma);
-        this.setShape(forma);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void cleanPresence() {
-
-        // We break the bound between the relationship and their participants.
-        for (Pair<Relatable, List<Line>> pair : this.participants) {
-            pair.getFirst().removeRelationship(this);
-        }
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-
-        if (newComponent instanceof Relatable || newComponent instanceof Line) {
-
-            for (Pair<Relatable, List<Line>> pair : this.participants) {
-
-                if (pair.getFirst().equals(oldComponent)) {
-                    assert newComponent instanceof Relatable;
-                    pair.setFirst((Relatable) newComponent);
-                }
-
-                List<Line> lines = pair.getSecond();
-
-                lines.replaceAll(line -> line.equals(oldComponent) ? (Line) newComponent : line);
-
-            }
-
-        }
-
-    }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -230,6 +138,108 @@ public class Relationship extends AttributableComponent {
         this.resetPopupMenu();
     }
 
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void draw(Graphics2D g2) {
+
+        Pair<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
+
+        int anchoTexto = fontMetrics.getFirst();
+        int altoTexto = fontMetrics.getSecond();
+
+        int xTexto = getX() - anchoTexto / 2;
+        int yTexto = getY() + altoTexto / 4; // It's divided by four to compensate the text baseline.
+
+        g2.setStroke(new BasicStroke(1));
+
+        int margin = 15; // Margin around the text.
+
+        // It is not necessary to do this all the time. Only if the text is changed.
+        this.updateDiagonals(anchoTexto, altoTexto, margin);
+
+        forma.reset();
+        forma.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
+        forma.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
+        forma.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
+        forma.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
+
+        g2.setColor(Color.WHITE);
+        g2.fillPolygon(forma);
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(this.getText(), xTexto, yTexto);
+
+        if (this.isSelected()) {
+            this.setSelectionOptions(g2);
+        }
+
+        g2.drawPolygon(forma);
+        this.setShape(forma);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected JPopupMenu getPopupMenu() {
+
+        if (association == null) {
+            return this.getActionManager().getPopupMenu(
+                    this,
+                    Action.ADD_ATTRIBUTE,
+                    Action.ADD_ASSOCIATION,
+                    Action.RENAME,
+                    Action.DELETE
+            );
+        } else {
+            return this.getActionManager().getPopupMenu(
+                    this,
+                    Action.ADD_ATTRIBUTE,
+                    Action.RENAME,
+                    Action.DELETE
+            );
+        }
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void cleanPresence() {
+
+        // We break the bound between the relationship and their participants.
+        for (Pair<Relatable, List<Line>> pair : this.participants) {
+            pair.getFirst().removeRelationship(this);
+        }
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void changeReference(Component oldComponent, Component newComponent) {
+
+        if (newComponent instanceof Relatable || newComponent instanceof Line) {
+
+            for (Pair<Relatable, List<Line>> pair : this.participants) {
+
+                if (pair.getFirst().equals(oldComponent)) {
+                    assert newComponent instanceof Relatable;
+                    pair.setFirst((Relatable) newComponent);
+                }
+
+                List<Line> lines = pair.getSecond();
+
+                lines.replaceAll(line -> line.equals(oldComponent) ? (Line) newComponent : line);
+
+            }
+
+        }
+
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -247,7 +257,10 @@ public class Relationship extends AttributableComponent {
             }
         }
 
-        out.add(this.association);
+        if (this.association != null) {
+            out.addAll(this.association.getComponentsForRemoval());
+            out.add(this.association);
+        }
 
         return out;
     }

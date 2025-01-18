@@ -29,9 +29,8 @@ import com.bdd.mer.frame.LanguageManager;
 import javax.swing.*;
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 public final class ActionManager implements Serializable {
 
@@ -132,6 +131,13 @@ public final class ActionManager implements Serializable {
                                     cardinality
                             );
 
+                            // This must be improved later.
+                            // If an association is related, the line cannot wait until then the association is drawn.
+                            // It must be drawn first.
+                            if (component instanceof Association) {
+                                guardedLine.setDrawingPriority(0);
+                            }
+
                             lines.add(guardedLine);
 
                             newRelationship.addParticipant(castedComponent, guardedLine);
@@ -158,14 +164,14 @@ public final class ActionManager implements Serializable {
                     }
 
                     for (Cardinality cardinality : cardinalities) {
-                        drawingPanel.addComponentLast(cardinality);
+                        drawingPanel.addComponent(cardinality);
                     }
 
                     for (Line line : lines) {
                         drawingPanel.addComponent(line);
                     }
 
-                    drawingPanel.addComponentLast(newRelationship);
+                    drawingPanel.addComponent(newRelationship);
 
                     drawingPanel.cleanSelectedComponents();
 
@@ -309,7 +315,7 @@ public final class ActionManager implements Serializable {
 
                             cardinality = new Cardinality("0", "N", this.drawingPanel);
 
-                            strongLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new SingleLine(), cardinality);
+                            strongLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new DoubleLine(3), cardinality);
                             newRelationship.addParticipant(entity, strongLine);
 
                         } else {
@@ -317,7 +323,7 @@ public final class ActionManager implements Serializable {
                             // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
                             staticCardinality = new StaticCardinality("1", "1", this.drawingPanel);
 
-                            weakLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new DoubleLine(3), staticCardinality);
+                            weakLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new SingleLine(), staticCardinality);
 
                             newRelationship.addParticipant(entity, weakLine);
                         }
@@ -326,10 +332,10 @@ public final class ActionManager implements Serializable {
                     drawingPanel.addComponent(weakLine);
                     drawingPanel.addComponent(strongLine);
 
-                    drawingPanel.addComponentLast(cardinality);
-                    drawingPanel.addComponentLast(staticCardinality);
+                    drawingPanel.addComponent(cardinality);
+                    drawingPanel.addComponent(staticCardinality);
 
-                    drawingPanel.addComponentLast(newRelationship);
+                    drawingPanel.addComponent(newRelationship);
 
                     drawingPanel.replaceComponent(entitySelected, weakVersion);
 
@@ -586,7 +592,7 @@ public final class ActionManager implements Serializable {
             int confirmation = JOptionPane.showConfirmDialog(this.drawingPanel, LanguageManager.getMessage("input.delete"));
             if (confirmation == JOptionPane.YES_OPTION) {
 
-                List<Component> componentsForRemoval = new ArrayList<>();
+                Set<Component> componentsForRemoval = new HashSet<>();
 
                 for (Component component : selectedComponents) {
 
@@ -595,6 +601,7 @@ public final class ActionManager implements Serializable {
                     }
 
                     componentsForRemoval.addAll(component.getComponentsForRemoval());
+                    componentsForRemoval.add(component);
                 }
 
                 for (Component component : componentsForRemoval) {

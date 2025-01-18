@@ -6,6 +6,10 @@ import java.awt.*;
 
 public class SingleLine implements LineMultiplicity {
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void draw(Graphics2D g2, LineShape lineShape, int x1, int y1, int x2, int y2) {
 

@@ -21,7 +21,18 @@ public class Line extends Component {
         this.secondComponent = secondComponent;
         this.lineShape = lineShape;
         this.lineMultiplicity = lineMultiplicity;
+        setDrawingPriority(2);
     }
+
+    public Point getCenterPoint() {
+
+        return this.lineShape.getCenterPoint(firstComponent.getX(), firstComponent.getY(), secondComponent.getX(), secondComponent.getY());
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected JPopupMenu getPopupMenu() {
@@ -55,12 +66,6 @@ public class Line extends Component {
         if (secondComponent.equals(oldComponent)) {
             secondComponent = newComponent;
         }
-
-    }
-
-    public Point getCenterPoint() {
-
-        return this.lineShape.getCenterPoint(firstComponent.getX(), firstComponent.getY(), secondComponent.getX(), secondComponent.getY());
 
     }
 

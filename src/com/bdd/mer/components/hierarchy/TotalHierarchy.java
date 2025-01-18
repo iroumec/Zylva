@@ -5,11 +5,23 @@ import com.bdd.mer.frame.DrawingPanel;
 
 import java.awt.*;
 
+// Is this class necessary? It's just a change in the line drawn to the parent.
 public class TotalHierarchy extends Hierarchy {
 
+    /**
+     * Constructs a {@code TotalHierarchy}.
+     *
+     * @param exclusivity {@code TotalHierarchy}'s exclusivity.
+     * @param parent {@code TotalHierarchy}'s parent entity.
+     * @param drawingPanel {@code DrawingPanel} where the {@code TotalHierarchy} lives.
+     */
     public TotalHierarchy(HierarchyExclusivity exclusivity, Entity parent, DrawingPanel drawingPanel) {
         super(exclusivity, parent, drawingPanel);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected void drawParentLine(Graphics2D g2) {

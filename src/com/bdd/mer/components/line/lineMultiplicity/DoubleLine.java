@@ -13,6 +13,10 @@ public class DoubleLine implements LineMultiplicity {
          this.separation = separation;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void draw(Graphics2D g2, LineShape lineShape, int x1, int x2, int y1, int y2) {
 

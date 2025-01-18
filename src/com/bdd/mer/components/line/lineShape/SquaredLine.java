@@ -5,6 +5,10 @@ import java.awt.*;
 // We moved to the second component Y axis value, and then we move in the x axis.
 public class SquaredLine implements LineShape {
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void draw(Graphics2D g2, int x1, int y1, int x2, int y2) {
 

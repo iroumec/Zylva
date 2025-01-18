@@ -4,6 +4,10 @@ import java.awt.*;
 
 public class DirectLine implements LineShape {
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void draw(Graphics2D g2, int x1, int y1, int x2, int y2) {
 
