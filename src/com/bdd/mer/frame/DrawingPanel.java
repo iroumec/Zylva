@@ -3,7 +3,7 @@ package com.bdd.mer.frame;
 import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
-import groovyjarjarantlr4.v4.runtime.misc.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
