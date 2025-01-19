@@ -37,7 +37,7 @@ public final class ActionManager implements Serializable {
     /**
      * <Code>DrawingPanel</Code> bounded to the <Code>ActionManager</Code>.
      */
-    private final DrawingPanel drawingPanel;
+    private DrawingPanel drawingPanel;
 
     /**
      * Constructs an <Code>ActionManager</Code>.
@@ -46,6 +46,16 @@ public final class ActionManager implements Serializable {
      */
     public ActionManager(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
+    }
+
+    /**
+     * Construct an {@code ActionManager}.
+     * <p>
+     * To things work correctly, it's necessary to set a {@code DrawingPanel}.
+     * @see #setDrawingPanel(DrawingPanel)
+     */
+    public ActionManager() {
+        this(null);
     }
 
     /* ---------------------------------------------------------------------------------------------------------- */
@@ -691,9 +701,7 @@ public final class ActionManager implements Serializable {
 
                 Attribute newAttribute = new Attribute(component, nombre, attributeSymbol, arrowBody, arrowEnding, this.drawingPanel);
 
-                component.addAttribute(newAttribute);
-
-                drawingPanel.addComponent(newAttribute);
+                this.addAttribute(newAttribute);
             }
         }
 
@@ -731,9 +739,7 @@ public final class ActionManager implements Serializable {
 
                     Attribute newAttribute = new MainAttribute(component, nombre, this.drawingPanel);
 
-                    component.addAttribute(newAttribute);
-
-                    drawingPanel.addComponent(newAttribute);
+                    this.addAttribute(newAttribute);
                 }
             }
 
@@ -742,6 +748,29 @@ public final class ActionManager implements Serializable {
             addAttribute(component, attributeSymbol);
 
         }
+    }
+
+    /**
+     * Adds an attribute in a way that it's correctly drawn.
+     * <p>
+     * This is important, so the things depending on the attribute (such as associations and other
+     * attributes) are drawn correctly in the start and not in the second drawing where the shape is set.
+     *
+     * @param attribute Attribute to be added.
+     */
+    private void addAttribute(Attribute attribute) {
+
+        attribute.setDrawingPriority(0);
+
+        drawingPanel.addComponent(attribute);
+
+        // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
+        // Maybe, it would be good to search other possible solutions, because this is not so efficient...
+        this.drawingPanel.paintImmediately(drawingPanel.getBounds());
+
+        attribute.setDrawingPriority(4);
+
+        drawingPanel.sortComponents();
     }
 
     /**
@@ -884,6 +913,42 @@ public final class ActionManager implements Serializable {
 
         return popupMenu;
 
+    }
+
+    public JPopupMenu getBackgroundPopupMenu() {
+
+        JPopupMenu backgroundPopupMenu = new JPopupMenu();
+
+        JMenuItem addEntity = new JMenuItem(LanguageManager.getMessage("option.addEntity"));
+        addEntity.addActionListener(_ -> this.addEntity());
+
+        JMenuItem addRelationship = new JMenuItem(LanguageManager.getMessage("option.addRelationship"));
+        addRelationship.addActionListener(_ -> this.addRelationship());
+
+        JMenuItem addDependency = new JMenuItem(LanguageManager.getMessage("option.addDependency"));
+        addDependency.addActionListener(_ -> this.addDependency());
+
+        JMenuItem addHierarchy = new JMenuItem(LanguageManager.getMessage("option.addHierarchy"));
+        addHierarchy.addActionListener(_ -> this.addHierarchy());
+
+        JMenuItem addNote = new JMenuItem(LanguageManager.getMessage("option.addNote"));
+        addNote.addActionListener(_ -> this.addNote());
+
+        JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
+        addAssociation.addActionListener(_ -> this.addAssociation());
+
+        backgroundPopupMenu.add(addEntity);
+        backgroundPopupMenu.add(addRelationship);
+        backgroundPopupMenu.add(addDependency);
+        backgroundPopupMenu.add(addHierarchy);
+        backgroundPopupMenu.add(addNote);
+        backgroundPopupMenu.add(addAssociation);
+
+        return backgroundPopupMenu;
+    }
+
+    public void setDrawingPanel(DrawingPanel drawingPanel) {
+        this.drawingPanel = drawingPanel;
     }
 
 }

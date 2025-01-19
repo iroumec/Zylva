@@ -15,8 +15,8 @@ public class DrawingPanel extends JPanel {
 
     private List<Component> components = new ArrayList<>();
     private ActionManager actionManager;
-    private Component componenteArrastrada = null;
-    private Set<Component> componentesSeleccionadas = new HashSet<>();
+    private Component draggedComponent = null;
+    private Set<Component> selectedComponents = new HashSet<>();
     private final Rectangle selectionArea;
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
@@ -32,155 +32,23 @@ public class DrawingPanel extends JPanel {
      */
     private int offsetX, offsetY;
 
-    public DrawingPanel() {
+    /**
+     * Constructs a {@code DrawingPanel}.
+     *
+     * @param actionManager {@code ActionManager} from what the {@code DrawingPanel} will take its actions.
+     */
+    public DrawingPanel(ActionManager actionManager) {
 
         this.setOpaque(Boolean.TRUE);
         this.setBackground(Color.WHITE);
 
+        this.setActionManager(actionManager);
+
         selectionArea = new Rectangle(0, 0, 0, 0);
 
-        addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                if (noComponenteThere(e.getX(), e.getY())) {
-                    // The selection starts at the point where the mouse was pressed.
-                    selectionAreaStartX = e.getX();
-                    selectionAreaStartY = e.getY();
-                    selectionArea.setBounds(selectionAreaStartX, selectionAreaStartY, 0, 0);
-                    repaint();
-                    selectingArea = true;
-                } else {
-                    selectingArea = false;
-                }
-            }
+        this.backgroundPopupMenu = actionManager.getBackgroundPopupMenu();
 
-            public void mouseReleased(MouseEvent e) {
-                // When the mouse is released, the selection finishes.
-                if (selectionArea.width != 0 || selectionArea.height != 0) {
-                    selectComponents();
-                    selectionArea.setBounds(0, 0, 0, 0);
-                    repaint();
-                } else {
-                    if (!e.isPopupTrigger()) {
-                        if (!e.isControlDown()) {
-                            // If the mouse is released and the selection area is nonexistent.
-                            cleanSelectedComponents();
-                        }
-                    }
-                }
-            }
-        });
-
-        // Events where the mouse moves.
-        addMouseMotionListener(new MouseMotionAdapter() {
-            public void mouseDragged(MouseEvent e) {
-                if (selectingArea) {
-                    // The selection area size is updated according to the mouse dragging.
-                    selectionArea.setBounds(
-                            Math.min(e.getX(), selectionAreaStartX),
-                            Math.min(e.getY(), selectionAreaStartY),
-                            Math.abs(e.getX() - selectionAreaStartX),
-                            Math.abs(e.getY() - selectionAreaStartY)
-                    );
-                    repaint();
-                }
-            }
-
-            /**
-             * This method gets the mouse position in the drawing panel.
-             */
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                if (DrawingPanel.this.getBounds().contains(e.getX(), e.getY())) {
-                    DrawingPanel.this.mouseX = e.getX();
-                    DrawingPanel.this.mouseY = e.getY();
-                }
-            }
-        });
-
-        backgroundPopupMenu = this.getBackgroundPopupMenu();
-
-        // Agrega un controlador de eventos de mouse
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // Cuando se hace clic en el mouse, verifica si se ha seleccionado una entidad
-                if (e.isControlDown()) {
-                    for (Component component : components.reversed()) {
-                        if (component.getBounds().contains(new Point(DrawingPanel.this.mouseX, DrawingPanel.this.mouseY))) {
-                            componentesSeleccionadas.add(component);
-                            component.setSelected(Boolean.TRUE);
-                            break;
-                        }
-                    }
-
-                } else {
-                    List<Component> components = getListComponents().reversed();
-                    for (Component component : components) {
-                        if (component.getBounds().contains(e.getPoint())) {
-                            componenteArrastrada = component;
-                            offsetX = e.getX() - componenteArrastrada.getX();
-                            offsetY = e.getY() - componenteArrastrada.getY();
-                            componenteArrastrada.setSelected(Boolean.TRUE);
-                            break;
-                        }
-                    }
-                }
-                mostrarMenu(e);
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // When the mouse is released, the component dragged is unselected and the dragging stops.
-                if (componenteArrastrada != null) {
-                    componenteArrastrada.setSelected(Boolean.FALSE);
-                }
-                componenteArrastrada = null;
-                repaint();
-
-                mostrarMenu(e);
-            }
-
-            private void mostrarMenu(MouseEvent e) {
-
-                // If right click is pressed...
-                if (e.isPopupTrigger()) {
-                    boolean componentClicked = false;
-
-                    for (Component component : getListComponents().reversed()) {
-                        if (component.getBounds().contains(e.getPoint())) {
-                            cleanSelectedComponents();
-                            componentesSeleccionadas.add(component);
-                            component.showPopupMenu(e.getComponent(), e.getX(), e.getY());
-                            componentClicked = Boolean.TRUE;
-                            repaint();
-                            break;
-                        }
-                    }
-
-                    if (!componentClicked) {
-                        backgroundPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-                        repaint();
-                    }
-                }
-
-            }
-        });
-
-        addMouseMotionListener(new MouseMotionAdapter() {
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-
-                // In case selection mode is not activated, the component is dragged with the mouse.
-                if (!e.isControlDown() && componenteArrastrada != null) {
-
-                    // Offset is subtracted with the objective of making the animation smooth.
-                    componenteArrastrada.setX(e.getX() - offsetX);
-                    componenteArrastrada.setY(e.getY() - offsetY);
-                    repaint();
-                }
-            }
-        });
+        this.initializeMouseListeners();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -229,7 +97,7 @@ public class DrawingPanel extends JPanel {
             if (selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
 
                 // If the component is inside the selection area...
-                componentesSeleccionadas.add(component);
+                selectedComponents.add(component);
                 component.setSelected(Boolean.TRUE);
             }
         }
@@ -262,6 +130,20 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * The drawing priority of the components may change dynamically. In that case, this method must be invoked to
+     * sort the components.
+     */
+    public void sortComponents() {
+
+        // The algorithm used is a Timsort, a combination of a Merge Sort and an Insertion Sort.
+        this.components.sort(Comparator.comparing(Component::getDrawingPriority));
+
+        this.repaint();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void replaceComponent(@NotNull Component oldComponent, @NotNull Component newComponent) {
 
         if (this.components.contains(oldComponent)) {
@@ -287,18 +169,18 @@ public class DrawingPanel extends JPanel {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<Component> getSelectedComponents() {
-        return (new ArrayList<>(componentesSeleccionadas));
+        return (new ArrayList<>(selectedComponents));
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void cleanSelectedComponents() {
 
-        for (Component a : componentesSeleccionadas) {
+        for (Component a : selectedComponents) {
            a.setSelected(Boolean.FALSE);
         }
 
-        componentesSeleccionadas.clear();
+        selectedComponents.clear();
         repaint();
     }
 
@@ -306,8 +188,8 @@ public class DrawingPanel extends JPanel {
 
     public void reset() {
         this.components = new ArrayList<>();
-        this.componenteArrastrada = null;
-        this.componentesSeleccionadas = new HashSet<>();
+        this.draggedComponent = null;
+        this.selectedComponents = new HashSet<>();
         repaint();
     }
 
@@ -317,7 +199,7 @@ public class DrawingPanel extends JPanel {
 
         List<Entity> out = new ArrayList<>();
 
-        for (Component component : this.componentesSeleccionadas) {
+        for (Component component : this.selectedComponents) {
             out.addAll(component.getEntities());
         }
 
@@ -346,38 +228,9 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void setActionManager(ActionManager actionManager) { this.actionManager = actionManager; }
-
-    private JPopupMenu getBackgroundPopupMenu() {
-
-        JPopupMenu backgroundPopupMenu = new JPopupMenu();
-
-        JMenuItem addEntity = new JMenuItem(LanguageManager.getMessage("option.addEntity"));
-        addEntity.addActionListener(_ -> this.getActionManager().addEntity());
-
-        JMenuItem addRelationship = new JMenuItem(LanguageManager.getMessage("option.addRelationship"));
-        addRelationship.addActionListener(_ -> this.getActionManager().addRelationship());
-
-        JMenuItem addDependency = new JMenuItem(LanguageManager.getMessage("option.addDependency"));
-        addDependency.addActionListener(_ -> this.getActionManager().addDependency());
-
-        JMenuItem addHierarchy = new JMenuItem(LanguageManager.getMessage("option.addHierarchy"));
-        addHierarchy.addActionListener(_ -> this.getActionManager().addHierarchy());
-
-        JMenuItem addNote = new JMenuItem(LanguageManager.getMessage("option.addNote"));
-        addNote.addActionListener(_ -> this.getActionManager().addNote());
-
-        JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
-        addAssociation.addActionListener(_ -> this.getActionManager().addAssociation());
-
-        backgroundPopupMenu.add(addEntity);
-        backgroundPopupMenu.add(addRelationship);
-        backgroundPopupMenu.add(addDependency);
-        backgroundPopupMenu.add(addHierarchy);
-        backgroundPopupMenu.add(addNote);
-        backgroundPopupMenu.add(addAssociation);
-
-        return backgroundPopupMenu;
+    public void setActionManager(ActionManager actionManager) {
+        this.actionManager = actionManager;
+        actionManager.setDrawingPanel(this);
     }
 
     @SafeVarargs
@@ -386,7 +239,7 @@ public class DrawingPanel extends JPanel {
         Set<Class<?>> allowedClasses = new HashSet<>(Arrays.asList(classTypes));
 
         // Check if all components are of the allowed types.
-        for (Component component : this.componentesSeleccionadas) {
+        for (Component component : this.selectedComponents) {
             if (!allowedClasses.contains(component.getClass())) {
                 return false;
             }
@@ -399,13 +252,13 @@ public class DrawingPanel extends JPanel {
 
     public boolean isNumberOfSelectedComponentsBetween(int a, int b) {
 
-        return this.componentesSeleccionadas.size() >= a && this.componentesSeleccionadas.size() <= b;
+        return this.selectedComponents.size() >= a && this.selectedComponents.size() <= b;
 
     }
 
     public boolean isNumberOfSelectedComponents(int n) {
 
-        return this.componentesSeleccionadas.size() == n;
+        return this.selectedComponents.size() == n;
 
     }
 
@@ -422,12 +275,170 @@ public class DrawingPanel extends JPanel {
 
     public void resetLanguage() {
 
-        this.backgroundPopupMenu = this.getBackgroundPopupMenu();
+        this.backgroundPopupMenu = this.actionManager.getBackgroundPopupMenu();
 
         for (Component component : this.components) {
             component.resetLanguage();
         }
 
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                           Mouse Interactions Methods                                           */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    private void initializeMouseListeners() {
+
+        addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                handleMousePressed(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                handleMouseReleased(e);
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                handleMouseDragged(e);
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                handleMouseMoved(e);
+            }
+        });
+    }
+
+    private void handleMousePressed(MouseEvent e) {
+
+        if (noComponenteThere(e.getX(), e.getY()) && !e.isControlDown()) {
+            startSelectionArea(e);
+        } else {
+            selectingArea = false;
+
+            // Cuando se hace clic en el mouse, verifica si se ha seleccionado una entidad
+            if (e.isControlDown()) {
+                for (Component component : components.reversed()) {
+                    if (component.getBounds().contains(new Point(DrawingPanel.this.mouseX, DrawingPanel.this.mouseY))) {
+                        selectedComponents.add(component);
+                        component.setSelected(Boolean.TRUE);
+                        break;
+                    }
+                }
+
+            } else {
+                List<Component> components = getListComponents().reversed();
+                for (Component component : components) {
+                    if (component.getBounds().contains(e.getPoint())) {
+                        draggedComponent = component;
+                        offsetX = e.getX() - draggedComponent.getX();
+                        offsetY = e.getY() - draggedComponent.getY();
+                        draggedComponent.setSelected(Boolean.TRUE);
+                        break;
+                    }
+                }
+            }
+            mostrarMenu(e);
+        }
+    }
+
+    private void mostrarMenu(MouseEvent e) {
+
+        // If right click is pressed...
+        if (e.isPopupTrigger()) {
+            boolean componentClicked = false;
+
+            for (Component component : getListComponents().reversed()) {
+                if (component.getBounds().contains(e.getPoint())) {
+                    cleanSelectedComponents();
+                    selectedComponents.add(component);
+                    component.showPopupMenu(e.getComponent(), e.getX(), e.getY());
+                    componentClicked = Boolean.TRUE;
+                    repaint();
+                    break;
+                }
+            }
+
+            if (!componentClicked) {
+                backgroundPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+                repaint();
+            }
+        }
+
+    }
+
+    private void handleMouseReleased(MouseEvent e) {
+        // When the mouse is released, the selection finishes.
+        if (selectionArea.width != 0 || selectionArea.height != 0) {
+            selectComponents();
+            selectionArea.setBounds(0, 0, 0, 0);
+            repaint();
+        } else {
+            if (!e.isPopupTrigger()) {
+                if (!e.isControlDown()) {
+                    // If the mouse is released and the selection area is nonexistent.
+                    cleanSelectedComponents();
+                }
+            }
+        }
+
+        // When the mouse is released, the component dragged is unselected and the dragging stops.
+        if (draggedComponent != null) {
+            draggedComponent.setSelected(Boolean.FALSE);
+        }
+        draggedComponent = null;
+        repaint();
+
+        mostrarMenu(e);
+
+    }
+
+    private void handleMouseDragged(MouseEvent e) {
+
+        if (selectingArea) {
+            updateSelectionArea(e);
+        } else if (!e.isPopupTrigger() && draggedComponent != null) {
+            dragComponent(e);
+        }
+
+        repaint();
+    }
+
+    private void handleMouseMoved(MouseEvent e) {
+        if (DrawingPanel.this.getBounds().contains(e.getX(), e.getY())) {
+            DrawingPanel.this.mouseX = e.getX();
+            DrawingPanel.this.mouseY = e.getY();
+        }
+    }
+
+    private void startSelectionArea(MouseEvent e) {
+        selectionAreaStartX = e.getX();
+        selectionAreaStartY = e.getY();
+        selectionArea.setBounds(selectionAreaStartX, selectionAreaStartY, 0, 0);
+        selectingArea = true;
+        repaint();
+    }
+
+    private void updateSelectionArea(MouseEvent e) {
+        selectionArea.setBounds(
+                Math.min(e.getX(), selectionAreaStartX),
+                Math.min(e.getY(), selectionAreaStartY),
+                Math.abs(e.getX() - selectionAreaStartX),
+                Math.abs(e.getY() - selectionAreaStartY)
+        );
+    }
+
+    private void dragComponent(MouseEvent e) {
+        // Offset is subtracted with the objective of making the animation smooth.
+        draggedComponent.setX(e.getX() - offsetX);
+        draggedComponent.setY(e.getY() - offsetY);
     }
 
 }

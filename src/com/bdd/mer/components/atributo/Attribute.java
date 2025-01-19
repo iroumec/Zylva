@@ -54,7 +54,9 @@ public class Attribute extends AttributableComponent {
         this.arrow = arrow;
         this.ending = ending;
 
-        setDrawingPriority(4);
+        this.owner.addAttribute(this);
+
+        setDrawingPriority(0);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -110,7 +112,7 @@ public class Attribute extends AttributableComponent {
     public boolean isMain() { return this.symbol.equals(AttributeSymbol.MAIN); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
+    /*                                       Overridden Methods and Related                                           */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -121,36 +123,87 @@ public class Attribute extends AttributableComponent {
         }
 
         Rectangle ownerBounds = this.owner.getBounds();
+        Point textPosition = calculateTextPosition(ownerBounds);
+        String displayText = prepareText();
+        Rectangle textBounds = calculateTextBounds(g2, displayText, textPosition);
 
-        int x = ((int) ownerBounds.getCenterX() + (int) ownerBounds.getMaxX())/2;
-        int y = (int) ownerBounds.getMaxY();
-        int i = this.owner.getAttributePosition(this);
+        setShape(textBounds);
+        drawText(g2, displayText, textPosition);
+        drawConnectingLine(g2, ownerBounds, textPosition);
 
-        int atributoY = y + 15 + i * 16; // Attributes position in Y axis.
-
-        // It's necessary to change the font so the UNICODE chars can be shown.
-        g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
-
-        String nombreAMostrar = this.getArrow() + getEnding() + this.getSymbol() + this.getText();
-        g2.drawString(nombreAMostrar, x, atributoY);
-
-        FontMetrics fm = g2.getFontMetrics();
-        int anchoTexto = fm.stringWidth(nombreAMostrar);
-        int altoTexto = fm.getHeight();
-
-        int rectY = atributoY - altoTexto;
-
-        setShape(new Rectangle(x, rectY, anchoTexto, altoTexto));
-
-        // Draw a line to the owner.
-        g2.drawLine(x, y, x, atributoY);
-
-        // The font is reset.
-        g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-
-        g2.setColor(Color.BLACK);
-
+        resetGraphics(g2);
     }
+
+    /**
+     * Calculates the text position based on the owner.
+     *
+     * @param ownerBounds Owner's bounds.
+     * @return A {@code Point} containing the position of the text.
+     */
+    private Point calculateTextPosition(Rectangle ownerBounds) {
+        int x = ((int) ownerBounds.getCenterX() + (int) ownerBounds.getMaxX()) / 2;
+        int y = (int) ownerBounds.getMaxY();
+        int attributeIndex = this.owner.getAttributePosition(this);
+        int attributeY = y + 15 + attributeIndex * 16; // Y coordinate of the attribute.
+        return new Point(x, attributeY);
+    }
+
+    /**
+     * Prepares the text to be shown.
+     *
+     * @return Prepared text.
+     */
+    private String prepareText() {
+        return this.getArrow() + getEnding() + this.getSymbol() + this.getText();
+    }
+
+    /**
+     * Calculates the text limits as a Rectangle shape.
+     *
+     * @param g2 Graphics context.
+     * @param text Text.
+     * @param position Position of the text.
+     * @return {@code Rectangle} containing the limits of the text.
+     */
+    private Rectangle calculateTextBounds(Graphics2D g2, String text, Point position) {
+        FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(text);
+        int textHeight = fm.getHeight();
+        int rectY = position.y - textHeight;
+        return new Rectangle(position.x, rectY, textWidth, textHeight);
+    }
+
+    /**
+     * Draws the text.
+     *
+     * @param g2 Graphics context.
+     * @param text Text to be drawn.
+     * @param position Text position.
+     */
+    private void drawText(Graphics2D g2, String text, Point position) {
+        g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
+        g2.drawString(text, position.x, position.y);
+    }
+
+    /**
+     * Draws a line to the owner.
+     *
+     * @param g2 Graphics context.
+     * @param ownerBounds Owner's bounds.
+     * @param textPosition Position of the attribute's text.
+     */
+    private void drawConnectingLine(Graphics2D g2, Rectangle ownerBounds, Point textPosition) {
+        int x = textPosition.x;
+        int y = (int) ownerBounds.getMaxY();
+        g2.drawLine(x, y, x, textPosition.y);
+    }
+
+
+    private void resetGraphics(Graphics2D g2) {
+        g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        g2.setColor(Color.BLACK);
+    }
+
 
     /* -------------------------------------------------------------------------------------------------------------- */
 

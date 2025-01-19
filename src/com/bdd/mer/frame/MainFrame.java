@@ -19,8 +19,15 @@ public class MainFrame extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        // It contains the actions both the drawing panel and the frame can do.
+        ActionManager actionManager = new ActionManager();
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+
         // Creation of the drawing panel, the bar menu and the menu.
-        this.drawingPanel = new DrawingPanel();
+        this.drawingPanel = new DrawingPanel(actionManager);
         this.menuBar = new MenuBar(this, drawingPanel);
         JPanel menu = new JPanel();
         menu.setLayout(new BoxLayout(menu, BoxLayout.PAGE_AXIS));
@@ -29,11 +36,6 @@ public class MainFrame extends JFrame {
         menu.setPreferredSize(dimension);
         menu.setBackground(Color.LIGHT_GRAY);
 
-        /* ---------------------------------------------------------------------------------------------------------- */
-
-        // It contains the action both the drawing panel and the frame can do.
-        ActionManager actionManager = new ActionManager(drawingPanel);
-        drawingPanel.setActionManager(actionManager);
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                         Add Entity Key                                                     */
