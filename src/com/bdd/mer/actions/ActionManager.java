@@ -339,11 +339,23 @@ public final class ActionManager implements Serializable {
                         }
                     }
 
-                    drawingPanel.addComponent(weakLine);
-                    drawingPanel.addComponent(strongLine);
+                    // These checks are only added so the IDE don't tell me they can be null.
 
-                    drawingPanel.addComponent(cardinality);
-                    drawingPanel.addComponent(staticCardinality);
+                    if (weakLine != null) {
+                        drawingPanel.addComponent(weakLine);
+                    }
+
+                    if (strongLine != null) {
+                        drawingPanel.addComponent(strongLine);
+                    }
+
+                    if (cardinality != null) {
+                        drawingPanel.addComponent(cardinality);
+                    }
+
+                    if (staticCardinality != null) {
+                        drawingPanel.addComponent(staticCardinality);
+                    }
 
                     drawingPanel.addComponent(newRelationship);
 
