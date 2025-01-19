@@ -158,8 +158,8 @@ public final class ActionManager implements Serializable {
 
                         Relatable castedComponent = (Relatable) this.drawingPanel.getSelectedComponents().getFirst();
 
-                        Cardinality firstCardinality = new Cardinality("0", "N", this.drawingPanel);
-                        Cardinality secondCardinality = new Cardinality("0", "N", this.drawingPanel);
+                        Cardinality firstCardinality = new Cardinality("1", "N", this.drawingPanel);
+                        Cardinality secondCardinality = new Cardinality("1", "N", this.drawingPanel);
 
                         Line firstCardinalityLine = new GuardedLine(this.drawingPanel, (Component) castedComponent, newRelationship, new SquaredLine(), new SingleLine(), firstCardinality);
                         lines.add(firstCardinalityLine);
@@ -323,7 +323,7 @@ public final class ActionManager implements Serializable {
 
                         if (entity.equals(entitySelected)) {
 
-                            cardinality = new Cardinality("0", "N", this.drawingPanel);
+                            cardinality = new Cardinality("1", "N", this.drawingPanel);
 
                             strongLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new DoubleLine(3), cardinality);
                             newRelationship.addParticipant(entity, strongLine);
