@@ -1,7 +1,7 @@
 package com.bdd.mer.components.entity;
 
 import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.atributo.Attribute;
+import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;

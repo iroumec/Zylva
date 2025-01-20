@@ -1,4 +1,4 @@
-package com.bdd.mer.components.atributo.symbology;
+package com.bdd.mer.components.attribute.symbology;
 
 import java.io.Serializable;
 

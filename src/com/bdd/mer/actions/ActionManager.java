@@ -1,9 +1,9 @@
 package com.bdd.mer.actions;
 
-import com.bdd.mer.components.atributo.*;
-import com.bdd.mer.components.atributo.symbology.AttributeArrow;
-import com.bdd.mer.components.atributo.symbology.AttributeEnding;
-import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
+import com.bdd.mer.components.attribute.*;
+import com.bdd.mer.components.attribute.symbology.AttributeArrow;
+import com.bdd.mer.components.attribute.symbology.AttributeEnding;
+import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.hierarchy.HierarchyExclusivity;
 import com.bdd.mer.components.hierarchy.TotalHierarchy;
@@ -111,12 +111,17 @@ public final class ActionManager implements Serializable {
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, WeakEntity.class, Association.class)
                 && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
 
-            String nombre = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.name"));
+            String name = JOptionPane.showInputDialog(
+                    this.drawingPanel,
+                    null,
+                    LanguageManager.getMessage("input.name"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
 
-            if (nombre != null) {
-                if (!nombre.isEmpty()) {
+            if (name != null) {
+                if (!name.isEmpty()) {
 
-                    Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
+                    Relationship newRelationship = new Relationship(name, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
 
                     List<Cardinality> cardinalities = new ArrayList<>();
 
@@ -304,11 +309,16 @@ public final class ActionManager implements Serializable {
 
         if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
-            String nombre = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.name"));
+            String name = JOptionPane.showInputDialog(
+                    this.drawingPanel,
+                    null,
+                    LanguageManager.getMessage("input.name"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
 
-            if (nombre != null) {
+            if (name != null) {
 
-                Relationship newRelationship = new Relationship(nombre, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
+                Relationship newRelationship = new Relationship(name, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
 
                 Entity entitySelected = selectWeakEntity();
 
@@ -590,7 +600,12 @@ public final class ActionManager implements Serializable {
      */
     public void addNote() {
 
-        String text = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.text"));
+        String text = JOptionPane.showInputDialog(
+                this.drawingPanel,
+                null,
+                LanguageManager.getMessage("input.text"),
+                JOptionPane.QUESTION_MESSAGE
+        );
 
         if (text != null) {
             drawingPanel.addComponent(new Note(text, drawingPanel.getMouseX(), drawingPanel.getMouseY(), this.drawingPanel));
@@ -653,7 +668,13 @@ public final class ActionManager implements Serializable {
         String newText;
 
         do {
-            newText = JOptionPane.showInputDialog(this.drawingPanel, LanguageManager.getMessage("input.newText"));
+
+            newText= JOptionPane.showInputDialog(
+                    this.drawingPanel,
+                    null,
+                    LanguageManager.getMessage("input.newText"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
 
             // "newText" can be null when the user pressed "cancel"
             if (newText != null && newText.isEmpty()) {

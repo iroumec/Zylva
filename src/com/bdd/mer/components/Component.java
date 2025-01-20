@@ -251,6 +251,8 @@ public abstract class Component implements Serializable {
         graphics2D.setStroke(new BasicStroke(2));
     }
 
+    public boolean canBeSelectedBySelectionArea() { return true; }
+
     public boolean canBeDeleted() { return true; }
 
     public Pair<Integer, Integer> getFontMetrics(Graphics2D graphics2D) {

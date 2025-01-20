@@ -94,7 +94,7 @@ public class DrawingPanel extends JPanel {
 
         for (Component component : this.components) {
 
-            if (selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
+            if (component.canBeSelectedBySelectionArea() && selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
 
                 // If the component is inside the selection area...
                 selectedComponents.add(component);

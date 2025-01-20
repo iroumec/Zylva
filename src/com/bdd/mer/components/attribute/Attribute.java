@@ -1,11 +1,11 @@
-package com.bdd.mer.components.atributo;
+package com.bdd.mer.components.attribute;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.atributo.symbology.AttributeArrow;
-import com.bdd.mer.components.atributo.symbology.AttributeEnding;
-import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
+import com.bdd.mer.components.attribute.symbology.AttributeArrow;
+import com.bdd.mer.components.attribute.symbology.AttributeEnding;
+import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -141,11 +141,12 @@ public class Attribute extends AttributableComponent {
      * @return A {@code Point} containing the position of the text.
      */
     private Point calculateTextPosition(Rectangle ownerBounds) {
+        int attributePosition = this.owner.getAttributePosition(this);
+
         int x = ((int) ownerBounds.getCenterX() + (int) ownerBounds.getMaxX()) / 2;
-        int y = (int) ownerBounds.getMaxY();
-        int attributeIndex = this.owner.getAttributePosition(this);
-        int attributeY = y + 15 + attributeIndex * 16; // Y coordinate of the attribute.
-        return new Point(x, attributeY);
+        int y = (int) ownerBounds.getMaxY() + 10 + attributePosition * 16;
+
+        return new Point(x, y);
     }
 
     /**
@@ -194,7 +195,7 @@ public class Attribute extends AttributableComponent {
      */
     private void drawConnectingLine(Graphics2D g2, Rectangle ownerBounds, Point textPosition) {
         int x = textPosition.x;
-        int y = (int) ownerBounds.getMaxY();
+        int y = (int) ownerBounds.getCenterY();
         g2.drawLine(x, y, x, textPosition.y);
     }
 
@@ -244,5 +245,10 @@ public class Attribute extends AttributableComponent {
         }
 
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public boolean canBeSelectedBySelectionArea() { return false; }
 
 }

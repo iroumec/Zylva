@@ -1,9 +1,9 @@
-package com.bdd.mer.components.atributo;
+package com.bdd.mer.components.attribute;
 
 import com.bdd.mer.components.AttributableComponent;
-import com.bdd.mer.components.atributo.symbology.AttributeArrow;
-import com.bdd.mer.components.atributo.symbology.AttributeEnding;
-import com.bdd.mer.components.atributo.symbology.AttributeSymbol;
+import com.bdd.mer.components.attribute.symbology.AttributeArrow;
+import com.bdd.mer.components.attribute.symbology.AttributeEnding;
+import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
 

@@ -1,6 +1,6 @@
 package com.bdd.mer.components;
 
-import com.bdd.mer.components.atributo.Attribute;
+import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public abstract class AttributableComponent extends Component {
      * @param attribute {@code Attribute} whose position is wanted to be known.
      * @return Position of the attribute in the hierarchy.
      *
-     * This allows complex trees of attributes to bee drawn.
+     * This allows complex trees of attributes to be drawn.
      */
     public int getAttributePosition(Attribute attribute) {
 
