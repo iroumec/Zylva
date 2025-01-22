@@ -1,4 +1,4 @@
-# Introduction
+# Introduction.
 
 Zylva DERExt is an extended entity-relationship model diagram application developed completely in Java.
 
@@ -20,7 +20,7 @@ The application is compatible with both mouse and keyboard shortcuts!
 
 ![mouseAndKeyboardControls.gif](src/resources/multimedia/mouseAndKeyboardControls.gif)
 
-# Languages
+# Languages.
 
 The language of the application can be changed in any moment!
 
@@ -28,7 +28,7 @@ The language of the application can be changed in any moment!
 
 Right now, the application is only available in English, Spanish and French.
 
-# Installation
+# Installation.
 
 Make sure you have downloaded Java Runtime Environment and JDK >= 23. Here are the links:
 - https://www.java.com/es/
