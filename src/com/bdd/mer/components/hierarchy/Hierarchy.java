@@ -77,7 +77,9 @@ public class Hierarchy extends Component {
      * @param g2 Graphics context.
      */
     protected void drawParentLine(Graphics2D g2) {
+        g2.setStroke(new BasicStroke(2));
         g2.drawLine(this.getX(), this.getY(), parent.getX(), parent.getY());
+        g2.setStroke(new BasicStroke(1));
     }
 
     /**

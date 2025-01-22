@@ -121,7 +121,9 @@ public final class ActionManager implements Serializable {
             if (name != null) {
                 if (!name.isEmpty()) {
 
-                    Relationship newRelationship = new Relationship(name, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
+                    Point center = this.drawingPanel.getCenterOfSelectedComponents();
+
+                    Relationship newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
 
                     List<Cardinality> cardinalities = new ArrayList<>();
 
@@ -134,7 +136,7 @@ public final class ActionManager implements Serializable {
                             // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
                             Relatable castedComponent = (Relatable) component;
 
-                            Cardinality cardinality = new Cardinality("0", "N", this.drawingPanel);
+                            Cardinality cardinality = new Cardinality("1", "N", this.drawingPanel);
 
                             cardinalities.add(cardinality);
 
@@ -318,7 +320,9 @@ public final class ActionManager implements Serializable {
 
             if (name != null) {
 
-                Relationship newRelationship = new Relationship(name, drawingPanel.getMouseX(),drawingPanel.getMouseY(), this.drawingPanel);
+                Point center = this.drawingPanel.getCenterOfSelectedComponents();
+
+                Relationship newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
 
                 Entity entitySelected = selectWeakEntity();
 
@@ -394,9 +398,9 @@ public final class ActionManager implements Serializable {
         int selection = JOptionPane.showOptionDialog(
                 this.drawingPanel,
                 LanguageManager.getMessage("input.weakEntity"),
-                "",
+                LanguageManager.getMessage("input.option"),
                 JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.QUESTION_MESSAGE,
                 null,
                 opciones,
                 opciones[0]);
@@ -718,34 +722,53 @@ public final class ActionManager implements Serializable {
      */
     public void addAttribute(AttributableComponent component, AttributeSymbol attributeSymbol) {
 
-        // Creation of the components of the panel.
+        // Create the components of the panel
         JTextField fieldNombre = new JTextField(10);
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
         JCheckBox boxMultivalued = new JCheckBox(LanguageManager.getMessage("attribute.multivalued"));
 
-        // Array of the components of the panel.
+        // Array of the components of the panel
         Object[] message = {
                 LanguageManager.getMessage("input.name"), fieldNombre,
                 LanguageManager.getMessage("input.selectOptions"), boxOptional, boxMultivalued
         };
 
-        int option = JOptionPane.showConfirmDialog(null, message, LanguageManager.getMessage("input.attributeInformation"), JOptionPane.OK_CANCEL_OPTION);
+        // Show the confirmation dialog
+        JOptionPane pane = new JOptionPane(
+                message,
+                JOptionPane.PLAIN_MESSAGE,
+                JOptionPane.OK_CANCEL_OPTION
+        );
 
-        if (option == JOptionPane.OK_OPTION) {
+        // Create the dialog directly
+        JDialog dialog = pane.createDialog(this.drawingPanel, LanguageManager.getMessage("input.attributeInformation"));
 
-            String nombre = fieldNombre.getText();
+        setFocus(fieldNombre);
 
-            if (nombre != null) {
+        dialog.setVisible(true);
 
-                AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
-                AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
+        // Get the selected value after the dialog is closed
+        Object selectedValue = pane.getValue();
+        if (selectedValue != null && (int) selectedValue == JOptionPane.OK_OPTION) {
+            String name = fieldNombre.getText();
 
-                Attribute newAttribute = new Attribute(component, nombre, attributeSymbol, arrowBody, arrowEnding, this.drawingPanel);
-
-                this.addAttribute(newAttribute);
+            // Check if the input is empty
+            while (name != null && name.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
+                name = this.getName();
             }
-        }
 
+            if (name == null) {
+                return;
+            }
+
+            AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
+            AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
+
+            Attribute newAttribute = new Attribute(component, name, attributeSymbol, arrowBody, arrowEnding, this.drawingPanel);
+
+            this.addAttribute(newAttribute);
+        }
     }
 
     /**
@@ -768,27 +791,71 @@ public final class ActionManager implements Serializable {
                 return;
             }
 
-            JTextField fieldNombre = new JTextField(10);
+            String name = this.getName();
 
-            int option = JOptionPane.showConfirmDialog(null, fieldNombre, LanguageManager.getMessage("input.name"), JOptionPane.OK_CANCEL_OPTION);
-
-            if (option == JOptionPane.OK_OPTION) {
-
-                String nombre = fieldNombre.getText();
-
-                if (nombre != null) {
-
-                    Attribute newAttribute = new MainAttribute(component, nombre, this.drawingPanel);
-
-                    this.addAttribute(newAttribute);
-                }
+            if (name == null) {
+                return;
             }
+
+            Attribute newAttribute = new MainAttribute(component, name, this.drawingPanel);
+
+            this.addAttribute(newAttribute);
 
         } else {
 
             addAttribute(component, attributeSymbol);
-
         }
+    }
+
+    /**
+     * It makes sure to return a non-empty name.
+     *
+     * @return {@code String} entered by the user.
+     */
+    private String getName() {
+
+        String name = JOptionPane.showInputDialog(
+                this.drawingPanel,
+                null,
+                LanguageManager.getMessage("input.name"),
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        while (name != null && name.trim().isEmpty()) {
+
+            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
+
+            name = JOptionPane.showInputDialog(
+                    this.drawingPanel,
+                    null,
+                    LanguageManager.getMessage("input.name"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
+        }
+
+        return name;
+    }
+
+    /**
+     * Sets focus on the JComponent.
+     *
+     * @param component {@code JComponent} to be focused.
+     */
+    private void setFocus(JComponent component) {
+
+        component.addAncestorListener(new javax.swing.event.AncestorListener() {
+            @Override
+            public void ancestorAdded(javax.swing.event.AncestorEvent event) {
+                component.requestFocusInWindow();
+            }
+
+            @Override
+            public void ancestorRemoved(javax.swing.event.AncestorEvent event) {}
+
+            @Override
+            public void ancestorMoved(javax.swing.event.AncestorEvent event) {}
+        });
+
     }
 
     /**

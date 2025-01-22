@@ -24,7 +24,7 @@ The language of the application can be changed in any moment!
 
 ![languageSelection.gif](src/resources/multimedia/languageSelection.gif)
 
-Right now, the application is only available in English and Spanish.
+Right now, the application is only available in English, Spanish and French.
 
 # Installation
 

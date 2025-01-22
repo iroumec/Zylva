@@ -31,33 +31,34 @@ public class LanguageManager {
      * @param mainFrame The frame whose language is wanted to be changed.
      */
     public static void changeLanguage(MainFrame mainFrame) {
-
-        // Map display names to acronyms.
-        Map<String, String> languages = new HashMap<>();
+        // Map display names to acronyms, sorted by display names (due to the TreeMap()).
+        Map<String, String> languages = new TreeMap<>();
         languages.put(LanguageManager.getMessage("language.english"), "en");
         languages.put(LanguageManager.getMessage("language.spanish"), "es");
+        languages.put(LanguageManager.getMessage("language.french"), "fr");
 
-        // Create GUI.
+        // Create the frame.
         JFrame frame = new JFrame(LanguageManager.getMessage("language.selectOption"));
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(300, 150);
+        frame.setSize(300, 120);
         frame.setLocationRelativeTo(null); // Center window
 
+        // Panel for components.
         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Reduce spacing around components.
 
-        // A combo box with display names is created.
+        // ComboBox for language selection.
         JComboBox<String> languageComboBox = new JComboBox<>(languages.keySet().toArray(new String[0]));
-        panel.add(new JLabel());
-        languageComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+        languageComboBox.setSelectedItem(LanguageManager.getMessage("language." + LanguageManager.getCurrentLanguage()));
+        languageComboBox.setPreferredSize(new Dimension(200, 25)); // Set fixed size to reduce padding.
+
         panel.add(languageComboBox);
 
         // Confirmation button.
         JButton confirmButton = new JButton(LanguageManager.getMessage("language.confirmOption"));
-        confirmButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(confirmButton);
 
-        // Action button.
+        // Add action to the button.
         confirmButton.addActionListener(_ -> {
             String selectedDisplayLanguage = (String) languageComboBox.getSelectedItem();
             if (selectedDisplayLanguage != null) {
@@ -65,14 +66,16 @@ public class LanguageManager {
                 applyLanguage(selectedAcronym, mainFrame);
                 frame.dispose();
                 JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged"));
-            } else {
-                JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.noLanguageSelected"));
             }
         });
 
         // Add panel to frame.
         frame.add(panel);
         frame.setVisible(true);
+    }
+
+    private static String getCurrentLanguage() {
+        return currentLocale.getDisplayLanguage(Locale.ENGLISH).toLowerCase();
     }
 
     /**

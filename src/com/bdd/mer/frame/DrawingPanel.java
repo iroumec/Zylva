@@ -21,6 +21,7 @@ public class DrawingPanel extends JPanel {
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
     private JPopupMenu backgroundPopupMenu;
+    private boolean antialiasing = true;
 
     /**
      * Mouse x and y coordinates. This is useful for when a combination of keys are pressed.
@@ -48,6 +49,8 @@ public class DrawingPanel extends JPanel {
 
         this.backgroundPopupMenu = actionManager.getBackgroundPopupMenu();
 
+        this.setAntialiasing(UserPreferences.loadAntialiasingPreference());
+
         this.initializeMouseListeners();
     }
 
@@ -61,9 +64,9 @@ public class DrawingPanel extends JPanel {
         // It draws the selection area.
         Graphics2D g2d = (Graphics2D) g;
 
-        // Antialiasing in the lines.
-        // Maybe it is a good idea to be able to deactivate or activate it.
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        if (antialiasing) {
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }
 
         g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
@@ -441,4 +444,35 @@ public class DrawingPanel extends JPanel {
         draggedComponent.setY(e.getY() - offsetY);
     }
 
+    public Point getCenterOfSelectedComponents() {
+
+        if (selectedComponents.isEmpty()) {
+            return new Point(this.getMouseX(), this.getMouseY());
+        }
+
+        double sumX = 0, sumY = 0;
+
+        for (Component component : this.selectedComponents) {
+
+            sumX += component.getX();
+            sumY += component.getY();
+        }
+
+        // Calculate the average of the X and Y coordinates
+        double centerX = sumX / this.selectedComponents.size();
+        double centerY = sumY / this.selectedComponents.size();
+
+        // Return the center as a Point object
+        return new Point((int) centerX, (int) centerY);
+    }
+
+    public void setAntialiasing(boolean antialiasing) {
+        this.antialiasing = antialiasing;
+        UserPreferences.saveAntialiasingPreference(antialiasing);
+        this.repaint();
+    }
+
+    public boolean isAntialiasingActive() {
+        return this.antialiasing;
+    }
 }
