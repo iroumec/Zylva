@@ -116,6 +116,7 @@ public abstract class AttributableComponent extends Component {
 
         for (Attribute attribute : this.attributes) {
             out.addAll(attribute.getComponentsForRemoval());
+            out.add(attribute);
         }
 
         return out;
