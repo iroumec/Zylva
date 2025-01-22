@@ -626,7 +626,15 @@ public final class ActionManager implements Serializable {
         List<Component> selectedComponents = this.drawingPanel.getSelectedComponents();
 
         if (!selectedComponents.isEmpty()) {
-            int confirmation = JOptionPane.showConfirmDialog(this.drawingPanel, LanguageManager.getMessage("input.delete"));
+
+            int confirmation = JOptionPane.showConfirmDialog(
+                    this.drawingPanel,
+                    LanguageManager.getMessage("input.delete"),
+                    LanguageManager.getMessage("title.delete"),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
             if (confirmation == JOptionPane.YES_OPTION) {
 
                 Set<Component> componentsForRemoval = new HashSet<>();
