@@ -2,15 +2,15 @@
 
 Zylva DERExt is an extended entity-relationship model diagram application developed in Java.
 
+# Easy and fast controls!
+
+![exampleCreation.gif](src/resources/multimedia/exampleCreation.gif)
+
 # PNG exportation and diagram save and load!
 
 You can save and load your diagrams, as well as exporting them as PNG images.
 
 ![exampleDiagram.png](src/resources/multimedia/exampleDiagram.png)
-
-# Easy and fast controls!
-
-
 
 # Use it as you prefer!
 
