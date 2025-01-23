@@ -41,6 +41,7 @@ the *jar* file. The command for this is: java -jar *directory*/ZylvaDERExt.jar.
 
 After the 1.0 version, which will bring optimization and improvements in the performance, my plan is:
 
+- Derivation!
 - Improving the code's efficiency at the same time I acquire more knowledge about Java and algorithms.
 - Adding more personalization tools.
 - Adding the possibility to have various *tabs* open at the same time.

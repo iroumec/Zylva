@@ -15,7 +15,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         setUndecorated(false);  // Removing of the title bar.
-        setTitle("Zylva DERExt");
+        setTitle("Zylva EERD");
         setSize(800, 600);
         setLocationRelativeTo(null);
 
@@ -138,6 +138,8 @@ public class MainFrame extends JFrame {
         add(drawingPanel, BorderLayout.CENTER);
         setJMenuBar(menuBar);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     public void resetLanguage() {
         this.menuBar.resetLanguage();

@@ -3,6 +3,7 @@ package com.bdd.mer.components.hierarchy;
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.line.Line;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.LanguageManager;
 
@@ -30,14 +31,19 @@ se nota con la letra "o" (Overlapping).
 public class Hierarchy extends Component {
 
     /**
-     * The exclusivity of the hierarchy.
+     * The symbol of the hierarchy, also denoting its exclusivity.
      */
-    private HierarchyExclusivity exclusivity;
+    private HierarchySymbol symbol;
 
     /**
      * The parent entity in the hierarchy.
      */
     private Entity parent;
+
+    /**
+     * The line to the parent.
+     */
+    private Line parentLine;
 
     /**
      * List of children entities in the hierarchy.
@@ -47,15 +53,15 @@ public class Hierarchy extends Component {
     /**
      * Constructs a {@code Hierarchy}.
      *
-     * @param exclusivity {@code Hierarchy}'s exclusivity.
+     * @param symbol {@code Hierarchy}'s symbol, denoting its exclusivity.
      * @param parent {@code Hierarchy}'s parent entity.
      * @param drawingPanel {@code DrawingPanel} where the {@code Hierarchy} lives.
      */
-    public Hierarchy(HierarchyExclusivity exclusivity, Entity parent, DrawingPanel drawingPanel) {
+    public Hierarchy(HierarchySymbol symbol, Entity parent, DrawingPanel drawingPanel) {
 
         super(parent.getX(), parent.getY() + 60, drawingPanel);
 
-        this.exclusivity = exclusivity;
+        this.symbol = symbol;
         this.parent = parent;
         this.children = new ArrayList<>();
 
@@ -69,17 +75,6 @@ public class Hierarchy extends Component {
      */
     public void addChild(Entity entity) {
         this.children.add(entity);
-    }
-
-    /**
-     * Draws a line to the parent.
-     *
-     * @param g2 Graphics context.
-     */
-    protected void drawParentLine(Graphics2D g2) {
-        g2.setStroke(new BasicStroke(2));
-        g2.drawLine(this.getX(), this.getY(), parent.getX(), parent.getY());
-        g2.setStroke(new BasicStroke(1));
     }
 
     /**
@@ -116,15 +111,15 @@ public class Hierarchy extends Component {
      *
      * @return The exclusivity of the hierarchy.
      */
-    public HierarchyExclusivity getExclusivity() { return this.exclusivity; }
+    public HierarchySymbol getSymbol() { return this.symbol; }
 
     /**
      * Changes the hierarchy's exclusivity.
      *
-     * @param exclusivity New exclusivity.
+     * @param symbol New exclusivity.
      */
-    public void setExclusivity(HierarchyExclusivity exclusivity) {
-        this.exclusivity = exclusivity;
+    public void setSymbol(HierarchySymbol symbol) {
+        this.symbol = symbol;
     }
 
     /**
@@ -169,6 +164,15 @@ public class Hierarchy extends Component {
 
     }
 
+    /**
+     * Sets the line to the parent.
+     *
+     * @param line New {@code Line} drawn to the parent.
+     */
+    public void setParentLine(Line line) {
+        this.parentLine = line;
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -189,7 +193,7 @@ public class Hierarchy extends Component {
     public void draw(Graphics2D g2) {
 
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(this.exclusivity.getSymbol());
+        int textWidth = fm.stringWidth(this.symbol.getSymbol());
         int textHeight = fm.getHeight();
 
         // The diameter is calculated according to the text size.
@@ -197,8 +201,6 @@ public class Hierarchy extends Component {
 
         // Radio of the oval.
         int radio = diameter / 2;
-
-        drawParentLine(g2);
 
         // Child lines.
         for (Entity e : children) {
@@ -226,7 +228,7 @@ public class Hierarchy extends Component {
 
         g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(2));
-        g2.drawString(this.exclusivity.getSymbol(), this.getX() - 4, this.getY() + 4);
+        g2.drawString(this.symbol.getSymbol(), this.getX() - 4, this.getY() + 4);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -285,6 +287,18 @@ public class Hierarchy extends Component {
 
         return true;
 
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public List<Component> getComponentsForRemoval() {
+
+        List<Component> out = new ArrayList<>(this.parentLine.getComponentsForRemoval());
+
+        out.add(this.parentLine);
+
+        return out;
     }
 
 }

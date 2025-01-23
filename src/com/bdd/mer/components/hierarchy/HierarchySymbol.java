@@ -2,14 +2,14 @@ package com.bdd.mer.components.hierarchy;
 
 import java.io.Serializable;
 
-public enum HierarchyExclusivity implements Serializable {
+public enum HierarchySymbol implements Serializable {
 
     DISJUNCT("d"),
     OVERLAPPING("o");
 
     final String symbol;
 
-    HierarchyExclusivity(String symbol) { this. symbol = symbol; }
+    HierarchySymbol(String symbol) { this. symbol = symbol; }
 
     public String getSymbol() { return this.symbol; }
 

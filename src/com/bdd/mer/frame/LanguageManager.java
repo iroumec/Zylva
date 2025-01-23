@@ -36,6 +36,8 @@ public class LanguageManager {
         languages.put(LanguageManager.getMessage("language.english"), "en");
         languages.put(LanguageManager.getMessage("language.spanish"), "es");
         languages.put(LanguageManager.getMessage("language.french"), "fr");
+        languages.put(LanguageManager.getMessage("language.italian"), "it");
+        languages.put(LanguageManager.getMessage("language.portuguese"), "pt");
 
         // Create the frame.
         JFrame frame = new JFrame(LanguageManager.getMessage("language.selectOption"));

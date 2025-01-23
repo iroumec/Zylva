@@ -68,7 +68,9 @@ public class DrawingPanel extends JPanel {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
 
-        g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        g2d.setFont(new Font("Noto Sans Devanagari", Font.PLAIN, 12));
+
+        //g2d.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         g2d.draw(selectionArea);
 

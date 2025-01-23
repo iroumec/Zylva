@@ -7,6 +7,7 @@ import com.bdd.mer.frame.menuBar.exportation.FileManager;
 import com.bdd.mer.frame.menuBar.exportation.ExportPNG;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class FileMenu extends JMenu {
 

@@ -5,8 +5,7 @@ import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.components.association.Association;
-import com.bdd.mer.components.hierarchy.HierarchyExclusivity;
-import com.bdd.mer.components.hierarchy.TotalHierarchy;
+import com.bdd.mer.components.hierarchy.HierarchySymbol;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.Entity;
@@ -525,15 +524,22 @@ public final class ActionManager implements Serializable {
             return null; // The process is cancelled.
         }
 
-        HierarchyExclusivity letter = (exclusiveButton.isSelected()) ? HierarchyExclusivity.DISJUNCT : HierarchyExclusivity.OVERLAPPING;
+        HierarchySymbol symbol = (exclusiveButton.isSelected()) ? HierarchySymbol.DISJUNCT : HierarchySymbol.OVERLAPPING;
 
-        Hierarchy newHierarchy;
+        Hierarchy newHierarchy = new Hierarchy(symbol, parent, this.drawingPanel);
+
+        Line parentLine;
 
         if (totalButton.isSelected()) {
-            newHierarchy = new TotalHierarchy(letter, parent, this.drawingPanel);
+            parentLine = new Line(this.drawingPanel, parent, newHierarchy, new DirectLine(), new DoubleLine(3));
         } else {
-            newHierarchy = new Hierarchy(letter, parent, this.drawingPanel);
+            parentLine = new Line(this.drawingPanel, parent, newHierarchy, new DirectLine(), new SingleLine());
+            parentLine.setStroke(new BasicStroke(2));
+            // This way, it's noticeable who is the parent of the hierarchy.
         }
+
+        newHierarchy.setParentLine(parentLine);
+        this.drawingPanel.addComponent(parentLine);
 
         return newHierarchy;
     }
@@ -583,10 +589,10 @@ public final class ActionManager implements Serializable {
      */
     public void swapExclusivity(Hierarchy hierarchy) {
 
-        if (hierarchy.getExclusivity().equals(HierarchyExclusivity.DISJUNCT)) {
-            hierarchy.setExclusivity(HierarchyExclusivity.OVERLAPPING);
+        if (hierarchy.getSymbol().equals(HierarchySymbol.DISJUNCT)) {
+            hierarchy.setSymbol(HierarchySymbol.OVERLAPPING);
         } else {
-            hierarchy.setExclusivity(HierarchyExclusivity.DISJUNCT);
+            hierarchy.setSymbol(HierarchySymbol.DISJUNCT);
         }
 
         this.drawingPanel.repaint();
@@ -1044,6 +1050,7 @@ public final class ActionManager implements Serializable {
 
         JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
         addAssociation.addActionListener(_ -> this.addAssociation());
+        addAssociation.setFont(new Font("Noto Sans Devanagari", Font.PLAIN, 12));
 
         backgroundPopupMenu.add(addEntity);
         backgroundPopupMenu.add(addRelationship);
@@ -1051,6 +1058,8 @@ public final class ActionManager implements Serializable {
         backgroundPopupMenu.add(addHierarchy);
         backgroundPopupMenu.add(addNote);
         backgroundPopupMenu.add(addAssociation);
+
+        backgroundPopupMenu.setFont(new Font("Noto Sans Devanagari", Font.PLAIN, 12));
 
         return backgroundPopupMenu;
     }

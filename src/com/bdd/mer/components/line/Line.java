@@ -10,6 +10,7 @@ import java.awt.*;
 
 public class Line extends Component {
 
+    private Stroke stroke;
     private Component firstComponent;
     private Component secondComponent;
     private final LineShape lineShape;
@@ -21,6 +22,7 @@ public class Line extends Component {
         this.secondComponent = secondComponent;
         this.lineShape = lineShape;
         this.lineMultiplicity = lineMultiplicity;
+        this.stroke = new BasicStroke(1);
         setDrawingPriority(2);
     }
 
@@ -29,6 +31,8 @@ public class Line extends Component {
         return this.lineShape.getCenterPoint(firstComponent.getX(), firstComponent.getY(), secondComponent.getX(), secondComponent.getY());
 
     }
+
+    public void setStroke(Stroke stroke) { this.stroke = stroke; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
@@ -47,7 +51,11 @@ public class Line extends Component {
         int x2 = secondComponent.getX();
         int y2 = secondComponent.getY();
 
+        Stroke currentStroke = g2.getStroke();
+
+        g2.setStroke(this.stroke);
         this.lineMultiplicity.draw(g2, lineShape, x1, y1, x2, y2);
+        g2.setStroke(currentStroke);
 
     }
 

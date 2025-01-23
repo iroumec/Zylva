@@ -40,9 +40,30 @@ public class Association extends Component implements Relatable {
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    @SuppressWarnings("Duplicates")
     @Override
     public void draw(Graphics2D g2) {
+
+        Rectangle shape = this.calculateBounds();
+
+        g2.setColor(Color.WHITE);
+        g2.fill(shape);
+
+        g2.setStroke(new BasicStroke(1));
+        g2.setColor(Color.BLACK);
+
+        if (this.isSelected()) {
+            this.setSelectionOptions(g2);
+        }
+
+        g2.draw(shape);
+
+        this.setShape(shape);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @SuppressWarnings("Duplicates")
+    public Rectangle calculateBounds() {
 
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
@@ -67,20 +88,7 @@ public class Association extends Component implements Relatable {
         this.setX((maxX + minX) / 2);
         this.setY((maxY + minY) / 2);
 
-        Rectangle shape = new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
-        g2.setColor(Color.WHITE);
-        g2.fill(shape);
-
-        g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.BLACK);
-
-        if (this.isSelected()) {
-            this.setSelectionOptions(g2);
-        }
-
-        g2.draw(shape);
-
-        this.setShape(shape);
+        return new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
