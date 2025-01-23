@@ -1050,7 +1050,6 @@ public final class ActionManager implements Serializable {
 
         JMenuItem addAssociation = new JMenuItem(LanguageManager.getMessage("option.addAssociation"));
         addAssociation.addActionListener(_ -> this.addAssociation());
-        addAssociation.setFont(new Font("Noto Sans Devanagari", Font.PLAIN, 12));
 
         backgroundPopupMenu.add(addEntity);
         backgroundPopupMenu.add(addRelationship);
@@ -1058,8 +1057,6 @@ public final class ActionManager implements Serializable {
         backgroundPopupMenu.add(addHierarchy);
         backgroundPopupMenu.add(addNote);
         backgroundPopupMenu.add(addAssociation);
-
-        backgroundPopupMenu.setFont(new Font("Noto Sans Devanagari", Font.PLAIN, 12));
 
         return backgroundPopupMenu;
     }
