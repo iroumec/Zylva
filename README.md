@@ -22,11 +22,9 @@ The application is compatible with both mouse and keyboard shortcuts!
 
 # Languages.
 
-The language of the application can be changed in any moment!
+The language of the application can be changed at any moment!
 
 ![languageSelection.gif](src/resources/multimedia/languageSelection.gif)
-
-Right now, the application is only available in English, Spanish and French.
 
 # Installation.
 
@@ -34,7 +32,7 @@ Make sure you have downloaded Java Runtime Environment and JDK >= 23. Here are t
 - https://www.java.com/es/
 - https://www.oracle.com/java/technologies/downloads/
 
-Once the previous programs are installed, you just need to execute the *.exe* file in *releases* (Windows) or execute
+Once the previous programs are installed, you need to execute the *.exe* file in *releases* (Windows) or execute
 the *jar* file. The command for this is: java -jar *directory*/ZylvaDERExt.jar.
 
 # What's next?
@@ -54,6 +52,6 @@ After the 1.0 version, which will bring optimization and improvements in the per
 
 My name is Iñaki. I'm a student of System Engineering. This is my first Java project.
 
-During my career, in the *Databases I* subject, I worked with an over-complicated and not too well-working software
+During my career, in the *Databases I* subject, I worked with an overcomplicated and not too well-worked software
 made in 2016 by other students of the career. Crashes and low performance motivated me to create an application which
-could accomplish that purpose in a better way.
+could achieve that purpose in a better way.
