@@ -28,12 +28,27 @@ The language of the application can be changed at any moment!
 
 # Installation.
 
-Make sure you have downloaded Java Runtime Environment and JDK >= 23. Here are the links:
+Make sure you have downloaded Java Runtime Environment >= 8 Build 441 and JDK >= 23. Here are the links:
 - https://www.java.com/es/
 - https://www.oracle.com/java/technologies/downloads/
 
-Once the previous programs are installed, you need to execute the *.exe* file in *releases* (Windows) or execute
-the *jar* file. The command for this is: java -jar *directory*/ZylvaDERExt.jar.
+Once the previous programs are installed, you need to execute the *.jar* file.
+You can do it by double-clicking on it or via command-line,
+writing the next command and replacing the ellipsis with the path of the file.
+
+```
+java -jar .../ZylvaDERExt.jar
+```
+
+> [!IMPORTANT]
+> 
+> In case you find yourself facing this error:
+> 
+>![javaException.png](src/resources/multimedia/javaException.png)
+> 
+> It occurs due to an old version of Java or JDK being installed in your device.
+> To fix it, uninstall all Java and JDK versions you have on your device,
+> install the new versions linked above and execute it again.
 
 # What's next?
 
