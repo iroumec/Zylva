@@ -47,7 +47,7 @@ java -jar .../ZylvaDERExt.jar
 >![javaException.png](src/resources/multimedia/javaException.png)
 > 
 > It occurs due to an old version of Java or JDK being installed in your device.
-> To fix it, uninstall all Java and JDK versions you have on your device,
+> To fix it, completely uninstall all Java and JDK versions,
 > install the new versions linked above and execute it again.
 
 # What's next?
