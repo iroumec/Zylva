@@ -8,7 +8,7 @@ Suggestions and contributions are highly appreciated!
 
 ![exampleCreation.gif](src/resources/multimedia/exampleCreation.gif)
 
-# PNG exportation and diagram save and load!
+# Exportation!
 
 You can save and load your diagrams, as well as exporting them as PNG images.
 
