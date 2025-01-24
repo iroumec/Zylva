@@ -26,6 +26,13 @@ The language of the application can be changed at any moment!
 
 ![languageSelection.gif](src/resources/multimedia/languageSelection.gif)
 
+> [!CAUTION]
+>
+> Excepting English and Spanish,
+> the rest of the languages were achieved using ChatGPT and Grazie Pro.
+> There might be errors in the translation!
+> Don't hesitate to report them.
+
 # Installation.
 
 Make sure you have downloaded Java Runtime Environment >= 8 Build 441 and JDK >= 23. Here are the links:
