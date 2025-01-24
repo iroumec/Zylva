@@ -2,7 +2,10 @@
 
 Zylva EERD is an enhanced entity-relationship model diagram application developed completely in Java.
 
-Suggestions and contributions are highly appreciated!
+> [!CAUTION]
+>
+> This is still a pre-release, which may contain severe bugs. 
+> Suggestions and contributions to possible improvements are highly appreciated!
 
 # Easy and fast controls!
 
@@ -39,8 +42,9 @@ Make sure you have downloaded Java Runtime Environment >= 8 Build 441 and JDK >=
 - https://www.java.com/en/download/manual.jsp
 - https://www.oracle.com/java/technologies/downloads/
 
-Once the previous programs are installed, you need to execute the *.jar* file.
-You can do it by double-clicking on it or via command-line,
+Once the previous programs are installed, you need to download and execute the *.jar* file
+you can find in the latest release in the [Releases](https://github.com/iroumec/Zylva-EERD/releases) section.
+Once downloaded, you can execute it by double-clicking on it or via command-line,
 writing the next command and replacing the ellipsis with the path of the file.
 
 ```
