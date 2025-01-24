@@ -1,6 +1,6 @@
 # Introduction.
 
-Zylva DERExt is an enhanced entity-relationship model diagram application developed completely in Java.
+Zylva EERD is an enhanced entity-relationship model diagram application developed completely in Java.
 
 Suggestions and contributions are highly appreciated!
 
@@ -44,7 +44,7 @@ You can do it by double-clicking on it or via command-line,
 writing the next command and replacing the ellipsis with the path of the file.
 
 ```
-java -jar .../ZylvaDERExt.jar
+java -jar .../ZylvaEERD.jar
 ```
 
 > [!IMPORTANT]
