@@ -29,7 +29,7 @@ The language of the application can be changed at any moment!
 # Installation.
 
 Make sure you have downloaded Java Runtime Environment >= 8 Build 441 and JDK >= 23. Here are the links:
-- https://www.java.com/es/
+- https://www.java.com/en/download/manual.jsp
 - https://www.oracle.com/java/technologies/downloads/
 
 Once the previous programs are installed, you need to execute the *.jar* file.
