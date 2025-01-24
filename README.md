@@ -1,6 +1,6 @@
 # Introduction.
 
-Zylva DERExt is an extended entity-relationship model diagram application developed completely in Java.
+Zylva DERExt is an enhanced entity-relationship model diagram application developed completely in Java.
 
 Suggestions and contributions are highly appreciated!
 
@@ -70,7 +70,7 @@ After the 1.0 version, which will bring optimization and improvements in the per
 - More languages!
 - Expanding the app to more types of diagrams!
 
-# About the author
+# About the author.
 
 My name is Iñaki. I'm a student of System Engineering. This is my first Java project.
 
