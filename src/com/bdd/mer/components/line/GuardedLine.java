@@ -1,8 +1,6 @@
 package com.bdd.mer.components.line;
 
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.line.lineMultiplicity.LineMultiplicity;
-import com.bdd.mer.components.line.lineShape.LineShape;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.frame.DrawingPanel;
 

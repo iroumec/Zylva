@@ -14,8 +14,6 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.line.lineMultiplicity.DoubleLine;
-import com.bdd.mer.components.line.lineMultiplicity.SingleLine;
-import com.bdd.mer.components.line.lineShape.DirectLine;
 import com.bdd.mer.components.line.lineShape.SquaredLine;
 import com.bdd.mer.components.relationship.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.Relationship;
