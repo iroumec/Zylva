@@ -439,7 +439,7 @@ public class DrawingPanel extends JPanel {
     }
 
     private void dragComponent(MouseEvent e) {
-        // Offset is subtracted with the objective of making the animation smooth.
+        // Offset is subtracted with the goal of making the animation smooth.
         draggedComponent.setX(e.getX() - offsetX);
         draggedComponent.setY(e.getY() - offsetY);
     }

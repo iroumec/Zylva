@@ -10,6 +10,10 @@ import java.util.List;
 
 public final class FileManager {
 
+    private FileManager() {
+        throw new AssertionError(); // Security oriented.
+    }
+
     public static void saveDiagram(DrawingPanel drawingPanel) {
 
         JFileChooser fileChooser = new JFileChooser();

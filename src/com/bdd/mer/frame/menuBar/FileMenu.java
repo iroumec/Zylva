@@ -8,7 +8,7 @@ import com.bdd.mer.frame.menuBar.exportation.ExportPNG;
 
 import javax.swing.*;
 
-public class FileMenu extends JMenu {
+class FileMenu extends JMenu {
 
     private final DrawingPanel drawingPanel;
     private final JMenuItem exportPNG, saveDiagram, loadDiagram, changeLanguage, changeAntialiasing;
@@ -57,7 +57,7 @@ public class FileMenu extends JMenu {
         add(changeAntialiasing);
     }
 
-    public void resetLanguage() {
+    void resetLanguage() {
         exportPNG.setText(LanguageManager.getMessage("fileMenu.exportPNG"));
         saveDiagram.setText(LanguageManager.getMessage("fileMenu.saveDiagram"));
         loadDiagram.setText(LanguageManager.getMessage("fileMenu.loadDiagram"));

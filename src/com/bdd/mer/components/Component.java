@@ -238,7 +238,6 @@ public abstract class Component implements Serializable {
     public List<Component> getComponentsForRemoval() {
 
         return new ArrayList<>();
-
     }
 
     public abstract void cleanPresence();

@@ -19,6 +19,10 @@ public final class ExportPNG {
 
     private static final Logger logger = Logger.getLogger(ExportPNG.class.getName());
 
+    private ExportPNG() {
+        throw new AssertionError(); // Security oriented.
+    }
+
     public static void exportToPng(DrawingPanel drawingPanel) {
 
         // The minimal area of exportation is calculated.
