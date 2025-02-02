@@ -16,7 +16,7 @@ import java.util.List;
 
 public class Relationship extends AttributableComponent {
 
-    private final List<Pair<Relatable, List<Line>>> participants; // I use a Pair and not a HashMap because I cannot change dynamically an entity in it
+    private final List<Pair<Relatable, List<Line>>> participants; // I use a Pair and not a HashMap because I cannot dynamically change an entity in it
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon forma;
     private Association association;
@@ -119,7 +119,7 @@ public class Relationship extends AttributableComponent {
             this.removeParticipant(relatable);
         }
 
-        // In other case, we don't have to do anything because, if cleanRelatable was called, it is because
+        // In another case, we don't have to do anything because, if cleanRelatable was called, it is because
         // the entity will be eliminated and, so, the relationship also if it doesn't enter the if statement's body.
 
     }

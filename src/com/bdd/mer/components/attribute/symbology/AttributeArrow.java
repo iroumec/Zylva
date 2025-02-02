@@ -10,7 +10,10 @@ public enum AttributeArrow implements Serializable {
 
     AttributeArrow(String arrowBody) { this.arrowBody = arrowBody; }
 
-    public String getArrowBody() { return this.arrowBody; }
+    @Override
+    public String toString() {
+        return this.arrowBody;
+    }
 }
 
 // Maybe all this should be drawing...

@@ -13,6 +13,8 @@ public enum AttributeSymbol implements Serializable {
         this.symbol = symbol;
     }
 
-    public String getSymbol() { return this.symbol; }
-
+    @Override
+    public String toString() {
+        return this.symbol;
+    }
 }

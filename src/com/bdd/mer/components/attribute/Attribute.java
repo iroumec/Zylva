@@ -64,24 +64,6 @@ public class Attribute extends AttributableComponent {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
-     *
-     * @return The {@code Attribute}'s symbol.
-     */
-    public String getSymbol() { return this.symbol.getSymbol(); }
-
-    /**
-     *
-     * @return The {@code Attribute}'s arrow.
-     */
-    public String getArrow() { return this.arrow.getArrowBody(); }
-
-    /**
-     *
-     * @return The {@code Attribute}'s ending.
-     */
-    public String getEnding() { return this.ending.getArrowEnding(); }
-
-    /**
      * Swaps the optionality of the {@code Attribute}.
      */
     public void changeOptionality() {
@@ -155,7 +137,7 @@ public class Attribute extends AttributableComponent {
      * @return Prepared text.
      */
     private String prepareText() {
-        return this.getArrow() + getEnding() + this.getSymbol() + this.getText();
+        return this.arrow + this.ending.toString() + this.symbol + this.getText();
     }
 
     /**

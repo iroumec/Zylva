@@ -10,5 +10,8 @@ public enum AttributeEnding implements Serializable {
 
     AttributeEnding(String arrowEnding) { this.arrowEnding = arrowEnding; }
 
-    public String getArrowEnding() { return this.arrowEnding; }
+    @Override
+    public String toString() {
+        return this.arrowEnding;
+    }
 }

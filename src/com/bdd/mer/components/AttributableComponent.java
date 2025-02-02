@@ -84,7 +84,7 @@ public abstract class AttributableComponent extends Component {
 
     /**
      *
-     * @return The number of attributes of the component.
+     * @return The number of attributes in the component.
      */
     public int getNumberOfAttributes() {
 

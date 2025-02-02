@@ -23,7 +23,7 @@ public abstract class Component implements Serializable {
     private int drawingPriority = 0;
 
     /**
-     * This attribute indicate if the component is being selected or not.
+     * This attribute indicates if the component is being selected or not.
      */
     private boolean selected;
 
