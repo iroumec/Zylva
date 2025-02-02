@@ -99,7 +99,7 @@ public final class ActionManager implements Serializable {
     /**
      * Adds a new <Code>Relationship</Code> to the <Code>DrawingPanel</Code>.
      * <p></p>
-     * Between 1 and 3 entities (strong or weak) or associations must be selected.
+     * Between one and three entities (strong or weak) or associations must be selected.
      */
     public void addRelationship() {
 
@@ -242,7 +242,7 @@ public final class ActionManager implements Serializable {
             }
 
             // Validates if the maximum cardinality is a valid number or a letter.
-            if (!isIntegerOrLetter(maxText) || (isInteger(maxText) && Integer.parseInt(maxText) < 0)) {
+            if (!isIntegerOrLetter(maxText) || (isInteger(maxText) && Integer.parseInt(maxText) < 1)) {
                 JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMaximum"), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -309,7 +309,7 @@ public final class ActionManager implements Serializable {
     /**
      * Adds a new <Code>Dependency</Code> to the <Code>DrawingPanel</Code>.
      * <p></p>
-     * 2 strong entities must be selected.
+     * Two strong entities must be selected.
      */
     public void addDependency() {
 
@@ -537,7 +537,7 @@ public final class ActionManager implements Serializable {
 
         // If the user clicked "Cancel" or closed the window.
         if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
-            return null; // The process is cancelled.
+            return null; // The process is canceled.
         }
 
         HierarchySymbol symbol = (exclusiveButton.isSelected()) ? HierarchySymbol.DISJUNCT : HierarchySymbol.OVERLAPPING;
@@ -644,9 +644,9 @@ public final class ActionManager implements Serializable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
-     * Deletes all the selected components and their close related components.
+     * Deletes all the selected components and their close-related components.
      * <p></p>
-     * At least one component must be selected.
+     * At least a component must be selected.
      */
     public void deleteSelectedComponents() {
 
@@ -795,7 +795,7 @@ public final class ActionManager implements Serializable {
     }
 
     /**
-     * Given an attributable component, this method allows to select a type of attribute so it can be added later.
+     * Given an attributable component, this method allows selecting a type of attribute so it can be added later.
      *
      * @param component The attributable component owner of the attribute.
      */
@@ -896,7 +896,7 @@ public final class ActionManager implements Serializable {
         drawingPanel.addComponent(attribute);
 
         // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
-        // Maybe, it would be good to search other possible solutions, because this is not so efficient...
+        // Maybe it would be good to search other possible solutions because this is not so efficient...
         this.drawingPanel.paintImmediately(drawingPanel.getBounds());
 
         attribute.setDrawingPriority(4);
