@@ -13,10 +13,10 @@ public class GuardedLine extends Line {
 
     private final Cardinality guard;
 
-    public GuardedLine(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, LineShape lineShape, LineMultiplicity lineMultiplicity, Cardinality guard) {
-        super(drawingPanel, firstComponent, secondComponent, lineShape, lineMultiplicity);
-        this.guard = guard;
-        guard.setLine(this);
+     GuardedLine(Init<?> init) {
+        super(init);
+        this.guard = init.guard;
+        this.guard.setLine(this);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -25,12 +25,40 @@ public class GuardedLine extends Line {
 
     @Override
     public List<Component> getComponentsForRemoval() {
-
         List<Component> out = new ArrayList<>(guard.getComponentsForRemoval());
         out.add(guard);
-
         return out;
+    }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                     Builder                                                    */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    protected static abstract class Init<T extends Init<T>> extends Line.Init<T> {
+
+        // Required parameter.
+        private final Cardinality guard;
+
+        public Init(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Cardinality guard) {
+            super(drawingPanel, firstComponent, secondComponent);
+            this.guard = guard;
+        }
+
+        public GuardedLine build() {
+            return new GuardedLine(this);
+        }
+    }
+
+    public static class Builder extends Init<Builder> {
+
+        public Builder(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Cardinality guard) {
+            super(drawingPanel, firstComponent, secondComponent, guard);
+        }
+
+        @Override
+        protected Builder self() {
+            return this;
+        }
     }
 
 }

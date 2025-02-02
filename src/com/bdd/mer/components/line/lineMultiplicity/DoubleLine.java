@@ -22,6 +22,5 @@ public class DoubleLine implements LineMultiplicity {
 
         lineShape.draw(g2, x1 + separation, x2 + separation, y1 + separation, y2 + separation);
         lineShape.draw(g2, x1 - separation, x2 - separation, y1 - separation, y2 - separation);
-
     }
 }

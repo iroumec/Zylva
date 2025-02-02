@@ -139,13 +139,11 @@ public final class ActionManager implements Serializable {
 
                             cardinalities.add(cardinality);
 
-                            GuardedLine guardedLine = new GuardedLine(
+                            GuardedLine guardedLine = new GuardedLine.Builder(
                                     this.drawingPanel,
                                     (Component) castedComponent,
-                                    newRelationship, new DirectLine(),
-                                    new SingleLine(),
-                                    cardinality
-                            );
+                                    newRelationship,
+                                    cardinality).build();
 
                             // This must be improved later.
                             // If an association is related, the line cannot wait until then the association is drawn.
@@ -167,9 +165,18 @@ public final class ActionManager implements Serializable {
                         Cardinality firstCardinality = new Cardinality("1", "N", this.drawingPanel);
                         Cardinality secondCardinality = new Cardinality("1", "N", this.drawingPanel);
 
-                        Line firstCardinalityLine = new GuardedLine(this.drawingPanel, (Component) castedComponent, newRelationship, new SquaredLine(), new SingleLine(), firstCardinality);
+                        Line firstCardinalityLine = new GuardedLine.Builder(
+                                this.drawingPanel,
+                                (Component) castedComponent,
+                                newRelationship,
+                                firstCardinality).lineShape(new SquaredLine()).build();
                         lines.add(firstCardinalityLine);
-                        Line secondCardinalityLine = new GuardedLine(this.drawingPanel, newRelationship, (Component) castedComponent, new SquaredLine(), new SingleLine(), secondCardinality);
+
+                        Line secondCardinalityLine = new GuardedLine.Builder(
+                                this.drawingPanel,
+                                newRelationship,
+                                (Component) castedComponent,
+                                secondCardinality).lineShape(new SquaredLine()).build();
                         lines.add(secondCardinalityLine);
 
                         cardinalities.add(firstCardinality);
@@ -338,7 +345,13 @@ public final class ActionManager implements Serializable {
 
                             cardinality = new Cardinality("1", "N", this.drawingPanel);
 
-                            strongLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new DoubleLine(3), cardinality);
+                            strongLine = new GuardedLine.Builder(
+                                    this.drawingPanel,
+                                    entity,
+                                    newRelationship,
+                                    cardinality
+                            ).lineMultiplicity(new DoubleLine(3)).build();
+
                             newRelationship.addParticipant(entity, strongLine);
 
                         } else {
@@ -346,7 +359,12 @@ public final class ActionManager implements Serializable {
                             // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
                             staticCardinality = new StaticCardinality("1", "1", this.drawingPanel);
 
-                            weakLine = new GuardedLine(this.drawingPanel, entity, newRelationship, new DirectLine(), new SingleLine(), staticCardinality);
+                            weakLine = new GuardedLine.Builder(
+                                    this.drawingPanel,
+                                    entity,
+                                    newRelationship,
+                                    staticCardinality
+                            ).build();
 
                             newRelationship.addParticipant(entity, weakLine);
                         }
@@ -531,11 +549,12 @@ public final class ActionManager implements Serializable {
         Line parentLine;
 
         if (totalButton.isSelected()) {
-            parentLine = new Line(this.drawingPanel, parent, newHierarchy, new DirectLine(), new DoubleLine(3));
+            parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
+                    .lineMultiplicity(new DoubleLine(3)).build();
         } else {
-            parentLine = new Line(this.drawingPanel, parent, newHierarchy, new DirectLine(), new SingleLine());
-            parentLine.setStroke(new BasicStroke(2));
-            // This way, it's noticeable who is the parent of the hierarchy.
+            parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
+                    .stroke(new BasicStroke(2)).build();
+            // This way, setting the stroke, it's noticeable who is the parent of the hierarchy.
         }
 
         newHierarchy.setParentLine(parentLine);
