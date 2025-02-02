@@ -159,7 +159,7 @@ public class Hierarchy extends Component {
             this.children.remove(entity);
         }
 
-        // In other case, we don't have to do anything because, if cleanEntity was called, it is because
+        // In another case, we don't have to do anything because, if cleanEntity was called, it is because
         // the entity will be eliminated and, so, the hierarchy also if it doesn't enter into the if statement's body.
 
     }
@@ -193,7 +193,7 @@ public class Hierarchy extends Component {
     public void draw(Graphics2D g2) {
 
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(this.symbol.getSymbol());
+        int textWidth = fm.stringWidth(this.symbol.toString());
         int textHeight = fm.getHeight();
 
         // The diameter is calculated according to the text size.
@@ -228,7 +228,7 @@ public class Hierarchy extends Component {
 
         g2.setColor(Color.BLACK);
         g2.setStroke(new BasicStroke(2));
-        g2.drawString(this.symbol.getSymbol(), this.getX() - 4, this.getY() + 4);
+        g2.drawString(this.symbol.toString(), this.getX() - 4, this.getY() + 4);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -300,5 +300,4 @@ public class Hierarchy extends Component {
 
         return out;
     }
-
 }

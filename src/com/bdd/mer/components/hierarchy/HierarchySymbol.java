@@ -11,6 +11,8 @@ public enum HierarchySymbol implements Serializable {
 
     HierarchySymbol(String symbol) { this. symbol = symbol; }
 
-    public String getSymbol() { return this.symbol; }
-
+    @Override
+    public String toString() {
+        return this.symbol;
+    }
 }
