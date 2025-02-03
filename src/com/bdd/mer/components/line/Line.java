@@ -12,8 +12,8 @@ import java.awt.*;
 
 public class Line extends Component {
 
-    private Component firstComponent;
-    private Component secondComponent;
+    private final Component firstComponent;
+    private final Component secondComponent;
     private final Stroke stroke;
     private final LineShape lineShape;
     private final LineMultiplicity lineMultiplicity;
