@@ -1,13 +1,13 @@
-package com.bdd.mer.frame;
+package com.bdd.mer.frame.userPreferences;
+
+import com.bdd.mer.frame.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.prefs.*;
 
 public class LanguageManager {
 
-    private static final String LANGUAGE_KEY = "language";
     private static Locale currentLocale;
     private static ResourceBundle messages;
 
@@ -17,14 +17,13 @@ public class LanguageManager {
      * By default, the preferred language is English.
      */
     public static void initialize() {
-        Preferences preferences = Preferences.userNodeForPackage(LanguageManager.class);
-        String language = preferences.get(LANGUAGE_KEY, "en");
+        String language = UserPreferences.loadStringPreference(Preference.LANGUAGE, "en");
         currentLocale = Locale.forLanguageTag(language);
         messages = ResourceBundle.getBundle("resources/messages", currentLocale);
     }
 
     /**
-     * The language of the text appearing to the frame are changed to the selected language.
+     * The language of the text appearing to the frame is changed to the selected language.
      * <p>
      * The preference is saved for future executions of the program.
      *
@@ -71,7 +70,7 @@ public class LanguageManager {
             }
         });
 
-        // Add panel to frame.
+        // Add the panel to frame.
         frame.add(panel);
         frame.setVisible(true);
     }
@@ -91,22 +90,18 @@ public class LanguageManager {
         currentLocale = Locale.forLanguageTag(language);
         messages = ResourceBundle.getBundle("resources/messages", currentLocale);
 
-        // The user preference is saved.
-        Preferences preferences = Preferences.userNodeForPackage(LanguageManager.class);
-        preferences.put(LANGUAGE_KEY, language);
+        UserPreferences.savePreference(Preference.LANGUAGE, language);
 
         mainFrame.resetLanguage();
     }
 
     /**
-     * This method returns a message depending on the key parameter.
+     * This method returns a message depending on the key parameter in the selected language.
      *
      * @param key The key to access the message.
      * @return The message according to the key.
      */
-    // Obtener un mensaje en el idioma seleccionado
     public static String getMessage(String key) {
-        // Asegúrate de que initialize() se ha llamado antes
         if (messages == null) {
             initialize();
         }

@@ -2,6 +2,8 @@ package com.bdd.mer.frame;
 
 import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.Component;
+import com.bdd.mer.frame.userPreferences.Preference;
+import com.bdd.mer.frame.userPreferences.UserPreferences;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -49,7 +51,7 @@ public class DrawingPanel extends JPanel {
 
         this.backgroundPopupMenu = actionManager.getBackgroundPopupMenu();
 
-        this.setAntialiasing(UserPreferences.loadAntialiasingPreference());
+        this.setAntialiasing(UserPreferences.loadBooleanPreference(Preference.ANTIALIASING, true));
 
         this.initializeMouseListeners();
     }
@@ -442,7 +444,7 @@ public class DrawingPanel extends JPanel {
 
     public void setAntialiasing(boolean antialiasing) {
         this.antialiasing = antialiasing;
-        UserPreferences.saveAntialiasingPreference(antialiasing);
+        UserPreferences.savePreference(Preference.ANTIALIASING, antialiasing);
         this.repaint();
     }
 

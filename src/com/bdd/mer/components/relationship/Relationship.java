@@ -145,10 +145,10 @@ public class Relationship extends AttributableComponent {
 
     public void draw(Graphics2D g2) {
 
-        Pair<Integer, Integer> fontMetrics = this.getFontMetrics(g2);
+        FontMetrics fm = g2.getFontMetrics();
 
-        int anchoTexto = fontMetrics.getFirst();
-        int altoTexto = fontMetrics.getSecond();
+        int anchoTexto = fm.stringWidth(this.getText());
+        int altoTexto = fm.getHeight();
 
         int xTexto = getX() - anchoTexto / 2;
         int yTexto = getY() + altoTexto / 4; // It's divided by four to compensate the text baseline.

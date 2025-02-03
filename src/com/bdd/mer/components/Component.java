@@ -248,16 +248,6 @@ public abstract class Component implements Serializable {
 
     public boolean canBeDeleted() { return true; }
 
-    public Pair<Integer, Integer> getFontMetrics(Graphics2D graphics2D) {
-
-        FontMetrics fm = graphics2D.getFontMetrics();
-
-        int anchoTexto = fm.stringWidth(this.getText());
-        int altoTexto = fm.getHeight();
-
-        return new Pair<>(anchoTexto, altoTexto);
-    }
-
     public ActionManager getActionManager() { return this.drawingPanel.getActionManager(); }
 
     public void resetLanguage() {

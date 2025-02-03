@@ -2,7 +2,7 @@ package com.bdd.mer.frame.menuBar.exportation;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
+import com.bdd.mer.frame.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.io.*;

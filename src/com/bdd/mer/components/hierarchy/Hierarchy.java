@@ -5,7 +5,7 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.LanguageManager;
+import com.bdd.mer.frame.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;

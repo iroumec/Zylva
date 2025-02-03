@@ -1,6 +1,6 @@
 package com.bdd.mer.actions;
 
-import com.bdd.mer.frame.LanguageManager;
+import com.bdd.mer.frame.userPreferences.LanguageManager;
 
 import java.io.Serializable;
 

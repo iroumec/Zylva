@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 /**
- * This is an entity whose identification or existence depends on another one.
+ * Weak entity. This is an entity whose identification or existence depends on another one.
  */
 class WeakEntity implements Entity {
 
@@ -31,8 +31,6 @@ class WeakEntity implements Entity {
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override

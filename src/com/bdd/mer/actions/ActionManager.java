@@ -20,7 +20,7 @@ import com.bdd.mer.components.relationship.cardinality.StaticCardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
-import com.bdd.mer.frame.LanguageManager;
+import com.bdd.mer.frame.userPreferences.LanguageManager;
 import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
