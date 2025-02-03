@@ -8,7 +8,9 @@ import java.awt.geom.RoundRectangle2D;
 /**
  * This is an entity whose identification or existence depends on another one.
  */
-class WeakEntity extends Entity {
+class WeakEntity implements Entity {
+
+    final EntityWrapper entityWrapper;
 
     /**
      * Relationship where the entity is weak.
@@ -23,7 +25,7 @@ class WeakEntity extends Entity {
      */
     WeakEntity(EntityWrapper entityWrapper, Relationship relationship) {
 
-        super(entityWrapper);
+        this.entityWrapper = entityWrapper;
         this.relationship = relationship;
     }
 
@@ -34,7 +36,7 @@ class WeakEntity extends Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    void fillShape(Graphics2D graphics2D, RoundRectangle2D rectangle2D) {
+    public void fillShape(Graphics2D graphics2D, RoundRectangle2D rectangle2D) {
 
         Rectangle bounds = rectangle2D.getBounds();
         RoundRectangle2D shape = new RoundRectangle2D.Float(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6, 10, 10); // The number of the left must be half the number on the right // The number of the left must be half the number on the right

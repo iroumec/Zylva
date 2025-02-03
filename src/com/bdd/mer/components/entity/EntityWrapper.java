@@ -44,7 +44,7 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
     public EntityWrapper(String text, int x, int y, DrawingPanel drawingPanel) {
         super(text, x, y, drawingPanel);
         this.hierarchies = new ArrayList<>();
-        this.entity = new Entity(this); // By default, a strong entity is created.
+        this.entity = new StrongEntity(this); // By default, a strong entity is created.
         this.relationshipsManager = new RelatableImplementation();
         setDrawingPriority(7);
     }
@@ -169,7 +169,7 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
      */
     public void setWeakVersion(Relationship relationship) {
 
-        if (this.entity.getClass() == Entity.class) {
+        if (this.entity.getClass() == StrongEntity.class) {
             this.entity = new WeakEntity(this, relationship);
         }
     }
@@ -180,7 +180,7 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
     public void setStrongVersion() {
 
         if (this.entity.getClass() == WeakEntity.class) {
-            this.entity = new Entity(this);
+            this.entity = new StrongEntity(this);
         }
     }
 
