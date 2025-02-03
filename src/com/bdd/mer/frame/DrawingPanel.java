@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DrawingPanel extends JPanel {
 
@@ -128,7 +129,7 @@ public class DrawingPanel extends JPanel {
     public void removeComponent(@NotNull Component componentToRemove) {
         componentToRemove.cleanPresence();
         this.components.remove(componentToRemove);
-        repaint();
+        repaint(componentToRemove.getBounds());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -141,8 +142,6 @@ public class DrawingPanel extends JPanel {
 
         // The algorithm used is a Timsort, a combination of a Merge Sort and an Insertion Sort.
         this.components.sort(Comparator.comparing(Component::getDrawingPriority));
-
-        this.repaint();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -165,7 +164,9 @@ public class DrawingPanel extends JPanel {
             component.changeReference(oldComponent, newComponent);
         }
 
-        this.repaint();
+        // Only the changed areas are repainted.
+        this.repaint(oldComponent.getBounds());
+        this.repaint(newComponent.getBounds());
 
     }
 
@@ -179,12 +180,12 @@ public class DrawingPanel extends JPanel {
 
     public void cleanSelectedComponents() {
 
-        for (Component a : selectedComponents) {
-           a.setSelected(Boolean.FALSE);
+        for (Component selectedComponent : selectedComponents) {
+           selectedComponent.setSelected(Boolean.FALSE);
+           repaint(selectedComponent.getBounds());
         }
 
         selectedComponents.clear();
-        repaint();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -198,15 +199,12 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Entity> getSelectedEntities() {
-
-        List<Entity> out = new ArrayList<>();
-
-        for (Component component : this.selectedComponents) {
-            out.addAll(component.getEntities());
-        }
-
-        return out;
+    @SuppressWarnings("unchecked")
+    // The class of the component being added to the list is checked, so the cast is safe.
+    public <T extends Component> List<T> getSelectedComponentsByClass(Class<T> specificClass) {
+        return (List<T>) this.selectedComponents.stream()
+                .filter(e -> e.getClass().equals(specificClass))
+                .collect(Collectors.toList());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -328,14 +326,7 @@ public class DrawingPanel extends JPanel {
 
             // Cuando se hace clic en el mouse, verifica si se ha seleccionado una entidad
             if (e.isControlDown()) {
-                for (Component component : components.reversed()) {
-                    if (component.getBounds().contains(new Point(DrawingPanel.this.mouseX, DrawingPanel.this.mouseY))) {
-                        selectedComponents.add(component);
-                        component.setSelected(Boolean.TRUE);
-                        break;
-                    }
-                }
-
+                this.handleControlClick();
             } else {
                 List<Component> components = getListComponents().reversed();
                 for (Component component : components) {
@@ -352,6 +343,16 @@ public class DrawingPanel extends JPanel {
         }
     }
 
+    private void handleControlClick() {
+        for (Component component : components.reversed()) {
+            if (component.getBounds().contains(new Point(DrawingPanel.this.mouseX, DrawingPanel.this.mouseY))) {
+                selectedComponents.add(component);
+                component.setSelected(Boolean.TRUE);
+                break;
+            }
+        }
+    }
+
     private void mostrarMenu(MouseEvent e) {
 
         // If right click is pressed...
@@ -364,14 +365,14 @@ public class DrawingPanel extends JPanel {
                     selectedComponents.add(component);
                     component.showPopupMenu(e.getComponent(), e.getX(), e.getY());
                     componentClicked = Boolean.TRUE;
-                    repaint();
+                    //repaint();
                     break;
                 }
             }
 
             if (!componentClicked) {
                 backgroundPopupMenu.show(e.getComponent(), e.getX(), e.getY());
-                repaint();
+                //repaint();
             }
         }
 
@@ -426,7 +427,7 @@ public class DrawingPanel extends JPanel {
         selectionAreaStartY = e.getY();
         selectionArea.setBounds(selectionAreaStartX, selectionAreaStartY, 0, 0);
         selectingArea = true;
-        repaint();
+        repaint(selectionArea.getBounds());
     }
 
     private void updateSelectionArea(MouseEvent e) {
