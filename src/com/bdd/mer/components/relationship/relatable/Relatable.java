@@ -9,5 +9,4 @@ public interface Relatable extends Serializable {
     void addRelationship(Relationship relationship);
 
     void removeRelationship(Relationship relationship);
-
 }

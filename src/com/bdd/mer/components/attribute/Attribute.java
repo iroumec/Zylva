@@ -113,6 +113,8 @@ public class Attribute extends AttributableComponent {
         drawConnectingLine(g2, ownerBounds, textPosition);
 
         resetGraphics(g2);
+
+        g2.draw(this.getShape());
     }
 
     /**
@@ -149,7 +151,9 @@ public class Attribute extends AttributableComponent {
      */
     private Rectangle calculateTextBounds(Graphics2D g2, String text, Point position) {
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(text);
+        int textWidth = fm.stringWidth(text) - 12;
+        // Manual correction because, I don't know why,
+        // the width number is not accurate
         int textHeight = fm.getHeight();
         int rectY = position.y - textHeight;
         return new Rectangle(position.x, rectY, textWidth, textHeight);

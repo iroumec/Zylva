@@ -7,97 +7,88 @@ import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
-import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 public class Relationship extends AttributableComponent {
 
-    private final List<Pair<Relatable, List<Line>>> participants; // I use a Pair and not a HashMap because I cannot dynamically change an entity in it
+    /**
+     * Participant of the relationship.
+     */
+    private final Map<Relatable, List<Line>> participants;
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon forma;
     private Association association;
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
+    /**
+     * Constructs a {@code Relationship}.
+     *
+     * @param text Name of the relationship.
+     * @param x X coordinate of the relationship.
+     * @param y Y coordinate of the relationship.
+     * @param drawingPanel {@code DrawingPanel} in which the relationship lives.
+     */
     public Relationship(String text, int x, int y, DrawingPanel drawingPanel) {
+
         super(text, x, y, drawingPanel);
 
-        this.participants = new ArrayList<>();
-        forma = new Polygon();
-
+        this.participants = new HashMap<>();
+        this.forma = new Polygon();
         setDrawingPriority(6);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     public void addParticipant(Relatable relatableComponent, Line line) {
 
-        for (Pair<Relatable, List<Line>> pair : this.participants) {
-            if (pair.getFirst().equals(relatableComponent)) {
-                pair.getSecond().add(line);
-                return;
-            }
+        List<Line> lines = this.participants.get(relatableComponent);
+
+        // The participant doesn't exist.
+        if (lines == null) {
+            lines = new ArrayList<>();
+            relatableComponent.addRelationship(this);
         }
 
-        List<Line> lines = new ArrayList<>();
         lines.add(line);
 
-        this.participants.add(new Pair<>(relatableComponent, lines));
-
-        relatableComponent.addRelationship(this);
+        this.participants.put(relatableComponent, lines);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void removeParticipant(Relatable relatable) {
 
-        for (Pair<Relatable, List<Line>> pair : this.participants) {
-            if (pair.getFirst().equals(relatable)) {
-                this.participants.remove(pair);
+        List<Line> lines = this.participants.get(relatable);
 
-                for (Line line : pair.getSecond()) {
-                    this.getPanelDibujo().removeComponent(line);
-                }
+        this.participants.remove(relatable);
+        relatable.removeRelationship(this);
 
-                break;
-            }
+        for (Line line : lines) {
+            this.getPanelDibujo().removeComponent(line);
         }
-
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Component> getRelatedComponents() {
+    public Set<Component> getRelatedComponents() {
 
-        List<Component> out = new ArrayList<>(this.getAttributes());
+        Set<Component> out = new HashSet<>(this.getAttributes());
 
-        for (Pair<Relatable, List<Line>> pair : this.participants) {
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
 
-            if (pair.getFirst() instanceof Component relatable) {
+            out.add((Component) participant.getKey());
 
-                out.add(relatable);
-
-                if (relatable instanceof AttributableComponent attributable) {
-
-                    out.addAll(attributable.getAttributes());
-                }
-
-                out.addAll(pair.getSecond());
-
+            if (participant.getKey() instanceof AttributableComponent attributableComponent) {
+                out.addAll(attributableComponent.getAttributes());
             }
+
+            out.addAll(participant.getValue());
         }
 
         return out;
-
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -126,7 +117,7 @@ public class Relationship extends AttributableComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void updateDiagonals(int textWidth, int textHeight, int margin) {
+    private void updateDiagonals(int textWidth, int textHeight, int margin) {
         horizontalDiagonal = textWidth + 2 * margin; // Diagonal horizontal basada en el ancho del texto
         verticalDiagonal = textHeight + 2 * margin; // Diagonal vertical basada en el alto del texto
     }
@@ -210,8 +201,8 @@ public class Relationship extends AttributableComponent {
     public void cleanPresence() {
 
         // We break the bound between the relationship and their participants.
-        for (Pair<Relatable, List<Line>> pair : this.participants) {
-            pair.getFirst().removeRelationship(this);
+        for (Map.Entry<Relatable, List<Line>> pair : this.participants.entrySet()) {
+            pair.getKey().removeRelationship(this);
         }
 
     }
@@ -223,9 +214,9 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        for (Pair<Relatable, List<Line>> pair : this.participants) {
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
 
-            List<Line> lines = pair.getSecond();
+            List<Line> lines = participant.getValue();
 
             for (Line line : lines) {
                 out.addAll(line.getComponentsForRemoval());

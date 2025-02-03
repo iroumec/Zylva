@@ -15,7 +15,12 @@ public class RelatableImplementation implements Relatable {
         this.relationships = new ArrayList<>();
     }
 
-    public void addRelationship(Relationship relationship) { this.relationships.add(relationship); }
+    public void addRelationship(Relationship relationship) {
+
+        if (!this.relationships.contains(relationship)) {
+            this.relationships.add(relationship);
+        }
+    }
 
     public void removeRelationship(Relationship relationship) { this.relationships.remove(relationship); }
 
