@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // I found myself fighting with a problem where I needed to use multiple inheritance.
-// This class appear due to I decided to use compositing over inheritance design in this problem to solve it.
+// This class appears due to I decided to use compositing over inheritance design in this problem to solve it.
 public class RelatableImplementation implements Relatable {
 
     private final List<Relationship> relationships;

@@ -1,7 +1,6 @@
 package com.bdd.mer.components;
 
 import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.components.entity.Entity;
 import com.bdd.mer.structures.Pair;
 import com.bdd.mer.frame.DrawingPanel;
 
@@ -168,7 +167,7 @@ public abstract class Component implements Serializable {
      *
      * @return {@code TRUE} if the entity is being selected.
      */
-    public boolean isSelected() { return this.selected; }
+    protected boolean isSelected() { return this.selected; }
 
     /**
      * Updates the text of the component.
@@ -232,17 +231,12 @@ public abstract class Component implements Serializable {
         this.popupMenu.show(origin, x, y);
     }
 
-    // This method needs to be changed.
-    public List<Entity> getEntities() { return new ArrayList<>(); }
-
     public List<Component> getComponentsForRemoval() {
 
         return new ArrayList<>();
     }
 
     public abstract void cleanPresence();
-
-    public abstract void changeReference(Component oldComponent, Component newComponent);
 
     // The color and the stroke are changed if the entity is selected.
     public void setSelectionOptions(Graphics2D graphics2D) {

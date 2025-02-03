@@ -139,13 +139,6 @@ public class Association extends Component implements Relatable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-        // Do nothing, due to a relationship is not able to change.
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
     public void addRelationship(Relationship relationship) {
         this.relationshipsManager.addRelationship(relationship);
     }

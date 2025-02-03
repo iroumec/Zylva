@@ -65,19 +65,6 @@ public class Line extends Component {
     }
 
     @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-
-        if (firstComponent.equals(oldComponent)) {
-            firstComponent = newComponent;
-        }
-
-        if (secondComponent.equals(oldComponent)) {
-            secondComponent = newComponent;
-        }
-
-    }
-
-    @Override
     public Rectangle getBounds() {
 
         Point centerPoint = this.getCenterPoint();

@@ -145,32 +145,6 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void replaceComponent(@NotNull Component oldComponent, @NotNull Component newComponent) {
-
-        if (this.components.contains(oldComponent)) {
-
-            int oldComponentIndex = this.components.indexOf(oldComponent);
-
-            this.components.set(oldComponentIndex, newComponent);
-
-            this.components.remove(oldComponent);
-
-            this.components.add(oldComponentIndex, newComponent);
-
-        }
-
-        for (Component component : components) {
-            component.changeReference(oldComponent, newComponent);
-        }
-
-        // Only the changed areas are repainted.
-        this.repaint(oldComponent.getBounds());
-        this.repaint(newComponent.getBounds());
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     public List<Component> getSelectedComponents() {
         return (new ArrayList<>(selectedComponents));
     }

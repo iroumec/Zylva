@@ -2,7 +2,6 @@ package com.bdd.mer.components.attribute;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.AttributableComponent;
-import com.bdd.mer.components.Component;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
@@ -31,7 +30,7 @@ public class Attribute extends AttributableComponent {
     /**
      * {@code Attribute}'s owner.
      */
-    private AttributableComponent owner;
+    private final AttributableComponent owner;
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                         Initializing Related Methods                                           */
@@ -210,21 +209,6 @@ public class Attribute extends AttributableComponent {
     public void cleanPresence() {
 
         this.owner.removeAttribute(this);
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-
-        if (newComponent instanceof AttributableComponent) {
-
-            if (this.owner.equals(oldComponent)) {
-                this.owner = (AttributableComponent) newComponent;
-            }
-
-        }
 
     }
 

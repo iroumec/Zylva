@@ -78,20 +78,4 @@ public class Cardinality extends Component {
     @Override
     public void cleanPresence() {}
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-
-        if (newComponent instanceof GuardedLine) {
-
-            if (this.guardedLine.equals(oldComponent)) {
-                this.guardedLine = (GuardedLine) newComponent;
-            }
-        }
-
-        this.guardedLine.changeReference(oldComponent, newComponent);
-
-    }
-
 }

@@ -117,10 +117,4 @@ public class Note extends Component {
         // Do nothing.
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-        // Do nothing.
-    }
 }

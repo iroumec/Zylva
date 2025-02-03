@@ -2,7 +2,7 @@ package com.bdd.mer.components.hierarchy;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.entity.Entity;
+import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.LanguageManager;
@@ -38,7 +38,7 @@ public class Hierarchy extends Component {
     /**
      * The parent entity in the hierarchy.
      */
-    private Entity parent;
+    private final EntityWrapper parent;
 
     /**
      * The line to the parent.
@@ -48,7 +48,7 @@ public class Hierarchy extends Component {
     /**
      * List of children entities in the hierarchy.
      */
-    private final List<Entity> children;
+    private final List<EntityWrapper> children;
 
     /**
      * Constructs a {@code Hierarchy}.
@@ -57,7 +57,7 @@ public class Hierarchy extends Component {
      * @param parent {@code Hierarchy}'s parent entity.
      * @param drawingPanel {@code DrawingPanel} where the {@code Hierarchy} lives.
      */
-    public Hierarchy(HierarchySymbol symbol, Entity parent, DrawingPanel drawingPanel) {
+    public Hierarchy(HierarchySymbol symbol, EntityWrapper parent, DrawingPanel drawingPanel) {
 
         super(parent.getX(), parent.getY() + 60, drawingPanel);
 
@@ -73,7 +73,7 @@ public class Hierarchy extends Component {
      *
      * @param entity Child to be added.
      */
-    public void addChild(Entity entity) {
+    public void addChild(EntityWrapper entity) {
         this.children.add(entity);
     }
 
@@ -81,20 +81,20 @@ public class Hierarchy extends Component {
      *
      * @return The parent of the hierarchy.
      */
-    public Entity getParent() { return this.parent; }
+    public EntityWrapper getParent() { return this.parent; }
 
     /**
      *
      * @return A list containing the children of the hierarchy.
      */
-    public List<Entity> getChildren() { return new ArrayList<>(this.children); }
+    public List<EntityWrapper> getChildren() { return new ArrayList<>(this.children); }
 
     /**
      *
      * @param entity Entity to be checked.
      * @return {@code TRUE} if the entity is a children in the hierarchy.
      */
-    public boolean isChild(Entity entity) {
+    public boolean isChild(EntityWrapper entity) {
         return this.children.contains(entity);
     }
 
@@ -103,7 +103,7 @@ public class Hierarchy extends Component {
      * @param entity Entity to be checked.
      * @return {@code TRUE} if the entity is the parent of the hierarchy.
      */
-    public boolean isParent(Entity entity) {
+    public boolean isParent(EntityWrapper entity) {
         return this.parent.equals(entity);
     }
 
@@ -128,8 +128,8 @@ public class Hierarchy extends Component {
      */
     private boolean isThereMultipleInheritance() {
 
-        for (Entity firstChild : this.children) {
-            for (Entity secondChild : this.children) {
+        for (EntityWrapper firstChild : this.children) {
+            for (EntityWrapper secondChild : this.children) {
                 if (!firstChild.equals(secondChild) && firstChild.shareHierarchicalChild(secondChild)) {
                     return true;
                 }
@@ -153,7 +153,7 @@ public class Hierarchy extends Component {
      *
      * @param entity Entity to be cleaned.
      */
-    public void cleanEntity(Entity entity) {
+    public void cleanEntity(EntityWrapper entity) {
 
         if (!isParent(entity) && (!isChild(entity) || getNumberOfChildren() > 2)) {
             this.children.remove(entity);
@@ -203,7 +203,7 @@ public class Hierarchy extends Component {
         int radio = diameter / 2;
 
         // Child lines.
-        for (Entity e : children) {
+        for (EntityWrapper e : children) {
             g2.drawLine(this.getX(), this.getY(), e.getX(), e.getY());
         }
 
@@ -238,38 +238,8 @@ public class Hierarchy extends Component {
 
         this.parent.removeHierarchy(this);
 
-        for (Entity entity : this.children) {
+        for (EntityWrapper entity : this.children) {
             entity.removeHierarchy(this);
-        }
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-
-        if (newComponent instanceof Entity) {
-
-            if (this.parent.equals(oldComponent)) {
-                this.parent = (Entity) newComponent;
-            } else {
-
-                boolean removeOldEntity = false;
-
-                for (Entity child : this.children) {
-                    if (child.equals(oldComponent)) {
-                        removeOldEntity = true;
-                        break; // There will only be at most one coincidence.
-                    }
-                }
-
-                if (removeOldEntity) {
-                    this.children.remove((Entity) oldComponent);
-                    this.children.add((Entity) newComponent);
-                }
-
-            }
         }
 
     }

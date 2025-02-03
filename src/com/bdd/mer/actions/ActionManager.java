@@ -5,11 +5,10 @@ import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.components.association.Association;
+import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.hierarchy.HierarchySymbol;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.entity.Entity;
-import com.bdd.mer.components.entity.WeakEntity;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.Line;
@@ -22,6 +21,7 @@ import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
 import com.bdd.mer.frame.LanguageManager;
+import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,8 +78,14 @@ public final class ActionManager implements Serializable {
 
                 if (!this.drawingPanel.existsComponent(entityName)) {
 
-                    Entity newEntity = new Entity(entityName, drawingPanel.getMouseX(), drawingPanel.getMouseY(), this.drawingPanel);
-                    drawingPanel.addComponent(newEntity);
+                    EntityWrapper entityWrapper = new EntityWrapper(
+                            entityName,
+                            drawingPanel.getMouseX(),
+                            drawingPanel.getMouseY(),
+                            this.drawingPanel
+                    );
+
+                    drawingPanel.addComponent(entityWrapper);
                 } else {
 
                     JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.nameDuplicated"));
@@ -105,7 +111,7 @@ public final class ActionManager implements Serializable {
 
         int selectedComponents = this.drawingPanel.getSelectedComponents().size();
 
-        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, WeakEntity.class, Association.class)
+        if (drawingPanel.onlyTheseClassesAreSelected(EntityWrapper.class, Association.class)
                 && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
 
             String name = JOptionPane.showInputDialog(
@@ -313,7 +319,7 @@ public final class ActionManager implements Serializable {
      */
     public void addDependency() {
 
-        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
+        if (drawingPanel.onlyTheseClassesAreSelected(EntityWrapper.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
 
             String name = JOptionPane.showInputDialog(
                     this.drawingPanel,
@@ -328,16 +334,16 @@ public final class ActionManager implements Serializable {
 
                 Relationship newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
 
-                Entity entitySelected = selectWeakEntity();
+                EntityWrapper entitySelected = selectWeakEntity();
 
                 if (entitySelected != null) {
 
-                    WeakEntity weakVersion = entitySelected.getWeakVersion(newRelationship);
+                    entitySelected.setWeakVersion(newRelationship);
 
                     Cardinality cardinality = null, staticCardinality = null;
                     Line strongLine = null, weakLine = null;
 
-                    for (Entity entity : drawingPanel.getSelectedEntities()) {
+                    for (EntityWrapper entity : drawingPanel.getSelectedComponentsByClass(EntityWrapper.class)) {
 
                         if (entity.equals(entitySelected)) {
 
@@ -388,8 +394,6 @@ public final class ActionManager implements Serializable {
 
                     drawingPanel.addComponent(newRelationship);
 
-                    drawingPanel.replaceComponent(entitySelected, weakVersion);
-
                     drawingPanel.cleanSelectedComponents();
                 }
 
@@ -404,10 +408,10 @@ public final class ActionManager implements Serializable {
      *
      * @return {@code Entity} to be the weak entity of the dependency.
      */
-    private Entity selectWeakEntity() {
+    private EntityWrapper selectWeakEntity() {
 
-        Object[] opciones = {drawingPanel.getSelectedEntities().getFirst().getText(),
-                drawingPanel.getSelectedEntities().getLast().getText()};
+        Object[] opciones = {drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getFirst().getText(),
+                drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getLast().getText()};
 
         // THe JOptionPane with buttons is shown.
         int selection = JOptionPane.showOptionDialog(
@@ -421,8 +425,8 @@ public final class ActionManager implements Serializable {
                 opciones[0]);
 
         return switch (selection) {
-            case 0 -> (drawingPanel.getSelectedEntities().getFirst());
-            case 1 -> (drawingPanel.getSelectedEntities().getLast());
+            case 0 -> (drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getFirst());
+            case 1 -> (drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getLast());
             default -> {
                 JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("input.weakEntity"));
                 yield selectWeakEntity();
@@ -441,30 +445,31 @@ public final class ActionManager implements Serializable {
      */
     public void addHierarchy() {
 
-        if (drawingPanel.onlyTheseClassesAreSelected(Entity.class, WeakEntity.class) && drawingPanel.getSelectedComponents().size() >= 3) {
+        if (drawingPanel.onlyTheseClassesAreSelected(EntityWrapper.class) && drawingPanel.getSelectedComponents().size() >= 3) {
 
-            Entity parent = selectParent();
+            EntityWrapper parent = selectParent();
 
             main: if (parent != null && !parent.isAlreadyParent()) {
 
-                List<Entity> subtipos = getChildrenList(parent);
+                List<EntityWrapper> subtipos = getChildrenList(parent);
 
-                Hierarchy newHierarchy = getHierarchy(parent);
+                Pair<Hierarchy, Line> newHierarchyData = getHierarchy(parent);
 
-                if (newHierarchy == null) {
+                if (newHierarchyData == null) {
                     return;
                 }
 
-                parent.addHierarchy(newHierarchy);
+                Hierarchy newHierarchy = newHierarchyData.getFirst();
+                Line parentLine = newHierarchyData.getSecond();
 
-                for (Entity subtipo : subtipos) {
+                for (EntityWrapper subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);
 
                     if (!subtipo.addHierarchy(newHierarchy)) {
 
                         // Repairing action.
                         parent.removeHierarchy(newHierarchy);
-                        for (Entity s : subtipos) {
+                        for (EntityWrapper s : subtipos) {
                             s.removeHierarchy(newHierarchy);
 
                             String message = LanguageManager.getMessage("warning.theEntity") + " "
@@ -480,6 +485,8 @@ public final class ActionManager implements Serializable {
                     }
                 }
 
+                parent.addHierarchy(newHierarchy);
+                drawingPanel.addComponent(parentLine);
                 drawingPanel.addComponent(newHierarchy);
 
                 } else {
@@ -499,7 +506,8 @@ public final class ActionManager implements Serializable {
      * @param parent Entity parent of the hierarchy.
      * @return {@code Hierarchy} according to the options selected by the user.
      */
-    public Hierarchy getHierarchy(Entity parent) {
+    // Why returning a pair? This could be improved.
+    public Pair<Hierarchy, Line> getHierarchy(EntityWrapper parent) {
 
         // The radio buttons are created.
         JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
@@ -556,9 +564,8 @@ public final class ActionManager implements Serializable {
         }
 
         newHierarchy.setParentLine(parentLine);
-        this.drawingPanel.addComponent(parentLine);
 
-        return newHierarchy;
+        return new Pair<>(newHierarchy, parentLine);
     }
 
     /**
@@ -566,9 +573,9 @@ public final class ActionManager implements Serializable {
      *
      * @return {@code Hierarchy} selected to be the parent of the {@code Hierarchy}.
      */
-    public Entity selectParent() {
+    public EntityWrapper selectParent() {
 
-        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
+        List<EntityWrapper> entidadesSeleccionadas = drawingPanel.getSelectedComponentsByClass(EntityWrapper.class);
         Object[] opciones = new Object[entidadesSeleccionadas.size()];
 
         for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
@@ -589,11 +596,11 @@ public final class ActionManager implements Serializable {
      * @param parent {@code Entity} chosen as the parent of the hierarchy.
      * @return {@code List<Entity>} containing the children entities of the hierarchy.
      */
-    public List<Entity> getChildrenList(Entity parent) {
+    public List<EntityWrapper> getChildrenList(EntityWrapper parent) {
 
-        List<Entity> entidadesSeleccionadas = drawingPanel.getSelectedEntities();
+        List<EntityWrapper> entidadesSeleccionadas = drawingPanel.getSelectedComponentsByClass(EntityWrapper.class);
 
-        List<Entity> retorno = new ArrayList<>(entidadesSeleccionadas);
+        List<EntityWrapper> retorno = new ArrayList<>(entidadesSeleccionadas);
         retorno.remove((parent));
 
         return retorno;

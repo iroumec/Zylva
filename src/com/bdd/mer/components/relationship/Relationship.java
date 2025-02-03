@@ -219,30 +219,6 @@ public class Relationship extends AttributableComponent {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void changeReference(Component oldComponent, Component newComponent) {
-
-        if (newComponent instanceof Relatable || newComponent instanceof Line) {
-
-            for (Pair<Relatable, List<Line>> pair : this.participants) {
-
-                if (pair.getFirst().equals(oldComponent)) {
-                    assert newComponent instanceof Relatable;
-                    pair.setFirst((Relatable) newComponent);
-                }
-
-                List<Line> lines = pair.getSecond();
-
-                lines.replaceAll(line -> line.equals(oldComponent) ? (Line) newComponent : line);
-
-            }
-
-        }
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
     public List<Component> getComponentsForRemoval() {
 
         List<Component> out = super.getComponentsForRemoval();
