@@ -1,7 +1,6 @@
 package com.bdd.mer.components;
 
 import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.structures.Pair;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -99,7 +98,7 @@ public abstract class Component implements Serializable {
         this.y = y;
 
         this.drawingPanel = drawingPanel;
-        this.setPopupMenu(this.getPopupMenu());
+        this.popupMenu = this.getPopupMenu();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -110,13 +109,6 @@ public abstract class Component implements Serializable {
      * @return A {@code JPopupMenu} loaded with the actions the component can do.
      */
     protected abstract JPopupMenu getPopupMenu();
-
-    /**
-     * Changes the current {@code JPopupMenu} to a new one.
-     *
-     * @param popupMenu New {@code JPopupMenu}.
-     */
-    public void setPopupMenu(JPopupMenu popupMenu) { this.popupMenu = popupMenu; }
 
     /**
      * Resets the current {@code JPopupMenu}. This method is useful in cases where the {@code JPopupMenu} obtained
