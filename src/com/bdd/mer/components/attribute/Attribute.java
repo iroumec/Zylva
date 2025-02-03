@@ -114,7 +114,7 @@ public class Attribute extends AttributableComponent {
 
         resetGraphics(g2);
 
-        g2.draw(this.getShape());
+        //g2.draw(this.getShape());
     }
 
     /**
