@@ -2,7 +2,6 @@ package com.bdd.mer.frame;
 
 import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
