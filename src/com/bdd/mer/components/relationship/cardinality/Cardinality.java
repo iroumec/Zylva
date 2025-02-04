@@ -78,4 +78,10 @@ public class Cardinality extends Component {
     @Override
     public void cleanPresence() {}
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String toString() {
+        return this.getText();
+    }
 }

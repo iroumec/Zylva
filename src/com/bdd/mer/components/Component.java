@@ -253,5 +253,4 @@ public abstract class Component implements Serializable {
     }
 
     public void setDrawingPriority(int priority) { this.drawingPriority = priority; }
-
 }

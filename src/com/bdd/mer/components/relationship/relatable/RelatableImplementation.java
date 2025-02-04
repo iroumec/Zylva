@@ -25,5 +25,4 @@ public class RelatableImplementation implements Relatable {
     public void removeRelationship(Relationship relationship) { this.relationships.remove(relationship); }
 
     public List<Relationship> getRelationships() { return new ArrayList<>(this.relationships); }
-
 }

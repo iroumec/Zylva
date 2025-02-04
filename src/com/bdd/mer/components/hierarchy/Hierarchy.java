@@ -4,6 +4,7 @@ import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.userPreferences.LanguageManager;
 
@@ -28,7 +29,7 @@ pertenecer a un subtipo a la vez).
 Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
 se nota con la letra "o" (Overlapping).
  */
-public class Hierarchy extends Component {
+public class Hierarchy extends Component implements Derivable {
 
     /**
      * The symbol of the hierarchy, also denoting its exclusivity.
@@ -269,5 +270,19 @@ public class Hierarchy extends Component {
         out.add(this.parentLine);
 
         return out;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String parse() {
+
+        StringBuilder out = new StringBuilder(this.getClass() + "[" + this.parent.getText() + "](");
+
+        for (EntityWrapper child : this.children) {
+            out.append(child.getText()).append(",");
+        }
+
+        return out + ")";
     }
 }

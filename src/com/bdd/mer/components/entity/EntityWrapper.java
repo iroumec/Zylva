@@ -8,6 +8,7 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -16,7 +17,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityWrapper extends AttributableComponent implements Relatable {
+public class EntityWrapper extends AttributableComponent implements Relatable, Derivable {
 
     /**
      * Wrapped entity.
@@ -262,6 +263,18 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
+    public String parse() {
+
+        String out = this.entity.getClass().getSimpleName() + "[" + this.getText() + "]" + "(";
+
+        out += super.parse();
+
+        return out + ")";
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
     public void addRelationship(Relationship relationship) {
 
         if (this.entity.relationshipCanBeManipulated(relationship)) {
@@ -328,5 +341,10 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
          */
 
         return out;
+    }
+
+    @Override
+    public String toString() {
+        return this.getText();
     }
 }

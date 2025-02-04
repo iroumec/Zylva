@@ -1,12 +1,13 @@
 package com.bdd.mer.components;
 
 import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AttributableComponent extends Component {
+public abstract class AttributableComponent extends Component implements Derivable {
 
     /**
      * List of {@code Attribute} of the component.
@@ -131,6 +132,44 @@ public abstract class AttributableComponent extends Component {
             attribute.setSelected(isSelected);
         }
 
+    }
+
+    @Override
+    public String parse() {
+
+        StringBuilder out = new StringBuilder();
+
+        for (Attribute attribute : this.attributes) {
+
+            String name = attribute.getText();
+
+            if (attribute.isMain()) {
+                name = "/" + name;
+            }
+
+            if (attribute.isAlternative()) {
+                name = "//" + name;
+            }
+
+            if (attribute.isMultivalued()) {
+                name = "-" + name;
+            }
+
+            if (attribute.isOptional()) {
+                name = "*" + name;
+            }
+
+            out.append(name).append(";");
+        }
+
+        int lastIndex = out.lastIndexOf(";");
+
+        if (lastIndex != -1) {
+
+            out.deleteCharAt(lastIndex);
+        }
+
+        return out.toString();
     }
 
 }

@@ -231,4 +231,27 @@ public class Relationship extends AttributableComponent {
 
         return out;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String parse() {
+
+        StringBuilder out = new StringBuilder(this.getClass().getSimpleName() + "[" + this.getText() + "](");
+
+        out.append(super.parse()).append(")["); // Attributes.
+
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+
+            List<Line> lines = participant.getValue();
+
+            for (Line line : lines) {
+                out.append(((Component) participant.getKey()).getText()).append(line.toString()).append(";");
+            }
+        }
+
+        out.deleteCharAt(out.lastIndexOf(";"));
+
+        return out.append("]").toString();
+    }
 }

@@ -59,4 +59,8 @@ public class GuardedLine extends Line {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.guard.toString();
+    }
 }
