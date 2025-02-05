@@ -32,11 +32,21 @@ class Derivation {
     }
 
     private void addIdentificationAttribute(String attribute) {
-        this.identificationAttributes.add(attribute);
+
+        // The legibility of this could be improved.
+        if (this.identificationAttributes.contains(attribute)) {
+            this.identificationAttributes.add(DerivationFormater.DUPLICATED_ATTRIBUTE + attribute);
+        } else {
+            this.identificationAttributes.add(attribute);
+        }
     }
 
     private void addCommonAttribute(String attribute) {
-        this.commonAttributes.add(attribute);
+        if (this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute)) {
+            this.commonAttributes.add(DerivationFormater.DUPLICATED_ATTRIBUTE + attribute);
+        } else {
+            this.commonAttributes.add(attribute);
+        }
     }
 
     ReferencialIntegrityConstraint copyIdentificationAttributes(Derivation derivation) {
@@ -45,6 +55,18 @@ class Derivation {
 
         for (String attribute : this.identificationAttributes) {
             derivation.addIdentificationAttribute(attribute);
+            constraint.addReference(attribute, attribute);
+        }
+
+        return constraint;
+    }
+
+    ReferencialIntegrityConstraint copyIdentificationAttributes(Derivation derivation, String text) {
+
+        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
+
+        for (String attribute : this.identificationAttributes) {
+            derivation.addIdentificationAttribute(text + attribute);
             constraint.addReference(attribute, attribute);
         }
 
@@ -119,6 +141,12 @@ class Derivation {
         }
     }
 
+    void moveCommonAttributesTo(Derivation derivation) {
+        for (String attribute : this.commonAttributes) {
+            derivation.addCommonAttribute(attribute);
+        }
+    }
+
     boolean hasAttribute(String attribute) {
         return this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute);
     }
@@ -135,10 +163,20 @@ class Derivation {
     public String toString() {
         StringBuilder out = new StringBuilder(this.name).append("(");
 
+        StringBuilder identificationAttributes = new StringBuilder();
+
         // Agregar los atributos de identificación
         for (String attribute : this.identificationAttributes) {
-            out.append(DerivationFormater.format(attribute)).append(", ");
+            // This "cleanAllFormats" could be moved to the adding to identification attributes.
+            identificationAttributes.append(DerivationFormater.cleanAllFormats(attribute)).append(", ");
         }
+
+        deleteLast(", ", identificationAttributes);
+
+        out.append(DerivationFormater
+                .format(DerivationFormater.MAIN_ATTRIBUTE + identificationAttributes))
+            .append(", ")
+        ;
 
         // Agregar los atributos comunes
         for (String attribute : this.commonAttributes) {
@@ -146,14 +184,18 @@ class Derivation {
         }
 
         // Eliminar la última coma y espacio
-        int startIndex = out.lastIndexOf(", ");
-        if (startIndex != -1) {
-            out.delete(startIndex, startIndex + 2); // Eliminar la coma y el espacio
-        }
+        deleteLast(", ", out);
 
         out.append(")");
 
         // Eliminar cualquier espacio residual al final
         return out.toString().replaceAll("\\s+$", "");
+    }
+
+    private void deleteLast(String textToBeDeleted, StringBuilder stringBuilder) {
+        int startIndex = stringBuilder.lastIndexOf(textToBeDeleted);
+        if (startIndex != -1) {
+            stringBuilder.delete(startIndex, startIndex + 2); // Eliminar la coma y el espacio
+        }
     }
 }

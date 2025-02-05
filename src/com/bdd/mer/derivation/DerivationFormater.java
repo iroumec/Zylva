@@ -7,10 +7,12 @@ public class DerivationFormater implements Serializable {
     // Why string? They could be char.
     public static final String SEPARATOR = ";";
     public static final String MAIN_ATTRIBUTE = "&";
-    public static final String FOREIGN_ATTRIBUTE = "@";
     public static final String OPTIONAL_ATTRIBUTE = "*";
     public static final String ALTERNATIVE_ATTRIBUTE = "+";
     public static final String MULTIVALUED_ATTRIBUTE = "#";
+
+    static final String FOREIGN_ATTRIBUTE = "@";
+    static final String DUPLICATED_ATTRIBUTE = "!RENAMED";
 
     static String format(String text) {
         String out = text;
@@ -34,6 +36,10 @@ public class DerivationFormater implements Serializable {
 
         if (text.contains(MULTIVALUED_ATTRIBUTE)) {
             out = "<span class=\"multivalued\">" + out + "</span>";
+        }
+
+        if (text.contains(DUPLICATED_ATTRIBUTE)) {
+            out = "<span class=\"duplicated\">" + out + "</span>";
         }
 
         return cleanAllFormats(out);
@@ -104,6 +110,12 @@ public class DerivationFormater implements Serializable {
                         }
                         .optional::before {
                             content: "*";
+                            font-weight: bold;
+                        }
+                        .italic {
+                            font-style: italic;
+                        }
+                        .bold {
                             font-weight: bold;
                         }
                     </style>

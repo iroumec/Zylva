@@ -19,7 +19,6 @@ public class DerivationManager {
     private static final Map<String, Derivation> derivations = new HashMap<>();
     private static final List<ReferencialIntegrityConstraint> referentialIntegrityConstraints = new ArrayList<>();
     private static final Pattern pattern = Pattern.compile(
-            /*"([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]*)\\)(?:\\[([A-Za-z0-9, ();]+(?:\\([0-9, ]+\\))?;?)+])?"*/
             "([A-Za-záéíóúÁÉÍÓÚñÑ]+)\\[([A-Za-záéíóúÁÉÍÓÚñÑ]+)]\\(([^)]*)\\)(?:\\[([A-Za-z0-9, ();áéíóúÁÉÍÓÚñÑ]+(?:\\([0-9, ]+\\))?;?)+])?"
     );
     private static final Pattern cardinalityPattern = Pattern.compile("([A-Za-z0-9]+)\\((\\w+), (\\w+)\\)");
@@ -54,6 +53,7 @@ public class DerivationManager {
             String name = matcher.group(2);
             String attributes = matcher.group(3);
 
+            // For optimization.
             if (!className.equals("Attribute") || !attributes.trim().isEmpty()) {
                 createDerivation(name, attributes);
             }
@@ -126,8 +126,6 @@ public class DerivationManager {
     private static void manageRelationship(String relationshipName, String cardinalities) {
         Matcher cardinalityMatcher = cardinalityPattern.matcher(cardinalities);
 
-        System.out.println("Cardinalidades:");
-
         List<String> names = new ArrayList<>();
         List<String> minCardinalities = new ArrayList<>();
         List<String> maxCardinalities = new ArrayList<>();
@@ -140,6 +138,8 @@ public class DerivationManager {
 
         if (names.size() == 2) {
             manageBinaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
+        } else {
+            manageTernaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
         }
     }
 
@@ -158,19 +158,19 @@ public class DerivationManager {
                                                  List<String> maxCardinalities) {
 
         if (names.getFirst().equals(names.getLast())) {
-            manageUnaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
+            manageUnaryRelationship(relationshipName,names, minCardinalities, maxCardinalities);
             return;
         }
 
         if (maxCardinalities.getFirst().equals("1") || maxCardinalities.getLast().equals("1")) {
 
             if (maxCardinalities.getFirst().equals("1") && maxCardinalities.getLast().equals("1")) {
-                derivate1_1Relationship(relationshipName, names, minCardinalities, maxCardinalities);
+                derivate1_1Relationship(relationshipName, names, minCardinalities);
             } else {
                 derivate1_NRelationship(relationshipName, names, minCardinalities, maxCardinalities);
             }
         } else {
-            derivateN_NRelationship();
+            derivateN_NRelationship(relationshipName, names);
         }
     }
 
@@ -178,7 +178,33 @@ public class DerivationManager {
                                                 List<String> names,
                                                 List<String> minCardinalities,
                                                 List<String> maxCardinalities) {
-        System.out.println("Tes");
+
+        if (maxCardinalities.getFirst().equals("1") || maxCardinalities.getLast().equals("1")) {
+
+            if (maxCardinalities.getFirst().equals("1") && maxCardinalities.getLast().equals("1")) {
+                derivate1_1Relationship(relationshipName, names, minCardinalities);
+            } else {
+                derivate1_NUnaryRelationship(relationshipName, names.getFirst(), minCardinalities, maxCardinalities);
+            }
+        } else {
+            derivateN_NRelationship(relationshipName, names);
+        }
+
+    }
+
+    private static void derivate1_NUnaryRelationship(String relationshipName, String name, List<String> minCardinalities, List<String> maxCardinalities) {
+
+        String minCardinality = (maxCardinalities.getFirst().equals("N")) ? minCardinalities.getLast() : minCardinalities.getFirst();
+
+        Derivation derivation = derivations.get(name);
+        Derivation relationshipDerivation = derivations.get(relationshipName);
+        relationshipDerivation.moveCommonAttributesTo(derivation);
+
+        if (minCardinality.equals("0")) {
+            referentialIntegrityConstraints.add(derivation.copyIdentificationAttributesAsOptional(derivation));
+        } else { // It's equal to 1.
+            referentialIntegrityConstraints.add(derivation.copyIdentificationAttributes(derivation));
+        }
     }
 
     private static void derivate1_NRelationship(String relationshipName,
@@ -221,8 +247,7 @@ public class DerivationManager {
 
     private static void derivate1_1Relationship(String relationshipName,
                                                 List<String> names,
-                                                List<String> minCardinalities,
-                                                List<String> maxCardinalities) {
+                                                List<String> minCardinalities) {
 
         Derivation firstDerivation = derivations.get(names.getFirst());
         Derivation lastDerivation = derivations.get(names.getLast());
@@ -261,8 +286,27 @@ public class DerivationManager {
         derivations.remove(relationshipName);
     }
 
-    private static void derivateN_NRelationship() {
+    private static void derivateN_NRelationship(String relationshipName,
+                                                List<String> names) {
 
+        Derivation relationshipDerivation = derivations.get(relationshipName);
+
+        Derivation firstDerivation = derivations.get(names.getFirst());
+        Derivation lastDerivation = derivations.get(names.getLast());
+
+        referentialIntegrityConstraints
+                .add(firstDerivation.copyIdentificationAttributes(
+                        relationshipDerivation,
+                        DerivationFormater.FOREIGN_ATTRIBUTE
+                )
+        );
+
+        referentialIntegrityConstraints
+                .add(lastDerivation.copyIdentificationAttributes(
+                        relationshipDerivation,
+                        DerivationFormater.FOREIGN_ATTRIBUTE
+                )
+        );
     }
 
     private static void cleanEmptyDerivations() {
@@ -328,11 +372,18 @@ public class DerivationManager {
 
         htmlContent
                 .append("<div class=\"dotted-line\"></div>\n")
+                .append("<p>\n")
+                .append("<span class=\"bold\">Disclaimer!</span>\n")
+                .append("There could be more valid derivations. This is just one of those.\n")
+                .append("</p>")
+        ;
+
+        htmlContent
+                .append("<div class=\"dotted-line\"></div>\n")
                 .append("</body>\n")
                 .append("</html>\n")
         ;
 
-        // Guardar el contenido en un archivo HTML
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter("estructura.html"));
             writer.write(htmlContent.toString());
@@ -343,14 +394,6 @@ public class DerivationManager {
             throw new RuntimeException(e);
         }
 
-        /*
-        Disclaime: this only shows a posible derivation.
-         */
-
     }
-    // EntityWrapper[Yes](a) -> Yes(a)
-    // EntityWrapper[No](b) -> No(b)
-    // Relationship[Was](Yes(1,1);No(0, N)) -> No(b, a) and Yes is empty. So, it stops existing.
-    // Relationship[Was]()[]
 
 }
