@@ -5,38 +5,38 @@ import java.io.Serializable;
 public class DerivationFormater implements Serializable {
 
     // Why string? They could be char.
+    public static final String SEPARATOR = ";";
     public static final String MAIN_ATTRIBUTE = "&";
     public static final String FOREIGN_ATTRIBUTE = "@";
     public static final String OPTIONAL_ATTRIBUTE = "*";
-    public static final String ALTERNATIVE_ATTRIBUTE = "/";
+    public static final String ALTERNATIVE_ATTRIBUTE = "+";
     public static final String MULTIVALUED_ATTRIBUTE = "#";
 
     static String format(String text) {
         String out = text;
 
         // Aquí debes reemplazar las ocurrencias de cada atributo antes de aplicar los estilos
-        if (text.startsWith(MAIN_ATTRIBUTE)) {
-            out = "<span class=\"main\">" + text.substring(1) + "</span>";
+        if (text.contains(MAIN_ATTRIBUTE)) {
+            out = "<span class=\"main\">" + out + "</span>";
         }
 
-        if (text.startsWith(ALTERNATIVE_ATTRIBUTE)) {
-            out = "<span class=\"alternative\">" + text.substring(1) + "</span>";
+        if (text.contains(ALTERNATIVE_ATTRIBUTE)) {
+            out = "<span class=\"alternative\">" + out + "</span>";
         }
 
-        if (text.startsWith(FOREIGN_ATTRIBUTE)) {
-            out = "<span class=\"foreign\">" + text.substring(1) + "</span>";
+        if (text.contains(FOREIGN_ATTRIBUTE)) {
+            out = "<span class=\"foreign\">" + out + "</span>";
         }
 
-        if (text.startsWith(OPTIONAL_ATTRIBUTE)) {
-            out = "<span class=\"optional\">" + text.substring(1) + "</span>";
+        if (text.contains(OPTIONAL_ATTRIBUTE)) {
+            out = "<span class=\"optional\">" + out + "</span>";
         }
 
-        if (text.startsWith(MULTIVALUED_ATTRIBUTE)) {
-            out = "<span class=\"multivalued\">" + text.substring(1) + "</span>";
+        if (text.contains(MULTIVALUED_ATTRIBUTE)) {
+            out = "<span class=\"multivalued\">" + out + "</span>";
         }
 
-        // Eliminar los espacios y signos '$'
-        return out.replaceAll("\\$|\\s", "");
+        return cleanAllFormats(out);
     }
 
     static String cleanAllFormats(String text) {
@@ -45,10 +45,69 @@ public class DerivationFormater implements Serializable {
                 .replace(ALTERNATIVE_ATTRIBUTE, "")
                 .replace(OPTIONAL_ATTRIBUTE, "")
                 .replace(MULTIVALUED_ATTRIBUTE, "")
-                .replaceAll("\\$|\\s", ""); // Elimina todos los '$' y espacios
+                .replace(FOREIGN_ATTRIBUTE, "");
+                //.replaceAll("\\$|\\s", ""); // Elimina todos los '$' y espacios
     }
 
     static String getHTMLStyles() {
-        return "";
+        return """
+                    <style>
+                        .main {
+                            text-decoration: underline;
+                        }
+                        /* Definir estilos para las líneas punteadas */
+                        .foreign {
+                            border-bottom: 1px dotted black; /* Línea punteada original */
+                            margin: 5px 0; /* Espaciado alrededor */
+                            border-bottom-width: medium;
+                            position: relative; /* Necesario para el pseudoelemento ::after */
+                        }
+                        /* Añadir una segunda línea punteada si está dentro de otra .dotted-line */
+                        .foreign .foreign::after {
+                            content: ""; /* Necesario para crear el pseudoelemento */
+                            display: block; /* Hace que ocupe una nueva línea */
+                            border-bottom: 1px dotted black; /* Línea punteada adicional */
+                            margin-top: 5px; /* Espacio entre la primera y la segunda línea */
+                        }
+                        .alternative {
+                            display: inline-block;
+                            position: relative;
+                            padding-bottom: 0; /* Espacio entre el texto y las líneas */
+                        }
+                
+                        .alternative::after {
+                            content: '';
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 2px;
+                            background-color: black;
+                        }
+                
+                        .alternative::before {
+                            content: '';
+                            position: absolute;
+                            bottom: -4px; /* Ajusta el espacio entre las dos líneas */
+                            left: 0;
+                            width: 100%;
+                            height: 2px;
+                            background-color: black;
+                        }
+                        /* Definir estilos para las líneas punteadas */
+                        .dotted-line {
+                            border-top: 1px dotted black;
+                            margin: 5px 0;
+                        }
+                        /* Optional attributes */
+                        .optional {
+                            font-weight: bold;
+                        }
+                        .optional::before {
+                            content: "*";
+                            font-weight: bold;
+                        }
+                    </style>
+                """;
     }
 }

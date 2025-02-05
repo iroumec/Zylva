@@ -19,7 +19,8 @@ public class DerivationManager {
     private static final Map<String, Derivation> derivations = new HashMap<>();
     private static final List<ReferencialIntegrityConstraint> referentialIntegrityConstraints = new ArrayList<>();
     private static final Pattern pattern = Pattern.compile(
-            "([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]*)\\)(?:\\[([A-Za-z0-9, ();]+(?:\\([0-9, ]+\\))?;?)+])?"
+            /*"([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]*)\\)(?:\\[([A-Za-z0-9, ();]+(?:\\([0-9, ]+\\))?;?)+])?"*/
+            "([A-Za-záéíóúÁÉÍÓÚñÑ]+)\\[([A-Za-záéíóúÁÉÍÓÚñÑ]+)]\\(([^)]*)\\)(?:\\[([A-Za-z0-9, ();áéíóúÁÉÍÓÚñÑ]+(?:\\([0-9, ]+\\))?;?)+])?"
     );
     private static final Pattern cardinalityPattern = Pattern.compile("([A-Za-z0-9]+)\\((\\w+), (\\w+)\\)");
 
@@ -30,8 +31,6 @@ public class DerivationManager {
         for (Component component : components) {
 
             if (component instanceof Derivable derivableComponent) {
-
-                System.out.println("\n" + derivableComponent.parse());
 
                 derivate(derivableComponent.parse());
             }
@@ -55,11 +54,9 @@ public class DerivationManager {
             String name = matcher.group(2);
             String attributes = matcher.group(3);
 
-            //System.out.println("Clase: " + className);
-            //System.out.println("Nombre: " + name);
-            //System.out.println("Atributos: " + attributes);
-
-            createDerivation(name, attributes);
+            if (!className.equals("Attribute") || !attributes.trim().isEmpty()) {
+                createDerivation(name, attributes);
+            }
 
             // Si existe la parte adicional de cardinalidad
             String cardinalities = matcher.group(4);
@@ -75,27 +72,55 @@ public class DerivationManager {
 
             Derivation derivation = new Derivation(name);
 
-            String[] attributesArray = attributes.split(",");
-            for (String attribute : attributesArray) {
-                if (!attribute.isEmpty()) {
-
-                    if (attribute.contains(DerivationFormater.MULTIVALUED_ATTRIBUTE)) {
-                        Derivation multivaluedAttribute = new Derivation(attribute);
-                        multivaluedAttribute.addAttribute(
-                                DerivationFormater.MAIN_ATTRIBUTE +
-                                DerivationFormater.FOREIGN_ATTRIBUTE +
-                                name
-                        );
-                        multivaluedAttribute.addAttribute(DerivationFormater.MAIN_ATTRIBUTE + attribute);
-                    } else {
-
-                        derivation.addAttribute(attribute.trim());
-                    }
-                }
-            }
+            addAttributes(derivation, attributes);
 
             derivations.put(name, derivation);
+        } else if (!attributes.trim().isEmpty()) {
+            // We are facing a compound attribute.
+            searchAndReplaceCompound(name, attributes);
         }
+    }
+
+    private static void addAttributes(Derivation derivation, String attributes) {
+        String[] attributesArray = attributes.split(DerivationFormater.SEPARATOR);
+        for (String attribute : attributesArray) {
+            if (!attribute.isEmpty()) {
+
+                String cleanAttribute = DerivationFormater.cleanAllFormats(attribute);
+
+                if (attribute.contains(DerivationFormater.MULTIVALUED_ATTRIBUTE)) {
+                    ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(cleanAttribute, derivation.getName());
+                    constraint.addReference(derivation.getName(), derivation.getName());
+                    referentialIntegrityConstraints.add(constraint);
+                    Derivation multivaluedAttribute = new Derivation(cleanAttribute);
+                    multivaluedAttribute.addAttribute(
+                            DerivationFormater.MAIN_ATTRIBUTE +
+                                    DerivationFormater.FOREIGN_ATTRIBUTE +
+                                    derivation.getName()
+                    );
+                    multivaluedAttribute.addAttribute((DerivationFormater.MAIN_ATTRIBUTE + cleanAttribute).trim());
+                    derivations.put(cleanAttribute, multivaluedAttribute);
+                } else {
+                    derivations.put(cleanAttribute, new Derivation(cleanAttribute)); // This is useful for compound attributes.
+                    derivation.addAttribute(attribute.trim());
+                }
+            }
+        }
+    }
+
+    private static void searchAndReplaceCompound(String name, String attributes) {
+
+        Map<String, Derivation> derivationCopy = new HashMap<>(derivations);
+
+        for (Map.Entry<String, Derivation> entry : derivationCopy.entrySet()) {
+            Derivation derivation = entry.getValue();
+            if (derivation.hasAttribute(name)) {
+                derivation.removeAttribute(name);
+                addAttributes(derivation, attributes);
+            }
+        }
+
+        derivations.remove(name);
     }
 
     private static void manageRelationship(String relationshipName, String cardinalities) {
@@ -204,76 +229,6 @@ public class DerivationManager {
 
     }
 
-//    private static void createDerivation1(String parsedContent) throws Exception {
-//
-//        Matcher nameMatcher = namePattern.matcher(parsedContent);
-//        Matcher attributesMatcher = attributesPattern.matcher(parsedContent);
-//
-//        String name = "";
-//        List<String> attributesList = new ArrayList<>();
-//
-//        if (nameMatcher.find()) {
-//            System.out.println("Nombre: " + nameMatcher.group(1));
-//        }
-//
-//        if (attributesMatcher.find()) {
-//            String attributes = attributesMatcher.group(1);
-//            String[] attributesArray = attributes.split(",");
-//            System.out.println("Atributos:");
-//            for (String attribute : attributesArray) {
-//                attributesList.add(attribute.trim());
-//            }
-//        }
-//
-//        if (derivations.containsKey(name)) {
-//            throw new Exception();
-//        }
-//
-//        Derivation derivation = new Derivation(name);
-//
-//        for (String attribute : attributesList) {
-//            derivation.addAttribute(attribute);
-//        }
-//
-//        derivations.put(name, derivation);
-//    }
-
-    private static void derivate5(String parsedContent) {
-
-        // Expresión regular para capturar el nombre y los atributos
-        //String regex = "\\[([a-zA-Z0-9]+)]\\(([^)]+)\\)";
-        String regex = "([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]*)\\)";
-
-        // Crear el patrón y el matcher
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(parsedContent);
-
-        // Comprobar si la expresión regular hace match
-        if (matcher.find()) {
-            // Extraer el nombre
-            String name = matcher.group(1);
-
-            // Extraer los atributos y convertirlos en una lista
-            String atributosStr = matcher.group(2);
-            List<String> atributos = Arrays.asList(atributosStr.split("\\s*,\\s*"));
-
-            // Mostrar resultados
-            Derivation result = new Derivation(name);
-
-            for (String attribute : atributos) {
-                result.addAttribute(attribute);
-            }
-
-            derivations.put(name, result);
-
-            System.out.println("Nombre: " + name);
-            System.out.println("Atributos: " + atributos);
-        } else {
-            System.out.println("No se encontró el formato esperado.");
-        }
-
-    }
-
     private static void cleanEmptyDerivations() {
 
         // This must be done due to ConcurrentModificationException.
@@ -300,32 +255,17 @@ public class DerivationManager {
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                             <title>Estructura con formato</title>
-                            <style>
-                                /* Definir estilos para las líneas punteadas */
-                                .dotted-line {
-                                    border-top: 1px dotted black;
-                                    margin: 5px 0;
-                                }
-                                /* Estilo para subrayado */
-                                .underline {
-                                    text-decoration: underline;
-                                }
-                                /* Estilo para negritas */
-                                .bold {
-                                    font-weight: bold;
-                                }
-                                /* Estilo para texto con color */
-                                .highlight {
-                                    color: blue;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                        <h1>Derivation.</h1>
-                        <div class="dotted-line"></div>
-                        <h2>Relationships:</h2>
-                        """
-                );
+                        """);
+
+        htmlContent.append(DerivationFormater.getHTMLStyles());
+
+        htmlContent.append("""
+                            </head>
+                            <body>
+                            <h1>Derivation.</h1>
+                            <div class="dotted-line"></div>
+                            <h2>Relationships:</h2>
+                            """);
 
         for (Derivation derivation : derivations.values()) {
             htmlContent

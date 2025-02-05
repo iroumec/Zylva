@@ -160,10 +160,10 @@ public abstract class AttributableComponent extends Component implements Derivab
                 name = DerivationFormater.OPTIONAL_ATTRIBUTE + name;
             }
 
-            out.append(name).append(";");
+            out.append(name).append(DerivationFormater.SEPARATOR);
         }
 
-        int lastIndex = out.lastIndexOf(";");
+        int lastIndex = out.lastIndexOf(DerivationFormater.SEPARATOR);
 
         if (lastIndex != -1) {
 

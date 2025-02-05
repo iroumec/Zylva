@@ -74,8 +74,16 @@ class Derivation {
         }
     }
 
+    boolean hasAttribute(String attribute) {
+        return this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute);
+    }
+
     boolean isEmpty() {
         return this.identificationAttributes.isEmpty() && this.commonAttributes.isEmpty();
+    }
+
+    String getName() {
+        return this.name;
     }
 
     @Override

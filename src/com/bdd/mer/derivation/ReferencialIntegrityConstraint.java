@@ -28,9 +28,9 @@ public class ReferencialIntegrityConstraint {
 
         Pair<String, String> reference = this.references.removeFirst();
 
-        return this.referenced +
+        return this.referencing +
                 "[" + DerivationFormater.cleanAllFormats(reference.getFirst()) + "]" +
-                " << " + this.referencing +
+                " << " + this.referenced +
                 "[" + DerivationFormater.cleanAllFormats(reference.getSecond()) + "]";
     }
 }
