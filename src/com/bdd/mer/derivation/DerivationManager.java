@@ -3,6 +3,9 @@ package com.bdd.mer.derivation;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.frame.DrawingPanel;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,14 +16,12 @@ import java.util.regex.Pattern;
  */
 public class DerivationManager {
 
+    private static final Map<String, Derivation> derivations = new HashMap<>();
+    private static final List<ReferencialIntegrityConstraint> referentialIntegrityConstraints = new ArrayList<>();
     private static final Pattern pattern = Pattern.compile(
-            "([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]+)\\)(?:\\[([A-Za-z0-9, ()]+)])?"
+            "([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]*)\\)(?:\\[([A-Za-z0-9, ();]+(?:\\([0-9, ]+\\))?;?)+])?"
     );
     private static final Pattern cardinalityPattern = Pattern.compile("([A-Za-z0-9]+)\\((\\w+), (\\w+)\\)");
-    private static final Pattern classPattern = Pattern.compile("^([A-Za-z]+)");
-    private static final Pattern namePattern = Pattern.compile("\\[([a-zA-Z0-9]+)]");
-    private static final Pattern attributesPattern = Pattern.compile("\\(([^)]+)\\)");
-    private static final Map<String, Derivation> derivations = new HashMap<>();
 
     public static void derivate(DrawingPanel drawingPanel) {
 
@@ -29,6 +30,8 @@ public class DerivationManager {
         for (Component component : components) {
 
             if (component instanceof Derivable derivableComponent) {
+
+                System.out.println("\n" + derivableComponent.parse());
 
                 derivate(derivableComponent.parse());
             }
@@ -44,14 +47,15 @@ public class DerivationManager {
         Matcher matcher = pattern.matcher(parsedContent);
 
         if (matcher.find()) {
+
             // Captura de la clase, nombre y atributos
             String className = matcher.group(1);
             String name = matcher.group(2);
             String attributes = matcher.group(3);
 
-            System.out.println("Clase: " + className);
-            System.out.println("Nombre: " + name);
-            System.out.println("Atributos: " + attributes);
+            //System.out.println("Clase: " + className);
+            //System.out.println("Nombre: " + name);
+            //System.out.println("Atributos: " + attributes);
 
             createDerivation(name, attributes);
 
@@ -75,10 +79,11 @@ public class DerivationManager {
         for (String attribute : attributesArray) {
             derivation.addAttribute(attribute.trim());
         }
+
+        derivations.put(name, derivation);
     }
 
     private static void manageRelationship(String relationshipName, String cardinalities) {
-        Pattern cardinalityPattern = Pattern.compile("([A-Za-z0-9]+)\\((\\w+), (\\w+)\\)");
         Matcher cardinalityMatcher = cardinalityPattern.matcher(cardinalities);
 
         System.out.println("Cardinalidades:");
@@ -164,46 +169,45 @@ public class DerivationManager {
 
     }
 
-    private static void createDerivation1(String parsedContent) throws Exception {
+//    private static void createDerivation1(String parsedContent) throws Exception {
+//
+//        Matcher nameMatcher = namePattern.matcher(parsedContent);
+//        Matcher attributesMatcher = attributesPattern.matcher(parsedContent);
+//
+//        String name = "";
+//        List<String> attributesList = new ArrayList<>();
+//
+//        if (nameMatcher.find()) {
+//            System.out.println("Nombre: " + nameMatcher.group(1));
+//        }
+//
+//        if (attributesMatcher.find()) {
+//            String attributes = attributesMatcher.group(1);
+//            String[] attributesArray = attributes.split(",");
+//            System.out.println("Atributos:");
+//            for (String attribute : attributesArray) {
+//                attributesList.add(attribute.trim());
+//            }
+//        }
+//
+//        if (derivations.containsKey(name)) {
+//            throw new Exception();
+//        }
+//
+//        Derivation derivation = new Derivation(name);
+//
+//        for (String attribute : attributesList) {
+//            derivation.addAttribute(attribute);
+//        }
+//
+//        derivations.put(name, derivation);
+//    }
 
-        Matcher nameMatcher = namePattern.matcher(parsedContent);
-        Matcher attributesMatcher = attributesPattern.matcher(parsedContent);
-
-        String name = "";
-        List<String> attributesList = new ArrayList<>();
-
-        if (nameMatcher.find()) {
-            System.out.println("Nombre: " + nameMatcher.group(1));
-        }
-
-        if (attributesMatcher.find()) {
-            String attributes = attributesMatcher.group(1);
-            String[] attributesArray = attributes.split(",");
-            System.out.println("Atributos:");
-            for (String attribute : attributesArray) {
-                attributesList.add(attribute.trim());
-            }
-        }
-
-        if (derivations.containsKey(name)) {
-            throw new Exception();
-        }
-
-        Derivation derivation = new Derivation(name);
-
-        for (String attribute : attributesList) {
-            derivation.addAttribute(attribute);
-        }
-
-        derivations.put(name, derivation);
-    }
-
-    private static void derivat4e(Derivable entity) {
-
-        String parsedContent = entity.parse();
+    private static void derivate5(String parsedContent) {
 
         // Expresión regular para capturar el nombre y los atributos
-        String regex = "\\[([a-zA-Z0-9]+)]\\(([^)]+)\\)";
+        //String regex = "\\[([a-zA-Z0-9]+)]\\(([^)]+)\\)";
+        String regex = "([A-Za-z]+)\\[([A-Za-z]+)]\\(([^)]*)\\)";
 
         // Crear el patrón y el matcher
         Pattern pattern = Pattern.compile(regex);
@@ -236,6 +240,81 @@ public class DerivationManager {
     }
 
     private static void formatToHTML() {
+
+        StringBuilder htmlContent =
+                new StringBuilder("""
+                        <!DOCTYPE html>
+                        <html lang="es">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Estructura con formato</title>
+                            <style>
+                                /* Definir estilos para las líneas punteadas */
+                                .dotted-line {
+                                    border-top: 1px dotted black;
+                                    margin: 5px 0;
+                                }
+                                /* Estilo para subrayado */
+                                .underline {
+                                    text-decoration: underline;
+                                }
+                                /* Estilo para negritas */
+                                .bold {
+                                    font-weight: bold;
+                                }
+                                /* Estilo para texto con color */
+                                .highlight {
+                                    color: blue;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <h1>Derivation.</h1>
+                        <div class="dotted-line"></div>
+                        <h2>Relationships:</h2>
+                        """
+                );
+
+        for (Derivation derivation : derivations.values()) {
+            htmlContent
+                    .append("<ul>\n")
+                    .append("<li>").append(derivation.toString()).append("</li>\n")
+                    .append("</ul>\n")
+            ;
+        }
+
+        htmlContent
+                .append("<div class=\"dotted-line\"></div>\n")
+                .append("<h2>Referential integrity constraints:</h2>\n")
+        ;
+
+        for (ReferencialIntegrityConstraint constraint : referentialIntegrityConstraints) {
+            while (constraint.hasReferences()) {
+                htmlContent
+                        .append("<ul>\n")
+                        .append("<li>").append(constraint.popReference()).append("</li>\n")
+                        .append("</ul>\n")
+                ;
+            }
+        }
+
+        htmlContent
+                .append("<div class=\"dotted-line\"></div>\n")
+                .append("</body>\n")
+                .append("</html>\n")
+        ;
+
+        // Guardar el contenido en un archivo HTML
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("estructura.html"));
+            writer.write(htmlContent.toString());
+            writer.close();
+
+            System.out.println("Texto exportado a estructura.html");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
     // EntityWrapper[Yes](a) -> Yes(a)

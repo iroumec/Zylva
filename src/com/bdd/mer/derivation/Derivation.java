@@ -58,4 +58,10 @@ class Derivation {
     boolean hasAttributes() {
         return !this.commonAttributes.isEmpty() || !this.identificationAttributes.isEmpty();
     }
+
+    @Override
+    public String toString() {
+        return this.name +
+                "(" + this.commonAttributes.toString() + "," + this.identificationAttributes.toString() + ")";
+    }
 }
