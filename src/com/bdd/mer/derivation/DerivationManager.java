@@ -71,20 +71,31 @@ public class DerivationManager {
 
     private static void createDerivation(String name, String attributes) {
 
-        if (derivations.containsKey(name)) {
-            throw new IllegalStateException("Something wrong occurred.");
-        }
+        if (!derivations.containsKey(name)) {
 
-        Derivation derivation = new Derivation(name);
+            Derivation derivation = new Derivation(name);
 
-        String[] attributesArray = attributes.split(",");
-        for (String attribute : attributesArray) {
-            if (!attribute.isEmpty()) {
-                derivation.addAttribute(attribute.trim());
+            String[] attributesArray = attributes.split(",");
+            for (String attribute : attributesArray) {
+                if (!attribute.isEmpty()) {
+
+                    if (attribute.contains(DerivationFormater.MULTIVALUED_ATTRIBUTE)) {
+                        Derivation multivaluedAttribute = new Derivation(attribute);
+                        multivaluedAttribute.addAttribute(
+                                DerivationFormater.MAIN_ATTRIBUTE +
+                                DerivationFormater.FOREIGN_ATTRIBUTE +
+                                name
+                        );
+                        multivaluedAttribute.addAttribute(DerivationFormater.MAIN_ATTRIBUTE + attribute);
+                    } else {
+
+                        derivation.addAttribute(attribute.trim());
+                    }
+                }
             }
-        }
 
-        derivations.put(name, derivation);
+            derivations.put(name, derivation);
+        }
     }
 
     private static void manageRelationship(String relationshipName, String cardinalities) {

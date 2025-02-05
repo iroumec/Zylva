@@ -4,8 +4,9 @@ import com.bdd.mer.components.relationship.Relationship;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.io.Serializable;
 
-interface Entity {
+interface Entity extends Serializable {
 
     /**
      * Fills the {@code Entity}'s shape.

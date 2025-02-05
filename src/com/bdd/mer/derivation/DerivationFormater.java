@@ -1,9 +1,12 @@
 package com.bdd.mer.derivation;
 
-public class DerivationFormater {
+import java.io.Serializable;
+
+public class DerivationFormater implements Serializable {
 
     // Why string? They could be char.
     public static final String MAIN_ATTRIBUTE = "&";
+    public static final String FOREIGN_ATTRIBUTE = "@";
     public static final String OPTIONAL_ATTRIBUTE = "*";
     public static final String ALTERNATIVE_ATTRIBUTE = "/";
     public static final String MULTIVALUED_ATTRIBUTE = "#";
@@ -18,6 +21,10 @@ public class DerivationFormater {
 
         if (text.startsWith(ALTERNATIVE_ATTRIBUTE)) {
             out = "<span class=\"alternative\">" + text.substring(1) + "</span>";
+        }
+
+        if (text.startsWith(FOREIGN_ATTRIBUTE)) {
+            out = "<span class=\"foreign\">" + text.substring(1) + "</span>";
         }
 
         if (text.startsWith(OPTIONAL_ATTRIBUTE)) {
