@@ -38,7 +38,7 @@ class FileMenu extends JMenu {
         loadDiagram.addActionListener(_ -> FileManager.loadDiagram(drawingPanel));
 
         // Derivate diagram.
-        derivateDiagram = new JMenuItem(/*LanguageManager.getMessage("fileMenu.derivateDiagram")*/);
+        derivateDiagram = new JMenuItem("Derivate"/*LanguageManager.getMessage("fileMenu.derivateDiagram")*/);
         derivateDiagram.addActionListener(_ -> DerivationManager.derivate(drawingPanel));
 
         // Change language.

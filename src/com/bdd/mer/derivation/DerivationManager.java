@@ -37,6 +37,8 @@ public class DerivationManager {
             }
         }
 
+        cleanEmptyDerivations();
+
         formatToHTML();
 
         derivations.clear();
@@ -77,7 +79,9 @@ public class DerivationManager {
 
         String[] attributesArray = attributes.split(",");
         for (String attribute : attributesArray) {
-            derivation.addAttribute(attribute.trim());
+            if (!attribute.isEmpty()) {
+                derivation.addAttribute(attribute.trim());
+            }
         }
 
         derivations.put(name, derivation);
@@ -88,12 +92,18 @@ public class DerivationManager {
 
         System.out.println("Cardinalidades:");
 
-        while (cardinalityMatcher.find()) {
-            String name2 = cardinalityMatcher.group(1);
-            String minCardinality = cardinalityMatcher.group(2);
-            String maxCardinality = cardinalityMatcher.group(3);
+        List<String> names = new ArrayList<>();
+        List<String> minCardinalities = new ArrayList<>();
+        List<String> maxCardinalities = new ArrayList<>();
 
-            System.out.println("Nombre: " + name2 + ", Cardinalidad mínima: " + minCardinality + ", Cardinalidad máxima: " + maxCardinality);
+        while (cardinalityMatcher.find()) {
+            names.add(cardinalityMatcher.group(1));
+            minCardinalities.add(cardinalityMatcher.group(2));
+            maxCardinalities.add(cardinalityMatcher.group(3));
+        }
+
+        if (names.size() == 2) {
+            manageBinaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
         }
     }
 
@@ -116,8 +126,16 @@ public class DerivationManager {
             return;
         }
 
-        System.out.println("America");
+        if (maxCardinalities.getFirst().equals("1") || maxCardinalities.getLast().equals("1")) {
 
+            if (maxCardinalities.getFirst().equals("1") && maxCardinalities.getLast().equals("1")) {
+                derivate1_1Relationship();
+            } else {
+                derivate1_NRelationship(relationshipName, names, minCardinalities, maxCardinalities);
+            }
+        } else {
+            derivateN_NRelationship();
+        }
     }
 
     private static void manageUnaryRelationship(String relationshipName,
@@ -150,10 +168,16 @@ public class DerivationManager {
 
         relationshipDerivation.moveAttributesTo(nSideDerivation);
 
+        ReferencialIntegrityConstraint constraint;
+
         if (oneSideMinCardinality.equals("0")) {
-            oneSideDerivation.copyIdentificationAttributesAsOptional(nSideDerivation);
+            constraint = oneSideDerivation.copyIdentificationAttributesAsOptional(nSideDerivation);
         } else {
-            oneSideDerivation.copyIdentificationAttributes(nSideDerivation);
+            constraint = oneSideDerivation.copyIdentificationAttributes(nSideDerivation);
+        }
+
+        if (constraint != null) {
+            referentialIntegrityConstraints.add(constraint);
         }
 
         // Regla de negocio para la cardinalidad mínima.
@@ -237,6 +261,22 @@ public class DerivationManager {
             System.out.println("No se encontró el formato esperado.");
         }
 
+    }
+
+    private static void cleanEmptyDerivations() {
+
+        // This must be done due to ConcurrentModificationException.
+        List<String> keysToRemove = new ArrayList<>();
+
+        for (Map.Entry<String, Derivation> entry : derivations.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                keysToRemove.add(entry.getKey());
+            }
+        }
+
+        for (String key : keysToRemove) {
+            derivations.remove(key);
+        }
     }
 
     private static void formatToHTML() {

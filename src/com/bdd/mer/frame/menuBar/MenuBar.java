@@ -86,6 +86,8 @@ public class MenuBar extends JMenuBar {
         });
         cleanFrameButton.setBorderPainted(Boolean.FALSE);
 
+        cleanFrameButton.setFocusable(false); // If this is not disabled, when enter is pressed, the frame is cleaned.
+
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                              Help Button                                                   */
         /* ---------------------------------------------------------------------------------------------------------- */
@@ -123,6 +125,8 @@ public class MenuBar extends JMenuBar {
             }
         });
         helpButton.setBorderPainted(Boolean.FALSE);
+
+        helpButton.setFocusable(false);
 
         add(helpButton);
     }

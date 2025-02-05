@@ -2,6 +2,7 @@ package com.bdd.mer.components;
 
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
@@ -144,19 +145,19 @@ public abstract class AttributableComponent extends Component implements Derivab
             String name = attribute.getText();
 
             if (attribute.isMain()) {
-                name = "/" + name;
+                name = DerivationFormater.MAIN_ATTRIBUTE + name;
             }
 
             if (attribute.isAlternative()) {
-                name = "//" + name;
+                name = DerivationFormater.ALTERNATIVE_ATTRIBUTE + name;
             }
 
             if (attribute.isMultivalued()) {
-                name = "-" + name;
+                name = DerivationFormater.MULTIVALUED_ATTRIBUTE + name;
             }
 
             if (attribute.isOptional()) {
-                name = "*" + name;
+                name = DerivationFormater.OPTIONAL_ATTRIBUTE + name;
             }
 
             out.append(name).append(";");
