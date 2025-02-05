@@ -46,7 +46,6 @@ public class DerivationFormater implements Serializable {
                 .replace(OPTIONAL_ATTRIBUTE, "")
                 .replace(MULTIVALUED_ATTRIBUTE, "")
                 .replace(FOREIGN_ATTRIBUTE, "");
-                //.replaceAll("\\$|\\s", ""); // Elimina todos los '$' y espacios
     }
 
     static String getHTMLStyles() {

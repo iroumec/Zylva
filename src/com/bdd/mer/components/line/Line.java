@@ -14,7 +14,11 @@ public class Line extends Component {
 
     private final Component firstComponent;
     private final Component secondComponent;
-    private final Stroke stroke;
+
+    /**
+     * The interface {@code Stroke} is not used here because it's not serializable.
+     */
+    private final int strokeWidth;
     private final LineShape lineShape;
     private final LineMultiplicity lineMultiplicity;
 
@@ -24,7 +28,7 @@ public class Line extends Component {
         this.secondComponent = init.secondComponent;
         this.lineShape = init.lineShape;
         this.lineMultiplicity = init.lineMultiplicity;
-        this.stroke = init.stroke;
+        this.strokeWidth = init.strokeWidth;
         setDrawingPriority(2);
     }
 
@@ -53,7 +57,7 @@ public class Line extends Component {
 
         Stroke currentStroke = g2.getStroke();
 
-        g2.setStroke(this.stroke);
+        g2.setStroke(new BasicStroke(this.strokeWidth));
         this.lineMultiplicity.draw(g2, lineShape, x1, y1, x2, y2);
         g2.setStroke(currentStroke);
 
@@ -87,7 +91,7 @@ public class Line extends Component {
         // Optional parameters - initialized to default values
         private LineShape lineShape = new DirectLine();
         private LineMultiplicity lineMultiplicity = new SingleLine();
-        private Stroke stroke = new BasicStroke(1);
+        private int strokeWidth = 1;
 
         protected abstract T self();
 
@@ -107,8 +111,8 @@ public class Line extends Component {
             return self();
         }
 
-        public T stroke(Stroke stroke) {
-            this.stroke = stroke;
+        public T strokeWidth(int strokeWidth) {
+            this.strokeWidth = strokeWidth;
             return self();
         }
 

@@ -559,7 +559,7 @@ public final class ActionManager implements Serializable {
                     .lineMultiplicity(new DoubleLine(3)).build();
         } else {
             parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
-                    .stroke(new BasicStroke(2)).build();
+                    .strokeWidth(2).build();
             // This way, setting the stroke, it's noticeable who is the parent of the hierarchy.
         }
 

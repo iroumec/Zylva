@@ -47,6 +47,8 @@ public final class FileManager {
 
             } catch (IOException i) {
 
+                i.printStackTrace();
+
                 JOptionPane.showMessageDialog(null,LanguageManager.getMessage("fileManager.saveDiagram.exception"));
             }
         }

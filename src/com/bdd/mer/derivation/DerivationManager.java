@@ -165,7 +165,7 @@ public class DerivationManager {
         if (maxCardinalities.getFirst().equals("1") || maxCardinalities.getLast().equals("1")) {
 
             if (maxCardinalities.getFirst().equals("1") && maxCardinalities.getLast().equals("1")) {
-                derivate1_1Relationship();
+                derivate1_1Relationship(relationshipName, names, minCardinalities, maxCardinalities);
             } else {
                 derivate1_NRelationship(relationshipName, names, minCardinalities, maxCardinalities);
             }
@@ -216,13 +216,49 @@ public class DerivationManager {
             referentialIntegrityConstraints.add(constraint);
         }
 
-        // Regla de negocio para la cardinalidad mínima.
-
         derivations.remove(relationshipName);
     }
 
-    private static void derivate1_1Relationship() {
+    private static void derivate1_1Relationship(String relationshipName,
+                                                List<String> names,
+                                                List<String> minCardinalities,
+                                                List<String> maxCardinalities) {
 
+        Derivation firstDerivation = derivations.get(names.getFirst());
+        Derivation lastDerivation = derivations.get(names.getLast());
+        Derivation relationshipDerivation = derivations.get(relationshipName);
+
+        // Al this could be simplified.
+
+        if (minCardinalities.getFirst().equals("0") || minCardinalities.getLast().equals("0")) {
+
+            if (minCardinalities.getFirst().equals("0") && minCardinalities.getLast().equals("0")) { // Case (0,1):(0,1)
+
+                // The order could be different.
+
+                relationshipDerivation.moveAttributesTo(firstDerivation);
+                referentialIntegrityConstraints.add(lastDerivation.copyIdentificationAttributesAsOptionalForeign(firstDerivation));
+            } else { // Case (0,1):(1,1)
+
+                if (minCardinalities.getFirst().equals("0")) {
+
+                    relationshipDerivation.moveAttributesTo(firstDerivation);
+                    referentialIntegrityConstraints.add(lastDerivation.copyIdentificationAttributesAsAlternativeForeign(firstDerivation));
+                } else {
+
+                    relationshipDerivation.moveAttributesTo(lastDerivation);
+                    referentialIntegrityConstraints.add(firstDerivation.copyIdentificationAttributesAsAlternativeForeign(lastDerivation));
+                }
+            }
+        } else { // Case (1,1):(1,1)
+
+            // In the case of (1,1):(1,1), the order could be different.
+
+            relationshipDerivation.moveAttributesTo(firstDerivation);
+            referentialIntegrityConstraints.add(lastDerivation.copyIdentificationAttributesAsAlternativeForeign(firstDerivation));
+        }
+
+        derivations.remove(relationshipName);
     }
 
     private static void derivateN_NRelationship() {
@@ -306,6 +342,10 @@ public class DerivationManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        /*
+        Disclaime: this only shows a posible derivation.
+         */
 
     }
     // EntityWrapper[Yes](a) -> Yes(a)

@@ -51,12 +51,57 @@ class Derivation {
         return constraint;
     }
 
+    ReferencialIntegrityConstraint copyIdentificationAttributesAsAlternative(Derivation derivation) {
+
+        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
+
+        for (String attribute : this.identificationAttributes) {
+
+            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
+            derivation.addCommonAttribute(DerivationFormater.ALTERNATIVE_ATTRIBUTE + cleanAttribute);
+            constraint.addReference(cleanAttribute, cleanAttribute);
+        }
+
+        return constraint;
+    }
+
+    ReferencialIntegrityConstraint copyIdentificationAttributesAsAlternativeForeign(Derivation derivation) {
+
+        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
+
+        for (String attribute : this.identificationAttributes) {
+
+            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
+            derivation.addCommonAttribute(DerivationFormater.ALTERNATIVE_ATTRIBUTE + DerivationFormater.FOREIGN_ATTRIBUTE + cleanAttribute);
+            constraint.addReference(cleanAttribute, cleanAttribute);
+        }
+
+        return constraint;
+    }
+
+    ReferencialIntegrityConstraint copyIdentificationAttributesAsOptionalForeign(Derivation derivation) {
+
+        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
+
+        for (String attribute : this.identificationAttributes) {
+            derivation.addCommonAttribute(
+                    DerivationFormater.FOREIGN_ATTRIBUTE
+                    + DerivationFormater.OPTIONAL_ATTRIBUTE
+                    + attribute
+            );
+            constraint.addReference(attribute, attribute);
+        }
+
+        return constraint;
+    }
+
     ReferencialIntegrityConstraint copyIdentificationAttributesAsOptional(Derivation derivation) {
 
         ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
 
         for (String attribute : this.identificationAttributes) {
-            derivation.addCommonAttribute("*" + attribute);
+            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
+            derivation.addCommonAttribute(DerivationFormater.OPTIONAL_ATTRIBUTE + cleanAttribute);
             constraint.addReference(attribute, attribute);
         }
 
