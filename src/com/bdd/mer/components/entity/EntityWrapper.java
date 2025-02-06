@@ -17,7 +17,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityWrapper extends AttributableComponent implements Relatable, Derivable {
+public class EntityWrapper extends AttributableComponent implements Relatable {
 
     /**
      * Wrapped entity.
@@ -265,11 +265,16 @@ public class EntityWrapper extends AttributableComponent implements Relatable, D
     @Override
     public String parse() {
 
-        String out = this.entity.getClass().getSimpleName() + "[" + this.getText() + "]" + "(";
+        String out = this.entity.getClass().getSimpleName() + "[" + this.getIdentifier() + "]" + "(";
 
         out += super.parse();
 
         return out + ")";
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

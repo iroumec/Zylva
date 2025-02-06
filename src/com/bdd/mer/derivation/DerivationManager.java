@@ -31,6 +31,8 @@ public class DerivationManager {
 
             if (component instanceof Derivable derivableComponent) {
 
+                System.out.println(derivableComponent.parse());
+
                 derivate(derivableComponent.parse());
             }
         }
@@ -58,7 +60,7 @@ public class DerivationManager {
                 createDerivation(name, attributes);
             }
 
-            // Si existe la parte adicional de cardinalidad
+            // Si existe la parte adicional de cardinalidad...
             String cardinalities = matcher.group(4);
             if (cardinalities != null) {
                 manageRelationship(name, cardinalities);
@@ -138,14 +140,13 @@ public class DerivationManager {
 
         if (names.size() == 2) {
             manageBinaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
-        } else {
-            manageTernaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
+        } else if (names.size() == 3) {
+            manageTernaryRelationship(relationshipName, names, maxCardinalities);
         }
     }
 
     private static void manageTernaryRelationship(String relationshipName,
                                                   List<String> names,
-                                                  List<String> minCardinalities,
                                                   List<String> maxCardinalities) {
 
         Map<String, List<Integer>> cardinalityMap = new HashMap<>();
@@ -260,7 +261,11 @@ public class DerivationManager {
         relationshipDerivation.moveCommonAttributesTo(derivation);
 
         if (minCardinality.equals("0")) {
-            referentialIntegrityConstraints.add(derivation.copyIdentificationAttributesAsOptional(derivation));
+            referentialIntegrityConstraints.add(
+                    derivation.copyIdentificationAttributesAs(
+                            derivation,
+                            DerivationFormater.OPTIONAL_ATTRIBUTE
+                    ));
         } else { // It's equal to 1.
             referentialIntegrityConstraints.add(derivation.copyIdentificationAttributesAs(derivation));
         }
@@ -287,14 +292,21 @@ public class DerivationManager {
         Derivation oneSideDerivation = derivations.get(oneSideName);
         Derivation relationshipDerivation = new Derivation(relationshipName);
 
+        System.out.println(relationshipDerivation);
         relationshipDerivation.moveAttributesTo(nSideDerivation);
 
         ReferencialIntegrityConstraint constraint;
 
         if (oneSideMinCardinality.equals("0")) {
-            constraint = oneSideDerivation.copyIdentificationAttributesAsOptional(nSideDerivation);
+            constraint = oneSideDerivation
+                    .copyIdentificationAttributesAs(nSideDerivation, DerivationFormater.OPTIONAL_ATTRIBUTE);
         } else {
-            constraint = oneSideDerivation.copyIdentificationAttributesAs(nSideDerivation);
+            constraint = oneSideDerivation
+                    .copyIdentificationAttributesAs(
+                            nSideDerivation,
+                            DerivationFormater.FOREIGN_ATTRIBUTE,
+                            Derivation.AttributeType.COMMON
+                    );
         }
 
         if (constraint != null) {
@@ -319,9 +331,12 @@ public class DerivationManager {
             if (minCardinalities.getFirst().equals("0") && minCardinalities.getLast().equals("0")) { // Case (0,1):(0,1)
 
                 // The order could be different.
-
                 relationshipDerivation.moveAttributesTo(firstDerivation);
-                referentialIntegrityConstraints.add(lastDerivation.copyIdentificationAttributesAsOptionalForeign(firstDerivation));
+                referentialIntegrityConstraints.add(
+                        lastDerivation.copyIdentificationAttributesAs(
+                                firstDerivation,
+                                DerivationFormater.FOREIGN_ATTRIBUTE + DerivationFormater.OPTIONAL_ATTRIBUTE
+                        ));
             } else { // Case (0,1):(1,1)
 
                 if (minCardinalities.getFirst().equals("0")) {
@@ -447,8 +462,6 @@ public class DerivationManager {
             BufferedWriter writer = new BufferedWriter(new FileWriter("estructura.html"));
             writer.write(htmlContent.toString());
             writer.close();
-
-            System.out.println("Texto exportado a estructura.html");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

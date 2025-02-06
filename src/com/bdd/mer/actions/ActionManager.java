@@ -139,7 +139,13 @@ public final class ActionManager implements Serializable {
                             // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
                             Relatable castedComponent = (Relatable) component;
 
-                            Cardinality cardinality = new Cardinality("1", "N", this.drawingPanel);
+                            Cardinality cardinality;
+
+                            if (selectedComponents == 2) {
+                                cardinality = new Cardinality("1", "N", this.drawingPanel);
+                            } else {
+                                cardinality = new Cardinality("0", "N", this.drawingPanel);
+                            }
 
                             cardinalities.add(cardinality);
 

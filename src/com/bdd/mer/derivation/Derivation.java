@@ -56,54 +56,28 @@ class Derivation {
 
     ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation) {
 
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
-
-        for (String attribute : this.identificationAttributes) {
-            derivation.addIdentificationAttribute(attribute);
-            constraint.addReference(attribute, attribute);
-        }
-
-        return constraint;
+        return copyIdentificationAttributesAs(derivation, "");
     }
 
     ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation, String text) {
 
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
-
-        for (String attribute : this.identificationAttributes) {
-            derivation.addIdentificationAttribute(text + attribute);
-            constraint.addReference(attribute, attribute);
-        }
-
-        return constraint;
+        return copyIdentificationAttributesAs(derivation, text, AttributeType.IDENTIFICATION);
     }
 
     ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation, String text, AttributeType type) {
 
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
-
-        for (String attribute : this.identificationAttributes) {
-
-            if (type == AttributeType.COMMON) {
-                derivation.addCommonAttribute(text + attribute);
-            } else {
-                derivation.addIdentificationAttribute(text + attribute);
-            }
-
-            constraint.addReference(attribute, attribute);
-        }
-
-        return constraint;
-    }
-
-    ReferencialIntegrityConstraint copyIdentificationAttributesAsAlternative(Derivation derivation) {
-
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
+        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(derivation.name, this.name);
 
         for (String attribute : this.identificationAttributes) {
 
             String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
-            derivation.addCommonAttribute(DerivationFormater.ALTERNATIVE_ATTRIBUTE + cleanAttribute);
+
+            if (type == AttributeType.COMMON) {
+                derivation.addCommonAttribute(text + cleanAttribute);
+            } else {
+                derivation.addIdentificationAttribute(text + cleanAttribute);
+            }
+
             constraint.addReference(cleanAttribute, cleanAttribute);
         }
 
@@ -119,35 +93,6 @@ class Derivation {
             String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
             derivation.addCommonAttribute(DerivationFormater.ALTERNATIVE_ATTRIBUTE + DerivationFormater.FOREIGN_ATTRIBUTE + cleanAttribute);
             constraint.addReference(cleanAttribute, cleanAttribute);
-        }
-
-        return constraint;
-    }
-
-    ReferencialIntegrityConstraint copyIdentificationAttributesAsOptionalForeign(Derivation derivation) {
-
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
-
-        for (String attribute : this.identificationAttributes) {
-            derivation.addCommonAttribute(
-                    DerivationFormater.FOREIGN_ATTRIBUTE
-                    + DerivationFormater.OPTIONAL_ATTRIBUTE
-                    + attribute
-            );
-            constraint.addReference(attribute, attribute);
-        }
-
-        return constraint;
-    }
-
-    ReferencialIntegrityConstraint copyIdentificationAttributesAsOptional(Derivation derivation) {
-
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
-
-        for (String attribute : this.identificationAttributes) {
-            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
-            derivation.addCommonAttribute(DerivationFormater.OPTIONAL_ATTRIBUTE + cleanAttribute);
-            constraint.addReference(attribute, attribute);
         }
 
         return constraint;
@@ -191,7 +136,7 @@ class Derivation {
         // Agregar los atributos de identificación
         for (String attribute : this.identificationAttributes) {
             // This "cleanAllFormats" could be moved to the adding to identification attributes.
-            identificationAttributes.append(DerivationFormater.cleanAllFormats(attribute)).append(", ");
+            identificationAttributes.append(attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "")).append(", ");
         }
 
         deleteLast(", ", identificationAttributes);
@@ -215,6 +160,7 @@ class Derivation {
         return out.toString().replaceAll("\\s+$", "");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void deleteLast(String textToBeDeleted, StringBuilder stringBuilder) {
         int startIndex = stringBuilder.lastIndexOf(textToBeDeleted);
         if (startIndex != -1) {

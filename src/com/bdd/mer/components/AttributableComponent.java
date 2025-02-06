@@ -142,7 +142,7 @@ public abstract class AttributableComponent extends Component implements Derivab
 
         for (Attribute attribute : this.attributes) {
 
-            String name = attribute.getText();
+            String name = attribute.getIdentifier();
 
             if (attribute.isMain()) {
                 name = DerivationFormater.MAIN_ATTRIBUTE + name;

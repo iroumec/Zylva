@@ -5,6 +5,7 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.relationship.relatable.Relatable;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
 
@@ -237,7 +238,7 @@ public class Relationship extends AttributableComponent {
     @Override
     public String parse() {
 
-        StringBuilder out = new StringBuilder(this.getClass().getSimpleName() + "[" + this.getText() + "](");
+        StringBuilder out = new StringBuilder(this.getClass().getSimpleName() + "[" + this.getIdentifier() + "](");
 
         out.append(super.parse()).append(")["); // Attributes.
 
@@ -246,12 +247,17 @@ public class Relationship extends AttributableComponent {
             List<Line> lines = participant.getValue();
 
             for (Line line : lines) {
-                out.append(((Component) participant.getKey()).getText()).append(line.toString()).append(";");
+                out.append(((Derivable) participant.getKey()).getIdentifier()).append(line.toString()).append(";");
             }
         }
 
         out.deleteCharAt(out.lastIndexOf(";"));
 
         return out.append("]").toString();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
     }
 }

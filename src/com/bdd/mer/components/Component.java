@@ -43,7 +43,7 @@ public abstract class Component implements Serializable {
     /**
      * Drawing panel where the component lives.
      */
-    private final DrawingPanel drawingPanel;
+    private DrawingPanel drawingPanel;
 
     /**
      * JPopupMenu of the component.
@@ -253,4 +253,13 @@ public abstract class Component implements Serializable {
     }
 
     public void setDrawingPriority(int priority) { this.drawingPriority = priority; }
+
+    @Override
+    public String toString() {
+        return this.text;
+    }
+
+    public void setDrawingPanel(DrawingPanel drawingPanel) {
+        this.drawingPanel = drawingPanel;
+    }
 }

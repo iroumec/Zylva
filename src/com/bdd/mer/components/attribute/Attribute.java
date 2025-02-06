@@ -239,7 +239,12 @@ public class Attribute extends AttributableComponent {
     @Override
     public String parse() {
 
-        return this.getClass().getSimpleName() + "[" + this.getText() + "](" + super.parse() + ")";
+        return Attribute.class.getSimpleName() + "[" + this.getIdentifier() + "](" + super.parse() + ")";
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
     }
 
 }
