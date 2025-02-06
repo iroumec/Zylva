@@ -29,11 +29,27 @@ class Derivation {
     }
 
     void removeAttribute(String attribute) {
-        if (attribute.startsWith(DerivationFormater.MAIN_ATTRIBUTE)) {
-            this.identificationAttributes.remove(attribute);
-        } else {
-            this.commonAttributes.remove(attribute);
+
+        List<String> attributesToRemove = new ArrayList<>();
+
+        for (String identificationAttribute : this.identificationAttributes) {
+            String cleanIdentificationAttribute = DerivationFormater.cleanAllFormats(identificationAttribute);
+            if (cleanIdentificationAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+                attributesToRemove.add(identificationAttribute);
+            }
         }
+
+        this.identificationAttributes.removeAll(attributesToRemove);
+        attributesToRemove.clear();
+
+        for (String commonAttribute : this.commonAttributes) {
+            String cleanCommonAttribute = DerivationFormater.cleanAllFormats(commonAttribute);
+            if (cleanCommonAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+                attributesToRemove.add(commonAttribute);
+            }
+        }
+
+        this.commonAttributes.removeAll(attributesToRemove);
     }
 
     private void addIdentificationAttribute(String attribute) {
@@ -121,11 +137,25 @@ class Derivation {
     }
 
     boolean hasCommonAttribute(String attribute) {
-        return this.commonAttributes.contains(attribute);
+        for (String commonAttribute : this.commonAttributes) {
+            String cleanCommonAttribute = DerivationFormater.cleanAllFormats(commonAttribute);
+            if (cleanCommonAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     boolean hasIdentificationAttribute(String attribute) {
-        return this.identificationAttributes.contains(DerivationFormater.cleanAllFormats(attribute));
+        for (String identificationAttribute : this.identificationAttributes) {
+            String cleanIdentificationAttribute = DerivationFormater.cleanAllFormats(identificationAttribute);
+            if (cleanIdentificationAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     boolean isEmpty() {

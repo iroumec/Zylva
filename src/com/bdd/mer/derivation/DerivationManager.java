@@ -120,7 +120,7 @@ public class DerivationManager {
                 String cleanAttribute = DerivationFormater.cleanAllFormats(attribute);
 
                 derivations.put(cleanAttribute, new Derivation(cleanAttribute)); // This is useful for compound attributes.
-                derivation.addAttribute(attribute.trim());
+                derivation.addAttribute(DerivationFormater.MAIN_ATTRIBUTE + attribute.trim());
             }
         }
     }
@@ -131,8 +131,6 @@ public class DerivationManager {
 
         for (Map.Entry<String, Derivation> entry : derivationCopy.entrySet()) {
             Derivation derivation = entry.getValue();
-
-            System.out.println(name);
 
             if (derivation.hasCommonAttribute(name)) {
                 derivation.removeAttribute(name);
