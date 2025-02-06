@@ -148,8 +148,66 @@ public class DerivationManager {
                                                   List<String> minCardinalities,
                                                   List<String> maxCardinalities) {
 
-        // Derivation for ternary.
+        Map<String, List<Integer>> cardinalityMap = new HashMap<>();
 
+        int oneCount = 0;
+
+        for (int i = 0; i < names.size(); i++) {
+
+            String maxCardinality = maxCardinalities.get(i);
+
+            if (maxCardinality.equals("1")) {
+                oneCount++;
+            }
+
+            List<Integer> cardinality = cardinalityMap.getOrDefault(names.get(i), new ArrayList<>());
+            cardinality.add(i);
+            cardinalityMap.put(maxCardinality, cardinality);
+        }
+
+        List<ReferencialIntegrityConstraint> constraints = new ArrayList<>();
+        Derivation relationshipDerivation = derivations.get(relationshipName);
+        Derivation firstDerivation = derivations.get(names.getFirst());
+        Derivation secondDerivation = derivations.get(names.get(1));
+        Derivation thirdDerivation = derivations.get(names.getLast());
+        List<Derivation> derivationList = Arrays.asList(firstDerivation, secondDerivation, thirdDerivation);
+
+        switch (oneCount) {
+            case 0: // N:N:N
+
+                for (Derivation derivation : derivationList) {
+                    constraints.add(
+                            derivation.copyIdentificationAttributesAs(
+                                    relationshipDerivation, DerivationFormater.FOREIGN_ATTRIBUTE));
+                }
+
+                break;
+            case 1, 2, 3: // 1:N:N
+                Derivation maxCardinalityEqualsToOneDerivation
+                        = derivations.get(names.get(cardinalityMap.get("1").getFirst()));
+
+                for (Derivation derivation : derivationList) {
+                    if (!derivation.equals(maxCardinalityEqualsToOneDerivation)) {
+                        constraints.add(derivation
+                                .copyIdentificationAttributesAs(relationshipDerivation, DerivationFormater.FOREIGN_ATTRIBUTE));
+                    } else {
+                        constraints.add(derivation
+                                .copyIdentificationAttributesAs(
+                                        relationshipDerivation,
+                                        DerivationFormater.FOREIGN_ATTRIBUTE,
+                                        Derivation.AttributeType.COMMON
+                                ));
+                    }
+                }
+                break;
+            // 1:1:N -- The difference here is that there are more possible combinations. But the logic is the same as case 1 if we only want one combination.
+            //case 2: break;
+            // 1:1:1 -- Again, more possible, combinations.
+            //case 3: break;
+            default: throw new RuntimeException("Invalid cardinality for ternary relationship.");
+        }
+
+        referentialIntegrityConstraints.addAll(constraints);
     }
 
     private static void manageBinaryRelationship(String relationshipName,
@@ -182,6 +240,7 @@ public class DerivationManager {
         if (maxCardinalities.getFirst().equals("1") || maxCardinalities.getLast().equals("1")) {
 
             if (maxCardinalities.getFirst().equals("1") && maxCardinalities.getLast().equals("1")) {
+                // I couldn't find any rules for this kind of derivation.
                 derivate1_1Relationship(relationshipName, names, minCardinalities);
             } else {
                 derivate1_NUnaryRelationship(relationshipName, names.getFirst(), minCardinalities, maxCardinalities);
@@ -203,7 +262,7 @@ public class DerivationManager {
         if (minCardinality.equals("0")) {
             referentialIntegrityConstraints.add(derivation.copyIdentificationAttributesAsOptional(derivation));
         } else { // It's equal to 1.
-            referentialIntegrityConstraints.add(derivation.copyIdentificationAttributes(derivation));
+            referentialIntegrityConstraints.add(derivation.copyIdentificationAttributesAs(derivation));
         }
     }
 
@@ -235,7 +294,7 @@ public class DerivationManager {
         if (oneSideMinCardinality.equals("0")) {
             constraint = oneSideDerivation.copyIdentificationAttributesAsOptional(nSideDerivation);
         } else {
-            constraint = oneSideDerivation.copyIdentificationAttributes(nSideDerivation);
+            constraint = oneSideDerivation.copyIdentificationAttributesAs(nSideDerivation);
         }
 
         if (constraint != null) {
@@ -295,14 +354,14 @@ public class DerivationManager {
         Derivation lastDerivation = derivations.get(names.getLast());
 
         referentialIntegrityConstraints
-                .add(firstDerivation.copyIdentificationAttributes(
+                .add(firstDerivation.copyIdentificationAttributesAs(
                         relationshipDerivation,
                         DerivationFormater.FOREIGN_ATTRIBUTE
                 )
         );
 
         referentialIntegrityConstraints
-                .add(lastDerivation.copyIdentificationAttributes(
+                .add(lastDerivation.copyIdentificationAttributesAs(
                         relationshipDerivation,
                         DerivationFormater.FOREIGN_ATTRIBUTE
                 )

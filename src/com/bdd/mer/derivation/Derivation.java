@@ -5,6 +5,11 @@ import java.util.List;
 
 class Derivation {
 
+    enum AttributeType {
+        IDENTIFICATION,
+        COMMON
+    }
+
     private final String name;
     private final List<String> commonAttributes;
     private final List<String> identificationAttributes;
@@ -49,7 +54,7 @@ class Derivation {
         }
     }
 
-    ReferencialIntegrityConstraint copyIdentificationAttributes(Derivation derivation) {
+    ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation) {
 
         ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
 
@@ -61,12 +66,30 @@ class Derivation {
         return constraint;
     }
 
-    ReferencialIntegrityConstraint copyIdentificationAttributes(Derivation derivation, String text) {
+    ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation, String text) {
 
         ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
 
         for (String attribute : this.identificationAttributes) {
             derivation.addIdentificationAttribute(text + attribute);
+            constraint.addReference(attribute, attribute);
+        }
+
+        return constraint;
+    }
+
+    ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation, String text, AttributeType type) {
+
+        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
+
+        for (String attribute : this.identificationAttributes) {
+
+            if (type == AttributeType.COMMON) {
+                derivation.addCommonAttribute(text + attribute);
+            } else {
+                derivation.addIdentificationAttribute(text + attribute);
+            }
+
             constraint.addReference(attribute, attribute);
         }
 
