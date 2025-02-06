@@ -151,11 +151,17 @@ public class Association extends Component implements Relatable, Derivable {
         this.relationshipsManager.removeRelationship(relationship);
     }
 
+    /**
+     * @return Always null, due to its relationship will parse it.
+     */
     @Override
     public String parse() {
-        return this.relationship.parse();
+        return null;
     }
 
+    /**
+     * @return Its relationship's identifier.
+     */
     @Override
     public String getIdentifier() {
         return this.relationship.getIdentifier();

@@ -31,9 +31,11 @@ public class DerivationManager {
 
             if (component instanceof Derivable derivableComponent) {
 
-                System.out.println(derivableComponent.parse());
+                String parsedContent = derivableComponent.parse();
 
-                derivate(derivableComponent.parse());
+                if (parsedContent != null) {
+                    derivate(parsedContent);
+                }
             }
         }
 
@@ -110,15 +112,37 @@ public class DerivationManager {
         }
     }
 
+    private static void addIdentificationAttributes(Derivation derivation, String attributes) {
+        String[] attributesArray = attributes.split(DerivationFormater.SEPARATOR);
+        for (String attribute : attributesArray) {
+            if (!attribute.isEmpty()) {
+
+                String cleanAttribute = DerivationFormater.cleanAllFormats(attribute);
+
+                derivations.put(cleanAttribute, new Derivation(cleanAttribute)); // This is useful for compound attributes.
+                derivation.addAttribute(attribute.trim());
+            }
+        }
+    }
+
     private static void searchAndReplaceCompound(String name, String attributes) {
 
         Map<String, Derivation> derivationCopy = new HashMap<>(derivations);
 
         for (Map.Entry<String, Derivation> entry : derivationCopy.entrySet()) {
             Derivation derivation = entry.getValue();
-            if (derivation.hasAttribute(name)) {
+
+            System.out.println(name);
+
+            if (derivation.hasCommonAttribute(name)) {
                 derivation.removeAttribute(name);
                 addAttributes(derivation, attributes);
+            }
+
+            if (derivation.hasIdentificationAttribute(name)) {
+                derivation.removeAttribute(name);
+                // ¿Por qué mejor no un method replace?
+                addIdentificationAttributes(derivation, attributes);
             }
         }
 
@@ -292,14 +316,16 @@ public class DerivationManager {
         Derivation oneSideDerivation = derivations.get(oneSideName);
         Derivation relationshipDerivation = new Derivation(relationshipName);
 
-        System.out.println(relationshipDerivation);
         relationshipDerivation.moveAttributesTo(nSideDerivation);
 
         ReferencialIntegrityConstraint constraint;
 
         if (oneSideMinCardinality.equals("0")) {
             constraint = oneSideDerivation
-                    .copyIdentificationAttributesAs(nSideDerivation, DerivationFormater.OPTIONAL_ATTRIBUTE);
+                    .copyIdentificationAttributesAs(
+                            nSideDerivation,
+                            DerivationFormater.OPTIONAL_ATTRIBUTE
+                    );
         } else {
             constraint = oneSideDerivation
                     .copyIdentificationAttributesAs(
@@ -435,13 +461,11 @@ public class DerivationManager {
         ;
 
         for (ReferencialIntegrityConstraint constraint : referentialIntegrityConstraints) {
-            while (constraint.hasReferences()) {
-                htmlContent
-                        .append("<ul>\n")
-                        .append("<li>").append(constraint.popReference()).append("</li>\n")
-                        .append("</ul>\n")
-                ;
-            }
+            htmlContent
+                    .append("<ul>\n")
+                    .append("<li>").append(constraint).append("</li>\n")
+                    .append("</ul>\n")
+            ;
         }
 
         htmlContent

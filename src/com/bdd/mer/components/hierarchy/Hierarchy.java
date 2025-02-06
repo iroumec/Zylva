@@ -285,4 +285,9 @@ public class Hierarchy extends Component implements Derivable {
 
         return out + ")";
     }
+
+    @Override
+    public String getIdentifier() {
+        return "";
+    }
 }

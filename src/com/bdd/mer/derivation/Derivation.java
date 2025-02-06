@@ -115,8 +115,17 @@ class Derivation {
         }
     }
 
+    @SuppressWarnings("unused")
     boolean hasAttribute(String attribute) {
         return this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute);
+    }
+
+    boolean hasCommonAttribute(String attribute) {
+        return this.commonAttributes.contains(attribute);
+    }
+
+    boolean hasIdentificationAttribute(String attribute) {
+        return this.identificationAttributes.contains(DerivationFormater.cleanAllFormats(attribute));
     }
 
     boolean isEmpty() {

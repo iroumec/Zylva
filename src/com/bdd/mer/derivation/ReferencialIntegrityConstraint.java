@@ -20,17 +20,31 @@ public class ReferencialIntegrityConstraint {
         this.references.add(new Pair<>(referencingAttribute, referencedAttribute));
     }
 
-    boolean hasReferences() {
-        return !this.references.isEmpty();
-    }
+    @Override
+    public String toString() {
 
-    String popReference() {
+        StringBuilder referencingAttributes = new StringBuilder();
+        StringBuilder referencedAttributes = new StringBuilder();
 
-        Pair<String, String> reference = this.references.removeFirst();
+        for (Pair<String, String> reference : this.references) {
+            referencingAttributes.append(DerivationFormater.cleanAllFormats(reference.getFirst())).append(", ");
+            referencedAttributes.append(DerivationFormater.cleanAllFormats(reference.getSecond())).append(", ");
+        }
+
+        deleteLast(", ", referencingAttributes);
+        deleteLast(", ", referencedAttributes);
 
         return this.referencing +
-                "[" + DerivationFormater.cleanAllFormats(reference.getFirst()) + "]" +
+                "[" + referencingAttributes + "]" +
                 " << " + this.referenced +
-                "[" + DerivationFormater.cleanAllFormats(reference.getSecond()) + "]";
+                "[" + referencedAttributes + "]";
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private void deleteLast(String textToBeDeleted, StringBuilder stringBuilder) {
+        int startIndex = stringBuilder.lastIndexOf(textToBeDeleted);
+        if (startIndex != -1) {
+            stringBuilder.delete(startIndex, startIndex + 2);
+        }
     }
 }
