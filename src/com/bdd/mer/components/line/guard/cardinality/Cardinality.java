@@ -1,0 +1,35 @@
+package com.bdd.mer.components.line.guard.cardinality;
+
+import com.bdd.mer.actions.Action;
+import com.bdd.mer.components.Component;
+import com.bdd.mer.components.line.GuardedLine;
+import com.bdd.mer.components.line.guard.Guard;
+import com.bdd.mer.frame.DrawingPanel;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class Cardinality extends Guard {
+
+    public Cardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
+        super(giveFormat(firstValue, secondValue), drawingPanel);
+    }
+
+    public static String giveFormat(String firstValue, String secondValue) {
+        return "(" + firstValue + ", " + secondValue + ")";
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected JPopupMenu getPopupMenu() {
+
+        return this.getActionManager().getPopupMenu(
+                this,
+                Action.CHANGE_CARDINALITY
+        );
+
+    }
+}

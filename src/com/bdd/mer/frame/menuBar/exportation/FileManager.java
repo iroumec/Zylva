@@ -75,6 +75,8 @@ public final class FileManager {
                 @SuppressWarnings("unchecked")
                 List<Component> components = (List<Component>) in.readObject();
 
+                drawingPanel.reset();
+
                 for (Component component : components.reversed()) {
 
                     drawingPanel.addComponent(component);

@@ -84,6 +84,19 @@ public abstract class AttributableComponent extends Component implements Derivab
         return out;
     }
 
+    public List<Attribute> getMainAttributes() {
+
+        List<Attribute> out = new ArrayList<>();
+
+        for (Attribute attribute : this.attributes) {
+            if (attribute.isMain()) {
+                out.add(attribute);
+            }
+        }
+
+        return out;
+    }
+
     /**
      *
      * @return The number of attributes in the component.

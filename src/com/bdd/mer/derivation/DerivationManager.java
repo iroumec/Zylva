@@ -34,6 +34,7 @@ public class DerivationManager {
                 String parsedContent = derivableComponent.parse();
 
                 if (parsedContent != null) {
+                    System.out.println(parsedContent);
                     derivate(parsedContent);
                 }
             }

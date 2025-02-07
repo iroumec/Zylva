@@ -29,7 +29,7 @@ pertenecer a un subtipo a la vez).
 Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
 se nota con la letra "o" (Overlapping).
  */
-public class Hierarchy extends Component implements Derivable {
+public class Hierarchy extends Component {
 
     /**
      * The symbol of the hierarchy, also denoting its exclusivity.
@@ -274,20 +274,11 @@ public class Hierarchy extends Component implements Derivable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    @Override
-    public String parse() {
-
-        StringBuilder out = new StringBuilder(this.getClass() + "[" + this.parent.getText() + "](");
-
-        for (EntityWrapper child : this.children) {
-            out.append(child.getText()).append(",");
-        }
-
-        return out + ")";
+    public boolean isExclusive() {
+        return this.symbol == HierarchySymbol.DISJUNCT;
     }
 
-    @Override
-    public String getIdentifier() {
-        return "";
+    public String getDiscriminant() {
+        return this.parentLine.getText();
     }
 }

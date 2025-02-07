@@ -7,11 +7,11 @@ public class DerivationFormater implements Serializable {
     // Why string? They could be char.
     public static final String SEPARATOR = ";";
     public static final String MAIN_ATTRIBUTE = "&";
+    public static final String FOREIGN_ATTRIBUTE = "@";
     public static final String OPTIONAL_ATTRIBUTE = "*";
     public static final String ALTERNATIVE_ATTRIBUTE = "+";
     public static final String MULTIVALUED_ATTRIBUTE = "#";
 
-    static final String FOREIGN_ATTRIBUTE = "@";
     static final String DUPLICATED_ATTRIBUTE = "!RENAMED";
 
     static String format(String text) {

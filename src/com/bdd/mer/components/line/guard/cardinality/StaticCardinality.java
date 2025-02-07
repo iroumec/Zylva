@@ -1,4 +1,4 @@
-package com.bdd.mer.components.relationship.cardinality;
+package com.bdd.mer.components.line.guard.cardinality;
 
 import com.bdd.mer.frame.DrawingPanel;
 

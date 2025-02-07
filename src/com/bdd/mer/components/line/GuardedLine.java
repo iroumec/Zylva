@@ -1,7 +1,8 @@
 package com.bdd.mer.components.line;
 
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.relationship.cardinality.Cardinality;
+import com.bdd.mer.components.line.guard.Guard;
+import com.bdd.mer.components.line.guard.cardinality.Cardinality;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class GuardedLine extends Line {
 
-    private final Cardinality guard;
+    private final Guard guard;
 
      GuardedLine(Init<?> init) {
         super(init);
@@ -35,9 +36,9 @@ public class GuardedLine extends Line {
     protected static abstract class Init<T extends Init<T>> extends Line.Init<T> {
 
         // Required parameter.
-        private final Cardinality guard;
+        private final Guard guard;
 
-        public Init(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Cardinality guard) {
+        public Init(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Guard guard) {
             super(drawingPanel, firstComponent, secondComponent);
             this.guard = guard;
         }
@@ -49,7 +50,7 @@ public class GuardedLine extends Line {
 
     public static class Builder extends Init<Builder> {
 
-        public Builder(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Cardinality guard) {
+        public Builder(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Guard guard) {
             super(drawingPanel, firstComponent, secondComponent, guard);
         }
 
@@ -63,4 +64,7 @@ public class GuardedLine extends Line {
     public String toString() {
         return this.guard.toString();
     }
+
+    @Override
+    public String getText() { return this.guard.getText(); }
 }
