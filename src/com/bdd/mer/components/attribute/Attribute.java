@@ -5,13 +5,18 @@ import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.DerivationFormater;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Attribute extends AttributableComponent {
+public class Attribute extends AttributableComponent implements Derivable {
 
     /**
      * {@code Attribute}'s symbol.
@@ -234,17 +239,28 @@ public class Attribute extends AttributableComponent {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[" + this.getText() + "]" + super.toString();
-    }
-
-    @Override
-    public String parse() {
-
-        return Attribute.class.getSimpleName() + "[" + this.getIdentifier() + "](" + super.parse() + ")";
+        return this.getText();
     }
 
     @Override
     public String getIdentifier() {
         return this.getText();
+    }
+
+    @Override
+    @SuppressWarnings("Duplicated")
+    public List<DerivationObject> getDerivationObjects() {
+
+        List<DerivationObject> out = new ArrayList<>();
+
+        DerivationObject derivation = new SingularDerivation(this.getIdentifier());
+
+        for (Attribute attribute : this.getAttributes(1)) {
+            derivation.addAttribute(attribute);
+        }
+
+        out.add(derivation);
+
+        return out;
     }
 }

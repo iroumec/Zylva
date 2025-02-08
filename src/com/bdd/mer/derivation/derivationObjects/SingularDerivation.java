@@ -1,9 +1,6 @@
 package com.bdd.mer.derivation.derivationObjects;
 
-import com.bdd.mer.derivation.Derivation;
-
 public class SingularDerivation extends DerivationObject {
-
 
     public SingularDerivation(String name) {
         super(name);
@@ -12,7 +9,7 @@ public class SingularDerivation extends DerivationObject {
     @Override
     public void generateDerivation() {
 
-       super.generateDerivation();
+       this.addDerivation(super.generateOwnDerivation());
     }
 
 }

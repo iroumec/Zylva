@@ -347,7 +347,7 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
 
         DerivationObject derivation = new SingularDerivation(this.getIdentifier());
 
-        for (Attribute attribute : this.getAttributes()) {
+        for (Attribute attribute : this.getAttributes(1)) {
             derivation.addAttribute(attribute);
         }
 

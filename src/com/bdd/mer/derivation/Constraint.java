@@ -5,13 +5,13 @@ import com.bdd.mer.structures.Pair;
 import java.util.List;
 import java.util.Objects;
 
-public class ReferencialIntegrityConstraint {
+public class Constraint {
 
     private final String referencing;
     private final String referenced;
     private final List<Pair<String, String>> references;
 
-    ReferencialIntegrityConstraint(String referencing, String referenced) {
+    Constraint(String referencing, String referenced) {
         this.referencing = referencing;
         this.referenced = referenced;
         this.references = new java.util.ArrayList<>();
@@ -49,7 +49,7 @@ public class ReferencialIntegrityConstraint {
         }
     }
 
-    void transferConstraintsTo(ReferencialIntegrityConstraint constraint) {
+    void transferConstraintsTo(Constraint constraint) {
         for (Pair<String, String> reference : this.references) {
             constraint.addReference(reference.getFirst(), reference.getSecond());
         }
@@ -58,7 +58,7 @@ public class ReferencialIntegrityConstraint {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        ReferencialIntegrityConstraint that = (ReferencialIntegrityConstraint) o;
+        Constraint that = (Constraint) o;
         return Objects.equals(referencing, that.referencing) && Objects.equals(referenced, that.referenced);
     }
 

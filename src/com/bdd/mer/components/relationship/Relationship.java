@@ -248,7 +248,7 @@ public class Relationship extends AttributableComponent {
 
         PluralDerivation derivation = new PluralDerivation(this.getIdentifier());
 
-        for (Attribute attribute : this.getAttributes()) {
+        for (Attribute attribute : this.getAttributes(1)) {
             derivation.addAttribute(attribute);
         }
 

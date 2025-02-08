@@ -1,18 +1,17 @@
 package com.bdd.mer.derivation.derivationObjects;
 
-import com.bdd.mer.components.attribute.Attribute;
-import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.derivation.Derivation;
-import com.bdd.mer.derivation.DerivationFormater;
-import com.bdd.mer.derivation.ReferencialIntegrityConstraint;
+import com.bdd.mer.derivation.elements.Common;
+import com.bdd.mer.derivation.elements.Identifier;
+import com.bdd.mer.derivation.elements.Reference;
+import com.bdd.mer.derivation.elements.Static;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.regex.Matcher;
 
 public class PluralDerivation extends DerivationObject {
 
-    private final Derivation mainDerivation;
+    private Derivation mainDerivation;
     private final List<Member> members;
 
     public PluralDerivation(String name) {
@@ -25,81 +24,59 @@ public class PluralDerivation extends DerivationObject {
     }
 
     @Override
-    public void addAttribute(Attribute attribute) {
-
-        mainDerivation.addAttribute(parseAttribute(attribute));
-    }
-
-    @Override
     public void generateDerivation() {
 
-        for (Member member : members) {
-            member.name = member.name.toLowerCase();
-        }
-    }
-
-    private void manageRelationship(String relationshipName, String cardinalities) {
-
         int numberOfMembers = this.getNumberOfMembers();
+        this.mainDerivation = this.generateOwnDerivation();
 
         switch (numberOfMembers) {
-            case 2: manageBinaryRelationship(this.members.getFirst(), this.members.getLast()); break;
+            case 2: manageBinaryRelationship(); break;
             case 3: manageTernaryRelationship(); break;
             default: throw new RuntimeException("Invalid number of members for a plural derivation.");
+        }
+
+        // In case the relationship derivation was not removed.
+        if (mainDerivation != null) {
+            this.addDerivation(mainDerivation);
         }
     }
 
     private void manageTernaryRelationship() {
 
-        Map<String, List<Integer>> cardinalityMap = new HashMap<>();
-
         int oneCount = 0;
 
-        for (int i = 0; i < names.size(); i++) {
+        Member oneCardinalityMember = null;
 
-            String maxCardinality = maxCardinalities.get(i);
+        for (Member member : members) {
 
-            if (maxCardinality.equals("1")) {
+            if (member.maxCardinality.equals("1")) {
+
                 oneCount++;
+
+                if (oneCardinalityMember == null) {
+                    oneCardinalityMember = member;
+                }
             }
-
-            List<Integer> cardinality = cardinalityMap.getOrDefault(names.get(i), new ArrayList<>());
-            cardinality.add(i);
-            cardinalityMap.put(maxCardinality, cardinality);
         }
-
-        List<ReferencialIntegrityConstraint> constraints = new ArrayList<>();
-        Derivation relationshipDerivation = derivations.get(relationshipName);
-        Derivation firstDerivation = derivations.get(names.getFirst());
-        Derivation secondDerivation = derivations.get(names.get(1));
-        Derivation thirdDerivation = derivations.get(names.getLast());
-        List<Derivation> derivationList = Arrays.asList(firstDerivation, secondDerivation, thirdDerivation);
 
         switch (oneCount) {
             case 0: // N:N:N
 
-                for (Derivation derivation : derivationList) {
-                    constraints.add(
-                            derivation.copyIdentificationAttributesAs(
-                                    relationshipDerivation, DerivationFormater.FOREIGN_ATTRIBUTE));
-                }
+                this.mainDerivation.addElement(new Reference(this.members.getFirst().name, new Identifier()));
+                this.mainDerivation.addElement(new Reference(this.members.get(1).name, new Identifier()));
+                this.mainDerivation.addElement(new Reference(this.members.getLast().name, new Identifier()));
 
                 break;
             case 1, 2, 3: // 1:N:N
-                Derivation maxCardinalityEqualsToOneDerivation
-                        = derivations.get(names.get(cardinalityMap.get("1").getFirst()));
 
-                for (Derivation derivation : derivationList) {
-                    if (!derivation.equals(maxCardinalityEqualsToOneDerivation)) {
-                        constraints.add(derivation
-                                .copyIdentificationAttributesAs(relationshipDerivation, DerivationFormater.FOREIGN_ATTRIBUTE));
+                for (Member member : this.members) {
+
+                    if (!member.equals(oneCardinalityMember)) {
+
+                        this.mainDerivation.addElement(new Reference(member.name, new Identifier()));
                     } else {
-                        constraints.add(derivation
-                                .copyIdentificationAttributesAs(
-                                        relationshipDerivation,
-                                        DerivationFormater.FOREIGN_ATTRIBUTE,
-                                        Derivation.AttributeType.COMMON
-                                ));
+
+                        this.mainDerivation.addElement(new Reference(member.name, new Common()));
                     }
                 }
                 break;
@@ -109,30 +86,27 @@ public class PluralDerivation extends DerivationObject {
             //case 3: break;
             default: throw new RuntimeException("Invalid cardinality for ternary relationship.");
         }
-
-        referentialIntegrityConstraints.addAll(constraints);
     }
 
-    private static void manageBinaryRelationship(Member firstMember, Member secondMember) {
+    private void manageBinaryRelationship() {
 
-        if (firstMember.name.equals(lastMember.name)) {
+        Member firstMember = this.members.getFirst();
+        Member secondMember = this.members.getLast();
+
+        if (firstMember.name.equals(secondMember.name)) {
             manageUnaryRelationship(firstMember, secondMember);
-        }
-
-        if (names.getFirst().equals(names.getLast())) {
-            manageUnaryRelationship(relationshipName,names, minCardinalities, maxCardinalities);
             return;
         }
 
-        if (maxCardinalities.getFirst().equals("1") || maxCardinalities.getLast().equals("1")) {
+        if (firstMember.maxCardinality.equals("1") || secondMember.maxCardinality.equals("1")) {
 
-            if (maxCardinalities.getFirst().equals("1") && maxCardinalities.getLast().equals("1")) {
-                derivate1_1Relationship(relationshipName, names, minCardinalities);
+            if (firstMember.maxCardinality.equals("1") && secondMember.maxCardinality.equals("1")) {
+                derivate1_1Relationship(firstMember, secondMember);
             } else {
-                derivate1_NRelationship(relationshipName, names, minCardinalities, maxCardinalities);
+                derivate1_NRelationship(firstMember, secondMember);
             }
         } else {
-            derivateN_NRelationship(relationshipName, names);
+            derivateN_NRelationship(firstMember, secondMember);
         }
     }
 
@@ -156,68 +130,40 @@ public class PluralDerivation extends DerivationObject {
 
         String minCardinality = (firstMember.maxCardinality.equals("1")) ? firstMember.minCardinality : secondMember.minCardinality;
 
-        Derivation firstMemberDerivation
+        Derivation derivation = new Derivation(firstMember.name);
 
-        Derivation derivation = derivations.get(name);
-        Derivation relationshipDerivation = derivations.get(relationshipName);
-        relationshipDerivation.moveCommonAttributesTo(derivation);
+        derivation.addElement(new Static(this.getName(), new Common()));
 
         if (minCardinality.equals("0")) {
-            referentialIntegrityConstraints.add(
-                    derivation.copyIdentificationAttributesAs(
-                            derivation,
-                            DerivationFormater.OPTIONAL_ATTRIBUTE
-                    ));
+            derivation.addElement(new Reference(secondMember.name, new Common(true)));
         } else { // It's equal to 1.
-            referentialIntegrityConstraints.add(derivation.copyIdentificationAttributesAs(derivation));
+            derivation.addElement(new Reference(secondMember.name, new Identifier()));
         }
+
+        this.addDerivation(derivation);
+        // Remove relationship.
     }
 
-    private static void derivate1_NRelationship(String relationshipName,
-                                                List<String> names,
-                                                List<String> minCardinalities,
-                                                List<String> maxCardinalities) {
-        String oneSideName = "", nSideName = "";
-        String oneSideMinCardinality = "";
+    private void derivate1_NRelationship(Member firstMember, Member secondMember) {
 
-        for (int i = 0; i < names.size(); i++) {
+        Member oneSideMember = (firstMember.maxCardinality.equals("1")) ? firstMember : secondMember;
+        Member nSideMember = (firstMember.maxCardinality.equals("1")) ? secondMember : firstMember;
 
-            if (maxCardinalities.get(i).equals("1")) {
-                oneSideName = names.get(i);
-                oneSideMinCardinality = minCardinalities.get(i);
-            } else {
-                nSideName = names.get(i);
-            }
-        }
+        Derivation derivation = new Derivation(nSideMember.name);
+        derivation.addElement(new Static(this.getName(), new Common()));
 
-        Derivation nSideDerivation = derivations.get(nSideName);
-        Derivation oneSideDerivation = derivations.get(oneSideName);
-        Derivation relationshipDerivation = new Derivation(relationshipName);
+        if (oneSideMember.minCardinality.equals("0")) {
 
-        relationshipDerivation.moveAttributesTo(nSideDerivation);
+            derivation.addElement(new Reference(oneSideMember.name, new Common(true)));
 
-        ReferencialIntegrityConstraint constraint;
-
-        if (oneSideMinCardinality.equals("0")) {
-            constraint = oneSideDerivation
-                    .copyIdentificationAttributesAs(
-                            nSideDerivation,
-                            DerivationFormater.OPTIONAL_ATTRIBUTE
-                    );
         } else {
-            constraint = oneSideDerivation
-                    .copyIdentificationAttributesAs(
-                            nSideDerivation,
-                            DerivationFormater.FOREIGN_ATTRIBUTE,
-                            Derivation.AttributeType.COMMON
-                    );
+
+            derivation.addElement(new Reference(oneSideMember.name, new Common()));
         }
 
-        if (constraint != null) {
-            referentialIntegrityConstraints.add(constraint);
-        }
+        this.addDerivation(derivation);
 
-        derivations.remove(relationshipName);
+        this.mainDerivation = null;
     }
 
     private void derivate1_1Relationship(Member firstMember, Member secondMember) {
@@ -228,50 +174,55 @@ public class PluralDerivation extends DerivationObject {
 
                 // The order could be different.
                 Derivation derivation = new Derivation(firstMember.name);
+                // The first member references the second member identification attributes as optional.
+                derivation.addElement(new Reference(secondMember.name, new Common(true)));
+                // The first member has all the common attributes of the relationship.
+                derivation.addElement(new Static(this.getName(), new Common()));
 
-                // The order could be different.
-                this.mainDerivation.moveAttributesTo(derivation);
-                this.addReferencialIntegrityConstraint(
+                this.addDerivation(derivation);
 
-                );
-                referentialIntegrityConstraints.add(
-                        lastDerivation.copyIdentificationAttributesAs(
-                                firstDerivation,
-                                DerivationFormater.FOREIGN_ATTRIBUTE + DerivationFormater.OPTIONAL_ATTRIBUTE
-                        ));
-            } else { // Case (0,1):(1,1)
+            } else { // Case (0,1):(1,1) // Can be simplified.
 
-                if (minCardinalities.getFirst().equals("0")) {
+                Derivation derivation;
+                if (firstMember.minCardinality.equals("0")) {
 
-                    relationshipDerivation.moveAttributesTo(firstDerivation);
-                    referentialIntegrityConstraints.add(lastDerivation.copyIdentificationAttributesAsAlternativeForeign(firstDerivation));
+                    derivation = new Derivation(firstMember.name);
+                    // The first member references the second member identification attributes.
+                    derivation.addElement(new Reference(secondMember.name, new Common()));
+                    // The first member has all the common attributes of the relationship.
+
                 } else {
 
-                    relationshipDerivation.moveAttributesTo(lastDerivation);
-                    referentialIntegrityConstraints.add(firstDerivation.copyIdentificationAttributesAsAlternativeForeign(lastDerivation));
+                    derivation = new Derivation(secondMember.name);
+                    // The second member references the first member identification attributes.
+                    derivation.addElement(new Reference(firstMember.name, new Common()));
+                    // The second member has all the common attributes of the relationship.
+
                 }
+                derivation.addElement(new Static(this.getName(), new Common()));
+                this.addDerivation(derivation);
             }
         } else { // Case (1,1):(1,1)
 
-            // In the case of (1,1):(1,1), the order could be different.
+            // The order could be different.
 
-            relationshipDerivation.moveAttributesTo(firstDerivation);
-            referentialIntegrityConstraints.add(lastDerivation.copyIdentificationAttributesAsAlternativeForeign(firstDerivation));
+            Derivation derivation = new Derivation(firstMember.name);
+            // The first member references the second member identification attributes.
+            derivation.addElement(new Reference(secondMember.name, new Common()));
+            // The first member has all the common attributes of the relationship.
+            derivation.addElement(new Static(this.getName(), new Common()));
+
+            this.addDerivation(derivation);
         }
 
-        derivations.remove(relationshipName);
+        this.mainDerivation = null;
     }
 
     private void derivateN_NRelationship(Member firstMember, Member secondMember) {
 
-        Derivation derivation = new Derivation(this.getName());
-
         // The names of the members will be replaced with their identification attributes.
-        String prefix = DerivationFormater.MAIN_ATTRIBUTE + DerivationFormater.FOREIGN_ATTRIBUTE;
-        derivation.addAttribute(prefix + firstMember.name);
-        derivation.addAttribute(prefix + secondMember.name);
-
-        this.addDerivation(derivation);
+        this.mainDerivation.addElement(new Reference(firstMember.name, new Identifier()));
+        this.mainDerivation.addElement(new Reference(secondMember.name, new Identifier()));
     }
 
     private int getNumberOfMembers() {
