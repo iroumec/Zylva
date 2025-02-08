@@ -2,8 +2,9 @@ package com.bdd.mer.derivation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-class Derivation {
+public class Derivation {
 
     enum AttributeType {
         IDENTIFICATION,
@@ -14,13 +15,13 @@ class Derivation {
     private final List<String> commonAttributes;
     private final List<String> identificationAttributes;
 
-    Derivation(String name) {
+    public Derivation(String name) {
         this.name = name;
         this.commonAttributes = new ArrayList<>();
         this.identificationAttributes = new ArrayList<>();
     }
 
-    void addAttribute(String attribute) {
+    public void addAttribute(String attribute) {
         if (attribute.startsWith(DerivationFormater.MAIN_ATTRIBUTE)) {
             addIdentificationAttribute(attribute);
         } else {
@@ -114,7 +115,7 @@ class Derivation {
         return constraint;
     }
 
-    void moveAttributesTo(Derivation derivation) {
+    public void moveAttributesTo(Derivation derivation) {
 
         for (String attribute : this.identificationAttributes) {
             derivation.addIdentificationAttribute(attribute);
@@ -205,5 +206,24 @@ class Derivation {
         if (startIndex != -1) {
             stringBuilder.delete(startIndex, startIndex + 2); // Eliminar la coma y el espacio
         }
+    }
+
+    public Derivation unify(Derivation firstDerivation, Derivation secondDerivation) {
+
+        secondDerivation.moveAttributesTo(firstDerivation);
+
+        return firstDerivation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Derivation that = (Derivation) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

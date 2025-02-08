@@ -148,42 +148,4 @@ public abstract class AttributableComponent extends Component implements Derivab
 
     }
 
-    @Override
-    public String parse() {
-
-        StringBuilder out = new StringBuilder();
-
-        for (Attribute attribute : this.attributes) {
-
-            String name = attribute.getIdentifier();
-
-            if (attribute.isMain()) {
-                name = DerivationFormater.MAIN_ATTRIBUTE + name;
-            }
-
-            if (attribute.isAlternative()) {
-                name = DerivationFormater.ALTERNATIVE_ATTRIBUTE + name;
-            }
-
-            if (attribute.isMultivalued()) {
-                name = DerivationFormater.MULTIVALUED_ATTRIBUTE + name;
-            }
-
-            if (attribute.isOptional()) {
-                name = DerivationFormater.OPTIONAL_ATTRIBUTE + name;
-            }
-
-            out.append(name).append(DerivationFormater.SEPARATOR);
-        }
-
-        int lastIndex = out.lastIndexOf(DerivationFormater.SEPARATOR);
-
-        if (lastIndex != -1) {
-
-            out.deleteCharAt(lastIndex);
-        }
-
-        return out.toString();
-    }
-
 }

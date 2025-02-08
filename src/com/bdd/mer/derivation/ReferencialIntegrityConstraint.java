@@ -3,6 +3,7 @@ package com.bdd.mer.derivation;
 import com.bdd.mer.structures.Pair;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ReferencialIntegrityConstraint {
 
@@ -46,5 +47,23 @@ public class ReferencialIntegrityConstraint {
         if (startIndex != -1) {
             stringBuilder.delete(startIndex, startIndex + 2);
         }
+    }
+
+    void transferConstraintsTo(ReferencialIntegrityConstraint constraint) {
+        for (Pair<String, String> reference : this.references) {
+            constraint.addReference(reference.getFirst(), reference.getSecond());
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ReferencialIntegrityConstraint that = (ReferencialIntegrityConstraint) o;
+        return Objects.equals(referencing, that.referencing) && Objects.equals(referenced, that.referenced);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(referencing, referenced);
     }
 }

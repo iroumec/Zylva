@@ -3,11 +3,17 @@ package com.bdd.mer.components.relationship;
 import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.association.Association;
+import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.line.Line;
+import com.bdd.mer.components.line.guard.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.Derivation;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.derivationObjects.PluralDerivation;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
+import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -236,24 +242,39 @@ public class Relationship extends AttributableComponent {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public String parse() {
+    public List<DerivationObject> getDerivationObjects() {
 
-        StringBuilder out = new StringBuilder(this.getClass().getSimpleName() + "[" + this.getIdentifier() + "](");
+        List<DerivationObject> out = new ArrayList<>();
 
-        out.append(super.parse()).append(")["); // Attributes.
+        PluralDerivation derivation = new PluralDerivation(this.getIdentifier());
+
+        for (Attribute attribute : this.getAttributes()) {
+            derivation.addAttribute(attribute);
+        }
 
         for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
 
             List<Line> lines = participant.getValue();
 
             for (Line line : lines) {
-                out.append(((Derivable) participant.getKey()).getIdentifier()).append(line.toString()).append(";");
+
+                try {
+                    Pair<String, String> cardinalities = Cardinality.removeFormat(line.getText());
+
+                    derivation.addMember(new PluralDerivation.Member(
+                            ((Derivable) participant.getKey()).getIdentifier(),
+                            cardinalities.getFirst(),
+                            cardinalities.getSecond()
+                    ));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
-        out.deleteCharAt(out.lastIndexOf(";"));
+        out.add(derivation);
 
-        return out.append("]").toString();
+        return out;
     }
 
     @Override

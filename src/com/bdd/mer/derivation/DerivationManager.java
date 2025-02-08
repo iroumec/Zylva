@@ -1,6 +1,7 @@
 package com.bdd.mer.derivation;
 
 import com.bdd.mer.components.Component;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.io.BufferedWriter;
@@ -31,11 +32,20 @@ public class DerivationManager {
 
             if (component instanceof Derivable derivableComponent) {
 
-                String parsedContent = derivableComponent.parse();
+                List<DerivationObject> derivationObjects = derivableComponent.getDerivationObjects();
 
-                if (parsedContent != null) {
-                    System.out.println(parsedContent);
-                    derivate(parsedContent);
+                for (DerivationObject derivationObject : derivationObjects) {
+
+                    List<Derivation> derivations = derivationObject.getDerivations();
+                    List<ReferencialIntegrityConstraint> constraints = derivationObject.getReferencialIntegrityConstraints();
+
+                    for (Derivation derivation : derivationObject.getDerivations()) {
+                        addDerivation(derivation);
+                    }
+
+                    for (ReferencialIntegrityConstraint constraint : derivationObject.getReferencialIntegrityConstraints()) {
+                        addReferencialIntegrityConstraint(constraint);
+                    }
                 }
             }
         }
@@ -45,6 +55,31 @@ public class DerivationManager {
         formatToHTML();
 
         derivations.clear();
+    }
+
+    private static void addDerivation(Derivation newDerivation) {
+
+        if (derivations.containsKey(newDerivation.getName())) {
+
+            Derivation derivation = derivations.get(newDerivation.getName());
+
+            newDerivation.moveAttributesTo(derivation);
+        } else {
+            derivations.put(newDerivation.getName(), newDerivation);
+        }
+    }
+
+    private static void addReferencialIntegrityConstraint(ReferencialIntegrityConstraint newConstraint) {
+
+        if (referentialIntegrityConstraints.contains(newConstraint)) {
+
+            ReferencialIntegrityConstraint constraint = referentialIntegrityConstraints.get(referentialIntegrityConstraints.indexOf(newConstraint));
+
+            newConstraint.transferConstraintsTo(constraint);
+        } else {
+            referentialIntegrityConstraints.add(newConstraint);
+        }
+
     }
 
     private static void derivate(String parsedContent) {
@@ -166,6 +201,70 @@ public class DerivationManager {
         } else if (names.size() == 3) {
             manageTernaryRelationship(relationshipName, names, maxCardinalities);
         }
+    }
+
+    private static void manageRelationship(String relationshipName, String cardinalities) {
+
+        Matcher cardinalityMatcher = cardinalityPattern.matcher(cardinalities);
+
+        List<String> names = new ArrayList<>();
+        List<String> minCardinalities = new ArrayList<>();
+        List<String> maxCardinalities = new ArrayList<>();
+
+        while (cardinalityMatcher.find()) {
+            names.add(cardinalityMatcher.group(1));
+            minCardinalities.add(cardinalityMatcher.group(2));
+            maxCardinalities.add(cardinalityMatcher.group(3));
+        }
+
+        // It's checked if there is a combination of empty cardinalities and non-empty cardinalities.
+        boolean hasEmptyCardinality = false;
+        boolean hasNonEmptyCardinality = false;
+
+        for (int i = 0; i < minCardinalities.size(); i++) {
+            if (minCardinalities.get(i).isEmpty() && maxCardinalities.get(i).isEmpty()) {
+                hasEmptyCardinality = true; // Hay cardinalidad vacía
+            } else {
+                hasNonEmptyCardinality = true; // Hay cardinalidad no vacía
+            }
+
+            // Si encontramos ambos tipos, lanzamos la excepción
+            if (hasEmptyCardinality == hasNonEmptyCardinality) {
+                throw new IllegalArgumentException("Illegal parsed content for parsed component \"" + relationshipName + "\".");
+            }
+        }
+
+        // Si todas las cardinalidades están vacías, invocamos el método
+        if (hasEmptyCardinality) {
+            manageTransferentionRelationship(relationshipName, names);
+        } else {
+            // Manejo de relaciones binarias o ternarias
+            if (names.size() == 2) {
+                manageBinaryRelationship(relationshipName, names, minCardinalities, maxCardinalities);
+            } else if (names.size() == 3) {
+                manageTernaryRelationship(relationshipName, names, maxCardinalities);
+            }
+        }
+    }
+
+    /**
+     * TransferalDerivation Relationships are a type of parsing relationships in the form of:
+     * <p></p>
+     * *Class*[](*listOfAttributes*)[*parent*(),*son1*(),*son2()*...]
+     * <p></p>
+     * Where:
+     * - The list of attributes will be transferred to the parent.
+     * - The identification attributes of the parent will be transferred to the sons.
+     * <p></p>
+     * Take into consideration that the parent and all the sons must be
+     *
+     * @param relationshipName
+     * @param names
+     */
+    private static void manageTransferentionRelationship(String relationshipName, List<String> names) {
+
+
+
     }
 
     private static void manageTernaryRelationship(String relationshipName,
