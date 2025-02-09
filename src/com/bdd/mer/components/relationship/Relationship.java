@@ -249,7 +249,7 @@ public class Relationship extends AttributableComponent {
         PluralDerivation derivation = new PluralDerivation(this.getIdentifier());
 
         for (Attribute attribute : this.getAttributes(1)) {
-            derivation.addAttribute(attribute);
+            derivation.addAttribute(this, attribute);
         }
 
         for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {

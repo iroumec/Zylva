@@ -255,7 +255,7 @@ public class Attribute extends AttributableComponent implements Derivable {
         DerivationObject derivation = new SingularDerivation(this.getIdentifier());
 
         for (Attribute attribute : this.getAttributes(1)) {
-            derivation.addAttribute(attribute);
+            derivation.addAttribute(this, attribute);
         }
 
         out.add(derivation);

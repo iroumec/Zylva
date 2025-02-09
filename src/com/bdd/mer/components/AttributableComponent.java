@@ -144,6 +144,12 @@ public abstract class AttributableComponent extends Component implements Derivab
         return false;
     }
 
+    /**
+     *
+     * @return {@code TRUE} if the component has at least one attribute.
+     */
+    public boolean hasAttributes() { return !this.attributes.isEmpty(); }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */

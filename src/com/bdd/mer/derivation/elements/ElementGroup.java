@@ -1,5 +1,7 @@
 package com.bdd.mer.derivation.elements;
 
+import com.bdd.mer.derivation.TextUtility;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,52 @@ public class ElementGroup extends Element {
             copy.addElement(element.getCopy());
         }
 
+        this.copyDecoratorsTo(copy);
+
         return copy;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder out = new StringBuilder();
+
+        out.append(super.toString()).append("[");
+
+        for (Element element : elements) {
+            out.append(element.toString()).append(", ");
+        }
+
+        TextUtility.deleteLast(", ", out);
+
+        out.append("]");
+
+        return out.toString();
+    }
+
+    @Override
+    public String formatToHTML() {
+
+        StringBuilder out = new StringBuilder();
+
+        for (Element element : elements) {
+            out.append(element.formatToHTML()).append(", ");
+        }
+
+        TextUtility.deleteLast(", ", out);
+
+        return super.applyDecorators(out.toString());
+    }
+
+    @Override
+    public int getNumberOfElements() {
+
+        int out = 0;
+
+        for (Element element : elements) {
+            out += element.getNumberOfElements();
+        }
+
+        return out;
     }
 }

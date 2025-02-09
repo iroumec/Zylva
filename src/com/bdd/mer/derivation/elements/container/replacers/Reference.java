@@ -1,6 +1,6 @@
 package com.bdd.mer.derivation.elements.container.replacers;
 
-import com.bdd.mer.derivation.AttributeDecorator;
+import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.Element;
@@ -39,7 +39,7 @@ public class Reference extends Replacer {
         Element out = super.abstractReplacement(derivation);
 
         if (out != null) {
-            out.addDecoration(AttributeDecorator.FOREIGN_ATTRIBUTE);
+            out.addDecoration(ElementDecorator.FOREIGN_ATTRIBUTE);
         }
 
         return out;

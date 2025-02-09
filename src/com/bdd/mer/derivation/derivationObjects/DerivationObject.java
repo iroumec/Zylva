@@ -1,10 +1,14 @@
 package com.bdd.mer.derivation.derivationObjects;
 
 import com.bdd.mer.components.attribute.Attribute;
-import com.bdd.mer.derivation.AttributeDecorator;
+import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.*;
+import com.bdd.mer.derivation.elements.container.Final;
+import com.bdd.mer.derivation.elements.container.Holder;
 import com.bdd.mer.derivation.elements.container.replacers.Reference;
+import com.bdd.mer.derivation.elements.container.replacers.Static;
 import com.bdd.mer.derivation.elements.container.replacers.types.Common;
 import com.bdd.mer.derivation.elements.container.replacers.types.Optional;
 import com.bdd.mer.derivation.elements.container.replacers.types.Type;
@@ -30,33 +34,37 @@ public abstract class DerivationObject {
         this.commonElements.add(new SingleElement(attribute));
     }
 
-    public void addAttribute(Attribute attribute) {
+    public void addAttribute(Derivable owner, Attribute attribute) {
 
         // There is no distinction if the attribute is multivalued optional or not.
         // If it's multivalued, it can only be common.
         if (attribute.isMultivalued()) {
             Derivation multivaluedAttribute = new Derivation(attribute.getIdentifier());
             multivaluedAttribute.addIdentificationElement(new SingleElement(attribute.getIdentifier()));
-            multivaluedAttribute.addIdentificationElement(new SingleElement(this.getName(), new Reference()));
+            multivaluedAttribute.addIdentificationElement(new SingleElement(owner.getIdentifier()));
             this.addDerivation(multivaluedAttribute);
         } else {
 
             if (attribute.isMain()) {
 
+                // In case of a compound identification attribute, I will replace this identification attribute name
+                // with the common attributes of the derivation of the compound attribute.
                 this.identificationElements.add(
-                        new SingleElement(attribute.getIdentifier(), new Reference()));
+                        new SingleElement(attribute.getIdentifier(), new Static(new Common()))
+                );
             } else {
 
                 Element element;
                 Type type = (attribute.isOptional()) ? new Optional() : new Common();
 
+                element = new SingleElement(attribute.getIdentifier(), new Static(type));
+
                 if (attribute.isAlternative()) {
+                    element.addDecoration(ElementDecorator.ALTERNATIVE_ATTRIBUTE);
+                }
 
-                    element = new SingleElement(attribute.getIdentifier(), new Reference(type));
-                    element.addDecoration(AttributeDecorator.ALTERNATIVE_ATTRIBUTE);
-                } else {
-
-                    element = new SingleElement(attribute.getIdentifier(), new Reference(type));
+                if (attribute.isOptional()) {
+                    element.addDecoration(ElementDecorator.OPTIONAL_ATTRIBUTE);
                 }
 
                 this.commonElements.add(element);

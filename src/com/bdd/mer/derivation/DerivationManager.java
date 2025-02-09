@@ -3,13 +3,10 @@ package com.bdd.mer.derivation;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.elements.Element;
-import com.bdd.mer.derivation.elements.ElementFormater;
 import com.bdd.mer.derivation.elements.SingleElement;
+import com.bdd.mer.derivation.exporters.DerivationExporter;
 import com.bdd.mer.frame.DrawingPanel;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -36,7 +33,6 @@ public class DerivationManager {
                     derivationObject.generateDerivation();
 
                     for (Derivation derivation : derivationObject.getDerivations()) {
-                        System.out.println(derivation);
                         addDerivation(derivation);
                     }
                 }
@@ -45,24 +41,26 @@ public class DerivationManager {
 
         fillReferences();
 
-        cleanEmptyDerivations();
-
-        formatToHTML();
+        DerivationExporter.exportToHTML(derivations.values(), referentialIntegrityConstraints);
 
         derivations.clear();
     }
 
     private static void addDerivation(Derivation newDerivation) {
 
-        if (derivations.containsKey(newDerivation.getName())) {
+        if (!newDerivation.isEmpty()) {
 
-            Derivation currentDerivation = derivations.get(newDerivation.getName());
+            if (derivations.containsKey(newDerivation.getName())) {
 
-            Derivation unification = Derivation.unify(currentDerivation, newDerivation);
+                Derivation currentDerivation = derivations.get(newDerivation.getName());
 
-            derivations.put(unification.getName(), unification);
-        } else {
-            derivations.put(newDerivation.getName(), newDerivation);
+                Derivation unification = Derivation.unify(currentDerivation, newDerivation);
+
+                derivations.put(unification.getName(), unification);
+            } else {
+
+                derivations.put(newDerivation.getName(), newDerivation);
+            }
         }
     }
 
@@ -79,7 +77,13 @@ public class DerivationManager {
 
     }
 
+    /**
+     * The order in which the derivation are analyzed doesn't matter.
+     */
     private static void fillReferences() {
+
+        // To avoid ConcurrentModificationException.
+        List<Derivation> derivationToRemove = new ArrayList<>();
 
         for (Derivation derivation : derivations.values()) {
 
@@ -87,103 +91,33 @@ public class DerivationManager {
 
             for (SingleElement replacementNeeded : replacementsNeeded) {
 
-                Element replacement = replacementNeeded.abstractElements(
-                        derivations.get(replacementNeeded.getName())
-                );
+                Derivation replacementDerivation = derivations.get(replacementNeeded.getName());
 
-                if (replacement != null) {
+                if (replacementDerivation != null) {
+                    Element replacement = replacementNeeded.abstractElements(
+                            derivations.get(replacementNeeded.getName())
+                    );
 
-                    for (Constraint constraint : replacementNeeded.getGeneratedConstraints()) {
-                        addReferencialIntegrityConstraint(constraint);
+                    if (replacement != null) {
+
+                        // If all the elements will be replaced...
+                        if (replacementDerivation.getNumberOfElements() == replacement.getNumberOfElements()) {
+                            // There is no need for the replacement derivation to still existing.
+                            derivationToRemove.add(replacementDerivation);
+                        }
+
+                        for (Constraint constraint : replacementNeeded.getGeneratedConstraints()) {
+                            addReferencialIntegrityConstraint(constraint);
+                        }
+
+                        derivation.replace(replacementNeeded, replacement);
                     }
-
-                    derivation.replace(replacementNeeded, replacement);
                 }
             }
         }
-    }
 
-    private static void cleanEmptyDerivations() {
-
-        // This must be done due to ConcurrentModificationException.
-        List<String> keysToRemove = new ArrayList<>();
-
-        for (Map.Entry<String, Derivation> entry : derivations.entrySet()) {
-            if (entry.getValue().isEmpty()) {
-                keysToRemove.add(entry.getKey());
-            }
-        }
-
-        for (String key : keysToRemove) {
-            derivations.remove(key);
+        for (Derivation derivation : derivationToRemove) {
+            derivations.remove(derivation.getName());
         }
     }
-
-    private static void formatToHTML() {
-
-        StringBuilder htmlContent =
-                new StringBuilder("""
-                        <!DOCTYPE html>
-                        <html lang="es">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Estructura con formato</title>
-                        """);
-
-        htmlContent.append(ElementFormater.getHTMLStyles());
-
-        htmlContent.append("""
-                            </head>
-                            <body>
-                            <h1>Derivation.</h1>
-                            <div class="dotted-line"></div>
-                            <h2>Relationships:</h2>
-                            """);
-
-        for (Derivation derivation : derivations.values()) {
-            htmlContent
-                    .append("<ul>\n")
-                    .append("<li>").append(derivation.toString()).append("</li>\n")
-                    .append("</ul>\n")
-            ;
-        }
-
-        htmlContent
-                .append("<div class=\"dotted-line\"></div>\n")
-                .append("<h2>Referential integrity constraints:</h2>\n")
-        ;
-
-        for (Constraint constraint : referentialIntegrityConstraints) {
-            htmlContent
-                    .append("<ul>\n")
-                    .append("<li>").append(constraint).append("</li>\n")
-                    .append("</ul>\n")
-            ;
-        }
-
-        htmlContent
-                .append("<div class=\"dotted-line\"></div>\n")
-                .append("<p>\n")
-                .append("<span class=\"bold\">Disclaimer!</span>\n")
-                .append("There could be more valid derivations. This is just one of those.\n")
-                .append("</p>")
-        ;
-
-        htmlContent
-                .append("<div class=\"dotted-line\"></div>\n")
-                .append("</body>\n")
-                .append("</html>\n")
-        ;
-
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("estructura.html"));
-            writer.write(htmlContent.toString());
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
 }

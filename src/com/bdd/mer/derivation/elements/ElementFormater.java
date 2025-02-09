@@ -1,7 +1,5 @@
 package com.bdd.mer.derivation.elements;
 
-import com.bdd.mer.derivation.AttributeDecorator;
-
 import java.io.Serializable;
 
 public class ElementFormater implements Serializable {
@@ -47,10 +45,10 @@ public class ElementFormater implements Serializable {
         return cleanAllFormats(out);
     }
 
-    public static void cleanAllFormatsExcept(Element element, AttributeDecorator attributeDecorator) {
+    public static void cleanAllFormatsExcept(Element element, ElementDecorator elementDecorator) {
 
-        for (AttributeDecorator decorator : AttributeDecorator.values()) {
-            if (decorator != attributeDecorator) {
+        for (ElementDecorator decorator : ElementDecorator.values()) {
+            if (decorator != elementDecorator) {
                 element.removeDecoration(decorator);
             }
         }
@@ -63,73 +61,5 @@ public class ElementFormater implements Serializable {
                 .replace(OPTIONAL_ATTRIBUTE, "")
                 .replace(MULTIVALUED_ATTRIBUTE, "")
                 .replace(FOREIGN_ATTRIBUTE, "");
-    }
-
-    public static String getHTMLStyles() {
-        return """
-                    <style>
-                        .main {
-                            text-decoration: underline;
-                        }
-                        /* Definir estilos para las líneas punteadas */
-                        .foreign {
-                            border-bottom: 1px dotted black; /* Línea punteada original */
-                            margin: 5px 0; /* Espaciado alrededor */
-                            border-bottom-width: medium;
-                            position: relative; /* Necesario para el pseudoelemento ::after */
-                        }
-                        /* Añadir una segunda línea punteada si está dentro de otra .dotted-line */
-                        .foreign .foreign::after {
-                            content: ""; /* Necesario para crear el pseudoelemento */
-                            display: block; /* Hace que ocupe una nueva línea */
-                            border-bottom: 1px dotted black; /* Línea punteada adicional */
-                            margin-top: 5px; /* Espacio entre la primera y la segunda línea */
-                        }
-                        .alternative {
-                            display: inline-block;
-                            position: relative;
-                            padding-bottom: 0; /* Espacio entre el texto y las líneas */
-                        }
-                
-                        .alternative::after {
-                            content: '';
-                            position: absolute;
-                            bottom: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 2px;
-                            background-color: black;
-                        }
-                
-                        .alternative::before {
-                            content: '';
-                            position: absolute;
-                            bottom: -4px; /* Ajusta el espacio entre las dos líneas */
-                            left: 0;
-                            width: 100%;
-                            height: 2px;
-                            background-color: black;
-                        }
-                        /* Definir estilos para las líneas punteadas */
-                        .dotted-line {
-                            border-top: 1px dotted black;
-                            margin: 5px 0;
-                        }
-                        /* Optional attributes */
-                        .optional {
-                            font-weight: bold;
-                        }
-                        .optional::before {
-                            content: "*";
-                            font-weight: bold;
-                        }
-                        .italic {
-                            font-style: italic;
-                        }
-                        .bold {
-                            font-weight: bold;
-                        }
-                    </style>
-                """;
     }
 }

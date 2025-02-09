@@ -39,7 +39,17 @@ public class SingleElement extends Element {
     @Override
     public String toString() {
 
-        return super.toString() + this.name;
+        return super.toString() + "[" + this.name + "]";
+    }
+
+    @Override
+    public String formatToHTML() {
+        return super.applyDecorators(this.name);
+    }
+
+    @Override
+    public int getNumberOfElements() {
+        return 1;
     }
 
     @Override
@@ -61,6 +71,10 @@ public class SingleElement extends Element {
 
     @Override
     public Element getCopy() {
-        return new SingleElement(this.name, this.holder);
+
+        Element copy = new SingleElement(this.name, this.holder);
+        this.copyDecoratorsTo(copy);
+
+        return copy;
     }
 }

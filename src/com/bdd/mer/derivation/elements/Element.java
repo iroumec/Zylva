@@ -1,23 +1,21 @@
 package com.bdd.mer.derivation.elements;
 
-import com.bdd.mer.derivation.AttributeDecorator;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Element {
 
-    private final List<AttributeDecorator> decorations;
+    private final List<ElementDecorator> decorations;
 
     public Element() {
         this.decorations = new ArrayList<>();
     }
 
-    public void addDecoration(AttributeDecorator decorator) {
+    public void addDecoration(ElementDecorator decorator) {
         this.decorations.add(decorator);
     }
 
-    void removeDecoration(AttributeDecorator decorator) {
+    void removeDecoration(ElementDecorator decorator) {
         this.decorations.remove(decorator);
     }
 
@@ -31,16 +29,30 @@ public abstract class Element {
 
     public abstract List<SingleElement> getReplacementsNeeded();
 
-    public Element getCopy() {
+    public abstract Element getCopy();
 
-        Element copy = this.getCopy();
+    final void copyDecoratorsTo(Element element) {
 
-        for (AttributeDecorator decorator : this.decorations) {
-            copy.addDecoration(decorator);
+        for (ElementDecorator decorator : this.decorations) {
+            element.addDecoration(decorator);
+        }
+    }
+
+    public abstract String formatToHTML();
+
+    final String applyDecorators(String text) {
+
+        String out = text;
+
+        for (ElementDecorator decorator : this.decorations) {
+            out = decorator.formatToHTML(out);
         }
 
-        return copy;
+        return out;
+
     }
+
+    public abstract int getNumberOfElements();
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
@@ -51,7 +63,7 @@ public abstract class Element {
 
         StringBuilder out = new StringBuilder();
 
-        for (AttributeDecorator decorator : this.decorations) {
+        for (ElementDecorator decorator : this.decorations) {
             out.append(decorator.toString());
         }
 
