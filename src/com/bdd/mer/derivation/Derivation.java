@@ -200,36 +200,19 @@ public class Derivation {
     public String toString() {
         StringBuilder out = new StringBuilder(this.name).append("(");
 
-        if (!this.identificationElements.isEmpty()) {
+        out.append(this.identificationElements.toString());
 
-            StringBuilder identificationAttributes = new StringBuilder();
-
-            for (Element element : this.identificationElements) {
-                // This "cleanAllFormats" could be moved to the adding to identification attributes.
-                identificationAttributes.append(element).append(", ");
-            }
-
-            deleteLast(", ", identificationAttributes);
-
-            out.append(ElementFormater
-                            .format(ElementFormater.MAIN_ATTRIBUTE + identificationAttributes))
-                    .append(", ")
-            ;
-        }
-
-
-        // Agregar los atributos comunes
-        for (Element element : this.commonElements) {
-            out.append(element).append(", ");
-        }
+        out.append(this.commonElements.toString());
 
         // Eliminar la última coma y espacio
         deleteLast(", ", out);
 
         out.append(")");
 
+        out.append(", ");
+
         // Eliminar cualquier espacio residual al final
-        return out.toString().replaceAll("\\s+$", "");
+        return out.toString();
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -252,19 +235,11 @@ public class Derivation {
 
         Derivation unification = new Derivation(firstDerivation.name);
 
-        List<Element> commonElements = new ArrayList<>(firstDerivation.commonElements);
-        commonElements.addAll(secondDerivation.commonElements);
+        unification.addIdentificationElement(firstDerivation.identificationElements.getCopy());
+        unification.addIdentificationElement(secondDerivation.identificationElements.getCopy());
 
-        for (Element element : commonElements) {
-            unification.addCommonElement(element);
-        }
-
-        List<Element> identificationElements = new ArrayList<>(firstDerivation.identificationElements);
-        identificationElements.addAll(secondDerivation.identificationElements);
-
-        for (Element element : identificationElements) {
-            unification.addIdentificationElement(element);
-        }
+        unification.addCommonElement(firstDerivation.commonElements.getCopy());
+        unification.addCommonElement(secondDerivation.commonElements.getCopy());
 
         return unification;
     }

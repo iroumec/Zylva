@@ -2,6 +2,7 @@ package com.bdd.mer.derivation.elements.container.replacers;
 
 import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.elements.container.Replacer;
+import com.bdd.mer.derivation.elements.container.replacers.types.Identifier;
 import com.bdd.mer.derivation.elements.container.replacers.types.Type;
 
 import java.util.ArrayList;
@@ -18,6 +19,10 @@ import java.util.List;
  */
 
 public class Static extends Replacer {
+
+    public Static() {
+        this(new Identifier());
+    }
 
     public Static(Type type) {
         super(type);

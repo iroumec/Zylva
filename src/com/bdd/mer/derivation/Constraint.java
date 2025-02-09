@@ -29,8 +29,8 @@ public class Constraint {
         StringBuilder referencedAttributes = new StringBuilder();
 
         for (Pair<String, String> reference : this.references) {
-            referencingAttributes.append(ElementFormater.cleanAllFormats(reference.getFirst())).append(", ");
-            referencedAttributes.append(ElementFormater.cleanAllFormats(reference.getSecond())).append(", ");
+            //referencingAttributes.append(ElementFormater.cleanAllFormats(reference.getFirst())).append(", ");
+            //referencedAttributes.append(ElementFormater.cleanAllFormats(reference.getSecond())).append(", ");
         }
 
         deleteLast(", ", referencingAttributes);

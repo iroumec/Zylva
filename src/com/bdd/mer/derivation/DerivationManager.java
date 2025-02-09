@@ -36,6 +36,7 @@ public class DerivationManager {
                     derivationObject.generateDerivation();
 
                     for (Derivation derivation : derivationObject.getDerivations()) {
+                        System.out.println(derivation);
                         addDerivation(derivation);
                     }
                 }
@@ -90,7 +91,14 @@ public class DerivationManager {
                         derivations.get(replacementNeeded.getName())
                 );
 
-                derivation.replace(replacementNeeded, replacement);
+                if (replacement != null) {
+
+                    for (Constraint constraint : replacementNeeded.getGeneratedConstraints()) {
+                        addReferencialIntegrityConstraint(constraint);
+                    }
+
+                    derivation.replace(replacementNeeded, replacement);
+                }
             }
         }
     }

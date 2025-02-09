@@ -11,8 +11,6 @@ public class ElementGroup extends Element {
         this.elements = new ArrayList<>();
     }
 
-    public int getSize() { return this.elements.size(); }
-
     public boolean isEmpty() { return this.elements.isEmpty(); }
 
     @Override

@@ -1,8 +1,10 @@
 package com.bdd.mer.derivation.elements;
 
+import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.container.Final;
 import com.bdd.mer.derivation.elements.container.Holder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +27,11 @@ public class SingleElement extends Element {
         return this.name;
     }
 
+    public List<Constraint> getGeneratedConstraints() {
+        return this.holder.getGeneratedConstraints();
+    }
+
+    @Nullable
     public Element abstractElements(Derivation derivation) {
         return holder.abstractReplacement(derivation);
     }

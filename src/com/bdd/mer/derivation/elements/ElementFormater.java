@@ -65,7 +65,7 @@ public class ElementFormater implements Serializable {
                 .replace(FOREIGN_ATTRIBUTE, "");
     }
 
-    static String getHTMLStyles() {
+    public static String getHTMLStyles() {
         return """
                     <style>
                         .main {

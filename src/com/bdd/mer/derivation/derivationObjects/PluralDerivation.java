@@ -3,9 +3,9 @@ package com.bdd.mer.derivation.derivationObjects;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.SingleElement;
 import com.bdd.mer.derivation.elements.container.replacers.types.Common;
-import com.bdd.mer.derivation.elements.container.replacers.types.Identifier;
 import com.bdd.mer.derivation.elements.container.replacers.Reference;
 import com.bdd.mer.derivation.elements.container.replacers.Static;
+import com.bdd.mer.derivation.elements.container.replacers.types.Optional;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -143,19 +143,22 @@ public class PluralDerivation extends DerivationObject {
 
         Derivation derivation = new Derivation(firstMember.name);
 
-        derivation.addElement(new Static(this.getName(), new Common()));
+        derivation.addCommonElement(new SingleElement(this.getName(), new Static(new Common())));
 
         if (minCardinality.equals("0")) {
-            derivation.addElement(
-                    new SingleElement()
-                    new Reference(secondMember.name, new Common(true))
+            derivation.addCommonElement(
+                    new SingleElement(secondMember.name, new Reference(new Optional()))
             );
         } else { // It's equal to 1.
-            derivation.addElement(new Reference(secondMember.name, new Identifier()));
+            derivation.addIdentificationElement(
+                    new SingleElement(secondMember.name, new Reference())
+            );
         }
 
         this.addDerivation(derivation);
-        // Remove relationship.
+
+        // The derivation of the relationship no longer exists.
+        //this.mainDerivation = null;
     }
 
     private void derivate1_NRelationship(Member firstMember, Member secondMember) {
@@ -164,15 +167,21 @@ public class PluralDerivation extends DerivationObject {
         Member nSideMember = (firstMember.maxCardinality.equals("1")) ? secondMember : firstMember;
 
         Derivation derivation = new Derivation(nSideMember.name);
-        derivation.addElement(new Static(this.getName(), new Common()));
+        derivation.addCommonElement(
+                new SingleElement(this.getName(), new Static(new Common()))
+        );
 
         if (oneSideMember.minCardinality.equals("0")) {
 
-            derivation.addElement(new Reference(oneSideMember.name, new Common(true)));
+            derivation.addCommonElement(
+                    new SingleElement(oneSideMember.name, new Reference(new Optional()))
+            );
 
         } else {
 
-            derivation.addElement(new Reference(oneSideMember.name, new Common()));
+            derivation.addCommonElement(
+                    new SingleElement(oneSideMember.name, new Reference(new Common()))
+            );
         }
 
         this.addDerivation(derivation);
@@ -189,9 +198,13 @@ public class PluralDerivation extends DerivationObject {
                 // The order could be different.
                 Derivation derivation = new Derivation(firstMember.name);
                 // The first member references the second member identification attributes as optional.
-                derivation.addElement(new Reference(secondMember.name, new Common(true)));
+                derivation.addCommonElement(
+                        new SingleElement(secondMember.name, new Reference(new Optional()))
+                );
                 // The first member has all the common attributes of the relationship.
-                derivation.addElement(new Static(this.getName(), new Common()));
+                derivation.addCommonElement(
+                        new SingleElement(this.getName(), new Static(new Common()))
+                );
 
                 this.addDerivation(derivation);
 
@@ -202,18 +215,26 @@ public class PluralDerivation extends DerivationObject {
 
                     derivation = new Derivation(firstMember.name);
                     // The first member references the second member identification attributes.
-                    derivation.addElement(new Reference(secondMember.name, new Common()));
+                    derivation.addCommonElement(
+                            new SingleElement(secondMember.name, new Reference(new Common()))
+                    );
                     // The first member has all the common attributes of the relationship.
 
                 } else {
 
                     derivation = new Derivation(secondMember.name);
                     // The second member references the first member identification attributes.
-                    derivation.addElement(new Reference(firstMember.name, new Common()));
+                    derivation.addCommonElement(
+                            new SingleElement(firstMember.name, new Reference(new Common()))
+                    );
                     // The second member has all the common attributes of the relationship.
 
                 }
-                derivation.addElement(new Static(this.getName(), new Common()));
+
+                derivation.addCommonElement(
+                        new SingleElement(this.getName(), new Static(new Common()))
+                );
+
                 this.addDerivation(derivation);
             }
         } else { // Case (1,1):(1,1)
@@ -222,21 +243,29 @@ public class PluralDerivation extends DerivationObject {
 
             Derivation derivation = new Derivation(firstMember.name);
             // The first member references the second member identification attributes.
-            derivation.addElement(new Reference(secondMember.name, new Common()));
+            derivation.addCommonElement(
+                    new SingleElement(secondMember.name, new Reference(new Common()))
+            );
             // The first member has all the common attributes of the relationship.
-            derivation.addElement(new Static(this.getName(), new Common()));
+            derivation.addCommonElement(
+                    new SingleElement(this.getName(), new Static(new Common()))
+            );
 
             this.addDerivation(derivation);
         }
 
-        this.mainDerivation = null;
+        //this.mainDerivation = null;
     }
 
     private void derivateN_NRelationship(Member firstMember, Member secondMember) {
 
         // The names of the members will be replaced with their identification attributes.
-        this.mainDerivation.addElement(new Reference(firstMember.name, new Identifier()));
-        this.mainDerivation.addElement(new Reference(secondMember.name, new Identifier()));
+        this.mainDerivation.addIdentificationElement(
+                new SingleElement(firstMember.name, new Reference())
+        );
+        this.mainDerivation.addIdentificationElement(
+                new SingleElement(secondMember.name, new Reference())
+        );
     }
 
     private int getNumberOfMembers() {
