@@ -1,11 +1,7 @@
 package com.bdd.mer.derivation.elements.container.replacers;
 
-import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.elements.container.Replacer;
 import com.bdd.mer.derivation.elements.container.replacers.types.Source;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Static Identifier:
