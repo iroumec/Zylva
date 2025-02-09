@@ -185,8 +185,6 @@ public class PluralDerivation extends DerivationObject {
         }
 
         this.addDerivation(derivation);
-
-        this.mainDerivation = null;
     }
 
     private void derivate1_1Relationship(Member firstMember, Member secondMember) {
