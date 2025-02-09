@@ -1,8 +1,10 @@
-package com.bdd.mer.derivation;
+package com.bdd.mer.derivation.elements;
+
+import com.bdd.mer.derivation.AttributeDecorator;
 
 import java.io.Serializable;
 
-public class DerivationFormater implements Serializable {
+public class ElementFormater implements Serializable {
 
     // Why string? They could be char.
     public static final String SEPARATOR = ";";
@@ -43,6 +45,15 @@ public class DerivationFormater implements Serializable {
         }
 
         return cleanAllFormats(out);
+    }
+
+    public static void cleanAllFormatsExcept(Element element, AttributeDecorator attributeDecorator) {
+
+        for (AttributeDecorator decorator : AttributeDecorator.values()) {
+            if (decorator != attributeDecorator) {
+                element.removeDecoration(decorator);
+            }
+        }
     }
 
     static String cleanAllFormats(String text) {

@@ -1,5 +1,6 @@
 package com.bdd.mer.derivation;
 
+import com.bdd.mer.derivation.elements.ElementFormater;
 import com.bdd.mer.structures.Pair;
 
 import java.util.List;
@@ -28,8 +29,8 @@ public class Constraint {
         StringBuilder referencedAttributes = new StringBuilder();
 
         for (Pair<String, String> reference : this.references) {
-            referencingAttributes.append(DerivationFormater.cleanAllFormats(reference.getFirst())).append(", ");
-            referencedAttributes.append(DerivationFormater.cleanAllFormats(reference.getSecond())).append(", ");
+            referencingAttributes.append(ElementFormater.cleanAllFormats(reference.getFirst())).append(", ");
+            referencedAttributes.append(ElementFormater.cleanAllFormats(reference.getSecond())).append(", ");
         }
 
         deleteLast(", ", referencingAttributes);

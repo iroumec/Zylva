@@ -1,10 +1,11 @@
 package com.bdd.mer.derivation.derivationObjects;
 
 import com.bdd.mer.derivation.Derivation;
-import com.bdd.mer.derivation.elements.singleElements.replacers.types.Common;
-import com.bdd.mer.derivation.elements.singleElements.replacers.types.Identifier;
-import com.bdd.mer.derivation.elements.singleElements.replacers.Reference;
-import com.bdd.mer.derivation.elements.singleElements.replacers.Static;
+import com.bdd.mer.derivation.elements.SingleElement;
+import com.bdd.mer.derivation.elements.container.replacers.types.Common;
+import com.bdd.mer.derivation.elements.container.replacers.types.Identifier;
+import com.bdd.mer.derivation.elements.container.replacers.Reference;
+import com.bdd.mer.derivation.elements.container.replacers.Static;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -62,9 +63,15 @@ public class PluralDerivation extends DerivationObject {
         switch (oneCount) {
             case 0: // N:N:N
 
-                this.mainDerivation.addElement(new Reference(this.members.getFirst().name, new Identifier()));
-                this.mainDerivation.addElement(new Reference(this.members.get(1).name, new Identifier()));
-                this.mainDerivation.addElement(new Reference(this.members.getLast().name, new Identifier()));
+                this.mainDerivation.addIdentificationElement(
+                        new SingleElement(this.members.getFirst().name, new Reference())
+                );
+                this.mainDerivation.addIdentificationElement(
+                        new SingleElement(this.members.get(1).name, new Reference())
+                );
+                this.mainDerivation.addIdentificationElement(
+                        new SingleElement(this.members.getLast().name, new Reference())
+                );
 
                 break;
             case 1, 2, 3: // 1:N:N
@@ -73,10 +80,14 @@ public class PluralDerivation extends DerivationObject {
 
                     if (!member.equals(oneCardinalityMember)) {
 
-                        this.mainDerivation.addElement(new Reference(member.name, new Identifier()));
+                        this.mainDerivation.addIdentificationElement(
+                                new SingleElement(member.name, new Reference())
+                        );
                     } else {
 
-                        this.mainDerivation.addElement(new Reference(member.name, new Common()));
+                        this.mainDerivation.addIdentificationElement(
+                                new SingleElement(member.name, new Reference(new Common()))
+                        );
                     }
                 }
                 break;
@@ -135,7 +146,10 @@ public class PluralDerivation extends DerivationObject {
         derivation.addElement(new Static(this.getName(), new Common()));
 
         if (minCardinality.equals("0")) {
-            derivation.addElement(new Reference(secondMember.name, new Common(true)));
+            derivation.addElement(
+                    new SingleElement()
+                    new Reference(secondMember.name, new Common(true))
+            );
         } else { // It's equal to 1.
             derivation.addElement(new Reference(secondMember.name, new Identifier()));
         }

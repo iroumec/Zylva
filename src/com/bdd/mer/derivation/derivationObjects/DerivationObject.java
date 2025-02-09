@@ -4,11 +4,10 @@ import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.derivation.AttributeDecorator;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.*;
-import com.bdd.mer.derivation.elements.singleElements.Final;
-import com.bdd.mer.derivation.elements.singleElements.replacers.Reference;
-import com.bdd.mer.derivation.elements.singleElements.replacers.types.Common;
-import com.bdd.mer.derivation.elements.singleElements.replacers.types.Identifier;
-import com.bdd.mer.derivation.elements.singleElements.replacers.types.Type;
+import com.bdd.mer.derivation.elements.container.replacers.Reference;
+import com.bdd.mer.derivation.elements.container.replacers.types.Common;
+import com.bdd.mer.derivation.elements.container.replacers.types.Optional;
+import com.bdd.mer.derivation.elements.container.replacers.types.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public abstract class DerivationObject {
     }
 
     public void addAttribute(String attribute) {
-        this.commonElements.add(new Final(attribute));
+        this.commonElements.add(new SingleElement(attribute));
     }
 
     public void addAttribute(Attribute attribute) {
@@ -37,26 +36,27 @@ public abstract class DerivationObject {
         // If it's multivalued, it can only be common.
         if (attribute.isMultivalued()) {
             Derivation multivaluedAttribute = new Derivation(attribute.getIdentifier());
-            multivaluedAttribute.addIdentificationElement(new Final(attribute.getIdentifier()));
-            multivaluedAttribute.addIdentificationElement(new Reference(this.getName(), new Identifier()));
+            multivaluedAttribute.addIdentificationElement(new SingleElement(attribute.getIdentifier()));
+            multivaluedAttribute.addIdentificationElement(new SingleElement(this.getName(), new Reference()));
             this.addDerivation(multivaluedAttribute);
         } else {
 
             if (attribute.isMain()) {
 
-                this.identificationElements.add(new Reference(attribute.getIdentifier(), new Identifier()));
+                this.identificationElements.add(
+                        new SingleElement(attribute.getIdentifier(), new Reference()));
             } else {
 
                 Element element;
-                Type type = new Common(attribute.isOptional());
+                Type type = (attribute.isOptional()) ? new Optional() : new Common();
 
                 if (attribute.isAlternative()) {
 
-                    element = new Reference(attribute.getIdentifier(), type);
+                    element = new SingleElement(attribute.getIdentifier(), new Reference(type));
                     element.addDecoration(AttributeDecorator.ALTERNATIVE_ATTRIBUTE);
                 } else {
 
-                    element = new Reference(attribute.getIdentifier(), type);
+                    element = new SingleElement(attribute.getIdentifier(), new Reference(type));
                 }
 
                 this.commonElements.add(element);

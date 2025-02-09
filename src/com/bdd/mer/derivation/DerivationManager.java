@@ -2,6 +2,9 @@ package com.bdd.mer.derivation;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.elements.Element;
+import com.bdd.mer.derivation.elements.ElementFormater;
+import com.bdd.mer.derivation.elements.SingleElement;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.io.BufferedWriter;
@@ -79,20 +82,17 @@ public class DerivationManager {
 
         for (Derivation derivation : derivations.values()) {
 
-            List<String> replacementsNeeded = derivation.getReplacementNeeded();
+            List<SingleElement> replacementsNeeded = derivation.getReplacementNeeded();
 
-            for (String replacementNeeded : replacementsNeeded) {
+            for (SingleElement replacementNeeded : replacementsNeeded) {
 
-                derivation.replace(derivations.get(replacementNeeded));
+                Element replacement = replacementNeeded.abstractElements(
+                        derivations.get(replacementNeeded.getName())
+                );
+
+                derivation.replace(replacementNeeded, replacement);
             }
         }
-
-        for (Derivation derivation : derivations.values()) {
-
-
-
-        }
-
     }
 
     private static void cleanEmptyDerivations() {
@@ -123,7 +123,7 @@ public class DerivationManager {
                             <title>Estructura con formato</title>
                         """);
 
-        htmlContent.append(DerivationFormater.getHTMLStyles());
+        htmlContent.append(ElementFormater.getHTMLStyles());
 
         htmlContent.append("""
                             </head>

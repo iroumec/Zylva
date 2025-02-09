@@ -1,7 +1,5 @@
 package com.bdd.mer.derivation.elements;
 
-import com.bdd.mer.derivation.elements.singleElements.Replacer;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,14 +11,27 @@ public class ElementGroup extends Element {
         this.elements = new ArrayList<>();
     }
 
+    public int getSize() { return this.elements.size(); }
+
+    public boolean isEmpty() { return this.elements.isEmpty(); }
+
+    @Override
+    public void replace(SingleElement element, Element replacement) {
+        for (Element e : elements) {
+            if (e.equals(element)) {
+                elements.set(elements.indexOf(e), replacement);
+            }
+        }
+    }
+
     public void addElement(Element element) {
         this.elements.add(element);
     }
 
     @Override
-    public List<Replacer> getReplacementsNeeded() {
+    public List<SingleElement> getReplacementsNeeded() {
 
-        List<Replacer> out = new ArrayList<>();
+        List<SingleElement> out = new ArrayList<>();
 
         for (Element element : elements) {
             out.addAll(element.getReplacementsNeeded());

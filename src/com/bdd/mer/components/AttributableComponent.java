@@ -2,7 +2,6 @@ package com.bdd.mer.components;
 
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;

@@ -6,7 +6,6 @@ import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.mer.frame.DrawingPanel;

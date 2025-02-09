@@ -1,7 +1,6 @@
 package com.bdd.mer.derivation.elements;
 
 import com.bdd.mer.derivation.AttributeDecorator;
-import com.bdd.mer.derivation.elements.singleElements.Replacer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,19 @@ public abstract class Element {
         this.decorations.add(decorator);
     }
 
-    public abstract List<Replacer> getReplacementsNeeded();
+    void removeDecoration(AttributeDecorator decorator) {
+        this.decorations.remove(decorator);
+    }
+
+    /**
+     * There will never be a replacement of a {@code ElementGroup} for an {@code Element}.
+     *
+     * @param element
+     * @param replacement
+     */
+    public abstract void replace(SingleElement element, Element replacement);
+
+    public abstract List<SingleElement> getReplacementsNeeded();
 
     public Element getCopy() {
 
@@ -30,6 +41,10 @@ public abstract class Element {
 
         return copy;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public String toString() {

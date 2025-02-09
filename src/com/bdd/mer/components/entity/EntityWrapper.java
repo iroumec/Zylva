@@ -8,7 +8,6 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
-import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.mer.frame.DrawingPanel;

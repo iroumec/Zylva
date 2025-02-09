@@ -1,7 +1,9 @@
 package com.bdd.mer.derivation;
 
 import com.bdd.mer.derivation.elements.Element;
-import com.bdd.mer.derivation.elements.singleElements.Replacer;
+import com.bdd.mer.derivation.elements.ElementFormater;
+import com.bdd.mer.derivation.elements.ElementGroup;
+import com.bdd.mer.derivation.elements.SingleElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,69 +12,49 @@ import java.util.Objects;
 public class Derivation {
 
     private final String name;
-    private final List<Element> commonElements;
-    private final List<Element> identificationElements;
+    private final ElementGroup commonElements;
+    private final ElementGroup identificationElements;
 
     public Derivation(String name) {
         this.name = name;
-        this.commonElements = new ArrayList<>();
-        this.identificationElements = new ArrayList<>();
+        this.commonElements = new ElementGroup();
+        this.identificationElements = new ElementGroup();
+        this.identificationElements.addDecoration(AttributeDecorator.MAIN_ATTRIBUTE);
     }
 
     public void addIdentificationElement(Element element) {
-        this.identificationElements.add(element);
+        ElementFormater.cleanAllFormatsExcept(element, AttributeDecorator.FOREIGN_ATTRIBUTE);
+        this.identificationElements.addElement(element);
     }
 
     public void addCommonElement(Element element) {
-        this.commonElements.add(element);
+        this.commonElements.addElement(element);
     }
 
-    public void addElement(Element element) {
-        this.commonElements.add(element);
-    }
+    public List<SingleElement> getReplacementNeeded() {
 
-    public List<Replacer> getReplacementNeeded() {
-
-        List<Replacer> out = new ArrayList<>();
-
-        for (Element element : this.commonElements) {
-            out.addAll(element.getReplacementsNeeded());
-        }
-
-        for (Element element : this.identificationElements) {
-            out.addAll(element.getReplacementsNeeded());
-        }
+        List<SingleElement> out = new ArrayList<>(this.commonElements.getReplacementsNeeded());
+        out.addAll(this.identificationElements.getReplacementsNeeded());
 
         return out;
     }
 
-    public void replace(Replacer replacer, Derivation derivation) {
+    public void replace(SingleElement element, Element replacement) {
 
-        if (this.commonElements.contains(replacer)) {
-
-            this.commonElements.remove(replacer);
-        }
-
-        for (Element element : this.commonElements) {
-            out.addAll(element.getReplacementsNeeded());
-        }
-
-        for (Element element : this.identificationElements) {
-            out.addAll(element.getReplacementsNeeded());
-        }
-
+        this.commonElements.replace(element, replacement);
+        this.identificationElements.replace(element, replacement);
     }
 
-    public List<Element> getCommonElements() {
-        return new ArrayList<>(commonElements);
+    public ElementGroup getCommonElements() {
+        return (ElementGroup) this.commonElements.getCopy();
     }
 
-    public List<Element> getIdentificationElements() {
-        return new ArrayList<>(identificationElements);
+    public ElementGroup getIdentificationElements() {
+        return (ElementGroup) this.identificationElements.getCopy();
     }
 
 //    public void addAttribute(String attribute) {
-//        if (attribute.startsWith(DerivationFormater.MAIN_ATTRIBUTE)) {
+//        if (attribute.startsWith(ElementFormater.MAIN_ATTRIBUTE)) {
 //            addIdentificationAttribute(attribute);
 //        } else {
 //            addCommonAttribute(attribute);
@@ -84,8 +66,8 @@ public class Derivation {
 //        List<String> attributesToRemove = new ArrayList<>();
 //
 //        for (String identificationAttribute : this.identificationAttributes) {
-//            String cleanIdentificationAttribute = DerivationFormater.cleanAllFormats(identificationAttribute);
-//            if (cleanIdentificationAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+//            String cleanIdentificationAttribute = ElementFormater.cleanAllFormats(identificationAttribute);
+//            if (cleanIdentificationAttribute.equals(ElementFormater.cleanAllFormats(attribute))) {
 //                attributesToRemove.add(identificationAttribute);
 //            }
 //        }
@@ -94,8 +76,8 @@ public class Derivation {
 //        attributesToRemove.clear();
 //
 //        for (String commonAttribute : this.commonAttributes) {
-//            String cleanCommonAttribute = DerivationFormater.cleanAllFormats(commonAttribute);
-//            if (cleanCommonAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+//            String cleanCommonAttribute = ElementFormater.cleanAllFormats(commonAttribute);
+//            if (cleanCommonAttribute.equals(ElementFormater.cleanAllFormats(attribute))) {
 //                attributesToRemove.add(commonAttribute);
 //            }
 //        }
@@ -107,7 +89,7 @@ public class Derivation {
 //
 //        // The legibility of this could be improved.
 //        if (this.identificationAttributes.contains(attribute)) {
-//            this.identificationAttributes.add(DerivationFormater.DUPLICATED_ATTRIBUTE + attribute);
+//            this.identificationAttributes.add(ElementFormater.DUPLICATED_ATTRIBUTE + attribute);
 //        } else {
 //            this.identificationAttributes.add(attribute);
 //        }
@@ -115,7 +97,7 @@ public class Derivation {
 //
 //    private void addCommonAttribute(String attribute) {
 //        if (this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute)) {
-//            this.commonAttributes.add(DerivationFormater.DUPLICATED_ATTRIBUTE + attribute);
+//            this.commonAttributes.add(ElementFormater.DUPLICATED_ATTRIBUTE + attribute);
 //        } else {
 //            this.commonAttributes.add(attribute);
 //        }
@@ -137,7 +119,7 @@ public class Derivation {
 //
 //        for (String attribute : this.identificationAttributes) {
 //
-//            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
+//            String cleanAttribute = attribute.replace(ElementFormater.MAIN_ATTRIBUTE, "");
 //
 //            if (type == AttributeType.COMMON) {
 //                derivation.addCommonAttribute(text + cleanAttribute);
@@ -157,8 +139,8 @@ public class Derivation {
 //
 //        for (String attribute : this.identificationAttributes) {
 //
-//            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
-//            derivation.addCommonAttribute(DerivationFormater.ALTERNATIVE_ATTRIBUTE + DerivationFormater.FOREIGN_ATTRIBUTE + cleanAttribute);
+//            String cleanAttribute = attribute.replace(ElementFormater.MAIN_ATTRIBUTE, "");
+//            derivation.addCommonAttribute(ElementFormater.ALTERNATIVE_ATTRIBUTE + ElementFormater.FOREIGN_ATTRIBUTE + cleanAttribute);
 //            constraint.addReference(cleanAttribute, cleanAttribute);
 //        }
 //
@@ -189,8 +171,8 @@ public class Derivation {
 //
 //    boolean hasCommonAttribute(String attribute) {
 //        for (String commonAttribute : this.commonAttributes) {
-//            String cleanCommonAttribute = DerivationFormater.cleanAllFormats(commonAttribute);
-//            if (cleanCommonAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+//            String cleanCommonAttribute = ElementFormater.cleanAllFormats(commonAttribute);
+//            if (cleanCommonAttribute.equals(ElementFormater.cleanAllFormats(attribute))) {
 //                return true;
 //            }
 //        }
@@ -200,8 +182,8 @@ public class Derivation {
 //
 //    boolean hasIdentificationAttribute(String attribute) {
 //        for (String identificationAttribute : this.identificationAttributes) {
-//            String cleanIdentificationAttribute = DerivationFormater.cleanAllFormats(identificationAttribute);
-//            if (cleanIdentificationAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
+//            String cleanIdentificationAttribute = ElementFormater.cleanAllFormats(identificationAttribute);
+//            if (cleanIdentificationAttribute.equals(ElementFormater.cleanAllFormats(attribute))) {
 //                return true;
 //            }
 //        }
@@ -229,8 +211,8 @@ public class Derivation {
 
             deleteLast(", ", identificationAttributes);
 
-            out.append(DerivationFormater
-                            .format(DerivationFormater.MAIN_ATTRIBUTE + identificationAttributes))
+            out.append(ElementFormater
+                            .format(ElementFormater.MAIN_ATTRIBUTE + identificationAttributes))
                     .append(", ")
             ;
         }
