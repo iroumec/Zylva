@@ -1,17 +1,13 @@
 package com.bdd.mer.derivation;
 
 import com.bdd.mer.derivation.elements.Element;
+import com.bdd.mer.derivation.elements.singleElements.Replacer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Derivation {
-
-    enum AttributeType {
-        IDENTIFICATION,
-        COMMON
-    }
 
     private final String name;
     private final List<Element> commonElements;
@@ -33,6 +29,46 @@ public class Derivation {
 
     public void addElement(Element element) {
         this.commonElements.add(element);
+    }
+
+    public List<Replacer> getReplacementNeeded() {
+
+        List<Replacer> out = new ArrayList<>();
+
+        for (Element element : this.commonElements) {
+            out.addAll(element.getReplacementsNeeded());
+        }
+
+        for (Element element : this.identificationElements) {
+            out.addAll(element.getReplacementsNeeded());
+        }
+
+        return out;
+    }
+
+    public void replace(Replacer replacer, Derivation derivation) {
+
+        if (this.commonElements.contains(replacer)) {
+
+            this.commonElements.remove(replacer);
+        }
+
+        for (Element element : this.commonElements) {
+            out.addAll(element.getReplacementsNeeded());
+        }
+
+        for (Element element : this.identificationElements) {
+            out.addAll(element.getReplacementsNeeded());
+        }
+
+    }
+
+    public List<Element> getCommonElements() {
+        return new ArrayList<>(commonElements);
+    }
+
+    public List<Element> getIdentificationElements() {
+        return new ArrayList<>(identificationElements);
     }
 
 //    public void addAttribute(String attribute) {
@@ -173,43 +209,46 @@ public class Derivation {
 //        return false;
 //    }
 //
-//    boolean isEmpty() {
-//        return this.identificationAttributes.isEmpty() && this.commonAttributes.isEmpty();
-//    }
-//
-//
-//    @Override
-//    public String toString() {
-//        StringBuilder out = new StringBuilder(this.name).append("(");
-//
-//        StringBuilder identificationAttributes = new StringBuilder();
-//
-//        // Agregar los atributos de identificación
-//        for (Element attribute : this.identificationElements) {
-//            // This "cleanAllFormats" could be moved to the adding to identification attributes.
-//            identificationAttributes.append(attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "")).append(", ");
-//        }
-//
-//        deleteLast(", ", identificationAttributes);
-//
-//        out.append(DerivationFormater
-//                .format(DerivationFormater.MAIN_ATTRIBUTE + identificationAttributes))
-//            .append(", ")
-//        ;
-//
-//        // Agregar los atributos comunes
-//        for (String attribute : this.commonAttributes) {
-//            out.append(DerivationFormater.format(attribute)).append(", ");
-//        }
-//
-//        // Eliminar la última coma y espacio
-//        deleteLast(", ", out);
-//
-//        out.append(")");
-//
-//        // Eliminar cualquier espacio residual al final
-//        return out.toString().replaceAll("\\s+$", "");
-//    }
+    boolean isEmpty() {
+        return this.identificationElements.isEmpty() && this.commonElements.isEmpty();
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder(this.name).append("(");
+
+        if (!this.identificationElements.isEmpty()) {
+
+            StringBuilder identificationAttributes = new StringBuilder();
+
+            for (Element element : this.identificationElements) {
+                // This "cleanAllFormats" could be moved to the adding to identification attributes.
+                identificationAttributes.append(element).append(", ");
+            }
+
+            deleteLast(", ", identificationAttributes);
+
+            out.append(DerivationFormater
+                            .format(DerivationFormater.MAIN_ATTRIBUTE + identificationAttributes))
+                    .append(", ")
+            ;
+        }
+
+
+        // Agregar los atributos comunes
+        for (Element element : this.commonElements) {
+            out.append(element).append(", ");
+        }
+
+        // Eliminar la última coma y espacio
+        deleteLast(", ", out);
+
+        out.append(")");
+
+        // Eliminar cualquier espacio residual al final
+        return out.toString().replaceAll("\\s+$", "");
+    }
 
     @SuppressWarnings("SameParameterValue")
     private void deleteLast(String textToBeDeleted, StringBuilder stringBuilder) {
@@ -223,12 +262,30 @@ public class Derivation {
         return this.name;
     }
 
-//    public Derivation unify(Derivation firstDerivation, Derivation secondDerivation) {
-//
-//        secondDerivation.moveAttributesTo(firstDerivation);
-//
-//        return firstDerivation;
-//    }
+    public static Derivation unify(Derivation firstDerivation, Derivation secondDerivation) {
+
+        if (!firstDerivation.name.equals(secondDerivation.name)) {
+            throw new IllegalArgumentException("The derivation names must be the same.");
+        }
+
+        Derivation unification = new Derivation(firstDerivation.name);
+
+        List<Element> commonElements = new ArrayList<>(firstDerivation.commonElements);
+        commonElements.addAll(secondDerivation.commonElements);
+
+        for (Element element : commonElements) {
+            unification.addCommonElement(element);
+        }
+
+        List<Element> identificationElements = new ArrayList<>(firstDerivation.identificationElements);
+        identificationElements.addAll(secondDerivation.identificationElements);
+
+        for (Element element : identificationElements) {
+            unification.addIdentificationElement(element);
+        }
+
+        return unification;
+    }
 
     @Override
     public boolean equals(Object o) {

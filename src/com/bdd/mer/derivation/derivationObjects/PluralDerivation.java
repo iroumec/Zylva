@@ -1,10 +1,10 @@
 package com.bdd.mer.derivation.derivationObjects;
 
 import com.bdd.mer.derivation.Derivation;
-import com.bdd.mer.derivation.elements.Common;
-import com.bdd.mer.derivation.elements.Identifier;
-import com.bdd.mer.derivation.elements.Reference;
-import com.bdd.mer.derivation.elements.Static;
+import com.bdd.mer.derivation.elements.singleElements.replacers.types.Common;
+import com.bdd.mer.derivation.elements.singleElements.replacers.types.Identifier;
+import com.bdd.mer.derivation.elements.singleElements.replacers.Reference;
+import com.bdd.mer.derivation.elements.singleElements.replacers.Static;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

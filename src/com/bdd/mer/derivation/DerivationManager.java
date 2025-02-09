@@ -30,30 +30,33 @@ public class DerivationManager {
 
                 for (DerivationObject derivationObject : derivationObjects) {
 
-                    System.out.println(derivationObject);
+                    derivationObject.generateDerivation();
 
                     for (Derivation derivation : derivationObject.getDerivations()) {
-                        System.out.println("Derivación: " + derivation);
-                        //addDerivation(derivation);
+                        addDerivation(derivation);
                     }
                 }
             }
         }
 
-//        cleanEmptyDerivations();
-//
-//        formatToHTML();
-//
-//        derivations.clear();
+        fillReferences();
+
+        cleanEmptyDerivations();
+
+        formatToHTML();
+
+        derivations.clear();
     }
 
     private static void addDerivation(Derivation newDerivation) {
 
         if (derivations.containsKey(newDerivation.getName())) {
 
-            Derivation derivation = derivations.get(newDerivation.getName());
+            Derivation currentDerivation = derivations.get(newDerivation.getName());
 
-            //newDerivation.moveAttributesTo(derivation);
+            Derivation unification = Derivation.unify(currentDerivation, newDerivation);
+
+            derivations.put(unification.getName(), unification);
         } else {
             derivations.put(newDerivation.getName(), newDerivation);
         }
@@ -72,21 +75,41 @@ public class DerivationManager {
 
     }
 
-//    private static void cleanEmptyDerivations() {
-//
-//        // This must be done due to ConcurrentModificationException.
-//        List<String> keysToRemove = new ArrayList<>();
-//
-//        for (Map.Entry<String, Derivation> entry : derivations.entrySet()) {
-//            if (entry.getValue().isEmpty()) {
-//                keysToRemove.add(entry.getKey());
-//            }
-//        }
-//
-//        for (String key : keysToRemove) {
-//            derivations.remove(key);
-//        }
-//    }
+    private static void fillReferences() {
+
+        for (Derivation derivation : derivations.values()) {
+
+            List<String> replacementsNeeded = derivation.getReplacementNeeded();
+
+            for (String replacementNeeded : replacementsNeeded) {
+
+                derivation.replace(derivations.get(replacementNeeded));
+            }
+        }
+
+        for (Derivation derivation : derivations.values()) {
+
+
+
+        }
+
+    }
+
+    private static void cleanEmptyDerivations() {
+
+        // This must be done due to ConcurrentModificationException.
+        List<String> keysToRemove = new ArrayList<>();
+
+        for (Map.Entry<String, Derivation> entry : derivations.entrySet()) {
+            if (entry.getValue().isEmpty()) {
+                keysToRemove.add(entry.getKey());
+            }
+        }
+
+        for (String key : keysToRemove) {
+            derivations.remove(key);
+        }
+    }
 
     private static void formatToHTML() {
 

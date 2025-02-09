@@ -4,6 +4,11 @@ import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.derivation.AttributeDecorator;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.*;
+import com.bdd.mer.derivation.elements.singleElements.Final;
+import com.bdd.mer.derivation.elements.singleElements.replacers.Reference;
+import com.bdd.mer.derivation.elements.singleElements.replacers.types.Common;
+import com.bdd.mer.derivation.elements.singleElements.replacers.types.Identifier;
+import com.bdd.mer.derivation.elements.singleElements.replacers.types.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,17 +16,19 @@ import java.util.List;
 public abstract class DerivationObject {
 
     private final String name;
-    private final List<Element> elements;
     private final List<Derivation> derivations;
+    private final List<Element> commonElements;
+    private final List<Element> identificationElements;
 
     public DerivationObject(String name) {
         this.name = name;
-        this.elements = new ArrayList<>();
+        this.commonElements = new ArrayList<>();
         this.derivations = new ArrayList<>();
+        this.identificationElements = new ArrayList<>();
     }
 
     public void addAttribute(String attribute) {
-        this.elements.add(new Final(attribute));
+        this.commonElements.add(new Final(attribute));
     }
 
     public void addAttribute(Attribute attribute) {
@@ -37,7 +44,7 @@ public abstract class DerivationObject {
 
             if (attribute.isMain()) {
 
-                this.elements.add(new Reference(attribute.getIdentifier(), new Identifier()));
+                this.identificationElements.add(new Reference(attribute.getIdentifier(), new Identifier()));
             } else {
 
                 Element element;
@@ -52,7 +59,7 @@ public abstract class DerivationObject {
                     element = new Reference(attribute.getIdentifier(), type);
                 }
 
-                this.elements.add(element);
+                this.commonElements.add(element);
 
             }
         }
@@ -68,8 +75,12 @@ public abstract class DerivationObject {
 
         Derivation derivation = new Derivation(this.name);
 
-        for (Element element : this.elements) {
-            derivation.addElement(element);
+        for (Element element : this.commonElements) {
+            derivation.addCommonElement(element);
+        }
+
+        for (Element element : this.identificationElements) {
+            derivation.addIdentificationElement(element);
         }
 
         return derivation;

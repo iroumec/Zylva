@@ -1,7 +1,9 @@
-package com.bdd.mer.derivation.elements;
+package com.bdd.mer.derivation.elements.singleElements.replacers;
 
-import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.Derivation;
+import com.bdd.mer.derivation.elements.Element;
+import com.bdd.mer.derivation.elements.singleElements.Replacer;
+import com.bdd.mer.derivation.elements.singleElements.replacers.types.Type;
 
 import java.util.List;
 
@@ -21,14 +23,18 @@ public class Reference extends Replacer {
     }
 
     @Override
-    public List<Constraint> replace(List<Derivation> derivationsToCheck) {
-
-        for (Derivation derivation : derivationsToCheck) {
-            //if (derivation)
-        }
-
-        return new java.util.ArrayList<>();
+    public List<Element> getElementsToReplace(Derivation derivation) {
+        return List.of();
     }
 
 
+    @Override
+    public List<Replacer> getReplacementsNeeded() {
+        return List.of();
+    }
+
+    @Override
+    public Element getInstance() {
+        return null;
+    }
 }
