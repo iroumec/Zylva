@@ -11,7 +11,7 @@ import com.bdd.mer.derivation.elements.container.replacers.Reference;
 import com.bdd.mer.derivation.elements.container.replacers.Static;
 import com.bdd.mer.derivation.elements.container.replacers.types.Common;
 import com.bdd.mer.derivation.elements.container.replacers.types.Optional;
-import com.bdd.mer.derivation.elements.container.replacers.types.Type;
+import com.bdd.mer.derivation.elements.container.replacers.types.Source;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,23 +41,24 @@ public abstract class DerivationObject {
         if (attribute.isMultivalued()) {
             Derivation multivaluedAttribute = new Derivation(attribute.getIdentifier());
             multivaluedAttribute.addIdentificationElement(new SingleElement(attribute.getIdentifier()));
-            multivaluedAttribute.addIdentificationElement(new SingleElement(owner.getIdentifier()));
+            multivaluedAttribute.addIdentificationElement(new SingleElement(owner.getIdentifier(), new Reference()));
             this.addDerivation(multivaluedAttribute);
         } else {
+
+            Source source = (attribute.isOptional()) ? new Optional() : new Common();
+
+            // If it's compound, it'll have a static reference according to its source.
+            // If it's not compound, it'll have a Final reference.
+            Holder holder = (attribute.hasAttributes()) ? new Static(source) : new Final();
+
+            Element element = new SingleElement(attribute.getIdentifier(), holder);
 
             if (attribute.isMain()) {
 
                 // In case of a compound identification attribute, I will replace this identification attribute name
                 // with the common attributes of the derivation of the compound attribute.
-                this.identificationElements.add(
-                        new SingleElement(attribute.getIdentifier(), new Static(new Common()))
-                );
+                this.identificationElements.add(element);
             } else {
-
-                Element element;
-                Type type = (attribute.isOptional()) ? new Optional() : new Common();
-
-                element = new SingleElement(attribute.getIdentifier(), new Static(type));
 
                 if (attribute.isAlternative()) {
                     element.addDecoration(ElementDecorator.ALTERNATIVE_ATTRIBUTE);

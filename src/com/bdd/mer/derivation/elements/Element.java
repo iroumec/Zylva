@@ -1,14 +1,15 @@
 package com.bdd.mer.derivation.elements;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Element {
 
-    private final List<ElementDecorator> decorations;
+    private final Set<ElementDecorator> decorations;
 
     public Element() {
-        this.decorations = new ArrayList<>();
+        this.decorations = new HashSet<>();
     }
 
     public void addDecoration(ElementDecorator decorator) {
@@ -21,9 +22,6 @@ public abstract class Element {
 
     /**
      * There will never be a replacement of a {@code ElementGroup} for an {@code Element}.
-     *
-     * @param element
-     * @param replacement
      */
     public abstract void replace(SingleElement element, Element replacement);
 
@@ -52,7 +50,21 @@ public abstract class Element {
 
     }
 
+    public static void clearAllDecorationsExcepting(Element element, ElementDecorator... except) {
+
+        Set<ElementDecorator> exceptionList = new HashSet<>(Set.of(except));
+        Set<ElementDecorator> decorationsToRemove = new HashSet<>(element.decorations);
+
+        decorationsToRemove.removeAll(exceptionList);
+
+        for (ElementDecorator decorator : decorationsToRemove) {
+            element.removeDecoration(decorator);
+        }
+    }
+
     public abstract int getNumberOfElements();
+
+    public abstract List<SingleElement> getPartitions();
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */

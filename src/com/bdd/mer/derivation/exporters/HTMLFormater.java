@@ -74,22 +74,24 @@ class HTMLFormater {
         return """
                 <style>
                     .main {
-                        text-decoration: underline;
+                        border-bottom: 2px solid black;
                     }
                     /* Definir estilos para las líneas punteadas */
                     .foreign {
-                        border-bottom: 1px dotted black; /* Línea punteada original */
+                        border-bottom: 1px dashed black; /* Línea punteada original */
                         margin: 5px 0; /* Espaciado alrededor */
                         border-bottom-width: medium;
                         position: relative; /* Necesario para el pseudoelemento ::after */
+                        padding-bottom: 3px; /* Espacio entre el texto y las líneas */
                     }
                     /* Añadir una segunda línea punteada si está dentro de otra .dotted-line */
                     .foreign .foreign::after {
                         content: ""; /* Necesario para crear el pseudoelemento */
                         display: block; /* Hace que ocupe una nueva línea */
-                        border-bottom: 1px dotted black; /* Línea punteada adicional */
+                        border-bottom: 1px dashed black; /* Línea punteada adicional */
                         margin-top: 5px; /* Espacio entre la primera y la segunda línea */
                     }
+            
                     .alternative {
                         display: inline-block;
                         position: relative;
@@ -115,22 +117,29 @@ class HTMLFormater {
                         height: 2px;
                         background-color: black;
                     }
+            
                     /* Definir estilos para las líneas punteadas */
+            
                     .dotted-line {
                         border-top: 1px dotted black;
                         margin: 5px 0;
                     }
+            
                     /* Optional attributes */
+            
                     .optional {
                         font-weight: bold;
                     }
+            
                     .optional::before {
                         content: "*";
                         font-weight: bold;
                     }
+            
                     .italic {
                         font-style: italic;
                     }
+            
                     .bold {
                         font-weight: bold;
                     }

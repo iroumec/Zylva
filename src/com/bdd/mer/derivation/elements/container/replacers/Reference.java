@@ -1,15 +1,11 @@
 package com.bdd.mer.derivation.elements.container.replacers;
 
 import com.bdd.mer.derivation.elements.ElementDecorator;
-import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.derivation.elements.container.Replacer;
 import com.bdd.mer.derivation.elements.container.replacers.types.Identifier;
-import com.bdd.mer.derivation.elements.container.replacers.types.Type;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.bdd.mer.derivation.elements.container.replacers.types.Source;
 
 /**
  * Reference Identifier:
@@ -22,15 +18,12 @@ import java.util.List;
  */
 public class Reference extends Replacer {
 
-    private List<Constraint> constraints;
-
     public Reference() {
         this(new Identifier());
     }
 
-    public Reference(Type type) {
-        super(type);
-        this.constraints = new ArrayList<>();
+    public Reference(Source source) {
+        super(source);
     }
 
     @Override
@@ -46,7 +39,7 @@ public class Reference extends Replacer {
     }
 
     @Override
-    public List<Constraint> getGeneratedConstraints() {
-        return new ArrayList<>(constraints);
+    public boolean generatesConstraints() {
+        return true;
     }
 }

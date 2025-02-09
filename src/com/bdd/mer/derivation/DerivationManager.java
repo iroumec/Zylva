@@ -89,13 +89,13 @@ public class DerivationManager {
 
             List<SingleElement> replacementsNeeded = derivation.getReplacementNeeded();
 
-            for (SingleElement replacementNeeded : replacementsNeeded) {
+            for (SingleElement elementToReplace : replacementsNeeded) {
 
-                Derivation replacementDerivation = derivations.get(replacementNeeded.getName());
+                Derivation replacementDerivation = derivations.get(elementToReplace.getName());
 
                 if (replacementDerivation != null) {
-                    Element replacement = replacementNeeded.abstractElements(
-                            derivations.get(replacementNeeded.getName())
+                    Element replacement = elementToReplace.abstractElements(
+                            derivations.get(elementToReplace.getName())
                     );
 
                     if (replacement != null) {
@@ -106,11 +106,11 @@ public class DerivationManager {
                             derivationToRemove.add(replacementDerivation);
                         }
 
-                        for (Constraint constraint : replacementNeeded.getGeneratedConstraints()) {
-                            addReferencialIntegrityConstraint(constraint);
+                        if (elementToReplace.generatesConstraints()) {
+                            extractConstraints(derivation.getName(), replacementDerivation.getName(), replacement);
                         }
 
-                        derivation.replace(replacementNeeded, replacement);
+                        derivation.replace(elementToReplace, replacement);
                     }
                 }
             }
@@ -119,5 +119,18 @@ public class DerivationManager {
         for (Derivation derivation : derivationToRemove) {
             derivations.remove(derivation.getName());
         }
+    }
+
+    private static void extractConstraints(String referencing, String referenced, Element replacement) {
+
+        Constraint constraint = new Constraint(referencing, referenced);
+
+        List<SingleElement> elements = replacement.getPartitions();
+
+        for (SingleElement element : elements) {
+            constraint.addReference(element.getName(), element.getName());
+        }
+
+        addReferencialIntegrityConstraint(constraint);
     }
 }

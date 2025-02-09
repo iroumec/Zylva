@@ -1,23 +1,20 @@
 package com.bdd.mer.derivation.elements.container;
 
-import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.Element;
-import com.bdd.mer.derivation.elements.container.replacers.types.Type;
-
-import java.util.List;
+import com.bdd.mer.derivation.elements.container.replacers.types.Source;
 
 /**
- * Replace the derivation reference for the derivation according to the type.
+ * Replace the derivation reference for the derivation according to the source.
  * <p></p>
- * If the type is a {@code Common}, there will be not RIR.
+ * If the source is a {@code Common}, there will be not RIR.
  */
 public abstract class Replacer implements Holder {
 
-    private final Type type;
+    private final Source source;
 
-    public Replacer(Type type) {
-        this.type = type;
+    public Replacer(Source source) {
+        this.source = source;
     }
 
     @Override
@@ -28,8 +25,6 @@ public abstract class Replacer implements Holder {
     @Override
     public Element abstractReplacement(Derivation derivation) {
 
-        return type.getAbstractionElement(derivation);
+        return source.getAbstractionElement(derivation);
     }
-
-    public abstract List<Constraint> getGeneratedConstraints();
 }

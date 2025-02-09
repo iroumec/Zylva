@@ -1,6 +1,5 @@
 package com.bdd.mer.derivation;
 
-import com.bdd.mer.derivation.elements.ElementFormater;
 import com.bdd.mer.structures.Pair;
 
 import java.util.List;
@@ -28,26 +27,25 @@ public class Constraint {
         StringBuilder referencingAttributes = new StringBuilder();
         StringBuilder referencedAttributes = new StringBuilder();
 
-        for (Pair<String, String> reference : this.references) {
-            //referencingAttributes.append(ElementFormater.cleanAllFormats(reference.getFirst())).append(", ");
-            //referencedAttributes.append(ElementFormater.cleanAllFormats(reference.getSecond())).append(", ");
-        }
+        boolean addComma = false;
 
-        deleteLast(", ", referencingAttributes);
-        deleteLast(", ", referencedAttributes);
+        for (Pair<String, String> reference : this.references) {
+
+            if (addComma) {
+                referencingAttributes.append(", ");
+                referencedAttributes.append(", ");
+            } else {
+                addComma = true;
+            }
+
+            referencingAttributes.append(reference.getFirst());
+            referencedAttributes.append(reference.getSecond());
+        }
 
         return this.referencing +
                 "[" + referencingAttributes + "]" +
                 " << " + this.referenced +
                 "[" + referencedAttributes + "]";
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void deleteLast(String textToBeDeleted, StringBuilder stringBuilder) {
-        int startIndex = stringBuilder.lastIndexOf(textToBeDeleted);
-        if (startIndex != -1) {
-            stringBuilder.delete(startIndex, startIndex + 2);
-        }
     }
 
     void transferConstraintsTo(Constraint constraint) {

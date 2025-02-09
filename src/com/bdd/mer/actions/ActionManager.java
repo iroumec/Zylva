@@ -70,7 +70,7 @@ public final class ActionManager implements Serializable {
                 this.drawingPanel,
                 null,
                 LanguageManager.getMessage("actionManager.addEntity.dialog"), // Title.
-                JOptionPane.QUESTION_MESSAGE // Message Type.
+                JOptionPane.QUESTION_MESSAGE // Message Source.
         );
 
         if (entityName != null) { // If it's null, the action was canceled.
@@ -567,7 +567,7 @@ public final class ActionManager implements Serializable {
                     this.drawingPanel,
                     null,
                     "Enter a discriminant",
-                    JOptionPane.QUESTION_MESSAGE // Message Type.
+                    JOptionPane.QUESTION_MESSAGE // Message Source.
             );
 
             discriminant = new Discriminant(discriminantText, this.drawingPanel);

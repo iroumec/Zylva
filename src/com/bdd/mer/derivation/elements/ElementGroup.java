@@ -97,4 +97,16 @@ public class ElementGroup extends Element {
 
         return out;
     }
+
+    @Override
+    public List<SingleElement> getPartitions() {
+
+        List<SingleElement> out = new ArrayList<>();
+
+        for (Element element : elements) {
+            out.addAll(element.getPartitions());
+        }
+
+        return out;
+    }
 }

@@ -2,8 +2,7 @@ package com.bdd.mer.derivation.elements.container.replacers;
 
 import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.elements.container.Replacer;
-import com.bdd.mer.derivation.elements.container.replacers.types.Identifier;
-import com.bdd.mer.derivation.elements.container.replacers.types.Type;
+import com.bdd.mer.derivation.elements.container.replacers.types.Source;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,16 +19,12 @@ import java.util.List;
 
 public class Static extends Replacer {
 
-    public Static() {
-        this(new Identifier());
-    }
-
-    public Static(Type type) {
-        super(type);
+    public Static(Source source) {
+        super(source);
     }
 
     @Override
-    public List<Constraint> getGeneratedConstraints() {
-        return new ArrayList<>();
+    public boolean generatesConstraints() {
+        return false;
     }
 }

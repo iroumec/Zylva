@@ -1,6 +1,5 @@
 package com.bdd.mer.derivation.elements;
 
-import com.bdd.mer.derivation.Constraint;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.container.Final;
 import com.bdd.mer.derivation.elements.container.Holder;
@@ -27,8 +26,8 @@ public class SingleElement extends Element {
         return this.name;
     }
 
-    public List<Constraint> getGeneratedConstraints() {
-        return this.holder.getGeneratedConstraints();
+    public boolean generatesConstraints() {
+        return holder.generatesConstraints();
     }
 
     @Nullable
@@ -50,6 +49,16 @@ public class SingleElement extends Element {
     @Override
     public int getNumberOfElements() {
         return 1;
+    }
+
+    @Override
+    public List<SingleElement> getPartitions() {
+
+        List<SingleElement> out = new ArrayList<>();
+
+        out.add(this);
+
+        return out;
     }
 
     @Override

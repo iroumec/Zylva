@@ -20,7 +20,7 @@ public class Derivation {
     }
 
     public void addIdentificationElement(Element element) {
-        ElementFormater.cleanAllFormatsExcept(element, ElementDecorator.FOREIGN_ATTRIBUTE);
+        Element.clearAllDecorationsExcepting(element, ElementDecorator.FOREIGN_ATTRIBUTE);
         this.identificationElements.addElement(element);
     }
 
