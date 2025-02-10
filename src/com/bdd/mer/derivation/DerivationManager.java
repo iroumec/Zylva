@@ -135,10 +135,16 @@ public class DerivationManager {
             Element cleanElement = element.getCopy();
             Element.clearAllDecorations(cleanElement);
 
+            System.out.println(element);
+
             if (element.needsRename()) {
+
+                System.out.println("Entré aquí");
 
                 Element rename = cleanElement.getCopy();
                 rename.addDecoration(ElementDecorator.DUPLICATED);
+
+                constraint.addReference(rename, cleanElement);
             } else {
 
                 constraint.addReference(cleanElement, cleanElement);

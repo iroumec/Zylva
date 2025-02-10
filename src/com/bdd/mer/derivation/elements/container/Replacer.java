@@ -44,7 +44,7 @@ public class Replacer implements Holder {
 
     @Override
     public boolean generatesConstraints() {
-        return modifiers.contains(ElementDecorator.FOREIGN);
+        return this.modifiers.contains(ElementDecorator.FOREIGN);
     }
 
     @Override

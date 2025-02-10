@@ -30,7 +30,10 @@ public class SingleElement extends Element {
         return holder.generatesConstraints();
     }
 
-    public boolean needsRename() { return holder.needsRename(); }
+    public boolean needsRename() {
+        System.out.println("uwu");
+        return holder.needsRename();
+    }
 
     @Nullable
     public Element abstractElements(Derivation derivation) {
