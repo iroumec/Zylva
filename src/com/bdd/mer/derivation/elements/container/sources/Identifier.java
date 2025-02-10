@@ -1,4 +1,4 @@
-package com.bdd.mer.derivation.elements.container.replacers.types;
+package com.bdd.mer.derivation.elements.container.sources;
 
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.Element;
@@ -10,6 +10,7 @@ public class Identifier implements Source {
     public Element getAbstractionElement(Derivation derivation) {
 
         ElementGroup identificationElements = derivation.getIdentificationElements();
+        Element.clearAllDecorations(identificationElements);
 
         if (identificationElements.isEmpty()) {
             return null;

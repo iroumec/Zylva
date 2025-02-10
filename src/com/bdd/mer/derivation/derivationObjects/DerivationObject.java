@@ -7,11 +7,8 @@ import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.*;
 import com.bdd.mer.derivation.elements.container.Final;
 import com.bdd.mer.derivation.elements.container.Holder;
-import com.bdd.mer.derivation.elements.container.replacers.Reference;
-import com.bdd.mer.derivation.elements.container.replacers.Static;
-import com.bdd.mer.derivation.elements.container.replacers.types.Common;
-import com.bdd.mer.derivation.elements.container.replacers.types.Optional;
-import com.bdd.mer.derivation.elements.container.replacers.types.Source;
+import com.bdd.mer.derivation.elements.container.Replacer;
+import com.bdd.mer.derivation.elements.container.sources.Common;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +38,27 @@ public abstract class DerivationObject {
         if (attribute.isMultivalued()) {
             Derivation multivaluedAttribute = new Derivation(attribute.getIdentifier());
             multivaluedAttribute.addIdentificationElement(new SingleElement(attribute.getIdentifier()));
-            multivaluedAttribute.addIdentificationElement(new SingleElement(owner.getIdentifier(), new Reference()));
+            multivaluedAttribute.addIdentificationElement(new SingleElement(owner.getIdentifier(),
+                    new Replacer(ElementDecorator.FOREIGN))
+            );
             this.addDerivation(multivaluedAttribute);
         } else {
 
-            Source source = (attribute.isOptional()) ? new Optional() : new Common();
+            Holder holder;
 
             // If it's compound, it'll have a static reference according to its source.
             // If it's not compound, it'll have a Final reference.
-            Holder holder = (attribute.hasAttributes()) ? new Static(source) : new Final();
+            if (attribute.hasAttributes()) {
+
+                if (attribute.isOptional()) {
+                    holder = new Replacer(new Common(), ElementDecorator.OPTIONAL);
+                } else {
+                    holder = new Replacer(new Common());
+                }
+
+            } else {
+                holder = new Final();
+            }
 
             Element element = new SingleElement(attribute.getIdentifier(), holder);
 
@@ -61,11 +70,11 @@ public abstract class DerivationObject {
             } else {
 
                 if (attribute.isAlternative()) {
-                    element.addDecoration(ElementDecorator.ALTERNATIVE_ATTRIBUTE);
+                    element.addDecoration(ElementDecorator.ALTERNATIVE);
                 }
 
                 if (attribute.isOptional()) {
-                    element.addDecoration(ElementDecorator.OPTIONAL_ATTRIBUTE);
+                    element.addDecoration(ElementDecorator.OPTIONAL);
                 }
 
                 this.commonElements.add(element);

@@ -4,12 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 public enum ElementDecorator implements CharSequence {
 
-    MAIN_ATTRIBUTE("&", "main"),
-    FOREIGN_ATTRIBUTE("@", "foreign"),
-    OPTIONAL_ATTRIBUTE("*", "optional"),
-    ALTERNATIVE_ATTRIBUTE("+", "alternative"),
-    MULTIVALUED_ATTRIBUTE("#", "multivalued"),
-    DUPLICATED_ATTRIBUTE("!RENAMED", "duplicated");
+    MAIN("&", "main"),
+    FOREIGN("@", "foreign"),
+    OPTIONAL("*", "optional"),
+    ALTERNATIVE("+", "alternative"),
+    MULTIVALUED("#", "multivalued"),
+    DUPLICATED("!RENAMED", "duplicated");
 
     private final String notation;
     private final String styleName;

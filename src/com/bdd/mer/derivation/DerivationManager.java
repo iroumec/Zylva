@@ -44,6 +44,8 @@ public class DerivationManager {
         DerivationExporter.exportToHTML(derivations.values(), referentialIntegrityConstraints);
 
         derivations.clear();
+
+        referentialIntegrityConstraints.clear();
     }
 
     private static void addDerivation(Derivation newDerivation) {

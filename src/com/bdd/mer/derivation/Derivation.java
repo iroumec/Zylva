@@ -16,11 +16,11 @@ public class Derivation {
         this.name = name;
         this.commonElements = new ElementGroup();
         this.identificationElements = new ElementGroup();
-        this.identificationElements.addDecoration(ElementDecorator.MAIN_ATTRIBUTE);
+        this.identificationElements.addDecoration(ElementDecorator.MAIN);
     }
 
     public void addIdentificationElement(Element element) {
-        Element.clearAllDecorationsExcepting(element, ElementDecorator.FOREIGN_ATTRIBUTE);
+        Element.clearAllDecorationsExcepting(element, ElementDecorator.FOREIGN);
         this.identificationElements.addElement(element);
     }
 

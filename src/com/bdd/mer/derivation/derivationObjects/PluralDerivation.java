@@ -1,11 +1,11 @@
 package com.bdd.mer.derivation.derivationObjects;
 
 import com.bdd.mer.derivation.Derivation;
+import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.elements.SingleElement;
-import com.bdd.mer.derivation.elements.container.replacers.types.Common;
-import com.bdd.mer.derivation.elements.container.replacers.Reference;
-import com.bdd.mer.derivation.elements.container.replacers.Static;
-import com.bdd.mer.derivation.elements.container.replacers.types.Optional;
+import com.bdd.mer.derivation.elements.container.Holder;
+import com.bdd.mer.derivation.elements.container.Replacer;
+import com.bdd.mer.derivation.elements.container.sources.Common;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -60,17 +60,19 @@ public class PluralDerivation extends DerivationObject {
             }
         }
 
+        Holder mostUsedHolder = new Replacer(ElementDecorator.FOREIGN);
+
         switch (oneCount) {
             case 0: // N:N:N
 
                 this.mainDerivation.addIdentificationElement(
-                        new SingleElement(this.members.getFirst().name, new Reference())
+                        new SingleElement(this.members.getFirst().name, mostUsedHolder)
                 );
                 this.mainDerivation.addIdentificationElement(
-                        new SingleElement(this.members.get(1).name, new Reference())
+                        new SingleElement(this.members.get(1).name, mostUsedHolder)
                 );
                 this.mainDerivation.addIdentificationElement(
-                        new SingleElement(this.members.getLast().name, new Reference())
+                        new SingleElement(this.members.getLast().name, mostUsedHolder)
                 );
 
                 break;
@@ -81,12 +83,12 @@ public class PluralDerivation extends DerivationObject {
                     if (!member.equals(oneCardinalityMember)) {
 
                         this.mainDerivation.addIdentificationElement(
-                                new SingleElement(member.name, new Reference())
+                                new SingleElement(member.name, mostUsedHolder)
                         );
                     } else {
 
                         this.mainDerivation.addIdentificationElement(
-                                new SingleElement(member.name, new Reference(new Common()))
+                                new SingleElement(member.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
                         );
                     }
                 }
@@ -143,15 +145,15 @@ public class PluralDerivation extends DerivationObject {
 
         Derivation derivation = new Derivation(firstMember.name);
 
-        derivation.addCommonElement(new SingleElement(this.getName(), new Static(new Common())));
+        derivation.addCommonElement(new SingleElement(this.getName(), new Replacer(new Common())));
 
         if (minCardinality.equals("0")) {
             derivation.addCommonElement(
-                    new SingleElement(secondMember.name, new Reference(new Optional()))
+                    new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
             );
         } else { // It's equal to 1.
             derivation.addIdentificationElement(
-                    new SingleElement(secondMember.name, new Reference())
+                    new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN))
             );
         }
 
@@ -167,20 +169,21 @@ public class PluralDerivation extends DerivationObject {
         Member nSideMember = (firstMember.maxCardinality.equals("1")) ? secondMember : firstMember;
 
         Derivation derivation = new Derivation(nSideMember.name);
+
         derivation.addCommonElement(
-                new SingleElement(this.getName(), new Static(new Common()))
+                new SingleElement(this.getName(), new Replacer(new Common()))
         );
 
         if (oneSideMember.minCardinality.equals("0")) {
 
             derivation.addCommonElement(
-                    new SingleElement(oneSideMember.name, new Reference(new Optional()))
+                    new SingleElement(oneSideMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
             );
 
         } else {
 
             derivation.addCommonElement(
-                    new SingleElement(oneSideMember.name, new Reference(new Common()))
+                    new SingleElement(oneSideMember.name, new Replacer(ElementDecorator.FOREIGN))
             );
         }
 
@@ -197,11 +200,11 @@ public class PluralDerivation extends DerivationObject {
                 Derivation derivation = new Derivation(firstMember.name);
                 // The first member references the second member identification attributes as optional.
                 derivation.addCommonElement(
-                        new SingleElement(secondMember.name, new Reference(new Optional()))
+                        new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
                 );
                 // The first member has all the common attributes of the relationship.
                 derivation.addCommonElement(
-                        new SingleElement(this.getName(), new Static(new Common()))
+                        new SingleElement(this.getName(), new Replacer(new Common()))
                 );
 
                 this.addDerivation(derivation);
@@ -214,7 +217,7 @@ public class PluralDerivation extends DerivationObject {
                     derivation = new Derivation(firstMember.name);
                     // The first member references the second member identification attributes.
                     derivation.addCommonElement(
-                            new SingleElement(secondMember.name, new Reference(new Common()))
+                            new SingleElement(secondMember.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
                     );
                     // The first member has all the common attributes of the relationship.
 
@@ -223,14 +226,14 @@ public class PluralDerivation extends DerivationObject {
                     derivation = new Derivation(secondMember.name);
                     // The second member references the first member identification attributes.
                     derivation.addCommonElement(
-                            new SingleElement(firstMember.name, new Reference(new Common()))
+                            new SingleElement(firstMember.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
                     );
                     // The second member has all the common attributes of the relationship.
 
                 }
 
                 derivation.addCommonElement(
-                        new SingleElement(this.getName(), new Static(new Common()))
+                        new SingleElement(this.getName(), new Replacer(new Common()))
                 );
 
                 this.addDerivation(derivation);
@@ -242,11 +245,11 @@ public class PluralDerivation extends DerivationObject {
             Derivation derivation = new Derivation(firstMember.name);
             // The first member references the second member identification attributes.
             derivation.addCommonElement(
-                    new SingleElement(secondMember.name, new Reference(new Common()))
+                    new SingleElement(secondMember.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
             );
             // The first member has all the common attributes of the relationship.
             derivation.addCommonElement(
-                    new SingleElement(this.getName(), new Static(new Common()))
+                    new SingleElement(this.getName(), new Replacer(new Common()))
             );
 
             this.addDerivation(derivation);
@@ -259,10 +262,10 @@ public class PluralDerivation extends DerivationObject {
 
         // The names of the members will be replaced with their identification attributes.
         this.mainDerivation.addIdentificationElement(
-                new SingleElement(firstMember.name, new Reference())
+                new SingleElement(firstMember.name, new Replacer(ElementDecorator.FOREIGN))
         );
         this.mainDerivation.addIdentificationElement(
-                new SingleElement(secondMember.name, new Reference())
+                new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN))
         );
     }
 

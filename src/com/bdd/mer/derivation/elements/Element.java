@@ -50,6 +50,10 @@ public abstract class Element {
 
     }
 
+    public static void clearAllDecorations(Element element) {
+        element.decorations.clear();
+    }
+
     public static void clearAllDecorationsExcepting(Element element, ElementDecorator... except) {
 
         Set<ElementDecorator> exceptionList = new HashSet<>(Set.of(except));

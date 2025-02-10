@@ -1,7 +1,5 @@
 package com.bdd.mer.derivation.elements;
 
-import com.bdd.mer.derivation.TextUtility;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +18,8 @@ public class ElementGroup extends Element {
         for (Element e : elements) {
             if (e.equals(element)) {
                 elements.set(elements.indexOf(e), replacement);
+            } else {
+                e.replace(element, replacement);
             }
         }
     }
@@ -61,11 +61,18 @@ public class ElementGroup extends Element {
 
         out.append(super.toString()).append("[");
 
-        for (Element element : elements) {
-            out.append(element.toString()).append(", ");
-        }
+        boolean addComma = false;
 
-        TextUtility.deleteLast(", ", out);
+        for (Element element : elements) {
+
+            if (addComma) {
+                out.append(",");
+            } else {
+                addComma = true;
+            }
+
+            out.append(element.toString());
+        }
 
         out.append("]");
 
@@ -77,11 +84,18 @@ public class ElementGroup extends Element {
 
         StringBuilder out = new StringBuilder();
 
-        for (Element element : elements) {
-            out.append(element.formatToHTML()).append(", ");
-        }
+        boolean addComma = false;
 
-        TextUtility.deleteLast(", ", out);
+        for (Element element : elements) {
+
+            if (addComma) {
+                out.append(", ");
+            } else {
+                addComma = true;
+            }
+
+            out.append(element.formatToHTML());
+        }
 
         return super.applyDecorators(out.toString());
     }
