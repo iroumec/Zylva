@@ -60,7 +60,6 @@ public class Line extends Component {
         g2.setStroke(new BasicStroke(this.strokeWidth));
         this.lineMultiplicity.draw(g2, lineShape, x1, y1, x2, y2);
         g2.setStroke(currentStroke);
-
     }
 
     @Override

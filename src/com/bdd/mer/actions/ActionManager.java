@@ -480,14 +480,14 @@ public final class ActionManager implements Serializable {
 
                 List<EntityWrapper> subtipos = getChildrenList(parent);
 
-                Pair<Hierarchy, Line> newHierarchyData = getHierarchy(parent);
+                Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(parent);
 
                 if (newHierarchyData == null) {
                     return;
                 }
 
                 Hierarchy newHierarchy = newHierarchyData.first();
-                Line parentLine = newHierarchyData.second();
+                List<Component> componentsToAdd = newHierarchyData.second();
 
                 for (EntityWrapper subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);
@@ -513,7 +513,11 @@ public final class ActionManager implements Serializable {
                 }
 
                 parent.addHierarchy(newHierarchy);
-                drawingPanel.addComponent(parentLine);
+
+                for (Component component : componentsToAdd) {
+                    drawingPanel.addComponent(component);
+                }
+
                 drawingPanel.addComponent(newHierarchy);
 
                 } else {
@@ -533,8 +537,7 @@ public final class ActionManager implements Serializable {
      * @param parent Entity parent of the hierarchy.
      * @return {@code Hierarchy} according to the options selected by the user.
      */
-    // Why returning a pair? This could be improved.
-    public Pair<Hierarchy, Line> getHierarchy(EntityWrapper parent) {
+    public Pair<Hierarchy, List<Component>> getHierarchy(EntityWrapper parent) {
 
         // The radio buttons are created.
         JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
@@ -624,7 +627,15 @@ public final class ActionManager implements Serializable {
 
         newHierarchy.setParentLine(parentLine);
 
-        return new Pair<>(newHierarchy, parentLine);
+        List<Component> componentsToAdd = new ArrayList<>();
+
+        componentsToAdd.add(parentLine);
+
+        if (discriminant != null) {
+            componentsToAdd.add(discriminant);
+        }
+
+        return new Pair<>(newHierarchy, componentsToAdd);
     }
 
     /**

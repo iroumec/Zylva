@@ -2,7 +2,6 @@ package com.bdd.mer.components.hierarchy;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
-import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
