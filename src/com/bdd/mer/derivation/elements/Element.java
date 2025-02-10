@@ -16,10 +16,6 @@ public abstract class Element {
         this.decorations.add(decorator);
     }
 
-    void removeDecoration(ElementDecorator decorator) {
-        this.decorations.remove(decorator);
-    }
-
     /**
      * There will never be a replacement of a {@code ElementGroup} for an {@code Element}.
      */
