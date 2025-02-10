@@ -145,22 +145,32 @@ public class PluralDerivation extends DerivationObject {
 
         Derivation derivation = new Derivation(firstMember.name);
 
-        derivation.addCommonElement(new SingleElement(this.getName(), new Replacer(new Common())));
-
         if (minCardinality.equals("0")) {
+
+            if (!mainDerivation.isEmpty()) {
+                derivation.addCommonElement(new SingleElement(this.getName(),
+                        new Replacer(new Common(), ElementDecorator.OPTIONAL)));
+            }
+
             derivation.addCommonElement(
-                    new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
+                    new SingleElement(secondMember.name,
+                            new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL, ElementDecorator.DUPLICATED))
             );
+
         } else { // It's equal to 1.
+
+            if (!mainDerivation.isEmpty()) {
+                derivation.addCommonElement(new SingleElement(this.getName(),
+                        new Replacer(new Common())));
+            }
+
             derivation.addIdentificationElement(
-                    new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN))
+                    new SingleElement(secondMember.name,
+                            new Replacer(ElementDecorator.FOREIGN, ElementDecorator.DUPLICATED))
             );
         }
 
         this.addDerivation(derivation);
-
-        // The derivation of the relationship no longer exists.
-        //this.mainDerivation = null;
     }
 
     private void derivate1_NRelationship(Member firstMember, Member secondMember) {
@@ -170,17 +180,23 @@ public class PluralDerivation extends DerivationObject {
 
         Derivation derivation = new Derivation(nSideMember.name);
 
-        derivation.addCommonElement(
-                new SingleElement(this.getName(), new Replacer(new Common()))
-        );
-
         if (oneSideMember.minCardinality.equals("0")) {
+
+            // If the one side member has a cardinality of zero,
+            // the relationship's attributes are also optional.
+            derivation.addCommonElement(
+                    new SingleElement(this.getName(), new Replacer(new Common(), ElementDecorator.OPTIONAL))
+            );
 
             derivation.addCommonElement(
                     new SingleElement(oneSideMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
             );
 
         } else {
+
+            derivation.addCommonElement(
+                    new SingleElement(this.getName(), new Replacer(new Common()))
+            );
 
             derivation.addCommonElement(
                     new SingleElement(oneSideMember.name, new Replacer(ElementDecorator.FOREIGN))

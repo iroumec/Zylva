@@ -3,6 +3,7 @@ package com.bdd.mer.derivation;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.elements.Element;
+import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.elements.SingleElement;
 import com.bdd.mer.derivation.exporters.DerivationExporter;
 import com.bdd.mer.frame.DrawingPanel;
@@ -130,7 +131,18 @@ public class DerivationManager {
         List<SingleElement> elements = replacement.getPartitions();
 
         for (SingleElement element : elements) {
-            constraint.addReference(element.getName(), element.getName());
+
+            Element cleanElement = element.getCopy();
+            Element.clearAllDecorations(cleanElement);
+
+            if (element.needsRename()) {
+
+                Element rename = cleanElement.getCopy();
+                rename.addDecoration(ElementDecorator.DUPLICATED);
+            } else {
+
+                constraint.addReference(cleanElement, cleanElement);
+            }
         }
 
         addReferencialIntegrityConstraint(constraint);

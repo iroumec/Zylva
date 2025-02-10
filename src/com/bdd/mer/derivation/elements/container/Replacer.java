@@ -19,10 +19,6 @@ public class Replacer implements Holder {
     private final Source source;
     private final Set<ElementDecorator> modifiers;
 
-    public Replacer() {
-        this(new Identifier());
-    }
-
     public Replacer(Source source) {
         this(source, (new HashSet<ElementDecorator>()).toArray(new ElementDecorator[0]));
     }
@@ -34,6 +30,11 @@ public class Replacer implements Holder {
     public Replacer(Source source, ElementDecorator... modifiers) {
         this.source = source;
         this.modifiers = new HashSet<>(Set.of(modifiers));
+    }
+
+    @Override
+    public boolean needsRename() {
+        return this.modifiers.contains(ElementDecorator.DUPLICATED);
     }
 
     @Override

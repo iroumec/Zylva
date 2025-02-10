@@ -50,10 +50,9 @@ public class Derivation {
         return (ElementGroup) this.identificationElements.getCopy();
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return this.identificationElements.isEmpty() && this.commonElements.isEmpty();
     }
-
 
     @Override
     public String toString() {
@@ -63,7 +62,7 @@ public class Derivation {
         out += this.identificationElements.toString();
 
         if (!this.identificationElements.isEmpty() && !this.commonElements.isEmpty()) {
-            out += ", ";
+            out += ",";
         }
 
         out += this.commonElements.toString() + ")";
@@ -98,11 +97,21 @@ public class Derivation {
 
         Derivation unification = new Derivation(firstDerivation.name);
 
-        unification.addIdentificationElement(firstDerivation.identificationElements.getCopy());
-        unification.addIdentificationElement(secondDerivation.identificationElements.getCopy());
+        if (!firstDerivation.identificationElements.isEmpty()) {
+            unification.addIdentificationElement(firstDerivation.identificationElements.getCopy());
+        }
 
-        unification.addCommonElement(firstDerivation.commonElements.getCopy());
-        unification.addCommonElement(secondDerivation.commonElements.getCopy());
+        if (!secondDerivation.identificationElements.isEmpty()) {
+            unification.addIdentificationElement(secondDerivation.identificationElements.getCopy());
+        }
+
+        if (!firstDerivation.commonElements.isEmpty()) {
+            unification.addCommonElement(firstDerivation.commonElements.getCopy());
+        }
+
+        if (!secondDerivation.commonElements.isEmpty()) {
+            unification.addCommonElement(secondDerivation.commonElements.getCopy());
+        }
 
         return unification;
     }

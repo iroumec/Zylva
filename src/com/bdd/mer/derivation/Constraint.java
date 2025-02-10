@@ -1,5 +1,6 @@
 package com.bdd.mer.derivation;
 
+import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.structures.Pair;
 
 import java.util.List;
@@ -9,7 +10,7 @@ public class Constraint {
 
     private final String referencing;
     private final String referenced;
-    private final List<Pair<String, String>> references;
+    private final List<Pair<Element, Element>> references;
 
     Constraint(String referencing, String referenced) {
         this.referencing = referencing;
@@ -17,8 +18,8 @@ public class Constraint {
         this.references = new java.util.ArrayList<>();
     }
 
-    void addReference(String referencingAttribute, String referencedAttribute) {
-        this.references.add(new Pair<>(referencingAttribute, referencedAttribute));
+    void addReference(Element referencing, Element referenced) {
+        this.references.add(new Pair<>(referencing, referenced));
     }
 
     @Override
@@ -29,7 +30,7 @@ public class Constraint {
 
         boolean addComma = false;
 
-        for (Pair<String, String> reference : this.references) {
+        for (Pair<Element, Element> reference : this.references) {
 
             if (addComma) {
                 referencingAttributes.append(", ");
@@ -38,8 +39,34 @@ public class Constraint {
                 addComma = true;
             }
 
-            referencingAttributes.append(reference.getFirst());
-            referencedAttributes.append(reference.getSecond());
+            referencingAttributes.append(reference.getFirst().toString());
+            referencedAttributes.append(reference.getSecond().toString());
+        }
+
+        return this.referencing +
+                "[" + referencingAttributes + "]" +
+                " << " + this.referenced +
+                "[" + referencedAttributes + "]";
+    }
+
+    public String formatToHTML() {
+
+        StringBuilder referencingAttributes = new StringBuilder();
+        StringBuilder referencedAttributes = new StringBuilder();
+
+        boolean addComma = false;
+
+        for (Pair<Element, Element> reference : this.references) {
+
+            if (addComma) {
+                referencingAttributes.append(", ");
+                referencedAttributes.append(", ");
+            } else {
+                addComma = true;
+            }
+
+            referencingAttributes.append(reference.getFirst().formatToHTML());
+            referencedAttributes.append(reference.getSecond().formatToHTML());
         }
 
         return this.referencing +
@@ -49,7 +76,7 @@ public class Constraint {
     }
 
     void transferConstraintsTo(Constraint constraint) {
-        for (Pair<String, String> reference : this.references) {
+        for (Pair<Element, Element> reference : this.references) {
             constraint.addReference(reference.getFirst(), reference.getSecond());
         }
     }

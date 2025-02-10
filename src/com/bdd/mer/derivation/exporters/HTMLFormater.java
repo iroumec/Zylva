@@ -16,7 +16,7 @@ class HTMLFormater {
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Estructura con formato</title>
+                            <title>Results</title>
                         """);
 
         htmlContent.append(getHTMLStyles());
@@ -47,7 +47,7 @@ class HTMLFormater {
             for (Constraint constraint : constraints) {
                 htmlContent
                         .append("<ul>\n")
-                        .append("<li>").append(constraint).append("</li>\n")
+                        .append("<li>").append(constraint.formatToHTML()).append("</li>\n")
                         .append("</ul>\n")
                 ;
             }
@@ -134,6 +134,13 @@ class HTMLFormater {
                     .optional::before {
                         content: "*";
                         font-weight: bold;
+                    }
+                    .duplicated {
+                        font-style: italic;
+                    }
+                    .duplicated::after {
+                        content: "[RENAMED]";
+                        font-style: italic;
                     }
             
                     .italic {

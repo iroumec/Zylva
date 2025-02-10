@@ -30,6 +30,8 @@ public class SingleElement extends Element {
         return holder.generatesConstraints();
     }
 
+    public boolean needsRename() { return holder.needsRename(); }
+
     @Nullable
     public Element abstractElements(Derivation derivation) {
         return holder.abstractReplacement(derivation);
