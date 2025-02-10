@@ -74,8 +74,8 @@ public class DerivationManager {
             Constraint constraint = referentialIntegrityConstraints.get(referentialIntegrityConstraints.indexOf(newConstraint));
 
             if (newConstraint.hasSameReferencesAs(constraint)) {
-                // In case of facing an N:N unary relation.
 
+                // In case of facing an N:N unary relation.
                 newConstraint.setAsDuplicated();
 
                 referentialIntegrityConstraints.add(newConstraint);
@@ -96,42 +96,57 @@ public class DerivationManager {
     private static void fillReferences() {
 
         // To avoid ConcurrentModificationException.
-        List<Derivation> derivationToRemove = new ArrayList<>();
+        List<Derivation> derivationsToRemove = new ArrayList<>();
 
         for (Derivation derivation : derivations.values()) {
 
-            List<SingleElement> replacementsNeeded = derivation.getReplacementNeeded();
+            derivationsToRemove.addAll(fillReferences(derivation));
+        }
 
-            for (SingleElement elementToReplace : replacementsNeeded) {
+        for (Derivation derivation : derivationsToRemove) {
+            derivations.remove(derivation.getName());
+        }
+    }
 
-                Derivation replacementDerivation = derivations.get(elementToReplace.getName());
+    private static List<Derivation> fillReferences(Derivation derivation) {
 
-                if (replacementDerivation != null) {
-                    Element replacement = elementToReplace.abstractElements(
-                            derivations.get(elementToReplace.getName())
-                    );
+        List<Derivation> derivationsToRemove = new ArrayList<>();
 
-                    if (replacement != null) {
+        List<SingleElement> replacementsNeeded = derivation.getReplacementNeeded();
 
-                        // If all the elements will be replaced...
-                        if (replacementDerivation.getNumberOfElements() == replacement.getNumberOfElements()) {
-                            // There is no need for the replacement derivation to still existing.
-                            derivationToRemove.add(replacementDerivation);
-                        }
+        for (SingleElement elementToReplace : replacementsNeeded) {
 
-                        if (elementToReplace.generatesConstraints()) {
-                            extractConstraints(derivation.getName(), replacementDerivation.getName(), replacement);
-                        }
+            Derivation replacementDerivation = derivations.get(elementToReplace.getName());
 
-                        derivation.replace(elementToReplace, replacement);
+            if (replacementDerivation != null) {
+
+                // Useful in case of having a reference to a reference... and don't depend on the order.
+                fillReferences(replacementDerivation);
+
+                Element replacement = elementToReplace.abstractElements(
+                        derivations.get(elementToReplace.getName())
+                );
+
+                if (replacement != null) {
+
+                    // A derivation must be removed if we take all the elements from its common elements,
+                    // and it doesn't have identifier elements.
+                    if (replacementDerivation.getNumberOfCommonElements() == replacement.getNumberOfElements()
+                            && replacementDerivation.getNumberOfIdentificationElements() == 0) {
+                        // There is no need for the replacement derivation to still existing.
+                        derivationsToRemove.add(replacementDerivation);
                     }
+
+                    if (elementToReplace.generatesConstraints()) {
+                        extractConstraints(derivation.getName(), replacementDerivation.getName(), replacement);
+                    }
+
+                    derivation.replace(elementToReplace, replacement);
                 }
             }
         }
 
-        for (Derivation derivation : derivationToRemove) {
-            derivations.remove(derivation.getName());
-        }
+        return derivationsToRemove;
     }
 
     private static void extractConstraints(String referencing, String referenced, Element replacement) {

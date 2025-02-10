@@ -6,7 +6,6 @@ import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.mer.frame.DrawingPanel;
@@ -302,15 +301,9 @@ public class Hierarchy extends Component implements Derivable {
             out.add(parentDerivation);
         }
 
-        List<Attribute> parentMainAttributes = this.parent.getMainAttributes();
-
         for (EntityWrapper child : this.children) {
 
-            DerivationObject childDerivation = new SingularDerivation(child.getIdentifier());
-
-            for (Attribute attribute : parentMainAttributes) {
-                childDerivation.addAttribute(attribute.getIdentifier());
-            }
+            DerivationObject childDerivation = new SingularDerivation(child.getIdentifier(), this.parent);
 
             out.add(childDerivation);
         }

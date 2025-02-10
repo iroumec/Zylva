@@ -87,8 +87,8 @@ public class PluralDerivation extends DerivationObject {
                         );
                     } else {
 
-                        this.mainDerivation.addIdentificationElement(
-                                new SingleElement(member.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
+                        this.mainDerivation.addCommonElement(
+                                new SingleElement(member.name, new Replacer(ElementDecorator.FOREIGN))
                         );
                     }
                 }

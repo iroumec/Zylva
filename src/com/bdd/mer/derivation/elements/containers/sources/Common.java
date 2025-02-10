@@ -10,6 +10,7 @@ public class Common implements Source {
     public Element getAbstractionElement(Derivation derivation) {
 
         ElementGroup commonElements = derivation.getCommonElements();
+        commonElements.clearAllDecorations();
 
         if (commonElements.isEmpty()) {
             return null;

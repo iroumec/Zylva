@@ -117,8 +117,18 @@ public class Derivation {
         return unification;
     }
 
+    public int getNumberOfIdentificationElements() {
+        return this.identificationElements.getNumberOfElements();
+    }
+
+    @SuppressWarnings("unused")
+    public int getNumberOfCommonElements() {
+        return this.commonElements.getNumberOfElements();
+    }
+
+    @SuppressWarnings("unused")
     public int getNumberOfElements() {
-        return this.commonElements.getNumberOfElements() + this.identificationElements.getNumberOfElements();
+        return this.getNumberOfCommonElements() + this.getNumberOfIdentificationElements();
     }
 
     @Override
