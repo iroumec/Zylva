@@ -8,7 +8,8 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
-import com.bdd.mer.derivation.DerivationFormater;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -339,44 +340,19 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public String parse() {
+    public List<DerivationObject> getDerivationObjects() {
 
-        StringBuilder out = new StringBuilder(this.entity.getClass().getSimpleName() + "[" + this.getIdentifier() + "]" + "(");
+        List<DerivationObject> out = new ArrayList<>();
 
-        out.append(super.parse());
+        DerivationObject derivation = new SingularDerivation(this.getIdentifier());
 
-        out.append(DerivationFormater.SEPARATOR);
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-
-            if (hierarchy.isChild(this)) {
-
-                List<Attribute> mainAttributes = hierarchy.getParent().getMainAttributes();
-
-                for (Attribute mainAttribute : mainAttributes) {
-                    out.append(DerivationFormater.MAIN_ATTRIBUTE)
-                            .append(DerivationFormater.FOREIGN_ATTRIBUTE)
-                            .append(mainAttribute.getIdentifier())
-                            .append(DerivationFormater.SEPARATOR);
-                }
-
-                hierarchy.getParent().getMainAttributes();
-            } else {
-
-                if (hierarchy.isExclusive()) {
-                    out.append(hierarchy.getDiscriminant()).append(DerivationFormater.SEPARATOR);
-                }
-            }
+        for (Attribute attribute : this.getAttributes(1)) {
+            derivation.addAttribute(this, attribute);
         }
 
-        int lastIndex = out.lastIndexOf(DerivationFormater.SEPARATOR);
+        out.add(derivation);
 
-        if (lastIndex != -1) {
-
-            out.deleteCharAt(lastIndex);
-        }
-
-        return out + ")";
+        return out;
     }
 
     @Override

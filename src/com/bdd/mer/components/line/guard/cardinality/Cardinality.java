@@ -5,6 +5,7 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.guard.Guard;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +18,13 @@ public class Cardinality extends Guard {
 
     public static String giveFormat(String firstValue, String secondValue) {
         return "(" + firstValue + ", " + secondValue + ")";
+    }
+
+    public static Pair<String, String> removeFormat(String text) {
+
+        String[] cardinalities = text.replaceAll("[()]", "").split(", ");
+
+        return new Pair<>(cardinalities[0], cardinalities[1]);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

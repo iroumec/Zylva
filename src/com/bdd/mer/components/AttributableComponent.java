@@ -2,7 +2,6 @@ package com.bdd.mer.components;
 
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
@@ -70,6 +69,31 @@ public abstract class AttributableComponent extends Component implements Derivab
     }
 
     /**
+     * The first level is 1.
+     *
+     * @return {@code List<Attribute>} containing all the attributes of the component in the specified level.
+     */
+    public List<Attribute> getAttributes(int level) {
+
+        if (level < 0) {
+            throw new IllegalArgumentException("The level must be a positive integer. It was " + level + ".");
+        }
+
+        if (level == 0) {
+            return new ArrayList<>();
+        }
+
+        List<Attribute> out = new ArrayList<>();
+
+        for (Attribute attribute : this.attributes) {
+            out.add(attribute);
+            out.addAll(attribute.getAttributes((level - 1)));
+        }
+
+        return out;
+    }
+
+    /**
      *
      * @return {@code List<Attribute>} containing all the attributes of the component.
      */
@@ -120,6 +144,12 @@ public abstract class AttributableComponent extends Component implements Derivab
         return false;
     }
 
+    /**
+     *
+     * @return {@code TRUE} if the component has at least one attribute.
+     */
+    public boolean hasAttributes() { return !this.attributes.isEmpty(); }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -146,44 +176,6 @@ public abstract class AttributableComponent extends Component implements Derivab
             attribute.setSelected(isSelected);
         }
 
-    }
-
-    @Override
-    public String parse() {
-
-        StringBuilder out = new StringBuilder();
-
-        for (Attribute attribute : this.attributes) {
-
-            String name = attribute.getIdentifier();
-
-            if (attribute.isMain()) {
-                name = DerivationFormater.MAIN_ATTRIBUTE + name;
-            }
-
-            if (attribute.isAlternative()) {
-                name = DerivationFormater.ALTERNATIVE_ATTRIBUTE + name;
-            }
-
-            if (attribute.isMultivalued()) {
-                name = DerivationFormater.MULTIVALUED_ATTRIBUTE + name;
-            }
-
-            if (attribute.isOptional()) {
-                name = DerivationFormater.OPTIONAL_ATTRIBUTE + name;
-            }
-
-            out.append(name).append(DerivationFormater.SEPARATOR);
-        }
-
-        int lastIndex = out.lastIndexOf(DerivationFormater.SEPARATOR);
-
-        if (lastIndex != -1) {
-
-            out.deleteCharAt(lastIndex);
-        }
-
-        return out.toString();
     }
 
 }

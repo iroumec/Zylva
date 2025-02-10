@@ -2,9 +2,12 @@ package com.bdd.mer.components.hierarchy;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
+import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.userPreferences.LanguageManager;
 
@@ -29,7 +32,7 @@ pertenecer a un subtipo a la vez).
 Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
 se nota con la letra "o" (Overlapping).
  */
-public class Hierarchy extends Component {
+public class Hierarchy extends Component implements Derivable {
 
     /**
      * The symbol of the hierarchy, also denoting its exclusivity.
@@ -280,5 +283,31 @@ public class Hierarchy extends Component {
 
     public String getDiscriminant() {
         return this.parentLine.getText();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "";
+    }
+
+    @Override
+    public List<DerivationObject> getDerivationObjects() {
+
+        List<DerivationObject> out = new ArrayList<>();
+
+        if (this.isExclusive()) {
+            DerivationObject parentDerivation = new SingularDerivation(this.parent.getIdentifier());
+            parentDerivation.addAttribute(this.getDiscriminant());
+            out.add(parentDerivation);
+        }
+
+        for (EntityWrapper child : this.children) {
+
+            DerivationObject childDerivation = new SingularDerivation(child.getIdentifier(), this.parent);
+
+            out.add(childDerivation);
+        }
+
+        return out;
     }
 }

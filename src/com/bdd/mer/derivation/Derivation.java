@@ -1,209 +1,145 @@
 package com.bdd.mer.derivation;
 
+import com.bdd.mer.derivation.elements.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-class Derivation {
-
-    enum AttributeType {
-        IDENTIFICATION,
-        COMMON
-    }
+public class Derivation {
 
     private final String name;
-    private final List<String> commonAttributes;
-    private final List<String> identificationAttributes;
+    private final ElementGroup commonElements;
+    private final ElementGroup identificationElements;
 
-    Derivation(String name) {
+    public Derivation(String name) {
         this.name = name;
-        this.commonAttributes = new ArrayList<>();
-        this.identificationAttributes = new ArrayList<>();
+        this.commonElements = new ElementGroup();
+        this.identificationElements = new ElementGroup();
+        this.identificationElements.addDecoration(ElementDecorator.MAIN);
     }
 
-    void addAttribute(String attribute) {
-        if (attribute.startsWith(DerivationFormater.MAIN_ATTRIBUTE)) {
-            addIdentificationAttribute(attribute);
-        } else {
-            addCommonAttribute(attribute);
-        }
+    public void addIdentificationElement(Element element) {
+        element.clearAllDecorations();
+        this.identificationElements.addElement(element);
     }
 
-    void removeAttribute(String attribute) {
-
-        List<String> attributesToRemove = new ArrayList<>();
-
-        for (String identificationAttribute : this.identificationAttributes) {
-            String cleanIdentificationAttribute = DerivationFormater.cleanAllFormats(identificationAttribute);
-            if (cleanIdentificationAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
-                attributesToRemove.add(identificationAttribute);
-            }
-        }
-
-        this.identificationAttributes.removeAll(attributesToRemove);
-        attributesToRemove.clear();
-
-        for (String commonAttribute : this.commonAttributes) {
-            String cleanCommonAttribute = DerivationFormater.cleanAllFormats(commonAttribute);
-            if (cleanCommonAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
-                attributesToRemove.add(commonAttribute);
-            }
-        }
-
-        this.commonAttributes.removeAll(attributesToRemove);
+    public void addCommonElement(Element element) {
+        element.clearAllDecorations();
+        this.commonElements.addElement(element);
     }
 
-    private void addIdentificationAttribute(String attribute) {
+    public List<SingleElement> getReplacementNeeded() {
 
-        // The legibility of this could be improved.
-        if (this.identificationAttributes.contains(attribute)) {
-            this.identificationAttributes.add(DerivationFormater.DUPLICATED_ATTRIBUTE + attribute);
-        } else {
-            this.identificationAttributes.add(attribute);
-        }
+        List<SingleElement> out = new ArrayList<>(this.commonElements.getReplacementsNeeded());
+        out.addAll(this.identificationElements.getReplacementsNeeded());
+
+        return out;
     }
 
-    private void addCommonAttribute(String attribute) {
-        if (this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute)) {
-            this.commonAttributes.add(DerivationFormater.DUPLICATED_ATTRIBUTE + attribute);
-        } else {
-            this.commonAttributes.add(attribute);
-        }
+    public void replace(SingleElement element, Element replacement) {
+
+        this.commonElements.replace(element, replacement);
+        this.identificationElements.replace(element, replacement);
     }
 
-    ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation) {
-
-        return copyIdentificationAttributesAs(derivation, "");
+    public ElementGroup getCommonElements() {
+        return (ElementGroup) this.commonElements.getCopy();
     }
 
-    ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation, String text) {
-
-        return copyIdentificationAttributesAs(derivation, text, AttributeType.IDENTIFICATION);
+    public ElementGroup getIdentificationElements() {
+        return (ElementGroup) this.identificationElements.getCopy();
     }
 
-    ReferencialIntegrityConstraint copyIdentificationAttributesAs(Derivation derivation, String text, AttributeType type) {
-
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(derivation.name, this.name);
-
-        for (String attribute : this.identificationAttributes) {
-
-            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
-
-            if (type == AttributeType.COMMON) {
-                derivation.addCommonAttribute(text + cleanAttribute);
-            } else {
-                derivation.addIdentificationAttribute(text + cleanAttribute);
-            }
-
-            constraint.addReference(cleanAttribute, cleanAttribute);
-        }
-
-        return constraint;
-    }
-
-    ReferencialIntegrityConstraint copyIdentificationAttributesAsAlternativeForeign(Derivation derivation) {
-
-        ReferencialIntegrityConstraint constraint = new ReferencialIntegrityConstraint(this.name, derivation.name);
-
-        for (String attribute : this.identificationAttributes) {
-
-            String cleanAttribute = attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "");
-            derivation.addCommonAttribute(DerivationFormater.ALTERNATIVE_ATTRIBUTE + DerivationFormater.FOREIGN_ATTRIBUTE + cleanAttribute);
-            constraint.addReference(cleanAttribute, cleanAttribute);
-        }
-
-        return constraint;
-    }
-
-    void moveAttributesTo(Derivation derivation) {
-
-        for (String attribute : this.identificationAttributes) {
-            derivation.addIdentificationAttribute(attribute);
-        }
-
-        for (String attribute : this.commonAttributes) {
-            derivation.addCommonAttribute(attribute);
-        }
-    }
-
-    void moveCommonAttributesTo(Derivation derivation) {
-        for (String attribute : this.commonAttributes) {
-            derivation.addCommonAttribute(attribute);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    boolean hasAttribute(String attribute) {
-        return this.identificationAttributes.contains(attribute) || this.commonAttributes.contains(attribute);
-    }
-
-    boolean hasCommonAttribute(String attribute) {
-        for (String commonAttribute : this.commonAttributes) {
-            String cleanCommonAttribute = DerivationFormater.cleanAllFormats(commonAttribute);
-            if (cleanCommonAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    boolean hasIdentificationAttribute(String attribute) {
-        for (String identificationAttribute : this.identificationAttributes) {
-            String cleanIdentificationAttribute = DerivationFormater.cleanAllFormats(identificationAttribute);
-            if (cleanIdentificationAttribute.equals(DerivationFormater.cleanAllFormats(attribute))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    boolean isEmpty() {
-        return this.identificationAttributes.isEmpty() && this.commonAttributes.isEmpty();
-    }
-
-    String getName() {
-        return this.name;
+    public boolean isEmpty() {
+        return this.identificationElements.isEmpty() && this.commonElements.isEmpty();
     }
 
     @Override
     public String toString() {
-        StringBuilder out = new StringBuilder(this.name).append("(");
 
-        StringBuilder identificationAttributes = new StringBuilder();
+        String out = this.name + "(";
 
-        // Agregar los atributos de identificación
-        for (String attribute : this.identificationAttributes) {
-            // This "cleanAllFormats" could be moved to the adding to identification attributes.
-            identificationAttributes.append(attribute.replace(DerivationFormater.MAIN_ATTRIBUTE, "")).append(", ");
+        out += this.identificationElements.toString();
+
+        if (!this.identificationElements.isEmpty() && !this.commonElements.isEmpty()) {
+            out += ",";
         }
 
-        deleteLast(", ", identificationAttributes);
+        out += this.commonElements.toString() + ")";
 
-        out.append(DerivationFormater
-                .format(DerivationFormater.MAIN_ATTRIBUTE + identificationAttributes))
-            .append(", ")
-        ;
-
-        // Agregar los atributos comunes
-        for (String attribute : this.commonAttributes) {
-            out.append(DerivationFormater.format(attribute)).append(", ");
-        }
-
-        // Eliminar la última coma y espacio
-        deleteLast(", ", out);
-
-        out.append(")");
-
-        // Eliminar cualquier espacio residual al final
-        return out.toString().replaceAll("\\s+$", "");
+        return out;
     }
 
-    @SuppressWarnings("SameParameterValue")
-    private void deleteLast(String textToBeDeleted, StringBuilder stringBuilder) {
-        int startIndex = stringBuilder.lastIndexOf(textToBeDeleted);
-        if (startIndex != -1) {
-            stringBuilder.delete(startIndex, startIndex + 2); // Eliminar la coma y el espacio
+    public String formatToHTML() {
+
+        String out = this.name + "(";
+
+        out += this.identificationElements.formatToHTML();
+
+        if (!this.identificationElements.isEmpty() && !this.commonElements.isEmpty()) {
+            out += ", ";
         }
+
+        out += this.commonElements.formatToHTML() + ")";
+
+        return out;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public static Derivation unify(Derivation firstDerivation, Derivation secondDerivation) {
+
+        if (!firstDerivation.name.equals(secondDerivation.name)) {
+            throw new IllegalArgumentException("The derivation names must be the same.");
+        }
+
+        Derivation unification = new Derivation(firstDerivation.name);
+
+        if (!firstDerivation.identificationElements.isEmpty()) {
+            unification.addIdentificationElement(firstDerivation.identificationElements.getCopy());
+        }
+
+        if (!secondDerivation.identificationElements.isEmpty()) {
+            unification.addIdentificationElement(secondDerivation.identificationElements.getCopy());
+        }
+
+        if (!firstDerivation.commonElements.isEmpty()) {
+            unification.addCommonElement(firstDerivation.commonElements.getCopy());
+        }
+
+        if (!secondDerivation.commonElements.isEmpty()) {
+            unification.addCommonElement(secondDerivation.commonElements.getCopy());
+        }
+
+        return unification;
+    }
+
+    public int getNumberOfIdentificationElements() {
+        return this.identificationElements.getNumberOfElements();
+    }
+
+    @SuppressWarnings("unused")
+    public int getNumberOfCommonElements() {
+        return this.commonElements.getNumberOfElements();
+    }
+
+    @SuppressWarnings("unused")
+    public int getNumberOfElements() {
+        return this.getNumberOfCommonElements() + this.getNumberOfIdentificationElements();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Derivation that = (Derivation) o;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

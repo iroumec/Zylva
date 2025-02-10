@@ -25,6 +25,8 @@ import com.bdd.mer.frame.userPreferences.LanguageManager;
 import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
@@ -70,7 +72,7 @@ public final class ActionManager implements Serializable {
                 this.drawingPanel,
                 null,
                 LanguageManager.getMessage("actionManager.addEntity.dialog"), // Title.
-                JOptionPane.QUESTION_MESSAGE // Message Type.
+                JOptionPane.QUESTION_MESSAGE // Message Source.
         );
 
         if (entityName != null) { // If it's null, the action was canceled.
@@ -125,15 +127,17 @@ public final class ActionManager implements Serializable {
             if (name != null) {
                 if (!name.isEmpty()) {
 
-                    Point center = this.drawingPanel.getCenterOfSelectedComponents();
-
-                    Relationship newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
-
-                    List<Cardinality> cardinalities = new ArrayList<>();
+                    Relationship newRelationship = null;
 
                     List<Line> lines = new ArrayList<>();
 
+                    List<Cardinality> cardinalities = new ArrayList<>();
+
                     if (selectedComponents >= 2 && selectedComponents <= 3) {
+
+                        Point center = this.drawingPanel.getCenterOfSelectedComponents();
+
+                        newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
 
                         for (Component component : drawingPanel.getSelectedComponents()) {
 
@@ -171,6 +175,13 @@ public final class ActionManager implements Serializable {
 
                     } else if (selectedComponents == 1) {
 
+                        newRelationship = new Relationship(
+                                name,
+                                this.drawingPanel.getMouseX() + 90,
+                                this.drawingPanel.getMouseY() - 90,
+                                this.drawingPanel
+                        );
+
                         Relatable castedComponent = (Relatable) this.drawingPanel.getSelectedComponents().getFirst();
 
                         Cardinality firstCardinality = new Cardinality("1", "N", this.drawingPanel);
@@ -196,6 +207,10 @@ public final class ActionManager implements Serializable {
                         newRelationship.addParticipant(castedComponent, firstCardinalityLine);
                         newRelationship.addParticipant(castedComponent, secondCardinalityLine);
                     }
+
+                    // It can never be null, due to it is asked the exact amount of components previously.
+                    // But the IDE doesn't know it.
+                    assert newRelationship != null;
 
                     for (Cardinality cardinality : cardinalities) {
                         drawingPanel.addComponent(cardinality);
@@ -234,6 +249,8 @@ public final class ActionManager implements Serializable {
         miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.maximum")));
         miPanel.add(cardinalidadMaximaCampo);
 
+        setFocus(cardinalidadMinimaCampo);
+
         int resultado = JOptionPane.showConfirmDialog(null, miPanel, LanguageManager.getMessage("input.twoValues"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (resultado == JOptionPane.OK_OPTION) {
@@ -271,6 +288,9 @@ public final class ActionManager implements Serializable {
 
             // If everything is valid, the cardinality is updated.
             cardinality.setText(Cardinality.giveFormat(minText, maxText));
+
+            // Here only the area of the cardinality could be repainted, but, if the cardinality now has a considerable
+            // greater number, it'll lead to visual noise until all the panel is repainted.
             this.drawingPanel.repaint();
         }
     }
@@ -466,8 +486,8 @@ public final class ActionManager implements Serializable {
                     return;
                 }
 
-                Hierarchy newHierarchy = newHierarchyData.getFirst();
-                Line parentLine = newHierarchyData.getSecond();
+                Hierarchy newHierarchy = newHierarchyData.first();
+                Line parentLine = newHierarchyData.second();
 
                 for (EntityWrapper subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);
@@ -567,7 +587,7 @@ public final class ActionManager implements Serializable {
                     this.drawingPanel,
                     null,
                     "Enter a discriminant",
-                    JOptionPane.QUESTION_MESSAGE // Message Type.
+                    JOptionPane.QUESTION_MESSAGE // Message Source.
             );
 
             discriminant = new Discriminant(discriminantText, this.drawingPanel);
@@ -912,17 +932,17 @@ public final class ActionManager implements Serializable {
      */
     private void setFocus(JComponent component) {
 
-        component.addAncestorListener(new javax.swing.event.AncestorListener() {
+        component.addAncestorListener(new AncestorListener() {
             @Override
-            public void ancestorAdded(javax.swing.event.AncestorEvent event) {
+            public void ancestorAdded(AncestorEvent event) {
                 component.requestFocusInWindow();
             }
 
             @Override
-            public void ancestorRemoved(javax.swing.event.AncestorEvent event) {}
+            public void ancestorRemoved(AncestorEvent event) {}
 
             @Override
-            public void ancestorMoved(javax.swing.event.AncestorEvent event) {}
+            public void ancestorMoved(AncestorEvent event) {}
         });
 
     }
@@ -948,6 +968,8 @@ public final class ActionManager implements Serializable {
         attribute.setDrawingPriority(4);
 
         drawingPanel.sortComponents();
+
+        drawingPanel.repaint();
     }
 
     /**

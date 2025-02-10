@@ -6,6 +6,7 @@ import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -152,11 +153,11 @@ public class Association extends Component implements Relatable, Derivable {
     }
 
     /**
-     * @return Always null, due to its relationship will parse it.
+     * @return Always an empty list, due to its derivation process is contained in its relationship.
      */
     @Override
-    public String parse() {
-        return null;
+    public List<DerivationObject> getDerivationObjects() {
+        return new ArrayList<>();
     }
 
     /**
