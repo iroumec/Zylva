@@ -8,7 +8,6 @@ import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.line.guard.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.PluralDerivation;
 import com.bdd.mer.frame.DrawingPanel;
@@ -263,8 +262,8 @@ public class Relationship extends AttributableComponent {
 
                     derivation.addMember(new PluralDerivation.Member(
                             ((Derivable) participant.getKey()).getIdentifier(),
-                            cardinalities.getFirst(),
-                            cardinalities.getSecond()
+                            cardinalities.first(),
+                            cardinalities.second()
                     ));
                 } catch (Exception e) {
                     throw new RuntimeException(e);

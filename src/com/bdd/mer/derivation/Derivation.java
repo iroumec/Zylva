@@ -20,11 +20,12 @@ public class Derivation {
     }
 
     public void addIdentificationElement(Element element) {
-        Element.clearAllDecorationsExcepting(element, ElementDecorator.FOREIGN);
+        element.clearAllDecorations();
         this.identificationElements.addElement(element);
     }
 
     public void addCommonElement(Element element) {
+        element.clearAllDecorations();
         this.commonElements.addElement(element);
     }
 

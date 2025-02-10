@@ -5,10 +5,10 @@ import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.*;
-import com.bdd.mer.derivation.elements.container.Final;
-import com.bdd.mer.derivation.elements.container.Holder;
-import com.bdd.mer.derivation.elements.container.Replacer;
-import com.bdd.mer.derivation.elements.container.sources.Common;
+import com.bdd.mer.derivation.elements.containers.Final;
+import com.bdd.mer.derivation.elements.containers.Holder;
+import com.bdd.mer.derivation.elements.containers.Replacer;
+import com.bdd.mer.derivation.elements.containers.sources.Common;
 
 import java.util.ArrayList;
 import java.util.List;

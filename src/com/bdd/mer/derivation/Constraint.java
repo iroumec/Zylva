@@ -1,6 +1,7 @@
 package com.bdd.mer.derivation;
 
 import com.bdd.mer.derivation.elements.Element;
+import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.structures.Pair;
 
 import java.util.List;
@@ -39,8 +40,8 @@ public class Constraint {
                 addComma = true;
             }
 
-            referencingAttributes.append(reference.getFirst().toString());
-            referencedAttributes.append(reference.getSecond().toString());
+            referencingAttributes.append(reference.first().toString());
+            referencedAttributes.append(reference.second().toString());
         }
 
         return this.referencing +
@@ -65,8 +66,8 @@ public class Constraint {
                 addComma = true;
             }
 
-            referencingAttributes.append(reference.getFirst().formatToHTML());
-            referencedAttributes.append(reference.getSecond().formatToHTML());
+            referencingAttributes.append(reference.first().formatToHTML());
+            referencedAttributes.append(reference.second().formatToHTML());
         }
 
         return this.referencing +
@@ -77,8 +78,29 @@ public class Constraint {
 
     void transferConstraintsTo(Constraint constraint) {
         for (Pair<Element, Element> reference : this.references) {
-            constraint.addReference(reference.getFirst(), reference.getSecond());
+            constraint.addReference(reference.first(), reference.second());
         }
+    }
+
+    void setAsDuplicated() {
+        for (Pair<Element, Element> reference : this.references) {
+            reference.first().addDecoration(ElementDecorator.DUPLICATED);
+        }
+    }
+
+    boolean hasSameReferencesAs(Constraint constraint) {
+        for (Pair<Element, Element> reference : this.references) {
+            if (!constraint.hasReference(reference)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean hasReference(Pair<Element, Element> reference) {
+
+        return this.references.contains(reference);
     }
 
     @Override

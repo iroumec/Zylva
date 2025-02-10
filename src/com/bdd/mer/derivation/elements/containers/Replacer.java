@@ -1,10 +1,10 @@
-package com.bdd.mer.derivation.elements.container;
+package com.bdd.mer.derivation.elements.containers;
 
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.derivation.elements.ElementDecorator;
-import com.bdd.mer.derivation.elements.container.sources.Identifier;
-import com.bdd.mer.derivation.elements.container.sources.Source;
+import com.bdd.mer.derivation.elements.containers.sources.Identifier;
+import com.bdd.mer.derivation.elements.containers.sources.Source;
 
 import java.util.HashSet;
 import java.util.Set;

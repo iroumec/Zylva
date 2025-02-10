@@ -50,8 +50,10 @@ public abstract class Element {
 
     }
 
-    public static void clearAllDecorations(Element element) {
-        element.decorations.clear();
+    public abstract void clearAllDecorations();
+
+    final void emptyDecorations() {
+        this.decorations.clear();
     }
 
     public static void clearAllDecorationsExcepting(Element element, ElementDecorator... except) {

@@ -3,9 +3,9 @@ package com.bdd.mer.derivation.derivationObjects;
 import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.elements.SingleElement;
-import com.bdd.mer.derivation.elements.container.Holder;
-import com.bdd.mer.derivation.elements.container.Replacer;
-import com.bdd.mer.derivation.elements.container.sources.Common;
+import com.bdd.mer.derivation.elements.containers.Holder;
+import com.bdd.mer.derivation.elements.containers.Replacer;
+import com.bdd.mer.derivation.elements.containers.sources.Common;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -208,70 +208,48 @@ public class PluralDerivation extends DerivationObject {
 
     private void derivate1_1Relationship(Member firstMember, Member secondMember) {
 
-        if (firstMember.minCardinality.equals("0") || secondMember.minCardinality.equals("0")) {
+        // The member who takes the identification attributes of the other member.
+        Member mainMember, secondaryMember;
+        Derivation derivation;
+        List<ElementDecorator> decorators = new ArrayList<>();
+        decorators.add(ElementDecorator.FOREIGN);
+        decorators.add(ElementDecorator.ALTERNATIVE);
 
-            if (firstMember.minCardinality.equals("0") && secondMember.minCardinality.equals("0")) { // Case (0,1):(0,1)
+        // Case (0,1):(1,1).
+        if (!firstMember.minCardinality.equals(secondMember.minCardinality)) {
 
-                // The order could be different.
-                Derivation derivation = new Derivation(firstMember.name);
-                // The first member references the second member identification attributes as optional.
-                derivation.addCommonElement(
-                        new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
-                );
-                // The first member has all the common attributes of the relationship.
-                derivation.addCommonElement(
-                        new SingleElement(this.getName(), new Replacer(new Common()))
-                );
+            mainMember = (firstMember.minCardinality.equals("0")) ? firstMember : secondMember;
 
-                this.addDerivation(derivation);
+        } else { // Cases (0,1):(0,1) and (1,1):(1,1). Here the member chosen doesn't matter. There are two valid derivations.
 
-            } else { // Case (0,1):(1,1) // Can be simplified.
-
-                Derivation derivation;
-                if (firstMember.minCardinality.equals("0")) {
-
-                    derivation = new Derivation(firstMember.name);
-                    // The first member references the second member identification attributes.
-                    derivation.addCommonElement(
-                            new SingleElement(secondMember.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
-                    );
-                    // The first member has all the common attributes of the relationship.
-
-                } else {
-
-                    derivation = new Derivation(secondMember.name);
-                    // The second member references the first member identification attributes.
-                    derivation.addCommonElement(
-                            new SingleElement(firstMember.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
-                    );
-                    // The second member has all the common attributes of the relationship.
-
-                }
-
-                derivation.addCommonElement(
-                        new SingleElement(this.getName(), new Replacer(new Common()))
-                );
-
-                this.addDerivation(derivation);
+            if (firstMember.minCardinality.equals("0")) { // Case (0,1):(0,1).
+                decorators.add(ElementDecorator.OPTIONAL);
+                decorators.remove(ElementDecorator.ALTERNATIVE);
             }
-        } else { // Case (1,1):(1,1)
 
-            // The order could be different.
+            Random selector = new Random();
 
-            Derivation derivation = new Derivation(firstMember.name);
-            // The first member references the second member identification attributes.
-            derivation.addCommonElement(
-                    new SingleElement(secondMember.name, new Replacer(new Common(), ElementDecorator.FOREIGN))
-            );
-            // The first member has all the common attributes of the relationship.
+            mainMember = selector.nextBoolean() ? firstMember : secondMember;
+        }
+
+        secondaryMember = (mainMember.equals(firstMember)) ? secondMember : firstMember;
+
+        derivation = new Derivation(mainMember.name);
+
+        derivation.addCommonElement(
+                new SingleElement(secondaryMember.name,
+                        new Replacer(decorators.toArray(new ElementDecorator[0])))
+        );
+
+        if (!mainDerivation.isEmpty()) {
+
+            // The derivation member has all the common attributes of the relationship.
             derivation.addCommonElement(
                     new SingleElement(this.getName(), new Replacer(new Common()))
             );
-
-            this.addDerivation(derivation);
         }
 
-        //this.mainDerivation = null;
+        this.addDerivation(derivation);
     }
 
     private void derivateN_NRelationship(Member firstMember, Member secondMember) {
@@ -280,8 +258,18 @@ public class PluralDerivation extends DerivationObject {
         this.mainDerivation.addIdentificationElement(
                 new SingleElement(firstMember.name, new Replacer(ElementDecorator.FOREIGN))
         );
+
+        List<ElementDecorator> decoratorsForSecondMember = new ArrayList<>();
+        decoratorsForSecondMember.add(ElementDecorator.FOREIGN);
+
+        // N:N unary relationship.
+        if (firstMember.name.equals(secondMember.name)) {
+            decoratorsForSecondMember.add(ElementDecorator.DUPLICATED);
+        }
+
         this.mainDerivation.addIdentificationElement(
-                new SingleElement(secondMember.name, new Replacer(ElementDecorator.FOREIGN))
+                new SingleElement(secondMember.name,
+                        new Replacer(decoratorsForSecondMember.toArray(new ElementDecorator[0])))
         );
     }
 

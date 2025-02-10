@@ -1,12 +1,13 @@
 package com.bdd.mer.derivation.elements;
 
 import com.bdd.mer.derivation.Derivation;
-import com.bdd.mer.derivation.elements.container.Final;
-import com.bdd.mer.derivation.elements.container.Holder;
+import com.bdd.mer.derivation.elements.containers.Final;
+import com.bdd.mer.derivation.elements.containers.Holder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SingleElement extends Element {
 
@@ -30,11 +31,6 @@ public class SingleElement extends Element {
         return holder.generatesConstraints();
     }
 
-    public boolean needsRename() {
-        System.out.println("uwu");
-        return holder.needsRename();
-    }
-
     @Nullable
     public Element abstractElements(Derivation derivation) {
         return holder.abstractReplacement(derivation);
@@ -49,6 +45,11 @@ public class SingleElement extends Element {
     @Override
     public String formatToHTML() {
         return super.applyDecorators(this.name);
+    }
+
+    @Override
+    public void clearAllDecorations() {
+        super.emptyDecorations();
     }
 
     @Override
@@ -90,5 +91,17 @@ public class SingleElement extends Element {
         this.copyDecoratorsTo(copy);
 
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        SingleElement element = (SingleElement) o;
+        return Objects.equals(name, element.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

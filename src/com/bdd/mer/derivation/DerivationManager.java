@@ -73,7 +73,17 @@ public class DerivationManager {
 
             Constraint constraint = referentialIntegrityConstraints.get(referentialIntegrityConstraints.indexOf(newConstraint));
 
-            newConstraint.transferConstraintsTo(constraint);
+            if (newConstraint.hasSameReferencesAs(constraint)) {
+                // In case of facing an N:N unary relation.
+
+                newConstraint.setAsDuplicated();
+
+                referentialIntegrityConstraints.add(newConstraint);
+            } else {
+
+                newConstraint.transferConstraintsTo(constraint);
+            }
+
         } else {
             referentialIntegrityConstraints.add(newConstraint);
         }
@@ -132,23 +142,19 @@ public class DerivationManager {
 
         for (SingleElement element : elements) {
 
-            Element cleanElement = element.getCopy();
-            Element.clearAllDecorations(cleanElement);
+            Element firstElement = element.getCopy();
+            firstElement.clearAllDecorations();
 
-            System.out.println(element);
+            // It's important that they are two distinct objects.
+            Element secondElement = firstElement.getCopy();
 
-            if (element.needsRename()) {
+            // We are in the case of a unary relationship....
+            if (referencing.equals(referenced)) {
 
-                System.out.println("Entré aquí");
-
-                Element rename = cleanElement.getCopy();
-                rename.addDecoration(ElementDecorator.DUPLICATED);
-
-                constraint.addReference(rename, cleanElement);
-            } else {
-
-                constraint.addReference(cleanElement, cleanElement);
+                firstElement.addDecoration(ElementDecorator.DUPLICATED);
             }
+
+            constraint.addReference(firstElement, secondElement);
         }
 
         addReferencialIntegrityConstraint(constraint);

@@ -466,8 +466,8 @@ public final class ActionManager implements Serializable {
                     return;
                 }
 
-                Hierarchy newHierarchy = newHierarchyData.getFirst();
-                Line parentLine = newHierarchyData.getSecond();
+                Hierarchy newHierarchy = newHierarchyData.first();
+                Line parentLine = newHierarchyData.second();
 
                 for (EntityWrapper subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);

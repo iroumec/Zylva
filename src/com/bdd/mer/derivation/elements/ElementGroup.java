@@ -2,6 +2,7 @@ package com.bdd.mer.derivation.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ElementGroup extends Element {
 
@@ -18,6 +19,9 @@ public class ElementGroup extends Element {
         for (Element e : elements) {
             if (e.equals(element)) {
                 elements.set(elements.indexOf(e), replacement);
+                // This break is necessary in case of having duplicates.
+                // For example, in an N:N unary relationship.
+                break;
             } else {
                 e.replace(element, replacement);
             }
@@ -101,6 +105,16 @@ public class ElementGroup extends Element {
     }
 
     @Override
+    public void clearAllDecorations() {
+
+        super.emptyDecorations();
+
+        for (Element element : elements) {
+            element.clearAllDecorations();
+        }
+    }
+
+    @Override
     public int getNumberOfElements() {
 
         int out = 0;
@@ -122,5 +136,17 @@ public class ElementGroup extends Element {
         }
 
         return out;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ElementGroup that = (ElementGroup) o;
+        return Objects.equals(elements, that.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(elements);
     }
 }
