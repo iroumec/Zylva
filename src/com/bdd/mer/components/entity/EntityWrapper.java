@@ -8,6 +8,7 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
+import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -326,6 +327,73 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
         Whether an association where an entity participates must be deleted or not when the latter is deleted, it
         depends on the relationship forming the association.
          */
+
+        return out;
+    }
+
+    @Override
+    public String toString() {
+        return this.getText();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String parse() {
+
+        StringBuilder out = new StringBuilder(this.entity.getClass().getSimpleName() + "[" + this.getIdentifier() + "]" + "(");
+
+        out.append(super.parse());
+
+        out.append(DerivationFormater.SEPARATOR);
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+
+            if (hierarchy.isChild(this)) {
+
+                List<Attribute> mainAttributes = hierarchy.getParent().getMainAttributes();
+
+                for (Attribute mainAttribute : mainAttributes) {
+                    out.append(DerivationFormater.MAIN_ATTRIBUTE)
+                            .append(DerivationFormater.FOREIGN_ATTRIBUTE)
+                            .append(mainAttribute.getIdentifier())
+                            .append(DerivationFormater.SEPARATOR);
+                }
+
+                hierarchy.getParent().getMainAttributes();
+            } else {
+
+                if (hierarchy.isExclusive()) {
+                    out.append(hierarchy.getDiscriminant()).append(DerivationFormater.SEPARATOR);
+                }
+            }
+        }
+
+        int lastIndex = out.lastIndexOf(DerivationFormater.SEPARATOR);
+
+        if (lastIndex != -1) {
+
+            out.deleteCharAt(lastIndex);
+        }
+
+        return out + ")";
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
+    }
+
+    @Override
+    public List<Attribute> getMainAttributes() {
+
+        List<Attribute> out = new ArrayList<>(super.getMainAttributes());
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+            if (hierarchy.isChild(this)) {
+                out.addAll(hierarchy.getParent().getMainAttributes());
+            }
+        }
 
         return out;
     }

@@ -75,8 +75,18 @@ public final class FileManager {
                 @SuppressWarnings("unchecked")
                 List<Component> components = (List<Component>) in.readObject();
 
+                drawingPanel.reset();
+
                 for (Component component : components.reversed()) {
+
                     drawingPanel.addComponent(component);
+
+                    // If the PopupMenu is not reset, the actions menus are not shown.
+                    component.resetPopupMenu();
+
+                    // If the DrawingPanel is not set again, the actions have no effect.
+                    // This doesn't fix anything. Why attributes are not visible?
+                    component.setDrawingPanel(drawingPanel);
                 }
 
                 in.close();

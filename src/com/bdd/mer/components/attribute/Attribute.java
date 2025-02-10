@@ -151,9 +151,7 @@ public class Attribute extends AttributableComponent {
      */
     private Rectangle calculateTextBounds(Graphics2D g2, String text, Point position) {
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(text) - 12;
-        // Manual correction because, I don't know why,
-        // the width number is not accurate
+        int textWidth = fm.stringWidth(text);
         int textHeight = fm.getHeight();
         int rectY = position.y - textHeight;
         return new Rectangle(position.x, rectY, textWidth, textHeight);
@@ -190,6 +188,18 @@ public class Attribute extends AttributableComponent {
         g2.setColor(Color.BLACK);
     }
 
+    public boolean isMultivalued () {
+        return this.ending == AttributeEnding.MULTIVALUED;
+    }
+
+    public boolean isOptional() {
+        return this.arrow == AttributeArrow.OPTIONAL;
+    }
+
+    public boolean isAlternative() {
+        return this.symbol == AttributeSymbol.ALTERNATIVE;
+    }
+
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -220,5 +230,21 @@ public class Attribute extends AttributableComponent {
 
     @Override
     public boolean canBeSelectedBySelectionArea() { return false; }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "[" + this.getText() + "]" + super.toString();
+    }
+
+    @Override
+    public String parse() {
+
+        return Attribute.class.getSimpleName() + "[" + this.getIdentifier() + "](" + super.parse() + ")";
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
+    }
 
 }

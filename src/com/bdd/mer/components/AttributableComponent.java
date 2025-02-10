@@ -1,12 +1,14 @@
 package com.bdd.mer.components;
 
 import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.DerivationFormater;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AttributableComponent extends Component {
+public abstract class AttributableComponent extends Component implements Derivable {
 
     /**
      * List of {@code Attribute} of the component.
@@ -82,6 +84,19 @@ public abstract class AttributableComponent extends Component {
         return out;
     }
 
+    public List<Attribute> getMainAttributes() {
+
+        List<Attribute> out = new ArrayList<>();
+
+        for (Attribute attribute : this.attributes) {
+            if (attribute.isMain()) {
+                out.add(attribute);
+            }
+        }
+
+        return out;
+    }
+
     /**
      *
      * @return The number of attributes in the component.
@@ -131,6 +146,44 @@ public abstract class AttributableComponent extends Component {
             attribute.setSelected(isSelected);
         }
 
+    }
+
+    @Override
+    public String parse() {
+
+        StringBuilder out = new StringBuilder();
+
+        for (Attribute attribute : this.attributes) {
+
+            String name = attribute.getIdentifier();
+
+            if (attribute.isMain()) {
+                name = DerivationFormater.MAIN_ATTRIBUTE + name;
+            }
+
+            if (attribute.isAlternative()) {
+                name = DerivationFormater.ALTERNATIVE_ATTRIBUTE + name;
+            }
+
+            if (attribute.isMultivalued()) {
+                name = DerivationFormater.MULTIVALUED_ATTRIBUTE + name;
+            }
+
+            if (attribute.isOptional()) {
+                name = DerivationFormater.OPTIONAL_ATTRIBUTE + name;
+            }
+
+            out.append(name).append(DerivationFormater.SEPARATOR);
+        }
+
+        int lastIndex = out.lastIndexOf(DerivationFormater.SEPARATOR);
+
+        if (lastIndex != -1) {
+
+            out.deleteCharAt(lastIndex);
+        }
+
+        return out.toString();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.bdd.mer.frame.menuBar;
 
+import com.bdd.mer.derivation.DerivationManager;
 import com.bdd.mer.frame.userPreferences.LanguageManager;
 import com.bdd.mer.frame.MainFrame;
 import com.bdd.mer.frame.DrawingPanel;
@@ -11,7 +12,7 @@ import javax.swing.*;
 class FileMenu extends JMenu {
 
     private final DrawingPanel drawingPanel;
-    private final JMenuItem exportPNG, saveDiagram, loadDiagram, changeLanguage, changeAntialiasing;
+    private final JMenuItem exportPNG, saveDiagram, loadDiagram, changeLanguage, changeAntialiasing, derivateDiagram;
 
     FileMenu(MainFrame mainFrame, DrawingPanel drawingPanel, String text) {
 
@@ -36,6 +37,10 @@ class FileMenu extends JMenu {
         loadDiagram = new JMenuItem(LanguageManager.getMessage("fileMenu.loadDiagram"));
         loadDiagram.addActionListener(_ -> FileManager.loadDiagram(drawingPanel));
 
+        // Derivate diagram.
+        derivateDiagram = new JMenuItem("Derivate"/*LanguageManager.getMessage("fileMenu.derivateDiagram")*/);
+        derivateDiagram.addActionListener(_ -> DerivationManager.derivate(drawingPanel));
+
         // Change language.
         changeLanguage = new JMenuItem(LanguageManager.getMessage("fileMenu.changeLanguage"));
         changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage(mainFrame));
@@ -53,6 +58,7 @@ class FileMenu extends JMenu {
         add(exportPNG);
         add(saveDiagram);
         add(loadDiagram);
+        add(derivateDiagram);
         add(changeLanguage);
         add(changeAntialiasing);
     }

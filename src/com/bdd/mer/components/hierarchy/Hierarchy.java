@@ -4,6 +4,7 @@ import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.frame.userPreferences.LanguageManager;
 
@@ -269,5 +270,15 @@ public class Hierarchy extends Component {
         out.add(this.parentLine);
 
         return out;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public boolean isExclusive() {
+        return this.symbol == HierarchySymbol.DISJUNCT;
+    }
+
+    public String getDiscriminant() {
+        return this.parentLine.getText();
     }
 }

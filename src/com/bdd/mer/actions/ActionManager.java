@@ -12,11 +12,12 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.Line;
+import com.bdd.mer.components.line.guard.Discriminant;
 import com.bdd.mer.components.line.lineMultiplicity.DoubleLine;
 import com.bdd.mer.components.line.lineShape.SquaredLine;
-import com.bdd.mer.components.relationship.cardinality.Cardinality;
+import com.bdd.mer.components.line.guard.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.Relationship;
-import com.bdd.mer.components.relationship.cardinality.StaticCardinality;
+import com.bdd.mer.components.line.guard.cardinality.StaticCardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.components.note.Note;
@@ -139,7 +140,13 @@ public final class ActionManager implements Serializable {
                             // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
                             Relatable castedComponent = (Relatable) component;
 
-                            Cardinality cardinality = new Cardinality("1", "N", this.drawingPanel);
+                            Cardinality cardinality;
+
+                            if (selectedComponents == 2) {
+                                cardinality = new Cardinality("1", "N", this.drawingPanel);
+                            } else {
+                                cardinality = new Cardinality("0", "N", this.drawingPanel);
+                            }
 
                             cardinalities.add(cardinality);
 
@@ -552,14 +559,46 @@ public final class ActionManager implements Serializable {
 
         Hierarchy newHierarchy = new Hierarchy(symbol, parent, this.drawingPanel);
 
+        Discriminant discriminant = null;
+
+        if (symbol.equals(HierarchySymbol.DISJUNCT)) {
+
+            String discriminantText = JOptionPane.showInputDialog(
+                    this.drawingPanel,
+                    null,
+                    "Enter a discriminant",
+                    JOptionPane.QUESTION_MESSAGE // Message Type.
+            );
+
+            discriminant = new Discriminant(discriminantText, this.drawingPanel);
+        }
+
         Line parentLine;
 
         if (totalButton.isSelected()) {
-            parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
-                    .lineMultiplicity(new DoubleLine(3)).build();
+
+            if (discriminant != null) {
+
+                parentLine = new GuardedLine.Builder(this.drawingPanel, parent, newHierarchy, discriminant)
+                        .lineMultiplicity(new DoubleLine(3)).build();
+            } else {
+
+                parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
+                        .lineMultiplicity(new DoubleLine(3)).build();
+            }
+
         } else {
-            parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
-                    .stroke(new BasicStroke(2)).build();
+
+            if (discriminant != null) {
+
+                parentLine = new GuardedLine.Builder(this.drawingPanel, parent, newHierarchy, discriminant)
+                        .strokeWidth(2).build();
+            } else {
+
+                parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
+                        .strokeWidth(2).build();
+            }
+
             // This way, setting the stroke, it's noticeable who is the parent of the hierarchy.
         }
 

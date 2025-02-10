@@ -5,6 +5,7 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Association extends Component implements Relatable {
+public class Association extends Component implements Relatable, Derivable {
 
     private final RelatableImplementation relationshipsManager;
 
@@ -148,5 +149,21 @@ public class Association extends Component implements Relatable {
     @Override
     public void removeRelationship(Relationship relationship) {
         this.relationshipsManager.removeRelationship(relationship);
+    }
+
+    /**
+     * @return Always null, due to its relationship will parse it.
+     */
+    @Override
+    public String parse() {
+        return null;
+    }
+
+    /**
+     * @return Its relationship's identifier.
+     */
+    @Override
+    public String getIdentifier() {
+        return this.relationship.getIdentifier();
     }
 }

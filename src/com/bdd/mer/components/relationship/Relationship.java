@@ -5,6 +5,7 @@ import com.bdd.mer.components.Component;
 import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.relationship.relatable.Relatable;
+import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.actions.Action;
 
@@ -230,5 +231,33 @@ public class Relationship extends AttributableComponent {
         }
 
         return out;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String parse() {
+
+        StringBuilder out = new StringBuilder(this.getClass().getSimpleName() + "[" + this.getIdentifier() + "](");
+
+        out.append(super.parse()).append(")["); // Attributes.
+
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+
+            List<Line> lines = participant.getValue();
+
+            for (Line line : lines) {
+                out.append(((Derivable) participant.getKey()).getIdentifier()).append(line.toString()).append(";");
+            }
+        }
+
+        out.deleteCharAt(out.lastIndexOf(";"));
+
+        return out.append("]").toString();
+    }
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
     }
 }

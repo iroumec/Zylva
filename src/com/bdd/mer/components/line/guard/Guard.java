@@ -1,20 +1,17 @@
-package com.bdd.mer.components.relationship.cardinality;
+package com.bdd.mer.components.line.guard;
 
-import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.frame.DrawingPanel;
 
-import javax.swing.*;
 import java.awt.*;
 
-public class Cardinality extends Component {
+public abstract class Guard extends Component {
 
     private GuardedLine guardedLine;
 
-    public Cardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
-        super(drawingPanel);
-        this.setText(giveFormat(firstValue, secondValue));
+    public Guard(String text, DrawingPanel drawingPanel) {
+        super(text, drawingPanel);
 
         setDrawingPriority(3);
     }
@@ -22,26 +19,6 @@ public class Cardinality extends Component {
     public void setLine(GuardedLine guardedLine) {
         this.guardedLine = guardedLine;
     }
-
-    public static String giveFormat(String firstValue, String secondValue) {
-        return "(" + firstValue + ", " + secondValue + ")";
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    protected JPopupMenu getPopupMenu() {
-
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.CHANGE_CARDINALITY
-        );
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void draw(Graphics2D g2) {
@@ -73,9 +50,13 @@ public class Cardinality extends Component {
         //g2.draw(shape);
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    @Override
+    public String toString() {
+        return this.getText();
+    }
 
     @Override
-    public void cleanPresence() {}
-
+    public void cleanPresence() {
+        // Do nothing.
+    }
 }
