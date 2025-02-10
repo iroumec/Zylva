@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Holder {
 
-    boolean needsRename();
     boolean mayNeedReplacement();
     boolean generatesConstraints();
     @Nullable Element abstractReplacement(Derivation derivation);

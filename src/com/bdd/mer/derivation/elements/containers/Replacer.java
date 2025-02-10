@@ -33,11 +33,6 @@ public class Replacer implements Holder {
     }
 
     @Override
-    public boolean needsRename() {
-        return this.modifiers.contains(ElementDecorator.DUPLICATED);
-    }
-
-    @Override
     public boolean mayNeedReplacement() {
         return true;
     }

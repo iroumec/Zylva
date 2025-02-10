@@ -56,18 +56,6 @@ public abstract class Element {
         this.decorations.clear();
     }
 
-    public static void clearAllDecorationsExcepting(Element element, ElementDecorator... except) {
-
-        Set<ElementDecorator> exceptionList = new HashSet<>(Set.of(except));
-        Set<ElementDecorator> decorationsToRemove = new HashSet<>(element.decorations);
-
-        decorationsToRemove.removeAll(exceptionList);
-
-        for (ElementDecorator decorator : decorationsToRemove) {
-            element.removeDecoration(decorator);
-        }
-    }
-
     public abstract int getNumberOfElements();
 
     public abstract List<SingleElement> getPartitions();
