@@ -1,6 +1,5 @@
 package com.bdd.mer.derivation;
 
-import com.bdd.mer.components.Component;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.derivation.elements.ElementDecorator;
@@ -10,46 +9,39 @@ import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.*;
 
-/**
- *
- * The format adopted must be:
- */
-public class DerivationManager {
-
-    private static final Map<String, Derivation> derivations = new HashMap<>();
-    private static final List<Constraint> referentialIntegrityConstraints = new ArrayList<>();
+public final class DerivationManager {
 
     public static void derivate(DrawingPanel drawingPanel) {
 
-        List<Component> components = drawingPanel.getListComponents().reversed();
+        Map<String, Derivation> derivations = new HashMap<>();
+        List<Constraint> constraints = new ArrayList<>();
 
-        for (Component component : components) {
+        List<Derivable> derivablesComponents = drawingPanel.getListComponents().stream()
+                .filter(component -> component instanceof Derivable)
+                .map(component -> (Derivable) component)
+                .toList();
 
-            if (component instanceof Derivable derivableComponent) {
+        for (Derivable derivableComponent : derivablesComponents) {
 
-                List<DerivationObject> derivationObjects = derivableComponent.getDerivationObjects();
+            List<DerivationObject> derivationObjects = derivableComponent.getDerivationObjects();
 
-                for (DerivationObject derivationObject : derivationObjects) {
+            for (DerivationObject derivationObject : derivationObjects) {
 
-                    derivationObject.generateDerivation();
+                derivationObject.generateDerivation();
 
-                    for (Derivation derivation : derivationObject.getDerivations()) {
-                        addDerivation(derivation);
-                    }
+                for (Derivation derivation : derivationObject.getDerivations()) {
+                    addDerivation(derivation, derivations);
                 }
             }
+
         }
 
-        fillReferences();
+        fillReferences(derivations, constraints);
 
-        DerivationExporter.exportToHTML(derivations.values(), referentialIntegrityConstraints);
-
-        derivations.clear();
-
-        referentialIntegrityConstraints.clear();
+        DerivationExporter.exportToHTML(derivations.values(), constraints);
     }
 
-    private static void addDerivation(Derivation newDerivation) {
+    private static void addDerivation(Derivation newDerivation, Map<String, Derivation> derivations) {
 
         if (!newDerivation.isEmpty()) {
 
@@ -67,25 +59,25 @@ public class DerivationManager {
         }
     }
 
-    private static void addReferencialIntegrityConstraint(Constraint newConstraint) {
+    private static void addReferencialIntegrityConstraint(Constraint newConstraint, List<Constraint> constraints) {
 
-        if (referentialIntegrityConstraints.contains(newConstraint)) {
+        if (constraints.contains(newConstraint)) {
 
-            Constraint constraint = referentialIntegrityConstraints.get(referentialIntegrityConstraints.indexOf(newConstraint));
+            Constraint constraint = constraints.get(constraints.indexOf(newConstraint));
 
             if (newConstraint.hasSameReferencesAs(constraint)) {
 
                 // In case of facing an N:N unary relation.
                 newConstraint.setAsDuplicated();
 
-                referentialIntegrityConstraints.add(newConstraint);
+                constraints.add(newConstraint);
             } else {
 
                 newConstraint.transferConstraintsTo(constraint);
             }
 
         } else {
-            referentialIntegrityConstraints.add(newConstraint);
+            constraints.add(newConstraint);
         }
 
     }
@@ -93,14 +85,17 @@ public class DerivationManager {
     /**
      * The order in which the derivation are analyzed doesn't matter.
      */
-    private static void fillReferences() {
+    private static void fillReferences(Map<String, Derivation> derivations, List<Constraint> constraints) {
 
         // To avoid ConcurrentModificationException.
         List<Derivation> derivationsToRemove = new ArrayList<>();
+        List<Derivation> alreadyFilledDerivations = new ArrayList<>();
 
         for (Derivation derivation : derivations.values()) {
 
-            derivationsToRemove.addAll(fillReferences(derivation));
+            if (!alreadyFilledDerivations.contains(derivation)) {
+                fillReferences(derivation, derivations, constraints, derivationsToRemove, alreadyFilledDerivations);
+            }
         }
 
         for (Derivation derivation : derivationsToRemove) {
@@ -108,9 +103,11 @@ public class DerivationManager {
         }
     }
 
-    private static List<Derivation> fillReferences(Derivation derivation) {
-
-        List<Derivation> derivationsToRemove = new ArrayList<>();
+    private static void fillReferences(Derivation derivation,
+                                       Map<String, Derivation> derivations,
+                                       List<Constraint> constraints,
+                                       List<Derivation> derivationsToRemove,
+                                       List<Derivation> alreadyFilledDerivations) {
 
         List<SingleElement> replacementsNeeded = derivation.getReplacementNeeded();
 
@@ -121,7 +118,8 @@ public class DerivationManager {
             if (replacementDerivation != null) {
 
                 // Useful in case of having a reference to a reference... and don't depend on the order.
-                fillReferences(replacementDerivation);
+                fillReferences(replacementDerivation, derivations, constraints,
+                        derivationsToRemove, alreadyFilledDerivations);
 
                 Element replacement = elementToReplace.abstractElements(
                         derivations.get(elementToReplace.getName())
@@ -138,7 +136,8 @@ public class DerivationManager {
                     }
 
                     if (elementToReplace.generatesConstraints()) {
-                        extractConstraints(derivation.getName(), replacementDerivation.getName(), replacement);
+                        extractConstraints(derivation.getName(), replacementDerivation.getName(),
+                                replacement, constraints);
                     }
 
                     derivation.replace(elementToReplace, replacement);
@@ -146,10 +145,11 @@ public class DerivationManager {
             }
         }
 
-        return derivationsToRemove;
+        alreadyFilledDerivations.add(derivation);
     }
 
-    private static void extractConstraints(String referencing, String referenced, Element replacement) {
+    private static void extractConstraints(String referencing, String referenced,
+                                           Element replacement, List<Constraint> constraints) {
 
         Constraint constraint = new Constraint(referencing, referenced);
 
@@ -172,6 +172,6 @@ public class DerivationManager {
             constraint.addReference(firstElement, secondElement);
         }
 
-        addReferencialIntegrityConstraint(constraint);
+        addReferencialIntegrityConstraint(constraint, constraints);
     }
 }

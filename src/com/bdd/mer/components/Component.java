@@ -2,12 +2,16 @@ package com.bdd.mer.components;
 
 import com.bdd.mer.actions.ActionManager;
 import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.mer.frame.userPreferences.LanguageManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.awt.*;
+import java.util.Set;
 
 public abstract class Component implements Serializable {
 
@@ -43,7 +47,7 @@ public abstract class Component implements Serializable {
     /**
      * Drawing panel where the component lives.
      */
-    private DrawingPanel drawingPanel;
+    protected DrawingPanel drawingPanel;
 
     /**
      * JPopupMenu of the component.
@@ -60,7 +64,7 @@ public abstract class Component implements Serializable {
      *
      * @param drawingPanel The drawing panel where the component lives.
      */
-    public Component(DrawingPanel drawingPanel) {
+    public Component(@NotNull DrawingPanel drawingPanel) {
         this("", 0, 0, drawingPanel);
     }
 
@@ -71,7 +75,7 @@ public abstract class Component implements Serializable {
      * @param text The text of the component.
      * @param drawingPanel The drawing panel where the component lives.
      */
-    public Component(String text, DrawingPanel drawingPanel) { this(text, 0 , 0, drawingPanel); }
+    public Component(@NotNull String text, @NotNull DrawingPanel drawingPanel) { this(text, 0 , 0, drawingPanel); }
 
     /**
      * Constructs a <code>Component</code> with an empty text. This constructor is useful for those components
@@ -81,7 +85,7 @@ public abstract class Component implements Serializable {
      * @param y The y coordinate of the component in the drawing panel.
      * @param drawingPanel The drawing panel where the component lives.
      */
-    public Component(int x, int y, DrawingPanel drawingPanel) { this("", x, y, drawingPanel); }
+    public Component(int x, int y, @NotNull DrawingPanel drawingPanel) { this("", x, y, drawingPanel); }
 
     /**
      * Constructs a <code>Component</code>.
@@ -91,7 +95,7 @@ public abstract class Component implements Serializable {
      * @param y The y coordinate of the component in the drawing panel.
      * @param drawingPanel The drawing panel where the component lives.
      */
-    public Component(String text, int x, int y, DrawingPanel drawingPanel)  {
+    public Component(@NotNull String text, int x, int y, @NotNull DrawingPanel drawingPanel)  {
         this.selected = false;
         this.text = text;
         this.x = x;
@@ -261,5 +265,60 @@ public abstract class Component implements Serializable {
 
     public void setDrawingPanel(DrawingPanel drawingPanel) {
         this.drawingPanel = drawingPanel;
+    }
+
+    /**
+     * Renames the component.
+     */
+    protected void rename() {
+
+        String newText;
+
+        do {
+
+            newText= JOptionPane.showInputDialog(
+                    this.drawingPanel,
+                    null,
+                    LanguageManager.getMessage("input.newText"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            // "newText" can be null when the user pressed "cancel"
+            if (newText != null && newText.isEmpty()) {
+                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.oneCharacter"));
+            }
+        } while (newText != null && newText.isEmpty());
+
+        // If "Cancel" was not pressed
+        if (newText != null) {
+            this.setText(newText);
+            this.drawingPanel.repaint();
+        }
+    }
+
+    /**
+     * Deletes the component and their close-related components.
+     */
+    protected void delete() {
+
+        int confirmation = JOptionPane.showConfirmDialog(
+                this.drawingPanel,
+                LanguageManager.getMessage("input.delete"),
+                LanguageManager.getMessage("title.delete"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+
+            Set<Component> componentsForRemoval = new HashSet<>(this.getComponentsForRemoval());
+            componentsForRemoval.add(this);
+
+            for (Component component : componentsForRemoval) {
+                this.drawingPanel.removeComponent(component);
+            }
+        }
+
+        this.drawingPanel.repaint();
     }
 }

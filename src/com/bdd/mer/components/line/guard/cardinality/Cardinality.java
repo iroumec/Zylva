@@ -1,14 +1,11 @@
 package com.bdd.mer.components.line.guard.cardinality;
 
 import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.Component;
-import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.guard.Guard;
 import com.bdd.mer.frame.DrawingPanel;
 import com.bdd.mer.structures.Pair;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Cardinality extends Guard {
 

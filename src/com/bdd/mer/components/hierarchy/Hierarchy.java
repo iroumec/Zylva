@@ -309,4 +309,15 @@ public class Hierarchy extends Component implements Derivable {
 
         return out;
     }
+
+    @Override
+    protected void delete() {
+
+        if (isThereMultipleInheritance()) {
+
+            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.multipleInheritance"));
+        } else {
+            super.delete();
+        }
+    }
 }

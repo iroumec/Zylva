@@ -2,7 +2,6 @@ package com.bdd.mer.components.line;
 
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.line.guard.Guard;
-import com.bdd.mer.components.line.guard.cardinality.Cardinality;
 import com.bdd.mer.frame.DrawingPanel;
 
 import java.util.ArrayList;

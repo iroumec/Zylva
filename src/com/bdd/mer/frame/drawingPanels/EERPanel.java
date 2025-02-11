@@ -1,26 +1,27 @@
-package com.bdd.mer.actions;
+package com.bdd.mer.frame.drawingPanels;
 
-import com.bdd.mer.components.attribute.*;
+import com.bdd.mer.actions.ActionManager;
+import com.bdd.mer.components.AttributableComponent;
+import com.bdd.mer.components.association.Association;
+import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.components.attribute.MainAttribute;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
-import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.entity.EntityWrapper;
-import com.bdd.mer.components.hierarchy.HierarchySymbol;
-import com.bdd.mer.components.AttributableComponent;
-import com.bdd.mer.components.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
+import com.bdd.mer.components.hierarchy.HierarchySymbol;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.line.guard.Discriminant;
+import com.bdd.mer.components.line.guard.cardinality.Cardinality;
+import com.bdd.mer.components.line.guard.cardinality.StaticCardinality;
 import com.bdd.mer.components.line.lineMultiplicity.DoubleLine;
 import com.bdd.mer.components.line.lineShape.SquaredLine;
-import com.bdd.mer.components.line.guard.cardinality.Cardinality;
+import com.bdd.mer.components.note.Note;
 import com.bdd.mer.components.relationship.Relationship;
-import com.bdd.mer.components.line.guard.cardinality.StaticCardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.components.note.Note;
 import com.bdd.mer.frame.userPreferences.LanguageManager;
 import com.bdd.mer.structures.Pair;
 
@@ -28,34 +29,18 @@ import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 
-public final class ActionManager implements Serializable {
+public class EERPanel extends DrawingPanel {
 
     /**
-     * <Code>DrawingPanel</Code> bounded to the <Code>ActionManager</Code>.
-     */
-    private DrawingPanel drawingPanel;
-
-    /**
-     * Constructs an <Code>ActionManager</Code>.
+     * Constructs a {@code DrawingPanel}.
      *
-     * @param drawingPanel <Code>DrawingPanel</Code> bounded to the <Code>ActionManager</Code>.
+     * @param actionManager {@code ActionManager} from what the {@code this} will take its actions.
      */
-    public ActionManager(DrawingPanel drawingPanel) {
-        this.drawingPanel = drawingPanel;
-    }
-
-    /**
-     * Construct an {@code ActionManager}.
-     * <p>
-     * To things work correctly, it's necessary to set a {@code DrawingPanel}.
-     * @see #setDrawingPanel(DrawingPanel)
-     */
-    public ActionManager() {
-        this(null);
+    public EERPanel(ActionManager actionManager) {
+        super(actionManager);
     }
 
     /* ---------------------------------------------------------------------------------------------------------- */
@@ -63,13 +48,13 @@ public final class ActionManager implements Serializable {
     /* ---------------------------------------------------------------------------------------------------------- */
 
     /**
-     * Adds a new <Code>Entity</Code> to the <Code>DrawingPanel</Code>.
+     * Adds a new <Code>Entity</Code> to the <Code>this</Code>.
      */
     public void addEntity() {
 
         // It shows an emergent window to ask the user for the entity's name.
         String entityName = JOptionPane.showInputDialog(
-                this.drawingPanel,
+                this,
                 null,
                 LanguageManager.getMessage("actionManager.addEntity.dialog"), // Title.
                 JOptionPane.QUESTION_MESSAGE // Message Source.
@@ -79,24 +64,24 @@ public final class ActionManager implements Serializable {
 
             if (!entityName.isEmpty()) {
 
-                if (!this.drawingPanel.existsComponent(entityName)) {
+                if (!this.existsComponent(entityName)) {
 
                     EntityWrapper entityWrapper = new EntityWrapper(
                             entityName,
-                            drawingPanel.getMouseX(),
-                            drawingPanel.getMouseY(),
-                            this.drawingPanel
+                            this.getMouseX(),
+                            this.getMouseY(),
+                            this
                     );
 
-                    drawingPanel.addComponent(entityWrapper);
+                    this.addComponent(entityWrapper);
                 } else {
 
-                    JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.nameDuplicated"));
+                    JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.nameDuplicated"));
                     addEntity();
                 }
             } else {
 
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.emptyName"));
             }
         }
     }
@@ -106,19 +91,19 @@ public final class ActionManager implements Serializable {
     /* ---------------------------------------------------------------------------------------------------------- */
 
     /**
-     * Adds a new <Code>Relationship</Code> to the <Code>DrawingPanel</Code>.
+     * Adds a new <Code>Relationship</Code> to the <Code>this</Code>.
      * <p></p>
      * Between one and three entities (strong or weak) or associations must be selected.
      */
     public void addRelationship() {
 
-        int selectedComponents = this.drawingPanel.getSelectedComponents().size();
+        int selectedComponents = this.getSelectedComponents().size();
 
-        if (drawingPanel.onlyTheseClassesAreSelected(EntityWrapper.class, Association.class)
-                && drawingPanel.isNumberOfSelectedComponentsBetween(1, 3)) {
+        if (this.onlyTheseClassesAreSelected(EntityWrapper.class, Association.class)
+                && this.isNumberOfSelectedComponentsBetween(1, 3)) {
 
             String name = JOptionPane.showInputDialog(
-                    this.drawingPanel,
+                    this,
                     null,
                     LanguageManager.getMessage("input.name"),
                     JOptionPane.QUESTION_MESSAGE
@@ -135,11 +120,11 @@ public final class ActionManager implements Serializable {
 
                     if (selectedComponents >= 2 && selectedComponents <= 3) {
 
-                        Point center = this.drawingPanel.getCenterOfSelectedComponents();
+                        Point center = this.getCenterOfSelectedComponents();
 
-                        newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
+                        newRelationship = new Relationship(name, center.x, center.y, this);
 
-                        for (Component component : drawingPanel.getSelectedComponents()) {
+                        for (com.bdd.mer.components.Component component : this.getSelectedComponents()) {
 
                             // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
                             Relatable castedComponent = (Relatable) component;
@@ -147,16 +132,16 @@ public final class ActionManager implements Serializable {
                             Cardinality cardinality;
 
                             if (selectedComponents == 2) {
-                                cardinality = new Cardinality("1", "N", this.drawingPanel);
+                                cardinality = new Cardinality("1", "N", this);
                             } else {
-                                cardinality = new Cardinality("0", "N", this.drawingPanel);
+                                cardinality = new Cardinality("0", "N", this);
                             }
 
                             cardinalities.add(cardinality);
 
                             GuardedLine guardedLine = new GuardedLine.Builder(
-                                    this.drawingPanel,
-                                    (Component) castedComponent,
+                                    this,
+                                    (com.bdd.mer.components.Component) castedComponent,
                                     newRelationship,
                                     cardinality).build();
 
@@ -177,27 +162,27 @@ public final class ActionManager implements Serializable {
 
                         newRelationship = new Relationship(
                                 name,
-                                this.drawingPanel.getMouseX() + 90,
-                                this.drawingPanel.getMouseY() - 90,
-                                this.drawingPanel
+                                this.getMouseX() + 90,
+                                this.getMouseY() - 90,
+                                this
                         );
 
-                        Relatable castedComponent = (Relatable) this.drawingPanel.getSelectedComponents().getFirst();
+                        Relatable castedComponent = (Relatable) this.getSelectedComponents().getFirst();
 
-                        Cardinality firstCardinality = new Cardinality("1", "N", this.drawingPanel);
-                        Cardinality secondCardinality = new Cardinality("1", "N", this.drawingPanel);
+                        Cardinality firstCardinality = new Cardinality("1", "N", this);
+                        Cardinality secondCardinality = new Cardinality("1", "N", this);
 
                         GuardedLine firstCardinalityLine = new GuardedLine.Builder(
-                                this.drawingPanel,
-                                (Component) castedComponent,
+                                this,
+                                (com.bdd.mer.components.Component) castedComponent,
                                 newRelationship,
                                 firstCardinality).lineShape(new SquaredLine()).build();
                         lines.add(firstCardinalityLine);
 
                         GuardedLine secondCardinalityLine = new GuardedLine.Builder(
-                                this.drawingPanel,
+                                this,
                                 newRelationship,
-                                (Component) castedComponent,
+                                (com.bdd.mer.components.Component) castedComponent,
                                 secondCardinality).lineShape(new SquaredLine()).build();
                         lines.add(secondCardinalityLine);
 
@@ -213,23 +198,23 @@ public final class ActionManager implements Serializable {
                     assert newRelationship != null;
 
                     for (Cardinality cardinality : cardinalities) {
-                        drawingPanel.addComponent(cardinality);
+                        this.addComponent(cardinality);
                     }
 
                     for (Line line : lines) {
-                        drawingPanel.addComponent(line);
+                        this.addComponent(line);
                     }
 
-                    drawingPanel.addComponent(newRelationship);
+                    this.addComponent(newRelationship);
 
-                    drawingPanel.cleanSelectedComponents();
+                    this.cleanSelectedComponents();
 
                 }
             } else {
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.emptyName"));
             }
         } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.relationshipCreation"));
+            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.relationshipCreation"));
         }
     }
 
@@ -291,7 +276,7 @@ public final class ActionManager implements Serializable {
 
             // Here only the area of the cardinality could be repainted, but, if the cardinality now has a considerable
             // greater number, it'll lead to visual noise until all the panel is repainted.
-            this.drawingPanel.repaint();
+            this.repaint();
         }
     }
 
@@ -340,16 +325,16 @@ public final class ActionManager implements Serializable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
-     * Adds a new <Code>Dependency</Code> to the <Code>DrawingPanel</Code>.
+     * Adds a new <Code>Dependency</Code> to the <Code>this</Code>.
      * <p></p>
      * Two strong entities must be selected.
      */
     public void addDependency() {
 
-        if (drawingPanel.onlyTheseClassesAreSelected(EntityWrapper.class) && drawingPanel.isNumberOfSelectedComponents(2)) {
+        if (this.onlyTheseClassesAreSelected(EntityWrapper.class) && this.isNumberOfSelectedComponents(2)) {
 
             String name = JOptionPane.showInputDialog(
-                    this.drawingPanel,
+                    this,
                     null,
                     LanguageManager.getMessage("input.name"),
                     JOptionPane.QUESTION_MESSAGE
@@ -357,9 +342,9 @@ public final class ActionManager implements Serializable {
 
             if (name != null) {
 
-                Point center = this.drawingPanel.getCenterOfSelectedComponents();
+                Point center = this.getCenterOfSelectedComponents();
 
-                Relationship newRelationship = new Relationship(name, center.x, center.y, this.drawingPanel);
+                Relationship newRelationship = new Relationship(name, center.x, center.y, this);
 
                 EntityWrapper entitySelected = selectWeakEntity();
 
@@ -370,14 +355,14 @@ public final class ActionManager implements Serializable {
                     Cardinality cardinality = null, staticCardinality = null;
                     GuardedLine strongLine = null, weakLine = null;
 
-                    for (EntityWrapper entity : drawingPanel.getSelectedComponentsByClass(EntityWrapper.class)) {
+                    for (EntityWrapper entity : this.getSelectedComponentsByClass(EntityWrapper.class)) {
 
                         if (entity.equals(entitySelected)) {
 
-                            cardinality = new Cardinality("1", "N", this.drawingPanel);
+                            cardinality = new Cardinality("1", "N", this);
 
                             strongLine = new GuardedLine.Builder(
-                                    this.drawingPanel,
+                                    this,
                                     entity,
                                     newRelationship,
                                     cardinality
@@ -388,10 +373,10 @@ public final class ActionManager implements Serializable {
                         } else {
 
                             // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
-                            staticCardinality = new StaticCardinality("1", "1", this.drawingPanel);
+                            staticCardinality = new StaticCardinality("1", "1", this);
 
                             weakLine = new GuardedLine.Builder(
-                                    this.drawingPanel,
+                                    this,
                                     entity,
                                     newRelationship,
                                     staticCardinality
@@ -404,29 +389,29 @@ public final class ActionManager implements Serializable {
                     // These checks are only added so the IDE don't tell me they can be null.
 
                     if (weakLine != null) {
-                        drawingPanel.addComponent(weakLine);
+                        this.addComponent(weakLine);
                     }
 
                     if (strongLine != null) {
-                        drawingPanel.addComponent(strongLine);
+                        this.addComponent(strongLine);
                     }
 
                     if (cardinality != null) {
-                        drawingPanel.addComponent(cardinality);
+                        this.addComponent(cardinality);
                     }
 
                     if (staticCardinality != null) {
-                        drawingPanel.addComponent(staticCardinality);
+                        this.addComponent(staticCardinality);
                     }
 
-                    drawingPanel.addComponent(newRelationship);
+                    this.addComponent(newRelationship);
 
-                    drawingPanel.cleanSelectedComponents();
+                    this.cleanSelectedComponents();
                 }
 
             }
         } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.dependencyCreation"));
+            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.dependencyCreation"));
         }
     }
 
@@ -437,12 +422,12 @@ public final class ActionManager implements Serializable {
      */
     private EntityWrapper selectWeakEntity() {
 
-        Object[] opciones = {drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getFirst().getText(),
-                drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getLast().getText()};
+        Object[] opciones = {this.getSelectedComponentsByClass(EntityWrapper.class).getFirst().getText(),
+                this.getSelectedComponentsByClass(EntityWrapper.class).getLast().getText()};
 
         // THe JOptionPane with buttons is shown.
         int selection = JOptionPane.showOptionDialog(
-                this.drawingPanel,
+                this,
                 LanguageManager.getMessage("input.weakEntity"),
                 LanguageManager.getMessage("input.option"),
                 JOptionPane.DEFAULT_OPTION,
@@ -452,10 +437,10 @@ public final class ActionManager implements Serializable {
                 opciones[0]);
 
         return switch (selection) {
-            case 0 -> (drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getFirst());
-            case 1 -> (drawingPanel.getSelectedComponentsByClass(EntityWrapper.class).getLast());
+            case 0 -> (this.getSelectedComponentsByClass(EntityWrapper.class).getFirst());
+            case 1 -> (this.getSelectedComponentsByClass(EntityWrapper.class).getLast());
             default -> {
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("input.weakEntity"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("input.weakEntity"));
                 yield selectWeakEntity();
             }
         };
@@ -466,13 +451,13 @@ public final class ActionManager implements Serializable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
-     * Adds a new <Code>Hierarchy</Code> to the <Code>DrawingPanel</Code>.
+     * Adds a new <Code>Hierarchy</Code> to the <Code>this</Code>.
      * <p></p>
      * At least three strong or weak entities must be selected.
      */
     public void addHierarchy() {
 
-        if (drawingPanel.onlyTheseClassesAreSelected(EntityWrapper.class) && drawingPanel.getSelectedComponents().size() >= 3) {
+        if (this.onlyTheseClassesAreSelected(EntityWrapper.class) && this.getSelectedComponents().size() >= 3) {
 
             EntityWrapper parent = selectParent();
 
@@ -480,14 +465,14 @@ public final class ActionManager implements Serializable {
 
                 List<EntityWrapper> subtipos = getChildrenList(parent);
 
-                Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(parent);
+                Pair<Hierarchy, List<com.bdd.mer.components.Component>> newHierarchyData = getHierarchy(parent);
 
                 if (newHierarchyData == null) {
                     return;
                 }
 
                 Hierarchy newHierarchy = newHierarchyData.first();
-                List<Component> componentsToAdd = newHierarchyData.second();
+                List<com.bdd.mer.components.Component> componentsToAdd = newHierarchyData.second();
 
                 for (EntityWrapper subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);
@@ -504,7 +489,7 @@ public final class ActionManager implements Serializable {
                                     + " " + LanguageManager.getMessage("warning.alreadyParticipatesInHierarchy") + " "
                                     + LanguageManager.getMessage("warning.multipleInheritanceOnlyAllowed");
 
-                            JOptionPane.showMessageDialog(this.drawingPanel, message);
+                            JOptionPane.showMessageDialog(this, message);
 
                             // Exit.
                             break main;
@@ -514,21 +499,21 @@ public final class ActionManager implements Serializable {
 
                 parent.addHierarchy(newHierarchy);
 
-                for (Component component : componentsToAdd) {
-                    drawingPanel.addComponent(component);
+                for (com.bdd.mer.components.Component component : componentsToAdd) {
+                    this.addComponent(component);
                 }
 
-                drawingPanel.addComponent(newHierarchy);
+                this.addComponent(newHierarchy);
 
-                } else {
-                    JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.alreadyParent"));
-                }
+            } else {
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.alreadyParent"));
+            }
         } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.threeEntities"));
+            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.threeEntities"));
         }
 
         // The selection mode is deactivated.
-        drawingPanel.cleanSelectedComponents();
+        this.cleanSelectedComponents();
     }
 
     /**
@@ -537,7 +522,7 @@ public final class ActionManager implements Serializable {
      * @param parent Entity parent of the hierarchy.
      * @return {@code Hierarchy} according to the options selected by the user.
      */
-    public Pair<Hierarchy, List<Component>> getHierarchy(EntityWrapper parent) {
+    public Pair<Hierarchy, List<com.bdd.mer.components.Component>> getHierarchy(EntityWrapper parent) {
 
         // The radio buttons are created.
         JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
@@ -580,20 +565,20 @@ public final class ActionManager implements Serializable {
 
         HierarchySymbol symbol = (exclusiveButton.isSelected()) ? HierarchySymbol.DISJUNCT : HierarchySymbol.OVERLAPPING;
 
-        Hierarchy newHierarchy = new Hierarchy(symbol, parent, this.drawingPanel);
+        Hierarchy newHierarchy = new Hierarchy(symbol, parent, this);
 
         Discriminant discriminant = null;
 
         if (symbol.equals(HierarchySymbol.DISJUNCT)) {
 
             String discriminantText = JOptionPane.showInputDialog(
-                    this.drawingPanel,
+                    this,
                     null,
                     "Enter a discriminant",
                     JOptionPane.QUESTION_MESSAGE // Message Source.
             );
 
-            discriminant = new Discriminant(discriminantText, this.drawingPanel);
+            discriminant = new Discriminant(discriminantText, this);
         }
 
         Line parentLine;
@@ -602,11 +587,11 @@ public final class ActionManager implements Serializable {
 
             if (discriminant != null) {
 
-                parentLine = new GuardedLine.Builder(this.drawingPanel, parent, newHierarchy, discriminant)
+                parentLine = new GuardedLine.Builder(this, parent, newHierarchy, discriminant)
                         .lineMultiplicity(new DoubleLine(3)).build();
             } else {
 
-                parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
+                parentLine = new Line.Builder(this, parent, newHierarchy)
                         .lineMultiplicity(new DoubleLine(3)).build();
             }
 
@@ -614,11 +599,11 @@ public final class ActionManager implements Serializable {
 
             if (discriminant != null) {
 
-                parentLine = new GuardedLine.Builder(this.drawingPanel, parent, newHierarchy, discriminant)
+                parentLine = new GuardedLine.Builder(this, parent, newHierarchy, discriminant)
                         .strokeWidth(2).build();
             } else {
 
-                parentLine = new Line.Builder(this.drawingPanel, parent, newHierarchy)
+                parentLine = new Line.Builder(this, parent, newHierarchy)
                         .strokeWidth(2).build();
             }
 
@@ -627,7 +612,7 @@ public final class ActionManager implements Serializable {
 
         newHierarchy.setParentLine(parentLine);
 
-        List<Component> componentsToAdd = new ArrayList<>();
+        List<com.bdd.mer.components.Component> componentsToAdd = new ArrayList<>();
 
         componentsToAdd.add(parentLine);
 
@@ -645,7 +630,7 @@ public final class ActionManager implements Serializable {
      */
     public EntityWrapper selectParent() {
 
-        List<EntityWrapper> entidadesSeleccionadas = drawingPanel.getSelectedComponentsByClass(EntityWrapper.class);
+        List<EntityWrapper> entidadesSeleccionadas = this.getSelectedComponentsByClass(EntityWrapper.class);
         Object[] opciones = new Object[entidadesSeleccionadas.size()];
 
         for (int i = 0; i < entidadesSeleccionadas.size(); i++) {
@@ -668,7 +653,7 @@ public final class ActionManager implements Serializable {
      */
     public List<EntityWrapper> getChildrenList(EntityWrapper parent) {
 
-        List<EntityWrapper> entidadesSeleccionadas = drawingPanel.getSelectedComponentsByClass(EntityWrapper.class);
+        List<EntityWrapper> entidadesSeleccionadas = this.getSelectedComponentsByClass(EntityWrapper.class);
 
         List<EntityWrapper> retorno = new ArrayList<>(entidadesSeleccionadas);
         retorno.remove((parent));
@@ -689,7 +674,7 @@ public final class ActionManager implements Serializable {
             hierarchy.setSymbol(HierarchySymbol.DISJUNCT);
         }
 
-        this.drawingPanel.repaint();
+        this.repaint();
 
     }
 
@@ -698,21 +683,21 @@ public final class ActionManager implements Serializable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
-     * Adds a new <Code>Note</Code> to the <Code>DrawingPanel</Code>.
+     * Adds a new <Code>Note</Code> to the <Code>this</Code>.
      * <p></p>
      * At least three strong or weak entities must be selected.
      */
     public void addNote() {
 
         String text = JOptionPane.showInputDialog(
-                this.drawingPanel,
+                this,
                 null,
                 LanguageManager.getMessage("input.text"),
                 JOptionPane.QUESTION_MESSAGE
         );
 
         if (text != null) {
-            drawingPanel.addComponent(new Note(text, drawingPanel.getMouseX(), drawingPanel.getMouseY(), this.drawingPanel));
+            this.addComponent(new Note(text, this.getMouseX(), this.getMouseY(), this));
         }
     }
 
@@ -727,12 +712,12 @@ public final class ActionManager implements Serializable {
      */
     public void deleteSelectedComponents() {
 
-        List<Component> selectedComponents = this.drawingPanel.getSelectedComponents();
+        List<com.bdd.mer.components.Component> selectedComponents = this.getSelectedComponents();
 
         if (!selectedComponents.isEmpty()) {
 
             int confirmation = JOptionPane.showConfirmDialog(
-                    this.drawingPanel,
+                    this,
                     LanguageManager.getMessage("input.delete"),
                     LanguageManager.getMessage("title.delete"),
                     JOptionPane.YES_NO_OPTION,
@@ -741,9 +726,9 @@ public final class ActionManager implements Serializable {
 
             if (confirmation == JOptionPane.YES_OPTION) {
 
-                Set<Component> componentsForRemoval = new HashSet<>();
+                Set<com.bdd.mer.components.Component> componentsForRemoval = new HashSet<>();
 
-                for (Component component : selectedComponents) {
+                for (com.bdd.mer.components.Component component : selectedComponents) {
 
                     if (!component.canBeDeleted()) {
                         return;
@@ -753,19 +738,19 @@ public final class ActionManager implements Serializable {
                     componentsForRemoval.add(component);
                 }
 
-                for (Component component : componentsForRemoval) {
-                    this.drawingPanel.removeComponent(component);
+                for (com.bdd.mer.components.Component component : componentsForRemoval) {
+                    this.removeComponent(component);
                 }
 
             }
 
-            this.drawingPanel.repaint();
+            this.repaint();
         } else {
-            JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.delete"));
+            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.delete"));
         }
 
         // Desactiva el modo de selección
-        drawingPanel.cleanSelectedComponents();
+        this.cleanSelectedComponents();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -775,14 +760,14 @@ public final class ActionManager implements Serializable {
     /**
      * Renames a {@code Component}.
      */
-    public void renameComponent(Component component) {
+    public void renameComponent(com.bdd.mer.components.Component component) {
 
         String newText;
 
         do {
 
             newText= JOptionPane.showInputDialog(
-                    this.drawingPanel,
+                    this,
                     null,
                     LanguageManager.getMessage("input.newText"),
                     JOptionPane.QUESTION_MESSAGE
@@ -790,14 +775,14 @@ public final class ActionManager implements Serializable {
 
             // "newText" can be null when the user pressed "cancel"
             if (newText != null && newText.isEmpty()) {
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.oneCharacter"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.oneCharacter"));
             }
         } while (newText != null && newText.isEmpty());
 
         // If "Cancel" was not pressed
         if (newText != null) {
             component.setText(newText);
-            this.drawingPanel.repaint();
+            this.repaint();
         }
     }
 
@@ -839,7 +824,7 @@ public final class ActionManager implements Serializable {
         );
 
         // Create the dialog directly
-        JDialog dialog = pane.createDialog(this.drawingPanel, LanguageManager.getMessage("input.attributeInformation"));
+        JDialog dialog = pane.createDialog(this, LanguageManager.getMessage("input.attributeInformation"));
 
         dialog.setVisible(true);
 
@@ -847,11 +832,7 @@ public final class ActionManager implements Serializable {
         Object selectedValue = pane.getValue();
         if (selectedValue != null && (int) selectedValue == JOptionPane.OK_OPTION) {
 
-            String name = this.getName();
-
-            if (name != null && (name.trim().isEmpty() || this.drawingPanel.existsComponent(name))) {
-                name = this.getName();
-            }
+            String name = this.getNameForComponent();
 
             if (name == null) {
                 return;
@@ -860,7 +841,7 @@ public final class ActionManager implements Serializable {
             AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
             AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
 
-            Attribute newAttribute = new Attribute(component, name, attributeSymbol, arrowBody, arrowEnding, this.drawingPanel);
+            Attribute newAttribute = new Attribute(component, name, attributeSymbol, arrowBody, arrowEnding, this);
 
             this.addAttribute(newAttribute);
         }
@@ -882,17 +863,17 @@ public final class ActionManager implements Serializable {
         if (attributeSymbol.equals(AttributeSymbol.MAIN)) {
 
             if (component.hasMainAttribute()) {
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.mainAttribute"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.mainAttribute"));
                 return;
             }
 
-            String name = this.getName();
+            String name = this.getNameForComponent();
 
             if (name == null) {
                 return;
             }
 
-            Attribute newAttribute = new MainAttribute(component, name, this.drawingPanel);
+            Attribute newAttribute = new MainAttribute(component, name, this);
 
             this.addAttribute(newAttribute);
 
@@ -907,10 +888,10 @@ public final class ActionManager implements Serializable {
      *
      * @return {@code String} entered by the user.
      */
-    private String getName() {
+    private String getNameForComponent() {
 
         String name = JOptionPane.showInputDialog(
-                this.drawingPanel,
+                this,
                 null,
                 LanguageManager.getMessage("input.name"),
                 JOptionPane.QUESTION_MESSAGE
@@ -925,7 +906,7 @@ public final class ActionManager implements Serializable {
 
             if (!nameIsEmpty) {
 
-                nameIsDuplicated = drawingPanel.existsComponent(name);
+                nameIsDuplicated = this.existsComponent(name);
             }
         }
 
@@ -933,14 +914,14 @@ public final class ActionManager implements Serializable {
 
             if (nameIsEmpty) {
 
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.emptyName"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.emptyName"));
             } else {
 
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.nameDuplicated"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.nameDuplicated"));
             }
 
             name = JOptionPane.showInputDialog(
-                    this.drawingPanel,
+                    this,
                     null,
                     LanguageManager.getMessage("input.name"),
                     JOptionPane.QUESTION_MESSAGE
@@ -952,7 +933,7 @@ public final class ActionManager implements Serializable {
 
                 if (!nameIsEmpty) {
 
-                    nameIsDuplicated = drawingPanel.existsComponent(name);
+                    nameIsDuplicated = this.existsComponent(name);
                 }
             }
         }
@@ -972,17 +953,17 @@ public final class ActionManager implements Serializable {
 
         attribute.setDrawingPriority(0);
 
-        drawingPanel.addComponent(attribute);
+        this.addComponent(attribute);
 
         // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
         // Maybe it would be good to search other possible solutions because this is not so efficient...
-        this.drawingPanel.paintImmediately(drawingPanel.getBounds());
+        this.paintImmediately(this.getBounds());
 
         attribute.setDrawingPriority(4);
 
-        drawingPanel.sortComponents();
+        this.sortComponents();
 
-        drawingPanel.repaint();
+        this.repaint();
     }
 
     /**
@@ -1042,7 +1023,7 @@ public final class ActionManager implements Serializable {
     public void changeOptionality(Attribute attribute) {
 
         attribute.changeOptionality();
-        drawingPanel.repaint();
+        this.repaint();
 
     }
 
@@ -1054,7 +1035,7 @@ public final class ActionManager implements Serializable {
     public void changeMultivalued(Attribute attribute) {
 
         attribute.changeMultivalued();
-        drawingPanel.repaint();
+        this.repaint();
 
     }
 
@@ -1070,21 +1051,21 @@ public final class ActionManager implements Serializable {
     // There must be selected at least an entity and a relationship (unary relationship)
     public void addAssociation() {
 
-        if (drawingPanel.getSelectedComponents().size() == 1 && drawingPanel.onlyTheseClassesAreSelected(Relationship.class)) {
+        if (this.getSelectedComponents().size() == 1 && this.onlyTheseClassesAreSelected(Relationship.class)) {
 
-            Relationship relationship = (Relationship) drawingPanel.getSelectedComponents().getFirst();
+            Relationship relationship = (Relationship) this.getSelectedComponents().getFirst();
 
             if (relationship.allMaxCardinalitiesAreN()) {
 
-                Association association = new Association(relationship, this.drawingPanel);
+                Association association = new Association(relationship, this);
 
-                drawingPanel.addComponent(association);
-                drawingPanel.repaint();
+                this.addComponent(association);
+                this.repaint();
 
-                drawingPanel.cleanSelectedComponents();
+                this.cleanSelectedComponents();
             } else {
 
-                JOptionPane.showMessageDialog(this.drawingPanel, "An association can only be created for N:N or N:N:N relationships.");
+                JOptionPane.showMessageDialog(this, "An association can only be created for N:N or N:N:N relationships.");
             }
 
         } else {
@@ -1096,42 +1077,7 @@ public final class ActionManager implements Serializable {
     /*                                                Get JPopupMenu                                                  */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Given a list of actions, it returns a JPopupMenu that allows the component to perform all
-     * the specified actions.
-     *
-     * @param component The component owner of the actions.
-     * @param actions An infinite list of actions we want to add to the panel.
-     * @return A <code>JPopupMenu</code> containing all the specified options.
-     */
-
-    public JPopupMenu getPopupMenu(Component component, Action ... actions) {
-
-        JPopupMenu popupMenu = new JPopupMenu();
-
-        for (Action action : actions) {
-
-            JMenuItem actionItem = new JMenuItem(action.getText());
-
-            switch (action) {
-                case DELETE -> actionItem.addActionListener(_ -> deleteSelectedComponents());
-                case RENAME, CHANGE_TEXT -> actionItem.addActionListener(_ -> renameComponent(component));
-                case ADD_ATTRIBUTE -> actionItem.addActionListener(_ -> addAttribute((AttributableComponent) component));
-                case ADD_ASSOCIATION -> actionItem.addActionListener(_ -> addAssociation());
-                case ADD_COMPLEX_ATTRIBUTE -> actionItem.addActionListener(_ -> addComplexAttribute((AttributableComponent) component));
-                case SWAP_MULTIVALUED -> actionItem.addActionListener(_ -> changeMultivalued((Attribute) component));
-                case SWAP_OPTIONALITY -> actionItem.addActionListener(_ -> changeOptionality((Attribute) component));
-                case SWAP_EXCLUSIVITY -> actionItem.addActionListener(_ -> swapExclusivity((Hierarchy) component));
-                case CHANGE_CARDINALITY -> actionItem.addActionListener(_ -> changeCardinality((Cardinality) component));
-                case ADD_REFLEXIVE_RELATIONSHIP -> actionItem.addActionListener(_ -> addRelationship());
-            }
-
-            popupMenu.add(actionItem);
-        }
-
-        return popupMenu;
-    }
-
+    @Override
     public JPopupMenu getBackgroundPopupMenu() {
 
         JPopupMenu backgroundPopupMenu = new JPopupMenu();
@@ -1164,10 +1110,6 @@ public final class ActionManager implements Serializable {
         return backgroundPopupMenu;
     }
 
-    public void setDrawingPanel(DrawingPanel drawingPanel) {
-        this.drawingPanel = drawingPanel;
-    }
-
     /**
      * Sets focus on the JComponent.
      *
@@ -1188,5 +1130,4 @@ public final class ActionManager implements Serializable {
             public void ancestorMoved(AncestorEvent event) {}
         });
     }
-
 }

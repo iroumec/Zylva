@@ -49,11 +49,15 @@ public class DrawingPanel extends JPanel {
 
         selectionArea = new Rectangle(0, 0, 0, 0);
 
-        this.backgroundPopupMenu = actionManager.getBackgroundPopupMenu();
+        this.backgroundPopupMenu = getBackgroundPopupMenu();
 
         this.setAntialiasing(UserPreferences.loadBooleanPreference(Preference.ANTIALIASING, true));
 
         this.initializeMouseListeners();
+    }
+
+    public JPopupMenu getBackgroundPopupMenu() {
+        return actionManager.getBackgroundPopupMenu();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

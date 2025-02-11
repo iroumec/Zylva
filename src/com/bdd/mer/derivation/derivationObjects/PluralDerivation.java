@@ -180,28 +180,32 @@ public class PluralDerivation extends DerivationObject {
 
         Derivation derivation = new Derivation(nSideMember.name);
 
+        List<ElementDecorator> decorators = new ArrayList<>();
+
+        // If the one side member has a cardinality of zero,
+        // the relationship's attributes are also optional.
         if (oneSideMember.minCardinality.equals("0")) {
+            decorators.add(ElementDecorator.OPTIONAL);
+        }
 
-            // If the one side member has a cardinality of zero,
-            // the relationship's attributes are also optional.
+        // If the main derivation has common attributes, the derivation will take them.
+        if (!mainDerivation.isEmpty()) {
             derivation.addCommonElement(
-                    new SingleElement(this.getName(), new Replacer(new Common(), ElementDecorator.OPTIONAL))
-            );
-
-            derivation.addCommonElement(
-                    new SingleElement(oneSideMember.name, new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL))
-            );
-
-        } else {
-
-            derivation.addCommonElement(
-                    new SingleElement(this.getName(), new Replacer(new Common()))
-            );
-
-            derivation.addCommonElement(
-                    new SingleElement(oneSideMember.name, new Replacer(ElementDecorator.FOREIGN))
+                    new SingleElement(
+                            this.getName(),
+                            new Replacer(new Common(), decorators.toArray(new ElementDecorator[0]))
+                    )
             );
         }
+
+        decorators.add(ElementDecorator.FOREIGN);
+
+        derivation.addCommonElement(
+                new SingleElement(
+                        oneSideMember.name,
+                        new Replacer(decorators.toArray(new ElementDecorator[0]))
+                )
+        );
 
         this.addDerivation(derivation);
     }

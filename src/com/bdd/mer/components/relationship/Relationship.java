@@ -4,6 +4,7 @@ import com.bdd.mer.components.AttributableComponent;
 import com.bdd.mer.components.Component;
 import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.line.guard.cardinality.Cardinality;
 import com.bdd.mer.components.relationship.relatable.Relatable;
@@ -24,7 +25,7 @@ public class Relationship extends AttributableComponent {
     /**
      * Participant of the relationship.
      */
-    private final Map<Relatable, List<Line>> participants;
+    private final Map<Relatable, List<GuardedLine>> participants;
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon forma;
     private Association association;
@@ -48,9 +49,9 @@ public class Relationship extends AttributableComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void addParticipant(Relatable relatableComponent, Line line) {
+    public void addParticipant(Relatable relatableComponent, GuardedLine line) {
 
-        List<Line> lines = this.participants.get(relatableComponent);
+        List<GuardedLine> lines = this.participants.get(relatableComponent);
 
         // The participant doesn't exist.
         if (lines == null) {
@@ -67,7 +68,7 @@ public class Relationship extends AttributableComponent {
 
     public void removeParticipant(Relatable relatable) {
 
-        List<Line> lines = this.participants.get(relatable);
+        List<GuardedLine> lines = this.participants.get(relatable);
 
         this.participants.remove(relatable);
         relatable.removeRelationship(this);
@@ -83,7 +84,7 @@ public class Relationship extends AttributableComponent {
 
         Set<Component> out = new HashSet<>(this.getAttributes());
 
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
 
             out.add((Component) participant.getKey());
 
@@ -135,11 +136,48 @@ public class Relationship extends AttributableComponent {
         this.resetPopupMenu();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    public boolean allMaxCardinalitiesAreN() {
+
+        List<GuardedLine> guardedLines = this.getLines();
+
+        for (GuardedLine guardedLine : guardedLines) {
+
+            // I know all the guarded lines will have a cardinality guard.
+            // Maybe it's not a bad idea to use a generic type to make sure...
+            Pair<String, String> cardinality = Cardinality.removeFormat(guardedLine.getText());
+
+            String maxCardinality = cardinality.second();
+
+            if (!maxCardinality.matches("[a-zA-Z]")) {
+                // If it's a number...
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    private List<GuardedLine> getLines() {
+
+        List<GuardedLine> out = new ArrayList<>();
+
+        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
+            out.addAll(participant.getValue());
+        }
+
+        return out;
+    }
+
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    @Override
     public void draw(Graphics2D g2) {
 
         FontMetrics fm = g2.getFontMetrics();
@@ -207,7 +245,7 @@ public class Relationship extends AttributableComponent {
     public void cleanPresence() {
 
         // We break the bound between the relationship and their participants.
-        for (Map.Entry<Relatable, List<Line>> pair : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<GuardedLine>> pair : this.participants.entrySet()) {
             pair.getKey().removeRelationship(this);
         }
 
@@ -220,9 +258,9 @@ public class Relationship extends AttributableComponent {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
 
-            List<Line> lines = participant.getValue();
+            List<GuardedLine> lines = participant.getValue();
 
             for (Line line : lines) {
                 out.addAll(line.getComponentsForRemoval());
@@ -251,11 +289,11 @@ public class Relationship extends AttributableComponent {
             derivation.addAttribute(this, attribute);
         }
 
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
 
-            List<Line> lines = participant.getValue();
+            List<GuardedLine> lines = participant.getValue();
 
-            for (Line line : lines) {
+            for (GuardedLine line : lines) {
 
                 try {
                     Pair<String, String> cardinalities = Cardinality.removeFormat(line.getText());

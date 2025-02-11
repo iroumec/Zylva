@@ -45,6 +45,8 @@ public final class FileManager {
                 out.close();
                 fileOut.close();
 
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("fileSavedSuccessfully"));
+
             } catch (IOException i) {
 
                 JOptionPane.showMessageDialog(null,LanguageManager.getMessage("fileManager.saveDiagram.exception"));
