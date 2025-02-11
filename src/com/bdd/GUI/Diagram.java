@@ -409,25 +409,23 @@ public abstract class Diagram extends JPanel implements Cloneable {
         draggedComponent.setY(e.getY() - offsetY);
     }
 
-    public Point getCenterOfComponents(com.bdd.GUI.components.Component... components) {
+    public Point getCenterOfComponents(List<Component> components) {
 
-        List<com.bdd.GUI.components.Component> componentsList = List.of(components);
-
-        if (componentsList.isEmpty()) {
+        if (components.isEmpty()) {
             return new Point(this.getMouseX(), this.getMouseY());
         }
 
         double sumX = 0, sumY = 0;
 
-        for (com.bdd.GUI.components.Component component : componentsList) {
+        for (com.bdd.GUI.components.Component component : components) {
 
             sumX += component.getX();
             sumY += component.getY();
         }
 
         // Calculate the average of the X and Y coordinates
-        double centerX = sumX / componentsList.size();
-        double centerY = sumY / componentsList.size();
+        double centerX = sumX / components.size();
+        double centerY = sumY / components.size();
 
         // Return the center as a Point object
         return new Point((int) centerX, (int) centerY);

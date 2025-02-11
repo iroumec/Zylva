@@ -22,6 +22,6 @@ public class StaticCardinality extends Cardinality {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(this);
+        return new JPopupMenu();
     }
 }

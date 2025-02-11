@@ -101,7 +101,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem item = new JMenuItem("action.addReflexiveRelationship");
-        item.addActionListener(_ -> Relationship.addRelationship((EERDiagram) this.diagram, this));
+        item.addActionListener(_ -> Relationship.addReflexiveRelationship((EERDiagram) this.diagram, this));
         popupMenu.add(item);
 
         item = new JMenuItem("action.delete");

@@ -9,6 +9,8 @@ import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.GUI.Diagram;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -357,5 +359,22 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         } else {
             return AttributeSymbol.MAIN;
         }
+    }
+
+    @Override
+    public List<DerivationObject> getDerivationObjects() {
+
+        // noinspection Dup
+        List<DerivationObject> out = new ArrayList<>();
+
+        DerivationObject derivation = new SingularDerivation(this.getIdentifier());
+
+        for (Attribute attribute : this.getAttributes(1)) {
+            derivation.addAttribute(this, attribute);
+        }
+
+        out.add(derivation);
+
+        return out;
     }
 }

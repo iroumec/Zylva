@@ -117,21 +117,6 @@ public class Hierarchy extends EERComponent implements Derivable {
 
     /**
      *
-     * @return The exclusivity of the hierarchy.
-     */
-    public HierarchySymbol getSymbol() { return this.symbol; }
-
-    /**
-     * Changes the hierarchy's exclusivity.
-     *
-     * @param symbol New exclusivity.
-     */
-    public void setSymbol(HierarchySymbol symbol) {
-        this.symbol = symbol;
-    }
-
-    /**
-     *
      * @return {@code TRUE} if the hierarchy is affected by multiple inheritance.
      */
     private boolean isThereMultipleInheritance() {
@@ -205,7 +190,7 @@ public class Hierarchy extends EERComponent implements Derivable {
      * <p></p>
      * At least three strong or weak entities must be selected.
      */
-    public static void addHierarchy(Diagram diagram, Component ... components) {
+    public static void addHierarchy(Diagram diagram, List<Component> components) {
 
         List<EntityWrapper> entities = Stream.of(components)
                 .filter(c -> c instanceof EntityWrapper)
@@ -213,9 +198,10 @@ public class Hierarchy extends EERComponent implements Derivable {
                 .toList();
 
         int numberOfEntities = entities.size();
+        int numberOfComponents = components.size();
 
         // The number of entities and components are different in case not all the components are entities.
-        if (numberOfEntities != components.length || numberOfEntities < 3) {
+        if (numberOfEntities != numberOfComponents || numberOfEntities < 3) {
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.threeEntities"));
         }
 
@@ -538,11 +524,12 @@ public class Hierarchy extends EERComponent implements Derivable {
     }
 
     @Override
-    protected void delete() {
+    public void delete() {
 
         if (isThereMultipleInheritance()) {
 
             JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.multipleInheritance"));
+            throw new RuntimeException("Multiple Inheritance.");
         } else {
             super.delete();
         }

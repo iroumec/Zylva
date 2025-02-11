@@ -1,6 +1,6 @@
 package com.bdd.mer.components.entity;
 
-import com.bdd.GUI.userPreferences.LanguageManager;
+import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.AttributableEERComponent;
 import com.bdd.GUI.components.Component;
 import com.bdd.mer.components.attribute.Attribute;
@@ -8,9 +8,6 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
-import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +40,7 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
      * @param y Y coordinate of the entity.
      * @param diagram {@code Diagram} in which the entity participates.
      */
-    public EntityWrapper(String text, int x, int y, Diagram diagram) {
+    public EntityWrapper(String text, int x, int y, EERDiagram diagram) {
         super(text, x, y, diagram);
         this.hierarchies = new ArrayList<>();
         this.entity = new StrongEntity(this); // By default, a strong entity is created.
@@ -186,7 +183,7 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         }
     }
 
-    public static void createEntity(Diagram diagram) {
+    public static void addEntity(EERDiagram diagram) {
 
         String name = getValidName(diagram);
 
@@ -258,9 +255,9 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         item.addActionListener(_ -> this.addComplexAttribute());
         popupMenu.add(item);
 
-//        item = new JMenuItem("action.addReflexiveRelationship");
-//        item.addActionListener(_ -> this.addReflexiveRelationship());
-//        popupMenu.add(item);
+        item = new JMenuItem("action.addReflexiveRelationship");
+        item.addActionListener(_ -> Relationship.addReflexiveRelationship((EERDiagram) this.diagram, this));
+        popupMenu.add(item);
 
         //noinspection DuplicatedCode
         item = new JMenuItem("action.rename");
@@ -365,24 +362,6 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     @Override
     public String toString() {
         return this.getText();
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public List<DerivationObject> getDerivationObjects() {
-
-        List<DerivationObject> out = new ArrayList<>();
-
-        DerivationObject derivation = new SingularDerivation(this.getIdentifier());
-
-        for (Attribute attribute : this.getAttributes(1)) {
-            derivation.addAttribute(this, attribute);
-        }
-
-        out.add(derivation);
-
-        return out;
     }
 
     @Override

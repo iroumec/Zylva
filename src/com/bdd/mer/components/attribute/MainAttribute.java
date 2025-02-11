@@ -5,7 +5,6 @@ import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.GUI.Diagram;
-import com.bdd.mer.actions.Action;
 
 import javax.swing.*;
 
@@ -29,12 +28,21 @@ public class MainAttribute extends Attribute {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.ADD_ATTRIBUTE,
-                Action.RENAME,
-                Action.DELETE
-        );
+        JPopupMenu popupMenu = new JPopupMenu();
 
+        JMenuItem menuItem = new JMenuItem("action.addAttribute");
+        menuItem.addActionListener(_ -> this.addAttribute());
+        popupMenu.add(menuItem);
+
+        // noinspection DuplicatedCode
+        menuItem = new JMenuItem("action.rename");
+        menuItem.addActionListener(_ -> this.rename());
+        popupMenu.add(menuItem);
+
+        menuItem = new JMenuItem("action.delete");
+        menuItem.addActionListener(_ -> this.delete());
+        popupMenu.add(menuItem);
+
+        return popupMenu;
     }
 }

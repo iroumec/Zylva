@@ -1,6 +1,7 @@
 package com.bdd.mer;
 
 import com.bdd.GUI.components.Component;
+import com.bdd.GUI.components.line.guard.Guard;
 import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.GUI.components.line.Line;
@@ -17,65 +18,14 @@ public class EERDiagram extends Diagram {
 
     @Override
     public void addComponent(@NotNull Component component) {
-        if (!(component instanceof EERComponent) && !(component instanceof Line) && !(component instanceof Note)) {
+        if (!(component instanceof EERComponent)
+                && !(component instanceof Line) && !(component instanceof Guard) && !(component instanceof Note)) {
             throw new IllegalArgumentException(
-                    "The component must be a type of EERComponent or an utility component such as Line or Note."
+                    "The component must be a type of EERComponent or an utility component such as Line, Guard or Note."
             );
         }
         super.addComponent(component);
     }
-
-//    /* -------------------------------------------------------------------------------------------------------------- */
-//    /*                                         Delete Selected Components                                             */
-//    /* -------------------------------------------------------------------------------------------------------------- */
-//
-//    /**
-//     * Deletes all the selected components and their close-related components.
-//     * <p></p>
-//     * At least a component must be selected.
-//     */
-//    public void deleteSelectedComponents() {
-//
-//        List<Component> selectedComponents = this.getSelectedComponents();
-//
-//        if (!selectedComponents.isEmpty()) {
-//
-//            int confirmation = JOptionPane.showConfirmDialog(
-//                    this,
-//                    LanguageManager.getMessage("input.delete"),
-//                    LanguageManager.getMessage("title.delete"),
-//                    JOptionPane.YES_NO_OPTION,
-//                    JOptionPane.QUESTION_MESSAGE
-//            );
-//
-//            if (confirmation == JOptionPane.YES_OPTION) {
-//
-//                Set<Component> componentsForRemoval = new HashSet<>();
-//
-//                for (Component component : selectedComponents) {
-//
-//                    if (!component.canBeDeleted()) {
-//                        return;
-//                    }
-//
-//                    componentsForRemoval.addAll(component.getComponentsForRemoval());
-//                    componentsForRemoval.add(component);
-//                }
-//
-//                for (Component component : componentsForRemoval) {
-//                    this.removeComponent(component);
-//                }
-//
-//            }
-//
-//            this.repaint();
-//        } else {
-//            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.delete"));
-//        }
-//
-//        // Desactiva el modo de selección
-//        this.cleanSelectedComponents();
-//    }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                Get JPopupMenu                                                  */
@@ -87,28 +37,34 @@ public class EERDiagram extends Diagram {
         JPopupMenu backgroundPopupMenu = new JPopupMenu();
 
         JMenuItem addEntity = new JMenuItem(LanguageManager.getMessage("option.addEntity"));
-        addEntity.addActionListener(_ -> EntityWrapper.createEntity(this));
+        addEntity.addActionListener(_ -> {
+            EntityWrapper.addEntity(this);
+            cleanSelectedComponents();
+        });
 
         JMenuItem addRelationship = new JMenuItem(LanguageManager.getMessage("option.addRelationship"));
-        addRelationship.addActionListener(_ -> Relationship.addRelationship(
-                this,
-                this.getSelectedComponents().toArray(Component[]::new)
-        ));
+        addRelationship.addActionListener(_ -> {
+            Relationship.addRelationship(this, this.getSelectedComponents());
+            cleanSelectedComponents();
+        });
 
         JMenuItem addDependency = new JMenuItem(LanguageManager.getMessage("option.addDependency"));
-        addDependency.addActionListener(_ -> Relationship.addDependency(
-                this,
-                this.getSelectedComponents().toArray(Component[]::new)
-        ));
+        addDependency.addActionListener(_ -> {
+            Relationship.addDependency(this, this.getSelectedComponents());
+            cleanSelectedComponents();
+        });
 
         JMenuItem addHierarchy = new JMenuItem(LanguageManager.getMessage("option.addHierarchy"));
-        addHierarchy.addActionListener(_ -> Hierarchy.addHierarchy(
-                this,
-                this.getSelectedComponents().toArray(Component[]::new)
-        ));
+        addHierarchy.addActionListener(_ -> {
+            Hierarchy.addHierarchy(this, this.getSelectedComponents());
+            cleanSelectedComponents();
+        });
 
         JMenuItem addNote = new JMenuItem(LanguageManager.getMessage("option.addNote"));
-        addNote.addActionListener(_ -> Note.addNote(this));
+        addNote.addActionListener(_ -> {
+            Note.addNote(this);
+            cleanSelectedComponents();
+        });
 
         backgroundPopupMenu.add(addEntity);
         backgroundPopupMenu.add(addRelationship);

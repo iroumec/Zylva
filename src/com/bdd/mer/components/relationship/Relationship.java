@@ -255,6 +255,7 @@ public class Relationship extends AttributableEERComponent {
             popupMenu.add(actionItem);
         }
 
+        //noinspection DuplicatedCode
         actionItem = new JMenuItem("action.rename");
         actionItem.addActionListener(_ -> this.rename());
         popupMenu.add(actionItem);
@@ -355,17 +356,17 @@ public class Relationship extends AttributableEERComponent {
      * <p></p>
      * Between one and three entities (strong or weak) or associations must be selected.
      */
-    public static void addRelationship(EERDiagram diagram, Component ... components) {
+    public static void addRelationship(EERDiagram diagram, List<Component> components) {
 
-        List<Relatable> relatableComponents = Stream.of(components)
-                .filter(c -> c instanceof Relatable)
+        List<Relatable> relatableComponents = components.stream()
+                .filter(c -> c instanceof EntityWrapper || c instanceof Association)
                 .map(c -> (Relatable) c)
                 .toList();
 
         int numberOfComponents = relatableComponents.size();
 
         // Not all the components are relatable.
-        if (numberOfComponents != components.length || numberOfComponents < 1 || numberOfComponents > 3) {
+        if (numberOfComponents != components.size() || numberOfComponents < 1 || numberOfComponents > 3) {
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.relationshipCreation"));
             return;
         }
@@ -378,9 +379,7 @@ public class Relationship extends AttributableEERComponent {
 
         Relationship newRelationship;
 
-        List<Line> lines = new ArrayList<>();
-
-        List<Cardinality> cardinalities = new ArrayList<>();
+        List<Component> newComponents = new ArrayList<>();
 
         if (numberOfComponents >= 2) { // Number of components in equal to two or three.
 
@@ -397,8 +396,7 @@ public class Relationship extends AttributableEERComponent {
                 } else {
                     cardinality = new Cardinality("0", "N", diagram);
                 }
-
-                cardinalities.add(cardinality);
+                newComponents.add(cardinality);
 
                 GuardedLine guardedLine = new GuardedLine.Builder(
                         diagram,
@@ -412,60 +410,68 @@ public class Relationship extends AttributableEERComponent {
                 if (relatable instanceof Association) {
                     guardedLine.setDrawingPriority(0);
                 }
-
-                lines.add(guardedLine);
+                newComponents.add(guardedLine);
 
                 newRelationship.addParticipant(relatable, guardedLine);
 
+                newComponents.add(newRelationship);
             }
 
         } else { // Number of components is equals to one.
 
-            newRelationship = new Relationship(
-                    name,
-                    diagram.getMouseX() + 90,
-                    diagram.getMouseY() - 90,
-                    diagram
-            );
-
-            Relatable relatable = relatableComponents.getFirst();
-
-            Cardinality firstCardinality = new Cardinality("1", "N", diagram);
-            Cardinality secondCardinality = new Cardinality("1", "N", diagram);
-
-            GuardedLine firstCardinalityLine = new GuardedLine.Builder(
-                    diagram,
-                    (Component) relatable,
-                    newRelationship,
-                    firstCardinality).lineShape(new SquaredLine()).build();
-            lines.add(firstCardinalityLine);
-
-            GuardedLine secondCardinalityLine = new GuardedLine.Builder(
-                    diagram,
-                    newRelationship,
-                    (Component) relatable,
-                    secondCardinality).lineShape(new SquaredLine()).build();
-            lines.add(secondCardinalityLine);
-
-            cardinalities.add(firstCardinality);
-            cardinalities.add(secondCardinality);
-
-            newRelationship.addParticipant(relatable, firstCardinalityLine);
-            newRelationship.addParticipant(relatable, secondCardinalityLine);
+            addReflexiveRelationship(diagram, relatableComponents.getFirst());
         }
 
-        for (Cardinality cardinality : cardinalities) {
-            diagram.addComponent(cardinality);
+        for (Component newComponent : newComponents) {
+            diagram.addComponent(newComponent);
+        }
+    }
+
+    public static void addReflexiveRelationship(EERDiagram diagram, Relatable relatable) {
+
+        List<Component> newComponents = new ArrayList<>();
+
+        String name = getValidName(diagram);
+
+        if (name == null) {
+            return;
         }
 
-        for (Line line : lines) {
-            diagram.addComponent(line);
+        Relationship newRelationship = new Relationship(
+                name,
+                diagram.getMouseX() + 90,
+                diagram.getMouseY() - 90,
+                diagram
+        );
+
+        Cardinality firstCardinality = new Cardinality("1", "N", diagram);
+        Cardinality secondCardinality = new Cardinality("1", "N", diagram);
+
+        GuardedLine firstCardinalityLine = new GuardedLine.Builder(
+                diagram,
+                (Component) relatable,
+                newRelationship,
+                firstCardinality).lineShape(new SquaredLine()).build();
+        newComponents.add(firstCardinalityLine);
+
+        GuardedLine secondCardinalityLine = new GuardedLine.Builder(
+                diagram,
+                newRelationship,
+                (Component) relatable,
+                secondCardinality).lineShape(new SquaredLine()).build();
+        newComponents.add(secondCardinalityLine);
+
+        newComponents.add(firstCardinality);
+        newComponents.add(secondCardinality);
+
+        newRelationship.addParticipant(relatable, firstCardinalityLine);
+        newRelationship.addParticipant(relatable, secondCardinalityLine);
+
+        newComponents.add(newRelationship);
+
+        for (Component newComponent : newComponents) {
+            diagram.addComponent(newComponent);
         }
-
-        diagram.addComponent(newRelationship);
-
-        // TODO: this shouldn't be included here.
-        diagram.cleanSelectedComponents();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -477,7 +483,7 @@ public class Relationship extends AttributableEERComponent {
      * <p></p>
      * Two strong entities must be selected.
      */
-    public static void addDependency(EERDiagram diagram, Component ... components) {
+    public static void addDependency(EERDiagram diagram, List<Component> components) {
 
         List<EntityWrapper> entities = Stream.of(components)
                 .filter(c -> c instanceof EntityWrapper)
@@ -486,7 +492,7 @@ public class Relationship extends AttributableEERComponent {
 
         // entities.size() != components.length when all at least one of the components passed is not an instance
         // of entity wrapper.
-        if (entities.size() != components.length || entities.size() != 2) {
+        if (entities.size() != components.size() || entities.size() != 2) {
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.dependencyCreation"));
             return;
         }

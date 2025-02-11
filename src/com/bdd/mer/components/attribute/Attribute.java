@@ -5,14 +5,10 @@ import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Attribute extends AttributableEERComponent implements Derivable {
 
@@ -255,22 +251,5 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     @Override
     public String getIdentifier() {
         return this.getText();
-    }
-
-    @Override
-    @SuppressWarnings("Duplicated")
-    public List<DerivationObject> getDerivationObjects() {
-
-        List<DerivationObject> out = new ArrayList<>();
-
-        DerivationObject derivation = new SingularDerivation(this.getIdentifier());
-
-        for (Attribute attribute : this.getAttributes(1)) {
-            derivation.addAttribute(this, attribute);
-        }
-
-        out.add(derivation);
-
-        return out;
     }
 }

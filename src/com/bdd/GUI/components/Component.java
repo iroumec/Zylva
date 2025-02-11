@@ -266,7 +266,7 @@ public abstract class Component implements Serializable, Cloneable {
     /**
      * Renames the component.
      */
-    protected void rename() {
+    public void rename() {
 
         String newText;
 
@@ -295,7 +295,7 @@ public abstract class Component implements Serializable, Cloneable {
     /**
      * Deletes the component and their close-related components.
      */
-    protected void delete() {
+    public void delete() {
 
         int confirmation = JOptionPane.showConfirmDialog(
                 this.diagram,

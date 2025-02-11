@@ -1,8 +1,11 @@
 package com.bdd.GUI;
 
 import com.bdd.GUI.components.Component;
+import com.bdd.GUI.components.note.Note;
 import com.bdd.mer.EERDiagram;
 import com.bdd.GUI.menuBar.MenuBar;
+import com.bdd.mer.components.entity.EntityWrapper;
+import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 
 import javax.swing.*;
@@ -24,6 +27,7 @@ public class MainFrame extends JFrame {
         /* ---------------------------------------------------------------------------------------------------------- */
 
         // Creation of the drawing panel, the bar menu and the menu.
+        UndoManager undoManager = new UndoManager(10);
         this.diagram = new EERDiagram();
         this.menuBar = new MenuBar(this, diagram);
         JPanel menu = new JPanel();
@@ -42,7 +46,8 @@ public class MainFrame extends JFrame {
         addEntityKey.getActionMap().put("actionE", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                diagram.addEntity();
+                EntityWrapper.addEntity(diagram);
+                diagram.cleanSelectedComponents();
             }
         });
 
@@ -55,7 +60,8 @@ public class MainFrame extends JFrame {
         addRelationshipKey.getActionMap().put("actionR", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Relationship.addRelationship(diagram, diagram.getSelectedComponents().toArray(Component[]::new));
+                Relationship.addRelationship(diagram, diagram.getSelectedComponents());
+                diagram.cleanSelectedComponents();
             }
         });
 
@@ -68,7 +74,8 @@ public class MainFrame extends JFrame {
         addDependencyKey.getActionMap().put("actionD", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Relationship.addDependency(diagram, diagram.getSelectedComponents().toArray(Component[]::new));
+                Relationship.addDependency(diagram, diagram.getSelectedComponents());
+                diagram.cleanSelectedComponents();
             }
         });
 
@@ -82,7 +89,8 @@ public class MainFrame extends JFrame {
         addHierarchyKey.getActionMap().put("actionH", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                diagram.addHierarchy();
+                Hierarchy.addHierarchy(diagram, diagram.getSelectedComponents());
+                diagram.cleanSelectedComponents();
             }
         });
 
@@ -95,7 +103,8 @@ public class MainFrame extends JFrame {
         addNoteKey.getActionMap().put("actionN", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                diagram.addNote();
+                Note.addNote(diagram);
+                diagram.cleanSelectedComponents();
             }
         });
 
@@ -107,7 +116,19 @@ public class MainFrame extends JFrame {
         deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                diagram.deleteSelectedComponents();
+
+                undoManager.saveState(diagram);
+
+                try {
+
+                    for (Component component : diagram.getSelectedComponents()) {
+                        component.delete();
+                    }
+                } catch (Exception err) {
+                    undoManager.saveState(diagram);
+                }
+
+                diagram.cleanSelectedComponents();
             }
         });
 
