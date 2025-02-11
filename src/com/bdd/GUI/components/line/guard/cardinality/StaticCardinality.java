@@ -1,4 +1,4 @@
-package com.bdd.mer.components.line.guard.cardinality;
+package com.bdd.GUI.components.line.guard.cardinality;
 
 import com.bdd.GUI.Diagram;
 

@@ -1,6 +1,6 @@
-package com.bdd.mer.components.line.lineMultiplicity;
+package com.bdd.GUI.components.line.lineMultiplicity;
 
-import com.bdd.mer.components.line.lineShape.LineShape;
+import com.bdd.GUI.components.line.lineShape.LineShape;
 
 import java.awt.*;
 import java.io.Serializable;

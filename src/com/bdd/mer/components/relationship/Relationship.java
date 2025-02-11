@@ -3,27 +3,27 @@ package com.bdd.mer.components.relationship;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.AttributableEERComponent;
-import com.bdd.GUI.Component;
-import com.bdd.mer.components.association.Association;
+import com.bdd.GUI.components.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
-import com.bdd.mer.components.line.GuardedLine;
-import com.bdd.mer.components.line.Line;
-import com.bdd.mer.components.line.guard.cardinality.Cardinality;
-import com.bdd.mer.components.line.guard.cardinality.StaticCardinality;
-import com.bdd.mer.components.line.lineMultiplicity.DoubleLine;
-import com.bdd.mer.components.line.lineShape.SquaredLine;
+import com.bdd.GUI.components.line.GuardedLine;
+import com.bdd.GUI.components.line.Line;
+import com.bdd.GUI.components.line.guard.cardinality.Cardinality;
+import com.bdd.GUI.components.line.guard.cardinality.StaticCardinality;
+import com.bdd.GUI.components.line.lineMultiplicity.DoubleLine;
+import com.bdd.GUI.components.line.lineShape.SquaredLine;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.PluralDerivation;
 import com.bdd.GUI.Diagram;
-import com.bdd.structures.Pair;
+import com.bdd.GUI.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Relationship extends AttributableEERComponent {
 
@@ -43,7 +43,7 @@ public class Relationship extends AttributableEERComponent {
      * @param y Y coordinate of the relationship.
      * @param diagram {@code Diagram} in which the relationship lives.
      */
-    public Relationship(String text, int x, int y, Diagram diagram) {
+    private Relationship(String text, int x, int y, Diagram diagram) {
 
         super(text, x, y, diagram);
 
@@ -54,7 +54,7 @@ public class Relationship extends AttributableEERComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void addParticipant(Relatable relatableComponent, GuardedLine line) {
+    private void addParticipant(Relatable relatableComponent, GuardedLine line) {
 
         List<GuardedLine> lines = this.participants.get(relatableComponent);
 
@@ -71,7 +71,7 @@ public class Relationship extends AttributableEERComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void removeParticipant(Relatable relatable) {
+    private void removeParticipant(Relatable relatable) {
 
         List<GuardedLine> lines = this.participants.get(relatable);
 
@@ -181,7 +181,7 @@ public class Relationship extends AttributableEERComponent {
      * Add an association to the diagram.
      */
     // There must be selected at least an entity and a relationship (unary relationship)
-    private void addAssociation() {
+    private void createAssociation() {
 
         if (this.allMaxCardinalitiesAreN()) {
 
@@ -251,7 +251,7 @@ public class Relationship extends AttributableEERComponent {
         if (association == null) {
 
             actionItem = new JMenuItem("action.addAssociation");
-            actionItem.addActionListener(_ -> this.addAssociation());
+            actionItem.addActionListener(_ -> this.createAssociation());
             popupMenu.add(actionItem);
         }
 
@@ -355,18 +355,22 @@ public class Relationship extends AttributableEERComponent {
      * <p></p>
      * Between one and three entities (strong or weak) or associations must be selected.
      */
-    public static void addRelationship(EERDiagram diagram, Relatable ... relatableComponents) {
+    public static void addRelationship(EERDiagram diagram, Component ... components) {
 
-        List<Relatable> components = List.of(relatableComponents);
+        List<Relatable> relatableComponents = Stream.of(components)
+                .filter(c -> c instanceof Relatable)
+                .map(c -> (Relatable) c)
+                .toList();
 
-        int numberOfComponents = components.size();
+        int numberOfComponents = relatableComponents.size();
 
-        if (numberOfComponents == 0 || numberOfComponents > 3) {
+        // Not all the components are relatable.
+        if (numberOfComponents != components.length || numberOfComponents < 1 || numberOfComponents > 3) {
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.relationshipCreation"));
             return;
         }
 
-        String name = getValidName();
+        String name = getValidName(diagram);
 
         if (name == null) {
             return;
@@ -380,15 +384,11 @@ public class Relationship extends AttributableEERComponent {
 
         if (numberOfComponents >= 2) { // Number of components in equal to two or three.
 
-            Component[] componentsArray = components.stream()
-                    .map(component -> (Component) component)
-                    .toArray(Component[]::new);
-
-            Point center = diagram.getCenterOfComponents(componentsArray);
+            Point center = diagram.getCenterOfComponents(components);
 
             newRelationship = new Relationship(name, center.x, center.y, diagram);
 
-            for (Relatable relatable : components) {
+            for (Relatable relatable : relatableComponents) {
 
                 Cardinality cardinality;
 
@@ -428,7 +428,7 @@ public class Relationship extends AttributableEERComponent {
                     diagram
             );
 
-            Relatable relatable = components.getFirst();
+            Relatable relatable = relatableComponents.getFirst();
 
             Cardinality firstCardinality = new Cardinality("1", "N", diagram);
             Cardinality secondCardinality = new Cardinality("1", "N", diagram);
@@ -477,18 +477,23 @@ public class Relationship extends AttributableEERComponent {
      * <p></p>
      * Two strong entities must be selected.
      */
-    public static void addDependency(EERDiagram diagram, EntityWrapper ... entitiesVararg) {
+    public static void addDependency(EERDiagram diagram, Component ... components) {
 
-        List<EntityWrapper> entities = List.of(entitiesVararg);
+        List<EntityWrapper> entities = Stream.of(components)
+                .filter(c -> c instanceof EntityWrapper)
+                .map(c -> (EntityWrapper) c)
+                .toList();
 
-        if (entities.size() != 2) {
+        // entities.size() != components.length when all at least one of the components passed is not an instance
+        // of entity wrapper.
+        if (entities.size() != components.length || entities.size() != 2) {
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.dependencyCreation"));
             return;
         }
 
-        String name = getValidName();
+        String name = getValidName(diagram);
 
-        Point center = diagram.getCenterOfComponents(entitiesVararg);
+        Point center = diagram.getCenterOfComponents(components);
 
         Relationship newRelationship = new Relationship(name, center.x, center.y, diagram);
 

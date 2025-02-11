@@ -1,6 +1,6 @@
 package com.bdd.GUI.menuBar.exportation;
 
-import com.bdd.GUI.Component;
+import com.bdd.GUI.components.Component;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
 

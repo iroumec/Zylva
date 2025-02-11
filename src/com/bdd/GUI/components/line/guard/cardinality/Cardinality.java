@@ -1,10 +1,9 @@
-package com.bdd.mer.components.line.guard.cardinality;
+package com.bdd.GUI.components.line.guard.cardinality;
 
 import com.bdd.GUI.userPreferences.LanguageManager;
-import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.line.guard.Guard;
+import com.bdd.GUI.components.line.guard.Guard;
 import com.bdd.GUI.Diagram;
-import com.bdd.structures.Pair;
+import com.bdd.GUI.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;

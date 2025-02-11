@@ -1,6 +1,5 @@
-package com.bdd.mer.components.line.guard;
+package com.bdd.GUI.components.line.guard;
 
-import com.bdd.mer.actions.Action;
 import com.bdd.GUI.Diagram;
 
 import javax.swing.*;

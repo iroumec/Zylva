@@ -1,17 +1,16 @@
-package com.bdd.mer.components.line;
+package com.bdd.GUI.components.line;
 
-import com.bdd.GUI.Component;
-import com.bdd.mer.components.EERComponent;
-import com.bdd.mer.components.line.lineMultiplicity.LineMultiplicity;
-import com.bdd.mer.components.line.lineMultiplicity.SingleLine;
-import com.bdd.mer.components.line.lineShape.DirectLine;
-import com.bdd.mer.components.line.lineShape.LineShape;
+import com.bdd.GUI.components.Component;
+import com.bdd.GUI.components.line.lineMultiplicity.LineMultiplicity;
+import com.bdd.GUI.components.line.lineMultiplicity.SingleLine;
+import com.bdd.GUI.components.line.lineShape.DirectLine;
+import com.bdd.GUI.components.line.lineShape.LineShape;
 import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class Line extends EERComponent {
+public class Line extends Component {
 
     private final Component firstComponent;
     private final Component secondComponent;

@@ -1,9 +1,13 @@
 package com.bdd.mer.components.hierarchy;
 
-import com.bdd.GUI.Component;
+import com.bdd.GUI.components.Component;
+import com.bdd.GUI.components.line.GuardedLine;
+import com.bdd.GUI.components.line.guard.Discriminant;
+import com.bdd.GUI.components.line.lineMultiplicity.DoubleLine;
+import com.bdd.GUI.structures.Pair;
 import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.entity.EntityWrapper;
-import com.bdd.mer.components.line.Line;
+import com.bdd.GUI.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
@@ -15,6 +19,7 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /*
 En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
@@ -189,6 +194,222 @@ public class Hierarchy extends EERComponent implements Derivable {
 
         this.diagram.repaint();
 
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                            Add Hierarchy                                                       */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Adds a new <Code>Hierarchy</Code> to the <Code>this</Code>.
+     * <p></p>
+     * At least three strong or weak entities must be selected.
+     */
+    public static void addHierarchy(Diagram diagram, Component ... components) {
+
+        List<EntityWrapper> entities = Stream.of(components)
+                .filter(c -> c instanceof EntityWrapper)
+                .map(c -> (EntityWrapper) c)
+                .toList();
+
+        int numberOfEntities = entities.size();
+
+        // The number of entities and components are different in case not all the components are entities.
+        if (numberOfEntities != components.length || numberOfEntities < 3) {
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.threeEntities"));
+        }
+
+        EntityWrapper parent = selectParent(diagram, entities);
+
+        main: if (parent != null && !parent.isAlreadyParent()) {
+
+            List<EntityWrapper> subtipos = getChildrenList(parent, entities);
+
+            Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(diagram, parent);
+
+            if (newHierarchyData == null) {
+                return;
+            }
+
+            Hierarchy newHierarchy = newHierarchyData.first();
+            List<Component> componentsToAdd = newHierarchyData.second();
+
+            for (EntityWrapper subtipo : subtipos) {
+                newHierarchy.addChild(subtipo);
+
+                if (!subtipo.addHierarchy(newHierarchy)) {
+
+                    // Repairing action.
+                    parent.removeHierarchy(newHierarchy);
+                    for (EntityWrapper s : subtipos) {
+                        s.removeHierarchy(newHierarchy);
+
+                        String message = LanguageManager.getMessage("warning.theEntity") + " "
+                                + '\"' + subtipo.getText() + '\"'
+                                + " " + LanguageManager.getMessage("warning.alreadyParticipatesInHierarchy") + " "
+                                + LanguageManager.getMessage("warning.multipleInheritanceOnlyAllowed");
+
+                        JOptionPane.showMessageDialog(diagram, message);
+
+                        // Exit.
+                        break main;
+                    }
+                }
+            }
+
+            parent.addHierarchy(newHierarchy);
+
+            for (Component component : componentsToAdd) {
+                diagram.addComponent(component);
+            }
+
+            diagram.addComponent(newHierarchy);
+
+        } else {
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.alreadyParent"));
+        }
+    }
+
+    /**
+     * Creates a {@code Hierarchy} according to the options selected by the user.
+     *
+     * @param parent Entity parent of the hierarchy.
+     * @return {@code Hierarchy} according to the options selected by the user.
+     */
+    public static Pair<Hierarchy, List<Component>> getHierarchy(Diagram diagram, EntityWrapper parent) {
+
+        // The radio buttons are created.
+        JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
+        JRadioButton overlapButton = new JRadioButton(LanguageManager.getMessage("hierarchy.overlap"));
+        JRadioButton totalButton = new JRadioButton(LanguageManager.getMessage("hierarchy.total"), true);
+        JRadioButton partialButton = new JRadioButton(LanguageManager.getMessage("hierarchy.partial"));
+
+        // The radio buttons are grouped so that only one can be selected at the same time.
+        ButtonGroup groupExclusivaCompartida = new ButtonGroup();
+        groupExclusivaCompartida.add(exclusiveButton);
+        groupExclusivaCompartida.add(overlapButton);
+
+        ButtonGroup groupTotalExclusiva = new ButtonGroup();
+        groupTotalExclusiva.add(totalButton);
+        groupTotalExclusiva.add(partialButton);
+
+        // A panel to contain the radio buttons is created.
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS)); // Añade un BoxLayout al panel
+
+        // A panel for each group of radio buttons is created.
+        JPanel panelEC = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelEC.add(exclusiveButton);
+        panelEC.add(overlapButton);
+
+        JPanel panelTP = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelTP.add(totalButton);
+        panelTP.add(partialButton);
+
+        panel.add(panelEC);
+        panel.add(panelTP);
+
+        int option = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.option"),
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+
+        // If the user clicked "Cancel" or closed the window.
+        if (option == JOptionPane.CLOSED_OPTION || option == JOptionPane.CANCEL_OPTION) {
+            return null; // The process is canceled.
+        }
+
+        HierarchySymbol symbol = (exclusiveButton.isSelected()) ? HierarchySymbol.DISJUNCT : HierarchySymbol.OVERLAPPING;
+
+        Hierarchy newHierarchy = new Hierarchy(symbol, parent, diagram);
+
+        Discriminant discriminant = null;
+
+        if (symbol.equals(HierarchySymbol.DISJUNCT)) {
+
+            String discriminantText = JOptionPane.showInputDialog(
+                    diagram,
+                    null,
+                    "Enter a discriminant",
+                    JOptionPane.QUESTION_MESSAGE // Message Source.
+            );
+
+            discriminant = new Discriminant(discriminantText, diagram);
+        }
+
+        Line parentLine;
+
+        if (totalButton.isSelected()) {
+
+            if (discriminant != null) {
+
+                parentLine = new GuardedLine.Builder(diagram, parent, newHierarchy, discriminant)
+                        .lineMultiplicity(new DoubleLine(3)).build();
+            } else {
+
+                parentLine = new Line.Builder(diagram, parent, newHierarchy)
+                        .lineMultiplicity(new DoubleLine(3)).build();
+            }
+
+        } else {
+
+            if (discriminant != null) {
+
+                parentLine = new GuardedLine.Builder(diagram, parent, newHierarchy, discriminant)
+                        .strokeWidth(2).build();
+            } else {
+
+                parentLine = new Line.Builder(diagram, parent, newHierarchy)
+                        .strokeWidth(2).build();
+            }
+
+            // This way, setting the stroke, it's noticeable who is the parent of the hierarchy.
+        }
+
+        newHierarchy.setParentLine(parentLine);
+
+        List<Component> componentsToAdd = new ArrayList<>();
+
+        componentsToAdd.add(parentLine);
+
+        if (discriminant != null) {
+            componentsToAdd.add(discriminant);
+        }
+
+        return new Pair<>(newHierarchy, componentsToAdd);
+    }
+
+    /**
+     * Allows the user to select, from the selected entities, an {@code Entity} to be the parent.
+     *
+     * @return {@code Hierarchy} selected to be the parent of the {@code Hierarchy}.
+     */
+    public static EntityWrapper selectParent(Diagram diagram, List<EntityWrapper> entities) {
+
+        Object[] opciones = new Object[entities.size()];
+
+        for (int i = 0; i < entities.size(); i++) {
+            opciones[i] = (entities.get(i)).getText();
+        }
+
+        // Muestra el JOptionPane con los botones
+        int selection = JOptionPane.showOptionDialog(diagram, LanguageManager.getMessage("hierarchy.selectParent"), "Selección",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
+
+        return (entities.get(selection));
+
+    }
+
+    /**
+     * Given the parent of the hierarchy, it returns a list containing its children.
+     *
+     * @param parent {@code Entity} chosen as the parent of the hierarchy.
+     * @return {@code List<Entity>} containing the children entities of the hierarchy.
+     */
+    public static List<EntityWrapper> getChildrenList(EntityWrapper parent, List<EntityWrapper> entities) {
+
+        List<EntityWrapper> out = new ArrayList<>(entities);
+        out.remove((parent));
+
+        return out;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

@@ -1,5 +1,6 @@
 package com.bdd.GUI;
 
+import com.bdd.GUI.components.Component;
 import com.bdd.GUI.userPreferences.Preference;
 import com.bdd.GUI.userPreferences.UserPreferences;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +16,9 @@ import java.util.stream.Collectors;
 
 public abstract class Diagram extends JPanel implements Cloneable {
 
-    private List<Component> components = new ArrayList<>();
-    private Component draggedComponent = null;
-    private Set<Component> selectedComponents = new HashSet<>();
+    private List<com.bdd.GUI.components.Component> components = new ArrayList<>();
+    private com.bdd.GUI.components.Component draggedComponent = null;
+    private Set<com.bdd.GUI.components.Component> selectedComponents = new HashSet<>();
     private Rectangle selectionArea;
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
@@ -71,7 +72,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
         g2d.draw(selectionArea);
 
-        for (Component component : this.components) {
+        for (com.bdd.GUI.components.Component component : this.components) {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(new BasicStroke(1));
             component.draw(g2d);
@@ -82,7 +83,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     public boolean noComponenteThere(int x, int y) {
 
-        for (Component component : this.components) {
+        for (com.bdd.GUI.components.Component component : this.components) {
             if (component.getBounds().contains((new Point(x, y)))) {
                 return false;
             }
@@ -94,7 +95,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     public void selectComponents() {
 
-        for (Component component : this.components) {
+        for (com.bdd.GUI.components.Component component : this.components) {
 
             if (component.canBeSelectedBySelectionArea() && selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
 
@@ -108,11 +109,11 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void addComponent(@NotNull Component component) {
+    public void addComponent(@NotNull com.bdd.GUI.components.Component component) {
         int index = Collections.binarySearch(
                 this.components,
                 component,
-                Comparator.comparing(Component::getDrawingPriority) // Cambiado aquí
+                Comparator.comparing(com.bdd.GUI.components.Component::getDrawingPriority) // Cambiado aquí
         );
         if (index < 0) {
             index = -index - 1;
@@ -124,7 +125,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void removeComponent(@NotNull Component componentToRemove) {
+    public void removeComponent(@NotNull com.bdd.GUI.components.Component componentToRemove) {
         componentToRemove.cleanPresence();
         this.components.remove(componentToRemove);
         repaint(componentToRemove.getBounds());
@@ -139,12 +140,12 @@ public abstract class Diagram extends JPanel implements Cloneable {
     public void sortComponents() {
 
         // The algorithm used is a Timsort, a combination of a Merge Sort and an Insertion Sort.
-        this.components.sort(Comparator.comparing(Component::getDrawingPriority));
+        this.components.sort(Comparator.comparing(com.bdd.GUI.components.Component::getDrawingPriority));
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Component> getSelectedComponents() {
+    public List<com.bdd.GUI.components.Component> getSelectedComponents() {
         return (new ArrayList<>(selectedComponents));
     }
 
@@ -152,7 +153,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     public void cleanSelectedComponents() {
 
-        for (Component selectedComponent : selectedComponents) {
+        for (com.bdd.GUI.components.Component selectedComponent : selectedComponents) {
            selectedComponent.setSelected(Boolean.FALSE);
            repaint(selectedComponent.getBounds());
         }
@@ -173,7 +174,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     @SuppressWarnings("unchecked")
     // The class of the component being added to the list is checked, so the cast is safe.
-    public <T extends Component> List<T> getSelectedComponentsByClass(Class<T> specificClass) {
+    public <T extends com.bdd.GUI.components.Component> List<T> getSelectedComponentsByClass(Class<T> specificClass) {
         return (List<T>) this.selectedComponents.stream()
                 .filter(e -> e.getClass().equals(specificClass))
                 .collect(Collectors.toList());
@@ -193,17 +194,17 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Component> getListComponents() { return new ArrayList<>(this.components); }
+    public List<com.bdd.GUI.components.Component> getListComponents() { return new ArrayList<>(this.components); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @SafeVarargs
-    public final boolean onlyTheseClassesAreSelected(Class<? extends Component>... classTypes) {
+    public final boolean onlyTheseClassesAreSelected(Class<? extends com.bdd.GUI.components.Component>... classTypes) {
         // Use a Set for faster lookup.
         Set<Class<?>> allowedClasses = new HashSet<>(Arrays.asList(classTypes));
 
         // Check if all components are of the allowed types.
-        for (Component component : this.selectedComponents) {
+        for (com.bdd.GUI.components.Component component : this.selectedComponents) {
             if (!allowedClasses.contains(component.getClass())) {
                 return false;
             }
@@ -228,7 +229,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     public boolean existsComponent(String componentName) {
 
-        for (Component component : this.components) {
+        for (com.bdd.GUI.components.Component component : this.components) {
             if (!component.getText().isEmpty() && component.getText().equals(componentName)) {
                 return true;
             }
@@ -241,7 +242,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
         this.backgroundPopupMenu = this.getBackgroundPopupMenu();
 
-        for (Component component : this.components) {
+        for (com.bdd.GUI.components.Component component : this.components) {
             component.resetLanguage();
         }
 
@@ -291,8 +292,8 @@ public abstract class Diagram extends JPanel implements Cloneable {
             if (e.isControlDown()) {
                 this.handleControlClick();
             } else {
-                List<Component> components = getListComponents().reversed();
-                for (Component component : components) {
+                List<com.bdd.GUI.components.Component> components = getListComponents().reversed();
+                for (com.bdd.GUI.components.Component component : components) {
                     if (component.getBounds().contains(e.getPoint())) {
                         draggedComponent = component;
                         offsetX = e.getX() - draggedComponent.getX();
@@ -307,7 +308,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
     }
 
     private void handleControlClick() {
-        for (Component component : components.reversed()) {
+        for (com.bdd.GUI.components.Component component : components.reversed()) {
             if (component.getBounds().contains(new Point(Diagram.this.mouseX, Diagram.this.mouseY))) {
                 selectedComponents.add(component);
                 component.setSelected(Boolean.TRUE);
@@ -322,7 +323,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
         if (e.isPopupTrigger()) {
             boolean componentClicked = false;
 
-            for (Component component : getListComponents().reversed()) {
+            for (com.bdd.GUI.components.Component component : getListComponents().reversed()) {
                 if (component.getBounds().contains(e.getPoint())) {
                     cleanSelectedComponents();
                     selectedComponents.add(component);
@@ -408,9 +409,9 @@ public abstract class Diagram extends JPanel implements Cloneable {
         draggedComponent.setY(e.getY() - offsetY);
     }
 
-    public Point getCenterOfComponents(Component ... components) {
+    public Point getCenterOfComponents(com.bdd.GUI.components.Component... components) {
 
-        List<Component> componentsList = List.of(components);
+        List<com.bdd.GUI.components.Component> componentsList = List.of(components);
 
         if (componentsList.isEmpty()) {
             return new Point(this.getMouseX(), this.getMouseY());
@@ -418,7 +419,7 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
         double sumX = 0, sumY = 0;
 
-        for (Component component : componentsList) {
+        for (com.bdd.GUI.components.Component component : componentsList) {
 
             sumX += component.getX();
             sumY += component.getY();

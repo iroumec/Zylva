@@ -1,14 +1,15 @@
-package com.bdd.mer.components.note;
+package com.bdd.GUI.components.note;
 
 import com.bdd.GUI.Diagram;
-import com.bdd.mer.components.EERComponent;
+import com.bdd.GUI.components.Component;
+import com.bdd.GUI.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Note extends EERComponent {
+public final class Note extends Component {
 
     /**
      * Constructor of the class.
@@ -17,7 +18,7 @@ public class Note extends EERComponent {
      * @param y The y coordinate in the panel.
      * @param diagram The drawing panel where the note lives.
      */
-    public Note(String text, int x, int y, Diagram diagram) {
+    private Note(String text, int x, int y, Diagram diagram) {
         super(text, x, y, diagram);
         setDrawingPriority(8);
     }
@@ -49,6 +50,20 @@ public class Note extends EERComponent {
             lines.add(currentLine.toString());
         }
         return lines;
+    }
+
+    public static void addNote(Diagram diagram) {
+
+        String text = JOptionPane.showInputDialog(
+                diagram,
+                null,
+                LanguageManager.getMessage("input.text"),
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (text != null) {
+            diagram.addComponent(new Note(text, diagram.getMouseX(), diagram.getMouseY(), diagram));
+        }
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

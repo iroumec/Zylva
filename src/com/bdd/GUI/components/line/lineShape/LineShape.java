@@ -1,4 +1,4 @@
-package com.bdd.mer.components.line.lineShape;
+package com.bdd.GUI.components.line.lineShape;
 
 import java.awt.*;
 import java.io.Serializable;

@@ -1,7 +1,9 @@
 package com.bdd.GUI;
 
+import com.bdd.GUI.components.Component;
 import com.bdd.mer.EERDiagram;
 import com.bdd.GUI.menuBar.MenuBar;
+import com.bdd.mer.components.relationship.Relationship;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +55,7 @@ public class MainFrame extends JFrame {
         addRelationshipKey.getActionMap().put("actionR", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                diagram.addRelationship();
+                Relationship.addRelationship(diagram, diagram.getSelectedComponents().toArray(Component[]::new));
             }
         });
 
@@ -66,7 +68,7 @@ public class MainFrame extends JFrame {
         addDependencyKey.getActionMap().put("actionD", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                diagram.addDependency();
+                Relationship.addDependency(diagram, diagram.getSelectedComponents().toArray(Component[]::new));
             }
         });
 
@@ -113,13 +115,13 @@ public class MainFrame extends JFrame {
         /*                                            Add Association Key                                             */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        JButton addAssociationKey = new JButton("Add association key");
-        addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "ActionA");
-        addAssociationKey.getActionMap().put("ActionA", new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                diagram.addAssociation();
-            }
-        });
+//        JButton addAssociationKey = new JButton("Add association key");
+//        addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "ActionA");
+//        addAssociationKey.getActionMap().put("ActionA", new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+//                diagram.addAssociation();
+//            }
+//        });
 
         // Adding the keys to the frame's functionalities.
         getContentPane().add(addEntityKey);
@@ -128,7 +130,7 @@ public class MainFrame extends JFrame {
         getContentPane().add(addHierarchyKey);
         getContentPane().add(addNoteKey);
         getContentPane().add(deleteKey);
-        getContentPane().add(addAssociationKey);
+//        getContentPane().add(addAssociationKey);
 
         add(diagram, BorderLayout.CENTER);
         setJMenuBar(menuBar);

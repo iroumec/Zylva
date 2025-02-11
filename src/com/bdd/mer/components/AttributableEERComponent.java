@@ -1,6 +1,6 @@
 package com.bdd.mer.components;
 
-import com.bdd.GUI.Component;
+import com.bdd.GUI.components.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.attribute.MainAttribute;
@@ -185,7 +185,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
     public void addRawAttribute() {
 
-        String name = this.getValidName();
+        String name = getValidName(this.diagram);
 
         if (name == null) {
             return;
@@ -236,11 +236,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         Object selectedValue = pane.getValue();
         if (selectedValue != null && (int) selectedValue == JOptionPane.OK_OPTION) {
 
-            String name = this.getValidName();
-
-            if (name != null && (name.trim().isEmpty() || this.diagram.existsComponent(name))) {
-                name = this.getValidName();
-            }
+            String name = getValidName(this.diagram);
 
             if (name == null) {
                 return;
@@ -273,7 +269,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
                 return;
             }
 
-            String name = this.getValidName();
+            String name = getValidName(this.diagram);
 
             if (name == null) {
                 return;
@@ -362,28 +358,4 @@ public abstract class AttributableEERComponent extends EERComponent implements D
             return AttributeSymbol.MAIN;
         }
     }
-
-    /**
-     * This method allows the user to change an attribute optionality.
-     *
-     * @param attribute The attribute whose optionality will be changed.
-     */
-    public void changeOptionality(Attribute attribute) {
-
-        attribute.changeOptionality();
-        diagram.repaint();
-    }
-
-    /**
-     * This method allows the user to change the number of values an attribute can take.
-     *
-     * @param attribute The attribute whose number of possible values will be changed.
-     */
-    public void changeMultivalued(Attribute attribute) {
-
-        attribute.changeMultivalued();
-        diagram.repaint();
-
-    }
-
 }

@@ -1,6 +1,6 @@
 package com.bdd.mer.components;
 
-import com.bdd.GUI.Component;
+import com.bdd.GUI.components.Component;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
@@ -41,10 +41,10 @@ public abstract class EERComponent extends Component {
      *
      * @return {@code String} entered by the user.
      */
-    protected static String getValidName() {
+    protected static String getValidName(Diagram diagram) {
 
         String name = JOptionPane.showInputDialog(
-                this.diagram,
+                diagram,
                 null,
                 LanguageManager.getMessage("input.name"),
                 JOptionPane.QUESTION_MESSAGE
@@ -67,14 +67,14 @@ public abstract class EERComponent extends Component {
 
             if (nameIsEmpty) {
 
-                JOptionPane.showMessageDialog(this.diagram, LanguageManager.getMessage("warning.emptyName"));
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.emptyName"));
             } else {
 
-                JOptionPane.showMessageDialog(this.diagram, LanguageManager.getMessage("warning.nameDuplicated"));
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.nameDuplicated"));
             }
 
             name = JOptionPane.showInputDialog(
-                    this.diagram,
+                    diagram,
                     null,
                     LanguageManager.getMessage("input.name"),
                     JOptionPane.QUESTION_MESSAGE

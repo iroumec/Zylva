@@ -1,4 +1,4 @@
-package com.bdd.structures;
+package com.bdd.GUI.structures;
 
 import java.io.Serializable;
 

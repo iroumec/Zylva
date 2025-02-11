@@ -1,5 +1,6 @@
-package com.bdd.GUI;
+package com.bdd.GUI.components;
 
+import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 

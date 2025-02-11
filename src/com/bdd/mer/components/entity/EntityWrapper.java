@@ -1,7 +1,8 @@
 package com.bdd.mer.components.entity;
 
+import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.components.AttributableEERComponent;
-import com.bdd.GUI.Component;
+import com.bdd.GUI.components.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
@@ -183,6 +184,24 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         if (this.entity.getClass() == WeakEntity.class) {
             this.entity = new StrongEntity(this);
         }
+    }
+
+    public static void createEntity(Diagram diagram) {
+
+        String name = getValidName(diagram);
+
+        if (name == null) {
+            return;
+        }
+
+        EntityWrapper entityWrapper = new EntityWrapper(
+                name,
+                diagram.getMouseX(),
+                diagram.getMouseY(),
+                diagram
+        );
+
+        diagram.addComponent(entityWrapper);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

@@ -1,8 +1,8 @@
-package com.bdd.mer.components.association;
+package com.bdd.mer.components.relationship;
 
-import com.bdd.GUI.Component;
+import com.bdd.GUI.components.Component;
+import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.EERComponent;
-import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.derivation.Derivable;
@@ -29,7 +29,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
      * @param relationship Core {@code Relationship} forming the association.
      * @param diagram {@code Diagram} where the Association lives.
      */
-    public Association(Relationship relationship, Diagram diagram) {
+    Association(Relationship relationship, Diagram diagram) {
         super(diagram);
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
@@ -65,7 +65,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @SuppressWarnings("Duplicates")
-    public Rectangle calculateBounds() {
+    private Rectangle calculateBounds() {
 
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
@@ -100,13 +100,15 @@ public class Association extends EERComponent implements Relatable, Derivable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-//        return this.getActionManager().getPopupMenu(
-//                this,
-//                Action.ADD_REFLEXIVE_RELATIONSHIP,
-//                Action.DELETE
-//        );
+        JMenuItem item = new JMenuItem("action.addReflexiveRelationship");
+        item.addActionListener(_ -> Relationship.addRelationship((EERDiagram) this.diagram, this));
+        popupMenu.add(item);
 
+        item = new JMenuItem("action.delete");
+        item.addActionListener(_ -> this.delete());
+        popupMenu.add(item);
 
+        return popupMenu;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

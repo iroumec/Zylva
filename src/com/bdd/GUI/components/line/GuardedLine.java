@@ -1,7 +1,7 @@
-package com.bdd.mer.components.line;
+package com.bdd.GUI.components.line;
 
-import com.bdd.GUI.Component;
-import com.bdd.mer.components.line.guard.Guard;
+import com.bdd.GUI.components.Component;
+import com.bdd.GUI.components.line.guard.Guard;
 import com.bdd.GUI.Diagram;
 
 import java.util.ArrayList;

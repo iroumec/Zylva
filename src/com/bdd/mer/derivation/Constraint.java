@@ -2,7 +2,7 @@ package com.bdd.mer.derivation;
 
 import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.derivation.elements.ElementDecorator;
-import com.bdd.structures.Pair;
+import com.bdd.GUI.structures.Pair;
 
 import java.util.List;
 import java.util.Objects;
