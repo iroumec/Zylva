@@ -5,6 +5,8 @@ import com.bdd.GUI.userPreferences.UserPreferences;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -406,23 +408,25 @@ public abstract class Diagram extends JPanel implements Cloneable {
         draggedComponent.setY(e.getY() - offsetY);
     }
 
-    public Point getCenterOfSelectedComponents() {
+    public Point getCenterOfComponents(Component ... components) {
 
-        if (selectedComponents.isEmpty()) {
+        List<Component> componentsList = List.of(components);
+
+        if (componentsList.isEmpty()) {
             return new Point(this.getMouseX(), this.getMouseY());
         }
 
         double sumX = 0, sumY = 0;
 
-        for (Component component : this.selectedComponents) {
+        for (Component component : componentsList) {
 
             sumX += component.getX();
             sumY += component.getY();
         }
 
         // Calculate the average of the X and Y coordinates
-        double centerX = sumX / this.selectedComponents.size();
-        double centerY = sumY / this.selectedComponents.size();
+        double centerX = sumX / componentsList.size();
+        double centerY = sumY / componentsList.size();
 
         // Return the center as a Point object
         return new Point((int) centerX, (int) centerY);
@@ -462,5 +466,26 @@ public abstract class Diagram extends JPanel implements Cloneable {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Sets focus on the JComponent.
+     *
+     * @param component {@code JComponent} to be focused.
+     */
+    public void setFocus(JComponent component) {
+
+        component.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent event) {
+                component.requestFocusInWindow();
+            }
+
+            @Override
+            public void ancestorRemoved(AncestorEvent event) {}
+
+            @Override
+            public void ancestorMoved(AncestorEvent event) {}
+        });
     }
 }

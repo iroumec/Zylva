@@ -703,7 +703,10 @@ public class EERDiagram extends Diagram {
         addEntity.addActionListener(_ -> this.addEntity());
 
         JMenuItem addRelationship = new JMenuItem(LanguageManager.getMessage("option.addRelationship"));
-        addRelationship.addActionListener(_ -> this.addRelationship());
+        addRelationship.addActionListener(_ -> Relationship.addRelationship(
+                this,
+                this.getSelectedComponents())
+        );
 
         JMenuItem addDependency = new JMenuItem(LanguageManager.getMessage("option.addDependency"));
         addDependency.addActionListener(_ -> this.addDependency());
@@ -725,26 +728,5 @@ public class EERDiagram extends Diagram {
         backgroundPopupMenu.add(addAssociation);
 
         return backgroundPopupMenu;
-    }
-
-    /**
-     * Sets focus on the JComponent.
-     *
-     * @param component {@code JComponent} to be focused.
-     */
-    private void setFocus(JComponent component) {
-
-        component.addAncestorListener(new AncestorListener() {
-            @Override
-            public void ancestorAdded(AncestorEvent event) {
-                component.requestFocusInWindow();
-            }
-
-            @Override
-            public void ancestorRemoved(AncestorEvent event) {}
-
-            @Override
-            public void ancestorMoved(AncestorEvent event) {}
-        });
     }
 }

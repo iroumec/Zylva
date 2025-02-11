@@ -41,7 +41,7 @@ public abstract class EERComponent extends Component {
      *
      * @return {@code String} entered by the user.
      */
-    protected String getValidName() {
+    protected static String getValidName() {
 
         String name = JOptionPane.showInputDialog(
                 this.diagram,
