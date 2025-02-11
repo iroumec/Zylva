@@ -31,7 +31,7 @@ public class MainAttribute extends Attribute {
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem menuItem = new JMenuItem("action.addAttribute");
-        menuItem.addActionListener(_ -> this.addAttribute());
+        menuItem.addActionListener(_ -> this.addRawAttribute());
         popupMenu.add(menuItem);
 
         // noinspection DuplicatedCode

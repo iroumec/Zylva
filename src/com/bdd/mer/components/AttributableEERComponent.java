@@ -196,7 +196,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         Attribute attribute = new Attribute(this, name, AttributeSymbol.COMMON, AttributeArrow.NON_OPTIONAL,
                 AttributeEnding.NON_MULTIVALUED, this.diagram);
 
-        this.attributes.add(attribute);
+        this.addAttribute(attribute);
     }
 
     /**
@@ -249,7 +249,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
             Attribute newAttribute = new Attribute(this, name, attributeSymbol, arrowBody, arrowEnding, this.diagram);
 
-            this.attributes.add(newAttribute);
+            this.addAttribute(newAttribute);
         }
     }
 
@@ -279,7 +279,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
             Attribute newAttribute = new MainAttribute(this, name, this.diagram);
 
-            this.attributes.add(newAttribute);
+            this.addAttribute(newAttribute);
 
         } else {
 
@@ -299,7 +299,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         attribute.setDrawingPriority(0);
 
-        diagram.addComponent(attribute);
+        this.diagram.addComponent(attribute);
 
         // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
         // Maybe it would be good to search other possible solutions because this is not so efficient...
@@ -307,9 +307,9 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         attribute.setDrawingPriority(4);
 
-        diagram.sortComponents();
+        this.diagram.sortComponents();
 
-        diagram.repaint();
+        this.diagram.repaint();
     }
 
     /**

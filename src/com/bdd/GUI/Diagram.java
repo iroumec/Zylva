@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class Diagram extends JPanel implements Cloneable {
 
@@ -172,16 +171,6 @@ public abstract class Diagram extends JPanel implements Cloneable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    @SuppressWarnings("unchecked")
-    // The class of the component being added to the list is checked, so the cast is safe.
-    public <T extends com.bdd.GUI.components.Component> List<T> getSelectedComponentsByClass(Class<T> specificClass) {
-        return (List<T>) this.selectedComponents.stream()
-                .filter(e -> e.getClass().equals(specificClass))
-                .collect(Collectors.toList());
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     public int getMouseX() {
         return this.mouseX;
     }
@@ -195,37 +184,6 @@ public abstract class Diagram extends JPanel implements Cloneable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<com.bdd.GUI.components.Component> getListComponents() { return new ArrayList<>(this.components); }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @SafeVarargs
-    public final boolean onlyTheseClassesAreSelected(Class<? extends com.bdd.GUI.components.Component>... classTypes) {
-        // Use a Set for faster lookup.
-        Set<Class<?>> allowedClasses = new HashSet<>(Arrays.asList(classTypes));
-
-        // Check if all components are of the allowed types.
-        for (com.bdd.GUI.components.Component component : this.selectedComponents) {
-            if (!allowedClasses.contains(component.getClass())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-
-    public boolean isNumberOfSelectedComponentsBetween(int a, int b) {
-
-        return this.selectedComponents.size() >= a && this.selectedComponents.size() <= b;
-
-    }
-
-    public boolean isNumberOfSelectedComponents(int n) {
-
-        return this.selectedComponents.size() == n;
-
-    }
 
     public boolean existsComponent(String componentName) {
 
@@ -462,7 +420,6 @@ public abstract class Diagram extends JPanel implements Cloneable {
             cloned.antialiasing = this.antialiasing;
             return cloned;
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
             return null;
         }
     }
