@@ -1,16 +1,17 @@
 package com.bdd.mer.components.line;
 
-import com.bdd.mer.components.Component;
+import com.bdd.GUI.Component;
+import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.line.lineMultiplicity.LineMultiplicity;
 import com.bdd.mer.components.line.lineMultiplicity.SingleLine;
 import com.bdd.mer.components.line.lineShape.DirectLine;
 import com.bdd.mer.components.line.lineShape.LineShape;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class Line extends Component {
+public class Line extends EERComponent {
 
     private final Component firstComponent;
     private final Component secondComponent;
@@ -23,7 +24,7 @@ public class Line extends Component {
     private final LineMultiplicity lineMultiplicity;
 
     Line(Init<?> init) {
-        super(init.drawingPanel);
+        super(init.diagram);
         this.firstComponent = init.firstComponent;
         this.secondComponent = init.secondComponent;
         this.lineShape = init.lineShape;
@@ -83,7 +84,7 @@ public class Line extends Component {
     // This is created due to hierarchy related problems. It wasn't necessary in case the Line was final.
     protected static abstract class Init<T extends Init<T>> {
         // Required parameters
-        private final DrawingPanel drawingPanel;
+        private final Diagram diagram;
         private final Component firstComponent;
         private final Component secondComponent;
 
@@ -94,8 +95,8 @@ public class Line extends Component {
 
         protected abstract T self();
 
-        public Init(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent) {
-            this.drawingPanel = drawingPanel;
+        public Init(Diagram diagram, Component firstComponent, Component secondComponent) {
+            this.diagram = diagram;
             this.firstComponent = firstComponent;
             this.secondComponent = secondComponent;
         }
@@ -122,8 +123,8 @@ public class Line extends Component {
 
     public static class Builder extends Init<Builder> {
 
-        public Builder(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent) {
-            super(drawingPanel, firstComponent, secondComponent);
+        public Builder(Diagram diagram, Component firstComponent, Component secondComponent) {
+            super(diagram, firstComponent, secondComponent);
         }
 
         @Override

@@ -1,25 +1,24 @@
 package com.bdd.mer.components.note;
 
-import com.bdd.mer.components.Component;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.actions.Action;
+import com.bdd.GUI.Diagram;
+import com.bdd.mer.components.EERComponent;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Note extends Component {
+public class Note extends EERComponent {
 
     /**
      * Constructor of the class.
      * @param text  The text that will appear in the note.
      * @param x The x coordinate in the panel.
      * @param y The y coordinate in the panel.
-     * @param drawingPanel The drawing panel where the note lives.
+     * @param diagram The drawing panel where the note lives.
      */
-    public Note(String text, int x, int y, DrawingPanel drawingPanel) {
-        super(text, x, y, drawingPanel);
+    public Note(String text, int x, int y, Diagram diagram) {
+        super(text, x, y, diagram);
         setDrawingPriority(8);
     }
 
@@ -59,12 +58,17 @@ public class Note extends Component {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.CHANGE_TEXT,
-                Action.DELETE
-        );
+        JPopupMenu popupMenu = new JPopupMenu();
 
+        JMenuItem actionItem = new JMenuItem("action.changeText");
+        actionItem.addActionListener(_ -> this.rename());
+        popupMenu.add(actionItem);
+
+        actionItem = new JMenuItem("action.delete");
+        actionItem.addActionListener(_ -> this.delete());
+        popupMenu.add(actionItem);
+
+        return popupMenu;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

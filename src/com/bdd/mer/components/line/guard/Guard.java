@@ -1,8 +1,8 @@
 package com.bdd.mer.components.line.guard;
 
-import com.bdd.mer.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.line.GuardedLine;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import java.awt.*;
 
@@ -10,8 +10,8 @@ public abstract class Guard extends Component {
 
     private GuardedLine guardedLine;
 
-    public Guard(String text, DrawingPanel drawingPanel) {
-        super(text, drawingPanel);
+    public Guard(String text, Diagram diagram) {
+        super(text, diagram);
 
         setDrawingPriority(3);
     }

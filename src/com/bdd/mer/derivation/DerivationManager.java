@@ -5,18 +5,18 @@ import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.elements.SingleElement;
 import com.bdd.mer.derivation.exporters.DerivationExporter;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import java.util.*;
 
 public final class DerivationManager {
 
-    public static void derivate(DrawingPanel drawingPanel) {
+    public static void derivate(Diagram diagram) {
 
         Map<String, Derivation> derivations = new HashMap<>();
         List<Constraint> constraints = new ArrayList<>();
 
-        List<Derivable> derivablesComponents = drawingPanel.getListComponents().stream()
+        List<Derivable> derivablesComponents = diagram.getListComponents().stream()
                 .filter(component -> component instanceof Derivable)
                 .map(component -> (Derivable) component)
                 .toList();

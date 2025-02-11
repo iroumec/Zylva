@@ -1,21 +1,20 @@
 package com.bdd.mer.components.attribute;
 
-import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.AttributableComponent;
+import com.bdd.mer.components.AttributableEERComponent;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Attribute extends AttributableComponent implements Derivable {
+public class Attribute extends AttributableEERComponent implements Derivable {
 
     /**
      * {@code Attribute}'s symbol.
@@ -35,7 +34,7 @@ public class Attribute extends AttributableComponent implements Derivable {
     /**
      * {@code Attribute}'s owner.
      */
-    private final AttributableComponent owner;
+    private final AttributableEERComponent owner;
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                         Initializing Related Methods                                           */
@@ -49,16 +48,14 @@ public class Attribute extends AttributableComponent implements Derivable {
      * @param symbol {@code Attribute}'s symbol.
      * @param arrow {@code Attribute}'s arrow.
      * @param ending {@code Attribute}'s ending.
-     * @param drawingPanel {@code DrawingPanel} where the {@code Attribute} lives.
+     * @param diagram {@code Diagram} where the {@code Attribute} lives.
      */
-    public Attribute(AttributableComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending, DrawingPanel drawingPanel) {
-        super(text, owner.getX(), owner.getY(), drawingPanel);
+    public Attribute(AttributableEERComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending, Diagram diagram) {
+        super(text, owner.getX(), owner.getY(), diagram);
         this.owner = owner;
         this.symbol = symbol;
         this.arrow = arrow;
         this.ending = ending;
-
-        this.owner.addAttribute(this);
 
         setDrawingPriority(0);
     }
@@ -70,7 +67,7 @@ public class Attribute extends AttributableComponent implements Derivable {
     /**
      * Swaps the optionality of the {@code Attribute}.
      */
-    public void changeOptionality() {
+    public void swapOptionality() {
 
         if (this.arrow == AttributeArrow.OPTIONAL) {
             this.arrow = AttributeArrow.NON_OPTIONAL;
@@ -82,7 +79,7 @@ public class Attribute extends AttributableComponent implements Derivable {
     /**
      * Change the number of values of the {@code Attribute}.
      */
-    public void changeMultivalued() {
+    public void swapMultivalued() {
 
         if (this.ending == AttributeEnding.MULTIVALUED) {
             this.ending = AttributeEnding.NON_MULTIVALUED;
@@ -211,15 +208,29 @@ public class Attribute extends AttributableComponent implements Derivable {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.ADD_ATTRIBUTE,
-                Action.SWAP_OPTIONALITY,
-                Action.SWAP_MULTIVALUED,
-                Action.RENAME,
-                Action.DELETE
-        );
+        JPopupMenu popupMenu = new JPopupMenu();
 
+        JMenuItem item = new JMenuItem("action.addAttribute");
+        item.addActionListener(_ -> this.addAttribute());
+        popupMenu.add(item);
+
+        item = new JMenuItem("action.swapOptionality");
+        item.addActionListener(_ -> this.swapOptionality());
+        popupMenu.add(item);
+
+        item = new JMenuItem("action.swapMultivalued");
+        item.addActionListener(_ -> this.swapMultivalued());
+        popupMenu.add(item);
+
+        item = new JMenuItem("action.rename");
+        item.addActionListener(_ -> this.rename());
+        popupMenu.add(item);
+
+        item = new JMenuItem("action.delete");
+        item.addActionListener(_ -> this.delete());
+        popupMenu.add(item);
+
+        return popupMenu;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

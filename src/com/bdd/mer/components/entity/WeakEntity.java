@@ -5,6 +5,8 @@ import com.bdd.mer.components.relationship.Relationship;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
+// TODO: derivation of the weak entity.
+
 /**
  * Weak entity. This is an entity whose identification or existence depends on another one.
  */

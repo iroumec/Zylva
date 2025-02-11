@@ -1,7 +1,7 @@
-package com.bdd.mer.frame;
+package com.bdd.GUI;
 
-import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.frame.menuBar.MenuBar;
+import com.bdd.mer.EERDiagram;
+import com.bdd.GUI.menuBar.MenuBar;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +9,7 @@ import java.awt.event.*;
 
 public class MainFrame extends JFrame {
 
-    private final DrawingPanel drawingPanel;
+    private final EERDiagram diagram;
     private final MenuBar menuBar;
 
     public MainFrame() {
@@ -21,14 +21,9 @@ public class MainFrame extends JFrame {
 
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        // It contains the actions both the drawing panel and the frame can do.
-        ActionManager actionManager = new ActionManager();
-
-        /* ---------------------------------------------------------------------------------------------------------- */
-
         // Creation of the drawing panel, the bar menu and the menu.
-        this.drawingPanel = new DrawingPanel(actionManager);
-        this.menuBar = new MenuBar(this, drawingPanel);
+        this.diagram = new EERDiagram();
+        this.menuBar = new MenuBar(this, diagram);
         JPanel menu = new JPanel();
         menu.setLayout(new BoxLayout(menu, BoxLayout.PAGE_AXIS));
         Dimension dimension = new Dimension(120, 30);
@@ -45,7 +40,7 @@ public class MainFrame extends JFrame {
         addEntityKey.getActionMap().put("actionE", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actionManager.addEntity();
+                diagram.addEntity();
             }
         });
 
@@ -58,7 +53,7 @@ public class MainFrame extends JFrame {
         addRelationshipKey.getActionMap().put("actionR", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actionManager.addRelationship();
+                diagram.addRelationship();
             }
         });
 
@@ -71,7 +66,7 @@ public class MainFrame extends JFrame {
         addDependencyKey.getActionMap().put("actionD", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actionManager.addDependency();
+                diagram.addDependency();
             }
         });
 
@@ -85,7 +80,7 @@ public class MainFrame extends JFrame {
         addHierarchyKey.getActionMap().put("actionH", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actionManager.addHierarchy();
+                diagram.addHierarchy();
             }
         });
 
@@ -98,7 +93,7 @@ public class MainFrame extends JFrame {
         addNoteKey.getActionMap().put("actionN", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                actionManager.addNote();
+                diagram.addNote();
             }
         });
 
@@ -110,7 +105,7 @@ public class MainFrame extends JFrame {
         deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                actionManager.deleteSelectedComponents();
+                diagram.deleteSelectedComponents();
             }
         });
 
@@ -122,7 +117,7 @@ public class MainFrame extends JFrame {
         addAssociationKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK), "ActionA");
         addAssociationKey.getActionMap().put("ActionA", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                actionManager.addAssociation();
+                diagram.addAssociation();
             }
         });
 
@@ -135,7 +130,7 @@ public class MainFrame extends JFrame {
         getContentPane().add(deleteKey);
         getContentPane().add(addAssociationKey);
 
-        add(drawingPanel, BorderLayout.CENTER);
+        add(diagram, BorderLayout.CENTER);
         setJMenuBar(menuBar);
     }
 
@@ -143,7 +138,7 @@ public class MainFrame extends JFrame {
 
     public void resetLanguage() {
         this.menuBar.resetLanguage();
-        this.drawingPanel.resetLanguage();
+        this.diagram.resetLanguage();
     }
 
 }

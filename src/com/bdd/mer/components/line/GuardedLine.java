@@ -1,8 +1,8 @@
 package com.bdd.mer.components.line;
 
-import com.bdd.mer.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.line.guard.Guard;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +37,8 @@ public class GuardedLine extends Line {
         // Required parameter.
         private final Guard guard;
 
-        public Init(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Guard guard) {
-            super(drawingPanel, firstComponent, secondComponent);
+        public Init(Diagram diagram, Component firstComponent, Component secondComponent, Guard guard) {
+            super(diagram, firstComponent, secondComponent);
             this.guard = guard;
         }
 
@@ -49,8 +49,8 @@ public class GuardedLine extends Line {
 
     public static class Builder extends Init<Builder> {
 
-        public Builder(DrawingPanel drawingPanel, Component firstComponent, Component secondComponent, Guard guard) {
-            super(drawingPanel, firstComponent, secondComponent, guard);
+        public Builder(Diagram diagram, Component firstComponent, Component secondComponent, Guard guard) {
+            super(diagram, firstComponent, secondComponent, guard);
         }
 
         @Override

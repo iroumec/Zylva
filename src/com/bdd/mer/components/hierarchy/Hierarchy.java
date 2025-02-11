@@ -1,14 +1,14 @@
 package com.bdd.mer.components.hierarchy;
 
-import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.Component;
+import com.bdd.GUI.Component;
+import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.userPreferences.LanguageManager;
+import com.bdd.GUI.Diagram;
+import com.bdd.GUI.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +31,7 @@ pertenecer a un subtipo a la vez).
 Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
 se nota con la letra "o" (Overlapping).
  */
-public class Hierarchy extends Component implements Derivable {
+public class Hierarchy extends EERComponent implements Derivable {
 
     /**
      * The symbol of the hierarchy, also denoting its exclusivity.
@@ -58,11 +58,11 @@ public class Hierarchy extends Component implements Derivable {
      *
      * @param symbol {@code Hierarchy}'s symbol, denoting its exclusivity.
      * @param parent {@code Hierarchy}'s parent entity.
-     * @param drawingPanel {@code DrawingPanel} where the {@code Hierarchy} lives.
+     * @param diagram {@code Diagram} where the {@code Hierarchy} lives.
      */
-    public Hierarchy(HierarchySymbol symbol, EntityWrapper parent, DrawingPanel drawingPanel) {
+    public Hierarchy(HierarchySymbol symbol, EntityWrapper parent, Diagram diagram) {
 
-        super(parent.getX(), parent.getY() + 60, drawingPanel);
+        super(parent.getX(), parent.getY() + 60, diagram);
 
         this.symbol = symbol;
         this.parent = parent;
@@ -176,6 +176,21 @@ public class Hierarchy extends Component implements Derivable {
         this.parentLine = line;
     }
 
+    /**
+     * Swaps the hierarchy's exclusivity.
+     */
+    private void swapExclusivity() {
+
+        if (this.symbol.equals(HierarchySymbol.DISJUNCT)) {
+            this.symbol = HierarchySymbol.OVERLAPPING;
+        } else {
+            this.symbol = HierarchySymbol.DISJUNCT;
+        }
+
+        this.diagram.repaint();
+
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -183,11 +198,17 @@ public class Hierarchy extends Component implements Derivable {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.DELETE,
-                Action.SWAP_EXCLUSIVITY
-        );
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        JMenuItem actionItem = new JMenuItem("action.delete");
+        actionItem.addActionListener(_ -> this.delete());
+        popupMenu.add(actionItem);
+
+        actionItem = new JMenuItem("action.swapExclusivity");
+        actionItem.addActionListener(_ -> this.swapExclusivity());
+        popupMenu.add(actionItem);
+
+        return popupMenu;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -244,21 +265,6 @@ public class Hierarchy extends Component implements Derivable {
         for (EntityWrapper entity : this.children) {
             entity.removeHierarchy(this);
         }
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public boolean canBeDeleted() {
-
-        if (isThereMultipleInheritance()) {
-
-            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.multipleInheritance"));
-            return false;
-        }
-
-        return true;
 
     }
 

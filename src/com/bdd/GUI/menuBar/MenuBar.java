@@ -1,8 +1,8 @@
-package com.bdd.mer.frame.menuBar;
+package com.bdd.GUI.menuBar;
 
-import com.bdd.mer.frame.userPreferences.LanguageManager;
-import com.bdd.mer.frame.MainFrame;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
+import com.bdd.GUI.userPreferences.LanguageManager;
+import com.bdd.GUI.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class MenuBar extends JMenuBar {
     private final FileMenu fileMenu;
     private final JButton cleanFrameButton, helpButton;
 
-    public MenuBar(MainFrame mainFrame, DrawingPanel drawingPanel) {
+    public MenuBar(MainFrame mainFrame, Diagram diagram) {
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                      Mouse Interactions Related                                            */
@@ -43,7 +43,7 @@ public class MenuBar extends JMenuBar {
         /*                                            File Menu                                                       */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        this.fileMenu = new FileMenu(mainFrame, drawingPanel, LanguageManager.getMessage("menuBar.file"));
+        this.fileMenu = new FileMenu(mainFrame, diagram, LanguageManager.getMessage("menuBar.file"));
 
         fileMenu.setBackground(UIManager.getColor("control"));
         fileMenu.addMouseListener(new MouseAdapter() {
@@ -67,8 +67,8 @@ public class MenuBar extends JMenuBar {
         // Añado un botón para limpiar la ventana
         this.cleanFrameButton = new JButton(LanguageManager.getMessage("menuBar.clean"));
         cleanFrameButton.addActionListener(_ -> {
-            drawingPanel.reset();
-            drawingPanel.repaint();
+            diagram.reset();
+            diagram.repaint();
         });
         add(cleanFrameButton);
 

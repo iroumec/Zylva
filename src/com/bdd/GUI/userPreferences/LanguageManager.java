@@ -1,6 +1,6 @@
-package com.bdd.mer.frame.userPreferences;
+package com.bdd.GUI.userPreferences;
 
-import com.bdd.mer.frame.MainFrame;
+import com.bdd.GUI.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;

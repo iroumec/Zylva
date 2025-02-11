@@ -2,15 +2,15 @@ package com.bdd.mer.components.line.guard.cardinality;
 
 import com.bdd.mer.actions.Action;
 import com.bdd.mer.components.line.guard.Guard;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.structures.Pair;
+import com.bdd.GUI.Diagram;
+import com.bdd.structures.Pair;
 
 import javax.swing.*;
 
 public class Cardinality extends Guard {
 
-    public Cardinality(String firstValue, String secondValue, DrawingPanel drawingPanel) {
-        super(giveFormat(firstValue, secondValue), drawingPanel);
+    public Cardinality(String firstValue, String secondValue, Diagram diagram) {
+        super(giveFormat(firstValue, secondValue), diagram);
     }
 
     public static String giveFormat(String firstValue, String secondValue) {

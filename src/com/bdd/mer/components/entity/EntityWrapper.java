@@ -1,8 +1,7 @@
 package com.bdd.mer.components.entity;
 
-import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.AttributableComponent;
-import com.bdd.mer.components.Component;
+import com.bdd.mer.components.AttributableEERComponent;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
@@ -10,7 +9,7 @@ import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +17,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityWrapper extends AttributableComponent implements Relatable {
+public class EntityWrapper extends AttributableEERComponent implements Relatable {
 
     /**
      * Wrapped entity.
@@ -41,10 +40,10 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
      * @param text Name of the entity.
      * @param x X coordinate of the entity.
      * @param y Y coordinate of the entity.
-     * @param drawingPanel {@code DrawingPanel} in which the entity participates.
+     * @param diagram {@code Diagram} in which the entity participates.
      */
-    public EntityWrapper(String text, int x, int y, DrawingPanel drawingPanel) {
-        super(text, x, y, drawingPanel);
+    public EntityWrapper(String text, int x, int y, Diagram diagram) {
+        super(text, x, y, diagram);
         this.hierarchies = new ArrayList<>();
         this.entity = new StrongEntity(this); // By default, a strong entity is created.
         this.relationshipsManager = new RelatableImplementation();
@@ -234,14 +233,26 @@ public class EntityWrapper extends AttributableComponent implements Relatable {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                com.bdd.mer.actions.Action.ADD_COMPLEX_ATTRIBUTE,
-                com.bdd.mer.actions.Action.ADD_REFLEXIVE_RELATIONSHIP,
-                com.bdd.mer.actions.Action.RENAME,
-                Action.DELETE
-        );
+        JPopupMenu popupMenu = new JPopupMenu();
 
+        JMenuItem item = new JMenuItem("action.addAttribute");
+        item.addActionListener(_ -> this.addComplexAttribute());
+        popupMenu.add(item);
+
+//        item = new JMenuItem("action.addReflexiveRelationship");
+//        item.addActionListener(_ -> this.addReflexiveRelationship());
+//        popupMenu.add(item);
+
+        //noinspection DuplicatedCode
+        item = new JMenuItem("action.rename");
+        item.addActionListener(_ -> this.rename());
+        popupMenu.add(item);
+
+        item = new JMenuItem("action.delete");
+        item.addActionListener(_ -> this.delete());
+        popupMenu.add(item);
+
+        return popupMenu;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

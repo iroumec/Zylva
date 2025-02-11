@@ -1,8 +1,8 @@
-package com.bdd.mer.frame.menuBar.exportation;
+package com.bdd.GUI.menuBar.exportation;
 
-import com.bdd.mer.components.Component;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.userPreferences.LanguageManager;
+import com.bdd.GUI.Component;
+import com.bdd.GUI.Diagram;
+import com.bdd.GUI.userPreferences.LanguageManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,12 +23,12 @@ public final class ExportPNG {
         throw new AssertionError(); // Security oriented.
     }
 
-    public static void exportToPng(DrawingPanel drawingPanel) {
+    public static void exportToPng(Diagram diagram) {
 
         // The minimal area of exportation is calculated.
-        Rectangle exportArea = getMinimalExportationArea(drawingPanel);
+        Rectangle exportArea = getMinimalExportationArea(diagram);
         if (exportArea.width <= 0 || exportArea.height <= 0) {
-            JOptionPane.showMessageDialog(drawingPanel, LanguageManager.getMessage("warning.noComponentsToExport"));
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.noComponentsToExport"));
             return;
         }
 
@@ -56,7 +56,7 @@ public final class ExportPNG {
             g.translate(-exportArea.x, -exportArea.y);
 
             // The panel is painted onto the high-resolution image.
-            drawingPanel.paint(g);
+            diagram.paint(g);
             g.dispose();
 
             // A JFileChooser is created.
@@ -85,16 +85,16 @@ public final class ExportPNG {
      * With the objective of the PNG not containing too much empty space, only the minimal area containing the
      * components is exported.
      *
-     * @param drawingPanel The drawing panel to export.
+     * @param diagram The drawing panel to export.
      * @return The minimal rectangle enclosing the components in the drawing panel.
      */
     @SuppressWarnings("Duplicates")
-    private static Rectangle getMinimalExportationArea(DrawingPanel drawingPanel) {
+    private static Rectangle getMinimalExportationArea(Diagram diagram) {
 
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
-        List<Component> components = new ArrayList<>(drawingPanel.getListComponents());
+        List<Component> components = new ArrayList<>(diagram.getListComponents());
 
         for (Component component : components) {
             Rectangle bounds = component.getBounds();

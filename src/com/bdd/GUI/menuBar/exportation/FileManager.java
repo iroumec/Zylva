@@ -1,8 +1,8 @@
-package com.bdd.mer.frame.menuBar.exportation;
+package com.bdd.GUI.menuBar.exportation;
 
-import com.bdd.mer.components.Component;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.userPreferences.LanguageManager;
+import com.bdd.GUI.Component;
+import com.bdd.GUI.Diagram;
+import com.bdd.GUI.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.io.*;
@@ -14,7 +14,7 @@ public final class FileManager {
         throw new AssertionError(); // Security oriented.
     }
 
-    public static void saveDiagram(DrawingPanel drawingPanel) {
+    public static void saveDiagram(Diagram diagram) {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(LanguageManager.getMessage("fileManager.saveDiagram.dialog"));
@@ -33,7 +33,7 @@ public final class FileManager {
                 fileToSave = new File(fileToSave.getAbsolutePath() + ".mer");
             }
 
-            List<Component> components = drawingPanel.getListComponents();
+            List<Component> components = diagram.getListComponents();
 
             try {
 
@@ -54,7 +54,7 @@ public final class FileManager {
         }
     }
 
-    public static void loadDiagram(DrawingPanel drawingPanel) {
+    public static void loadDiagram(Diagram diagram) {
 
         JFileChooser fileChooser = new JFileChooser();
 
@@ -77,18 +77,18 @@ public final class FileManager {
                 @SuppressWarnings("unchecked")
                 List<Component> components = (List<Component>) in.readObject();
 
-                drawingPanel.reset();
+                diagram.reset();
 
                 for (Component component : components.reversed()) {
 
-                    drawingPanel.addComponent(component);
+                    diagram.addComponent(component);
 
                     // If the PopupMenu is not reset, the actions menus are not shown.
                     component.resetPopupMenu();
 
-                    // If the DrawingPanel is not set again, the actions have no effect.
+                    // If the Diagram is not set again, the actions have no effect.
                     // This doesn't fix anything. Why attributes are not visible?
-                    component.setDrawingPanel(drawingPanel);
+                    component.setDrawingPanel(diagram);
                 }
 
                 in.close();

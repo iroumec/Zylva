@@ -1,9 +1,7 @@
-package com.bdd.mer.frame;
+package com.bdd.GUI;
 
-import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.components.Component;
-import com.bdd.mer.frame.userPreferences.Preference;
-import com.bdd.mer.frame.userPreferences.UserPreferences;
+import com.bdd.GUI.userPreferences.Preference;
+import com.bdd.GUI.userPreferences.UserPreferences;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -13,13 +11,12 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DrawingPanel extends JPanel {
+public abstract class Diagram extends JPanel implements Cloneable {
 
     private List<Component> components = new ArrayList<>();
-    private ActionManager actionManager;
     private Component draggedComponent = null;
     private Set<Component> selectedComponents = new HashSet<>();
-    private final Rectangle selectionArea;
+    private Rectangle selectionArea;
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
     private JPopupMenu backgroundPopupMenu;
@@ -36,16 +33,12 @@ public class DrawingPanel extends JPanel {
     private int offsetX, offsetY;
 
     /**
-     * Constructs a {@code DrawingPanel}.
-     *
-     * @param actionManager {@code ActionManager} from what the {@code DrawingPanel} will take its actions.
+     * Constructs a {@code Diagram}.
      */
-    public DrawingPanel(ActionManager actionManager) {
+    public Diagram() {
 
         this.setOpaque(Boolean.TRUE);
         this.setBackground(Color.WHITE);
-
-        this.setActionManager(actionManager);
 
         selectionArea = new Rectangle(0, 0, 0, 0);
 
@@ -56,9 +49,7 @@ public class DrawingPanel extends JPanel {
         this.initializeMouseListeners();
     }
 
-    public JPopupMenu getBackgroundPopupMenu() {
-        return actionManager.getBackgroundPopupMenu();
-    }
+    public abstract JPopupMenu getBackgroundPopupMenu();
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -204,15 +195,6 @@ public class DrawingPanel extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public ActionManager getActionManager() { return this.actionManager; }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public void setActionManager(ActionManager actionManager) {
-        this.actionManager = actionManager;
-        actionManager.setDrawingPanel(this);
-    }
-
     @SafeVarargs
     public final boolean onlyTheseClassesAreSelected(Class<? extends Component>... classTypes) {
         // Use a Set for faster lookup.
@@ -255,7 +237,7 @@ public class DrawingPanel extends JPanel {
 
     public void resetLanguage() {
 
-        this.backgroundPopupMenu = this.actionManager.getBackgroundPopupMenu();
+        this.backgroundPopupMenu = this.getBackgroundPopupMenu();
 
         for (Component component : this.components) {
             component.resetLanguage();
@@ -324,7 +306,7 @@ public class DrawingPanel extends JPanel {
 
     private void handleControlClick() {
         for (Component component : components.reversed()) {
-            if (component.getBounds().contains(new Point(DrawingPanel.this.mouseX, DrawingPanel.this.mouseY))) {
+            if (component.getBounds().contains(new Point(Diagram.this.mouseX, Diagram.this.mouseY))) {
                 selectedComponents.add(component);
                 component.setSelected(Boolean.TRUE);
                 break;
@@ -395,9 +377,9 @@ public class DrawingPanel extends JPanel {
     }
 
     private void handleMouseMoved(MouseEvent e) {
-        if (DrawingPanel.this.getBounds().contains(e.getX(), e.getY())) {
-            DrawingPanel.this.mouseX = e.getX();
-            DrawingPanel.this.mouseY = e.getY();
+        if (Diagram.this.getBounds().contains(e.getX(), e.getY())) {
+            Diagram.this.mouseX = e.getX();
+            Diagram.this.mouseY = e.getY();
         }
     }
 
@@ -454,5 +436,31 @@ public class DrawingPanel extends JPanel {
 
     public boolean isAntialiasingActive() {
         return this.antialiasing;
+    }
+
+    /**
+     * @return A deep copy of the diagram.
+     */
+    @Override
+    public Diagram clone() {
+        try {
+            Diagram cloned = (Diagram) super.clone();
+            cloned.components = new ArrayList<>();
+            for (Component component : this.components) {
+                cloned.components.add(component.clone());  // Clonamos las entidades
+            }
+            cloned.draggedComponent = this.draggedComponent;
+            cloned.selectedComponents = new HashSet<>();
+            cloned.selectionArea = this.selectionArea; // Must this be saved?
+            cloned.selectionAreaStartX = this.selectionAreaStartX; // Must this be saved?
+            cloned.selectionAreaStartY = this.selectionAreaStartY; // Must this be saved?
+            cloned.selectingArea = this.selectingArea;
+            cloned.backgroundPopupMenu = this.backgroundPopupMenu;
+            cloned.antialiasing = this.antialiasing;
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

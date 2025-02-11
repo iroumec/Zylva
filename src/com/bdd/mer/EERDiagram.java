@@ -1,7 +1,8 @@
-package com.bdd.mer.frame.drawingPanels;
+package com.bdd.mer;
 
-import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.components.AttributableComponent;
+import com.bdd.mer.components.AttributableEERComponent;
+import com.bdd.GUI.Component;
+import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.attribute.MainAttribute;
@@ -21,9 +22,10 @@ import com.bdd.mer.components.line.lineShape.SquaredLine;
 import com.bdd.mer.components.note.Note;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.userPreferences.LanguageManager;
-import com.bdd.mer.structures.Pair;
+import com.bdd.GUI.Diagram;
+import com.bdd.GUI.userPreferences.LanguageManager;
+import com.bdd.structures.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
@@ -32,15 +34,14 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class EERPanel extends DrawingPanel {
+public class EERDiagram extends Diagram {
 
-    /**
-     * Constructs a {@code DrawingPanel}.
-     *
-     * @param actionManager {@code ActionManager} from what the {@code this} will take its actions.
-     */
-    public EERPanel(ActionManager actionManager) {
-        super(actionManager);
+    @Override
+    public void addComponent(@NotNull Component component) {
+        if (!(component instanceof EERComponent)) {
+            throw new IllegalArgumentException("The component must be a type of EERComponent.");
+        }
+        super.addComponent(component);
     }
 
     /* ---------------------------------------------------------------------------------------------------------- */
@@ -86,366 +87,6 @@ public class EERPanel extends DrawingPanel {
         }
     }
 
-    /* ---------------------------------------------------------------------------------------------------------- */
-    /*                                           Add Relationship                                                 */
-    /* ---------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * Adds a new <Code>Relationship</Code> to the <Code>this</Code>.
-     * <p></p>
-     * Between one and three entities (strong or weak) or associations must be selected.
-     */
-    public void addRelationship() {
-
-        int selectedComponents = this.getSelectedComponents().size();
-
-        if (this.onlyTheseClassesAreSelected(EntityWrapper.class, Association.class)
-                && this.isNumberOfSelectedComponentsBetween(1, 3)) {
-
-            String name = JOptionPane.showInputDialog(
-                    this,
-                    null,
-                    LanguageManager.getMessage("input.name"),
-                    JOptionPane.QUESTION_MESSAGE
-            );
-
-            if (name != null) {
-                if (!name.isEmpty()) {
-
-                    Relationship newRelationship = null;
-
-                    List<Line> lines = new ArrayList<>();
-
-                    List<Cardinality> cardinalities = new ArrayList<>();
-
-                    if (selectedComponents >= 2 && selectedComponents <= 3) {
-
-                        Point center = this.getCenterOfSelectedComponents();
-
-                        newRelationship = new Relationship(name, center.x, center.y, this);
-
-                        for (com.bdd.mer.components.Component component : this.getSelectedComponents()) {
-
-                            // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
-                            Relatable castedComponent = (Relatable) component;
-
-                            Cardinality cardinality;
-
-                            if (selectedComponents == 2) {
-                                cardinality = new Cardinality("1", "N", this);
-                            } else {
-                                cardinality = new Cardinality("0", "N", this);
-                            }
-
-                            cardinalities.add(cardinality);
-
-                            GuardedLine guardedLine = new GuardedLine.Builder(
-                                    this,
-                                    (com.bdd.mer.components.Component) castedComponent,
-                                    newRelationship,
-                                    cardinality).build();
-
-                            // This must be improved later.
-                            // If an association is related, the line cannot wait until then the association is drawn.
-                            // It must be drawn first.
-                            if (component instanceof Association) {
-                                guardedLine.setDrawingPriority(0);
-                            }
-
-                            lines.add(guardedLine);
-
-                            newRelationship.addParticipant(castedComponent, guardedLine);
-
-                        }
-
-                    } else if (selectedComponents == 1) {
-
-                        newRelationship = new Relationship(
-                                name,
-                                this.getMouseX() + 90,
-                                this.getMouseY() - 90,
-                                this
-                        );
-
-                        Relatable castedComponent = (Relatable) this.getSelectedComponents().getFirst();
-
-                        Cardinality firstCardinality = new Cardinality("1", "N", this);
-                        Cardinality secondCardinality = new Cardinality("1", "N", this);
-
-                        GuardedLine firstCardinalityLine = new GuardedLine.Builder(
-                                this,
-                                (com.bdd.mer.components.Component) castedComponent,
-                                newRelationship,
-                                firstCardinality).lineShape(new SquaredLine()).build();
-                        lines.add(firstCardinalityLine);
-
-                        GuardedLine secondCardinalityLine = new GuardedLine.Builder(
-                                this,
-                                newRelationship,
-                                (com.bdd.mer.components.Component) castedComponent,
-                                secondCardinality).lineShape(new SquaredLine()).build();
-                        lines.add(secondCardinalityLine);
-
-                        cardinalities.add(firstCardinality);
-                        cardinalities.add(secondCardinality);
-
-                        newRelationship.addParticipant(castedComponent, firstCardinalityLine);
-                        newRelationship.addParticipant(castedComponent, secondCardinalityLine);
-                    }
-
-                    // It can never be null, due to it is asked the exact amount of components previously.
-                    // But the IDE doesn't know it.
-                    assert newRelationship != null;
-
-                    for (Cardinality cardinality : cardinalities) {
-                        this.addComponent(cardinality);
-                    }
-
-                    for (Line line : lines) {
-                        this.addComponent(line);
-                    }
-
-                    this.addComponent(newRelationship);
-
-                    this.cleanSelectedComponents();
-
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.emptyName"));
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.relationshipCreation"));
-        }
-    }
-
-    /**
-     * Given a cardinality, changes its values.
-     *
-     * @param cardinality <Code>Cardinality</Code> whose values will be changed.
-     */
-    public void changeCardinality(Cardinality cardinality) {
-
-        JTextField cardinalidadMinimaCampo = new JTextField(3);
-        JTextField cardinalidadMaximaCampo = new JTextField(3);
-
-        JPanel miPanel = new JPanel(new GridLayout(2, 2, 5, 5));
-        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.minimum")));
-        miPanel.add(cardinalidadMinimaCampo);
-        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.maximum")));
-        miPanel.add(cardinalidadMaximaCampo);
-
-        setFocus(cardinalidadMinimaCampo);
-
-        int resultado = JOptionPane.showConfirmDialog(null, miPanel, LanguageManager.getMessage("input.twoValues"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (resultado == JOptionPane.OK_OPTION) {
-            String minText = cardinalidadMinimaCampo.getText().trim();
-            String maxText = cardinalidadMaximaCampo.getText().trim();
-
-            Optional<Integer> minValue = parseInteger(minText);
-
-            // Validates if the fields are not empty.
-            if (minText.isEmpty() || maxText.isEmpty()) {
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.emptyFields"), "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Validates if the minimum cardinality is a valid number.
-            if (minValue.isEmpty() || minValue.get() < 0) {
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMinimum"), "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // Validates if the maximum cardinality is a valid number or a letter.
-            if (!isIntegerOrLetter(maxText) || (isInteger(maxText) && Integer.parseInt(maxText) < 1)) {
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMaximum"), "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // If the maximum cardinality is a number, it must be greater than the minimum cardinality.
-            if (isInteger(maxText)) {
-                int maxValue = Integer.parseInt(maxText);
-                if (minValue.get() > maxValue) {
-                    JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidRange"), "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            // If everything is valid, the cardinality is updated.
-            cardinality.setText(Cardinality.giveFormat(minText, maxText));
-
-            // Here only the area of the cardinality could be repainted, but, if the cardinality now has a considerable
-            // greater number, it'll lead to visual noise until all the panel is repainted.
-            this.repaint();
-        }
-    }
-
-    /**
-     * It parses a text to <Code>Integer</Code> if it's possible.
-     *
-     * @param text Text to be parsed.
-     * @return {@code Optional<Integer>} containing the parsed text if it was possible.
-     */
-    private Optional<Integer> parseInteger(String text) {
-        try {
-            return Optional.of(Integer.parseInt(text));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Validates if a text is an integer xor a letter.
-     *
-     * @param text Text to be checked.
-     * @return <Code>TRUE</Code> if the text is an integer xor a letter. It returns <Code>FALSE</Code> in any other
-     * case.
-     */
-    private boolean isIntegerOrLetter(String text) {
-        return text.matches("\\d+") || text.matches("[a-zA-Z]");
-    }
-
-    /**
-     * Validates if a text is strictly a number.
-     *
-     * @param text Text to be checked.
-     * @return <Code>TRUE</Code> if the text is an integer. It returns <Code>FALSE</Code> in any other case.
-     */
-    private boolean isInteger(String text) {
-        try {
-            Integer.parseInt(text);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                           Add Dependency                                                       */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * Adds a new <Code>Dependency</Code> to the <Code>this</Code>.
-     * <p></p>
-     * Two strong entities must be selected.
-     */
-    public void addDependency() {
-
-        if (this.onlyTheseClassesAreSelected(EntityWrapper.class) && this.isNumberOfSelectedComponents(2)) {
-
-            String name = JOptionPane.showInputDialog(
-                    this,
-                    null,
-                    LanguageManager.getMessage("input.name"),
-                    JOptionPane.QUESTION_MESSAGE
-            );
-
-            if (name != null) {
-
-                Point center = this.getCenterOfSelectedComponents();
-
-                Relationship newRelationship = new Relationship(name, center.x, center.y, this);
-
-                EntityWrapper entitySelected = selectWeakEntity();
-
-                if (entitySelected != null) {
-
-                    entitySelected.setWeakVersion(newRelationship);
-
-                    Cardinality cardinality = null, staticCardinality = null;
-                    GuardedLine strongLine = null, weakLine = null;
-
-                    for (EntityWrapper entity : this.getSelectedComponentsByClass(EntityWrapper.class)) {
-
-                        if (entity.equals(entitySelected)) {
-
-                            cardinality = new Cardinality("1", "N", this);
-
-                            strongLine = new GuardedLine.Builder(
-                                    this,
-                                    entity,
-                                    newRelationship,
-                                    cardinality
-                            ).lineMultiplicity(new DoubleLine(3)).build();
-
-                            newRelationship.addParticipant(entity, strongLine);
-
-                        } else {
-
-                            // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
-                            staticCardinality = new StaticCardinality("1", "1", this);
-
-                            weakLine = new GuardedLine.Builder(
-                                    this,
-                                    entity,
-                                    newRelationship,
-                                    staticCardinality
-                            ).build();
-
-                            newRelationship.addParticipant(entity, weakLine);
-                        }
-                    }
-
-                    // These checks are only added so the IDE don't tell me they can be null.
-
-                    if (weakLine != null) {
-                        this.addComponent(weakLine);
-                    }
-
-                    if (strongLine != null) {
-                        this.addComponent(strongLine);
-                    }
-
-                    if (cardinality != null) {
-                        this.addComponent(cardinality);
-                    }
-
-                    if (staticCardinality != null) {
-                        this.addComponent(staticCardinality);
-                    }
-
-                    this.addComponent(newRelationship);
-
-                    this.cleanSelectedComponents();
-                }
-
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.dependencyCreation"));
-        }
-    }
-
-    /**
-     * From the list of selected entities, allows the user to select the weak entity.
-     *
-     * @return {@code Entity} to be the weak entity of the dependency.
-     */
-    private EntityWrapper selectWeakEntity() {
-
-        Object[] opciones = {this.getSelectedComponentsByClass(EntityWrapper.class).getFirst().getText(),
-                this.getSelectedComponentsByClass(EntityWrapper.class).getLast().getText()};
-
-        // THe JOptionPane with buttons is shown.
-        int selection = JOptionPane.showOptionDialog(
-                this,
-                LanguageManager.getMessage("input.weakEntity"),
-                LanguageManager.getMessage("input.option"),
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                opciones,
-                opciones[0]);
-
-        return switch (selection) {
-            case 0 -> (this.getSelectedComponentsByClass(EntityWrapper.class).getFirst());
-            case 1 -> (this.getSelectedComponentsByClass(EntityWrapper.class).getLast());
-            default -> {
-                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("input.weakEntity"));
-                yield selectWeakEntity();
-            }
-        };
-    }
-
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                            Add Hierarchy                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -465,14 +106,14 @@ public class EERPanel extends DrawingPanel {
 
                 List<EntityWrapper> subtipos = getChildrenList(parent);
 
-                Pair<Hierarchy, List<com.bdd.mer.components.Component>> newHierarchyData = getHierarchy(parent);
+                Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(parent);
 
                 if (newHierarchyData == null) {
                     return;
                 }
 
                 Hierarchy newHierarchy = newHierarchyData.first();
-                List<com.bdd.mer.components.Component> componentsToAdd = newHierarchyData.second();
+                List<Component> componentsToAdd = newHierarchyData.second();
 
                 for (EntityWrapper subtipo : subtipos) {
                     newHierarchy.addChild(subtipo);
@@ -499,7 +140,7 @@ public class EERPanel extends DrawingPanel {
 
                 parent.addHierarchy(newHierarchy);
 
-                for (com.bdd.mer.components.Component component : componentsToAdd) {
+                for (Component component : componentsToAdd) {
                     this.addComponent(component);
                 }
 
@@ -522,7 +163,7 @@ public class EERPanel extends DrawingPanel {
      * @param parent Entity parent of the hierarchy.
      * @return {@code Hierarchy} according to the options selected by the user.
      */
-    public Pair<Hierarchy, List<com.bdd.mer.components.Component>> getHierarchy(EntityWrapper parent) {
+    public Pair<Hierarchy, List<Component>> getHierarchy(EntityWrapper parent) {
 
         // The radio buttons are created.
         JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
@@ -612,7 +253,7 @@ public class EERPanel extends DrawingPanel {
 
         newHierarchy.setParentLine(parentLine);
 
-        List<com.bdd.mer.components.Component> componentsToAdd = new ArrayList<>();
+        List<Component> componentsToAdd = new ArrayList<>();
 
         componentsToAdd.add(parentLine);
 
@@ -712,7 +353,7 @@ public class EERPanel extends DrawingPanel {
      */
     public void deleteSelectedComponents() {
 
-        List<com.bdd.mer.components.Component> selectedComponents = this.getSelectedComponents();
+        List<Component> selectedComponents = this.getSelectedComponents();
 
         if (!selectedComponents.isEmpty()) {
 
@@ -726,9 +367,9 @@ public class EERPanel extends DrawingPanel {
 
             if (confirmation == JOptionPane.YES_OPTION) {
 
-                Set<com.bdd.mer.components.Component> componentsForRemoval = new HashSet<>();
+                Set<Component> componentsForRemoval = new HashSet<>();
 
-                for (com.bdd.mer.components.Component component : selectedComponents) {
+                for (Component component : selectedComponents) {
 
                     if (!component.canBeDeleted()) {
                         return;
@@ -738,7 +379,7 @@ public class EERPanel extends DrawingPanel {
                     componentsForRemoval.add(component);
                 }
 
-                for (com.bdd.mer.components.Component component : componentsForRemoval) {
+                for (Component component : componentsForRemoval) {
                     this.removeComponent(component);
                 }
 
@@ -760,7 +401,7 @@ public class EERPanel extends DrawingPanel {
     /**
      * Renames a {@code Component}.
      */
-    public void renameComponent(com.bdd.mer.components.Component component) {
+    public void renameComponent(Component component) {
 
         String newText;
 
@@ -795,7 +436,7 @@ public class EERPanel extends DrawingPanel {
      *
      * @param component The attributable component owner of the attribute.
      */
-    public void addAttribute(AttributableComponent component) {
+    public void addAttribute(AttributableEERComponent component) {
         addAttribute(component, AttributeSymbol.COMMON);
     }
 
@@ -805,7 +446,7 @@ public class EERPanel extends DrawingPanel {
      * @param component The attributable component owner of the attribute.
      * @param attributeSymbol The type of the attribute.
      */
-    public void addAttribute(AttributableComponent component, AttributeSymbol attributeSymbol) {
+    public void addAttribute(AttributableEERComponent component, AttributeSymbol attributeSymbol) {
 
         // Create the components of the panel
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
@@ -852,7 +493,7 @@ public class EERPanel extends DrawingPanel {
      *
      * @param component The attributable component owner of the attribute.
      */
-    public void addComplexAttribute(AttributableComponent component) {
+    public void addComplexAttribute(AttributableEERComponent component) {
 
         AttributeSymbol attributeSymbol = selectAttributeType();
 
@@ -1013,30 +654,6 @@ public class EERPanel extends DrawingPanel {
         } else {
             return AttributeSymbol.MAIN;
         }
-    }
-
-    /**
-     * This method allows the user to change an attribute optionality.
-     *
-     * @param attribute The attribute whose optionality will be changed.
-     */
-    public void changeOptionality(Attribute attribute) {
-
-        attribute.changeOptionality();
-        this.repaint();
-
-    }
-
-    /**
-     * This method allows the user to change the number of values an attribute can take.
-     *
-     * @param attribute The attribute whose number of possible values will be changed.
-     */
-    public void changeMultivalued(Attribute attribute) {
-
-        attribute.changeMultivalued();
-        this.repaint();
-
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

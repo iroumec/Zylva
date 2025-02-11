@@ -1,4 +1,4 @@
-package com.bdd.mer.frame.userPreferences;
+package com.bdd.GUI.userPreferences;
 
 public enum Preference {
 

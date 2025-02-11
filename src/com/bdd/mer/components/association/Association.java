@@ -1,20 +1,20 @@
 package com.bdd.mer.components.association;
 
-import com.bdd.mer.actions.Action;
-import com.bdd.mer.components.Component;
+import com.bdd.GUI.Component;
+import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.mer.frame.DrawingPanel;
+import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Association extends Component implements Relatable, Derivable {
+public class Association extends EERComponent implements Relatable, Derivable {
 
     private final RelatableImplementation relationshipsManager;
 
@@ -27,10 +27,10 @@ public class Association extends Component implements Relatable, Derivable {
      * Constructs an {@code Association}.
      *
      * @param relationship Core {@code Relationship} forming the association.
-     * @param drawingPanel {@code DrawingPanel} where the Association lives.
+     * @param diagram {@code Diagram} where the Association lives.
      */
-    public Association(Relationship relationship, DrawingPanel drawingPanel) {
-        super(drawingPanel);
+    public Association(Relationship relationship, Diagram diagram) {
+        super(diagram);
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
         this.relationship.setAssociation(this);
@@ -98,11 +98,14 @@ public class Association extends Component implements Relatable, Derivable {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        return this.getActionManager().getPopupMenu(
-                this,
-                Action.ADD_REFLEXIVE_RELATIONSHIP,
-                Action.DELETE
-        );
+        JPopupMenu popupMenu = new JPopupMenu();
+
+//        return this.getActionManager().getPopupMenu(
+//                this,
+//                Action.ADD_REFLEXIVE_RELATIONSHIP,
+//                Action.DELETE
+//        );
+
 
     }
 

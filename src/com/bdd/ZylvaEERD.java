@@ -1,6 +1,6 @@
-package com.bdd.mer;
+package com.bdd;
 
-import com.bdd.mer.frame.MainFrame;
+import com.bdd.GUI.MainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;

@@ -1,26 +1,30 @@
 package com.bdd.mer.components.relationship;
 
-import com.bdd.mer.components.AttributableComponent;
-import com.bdd.mer.components.Component;
+import com.bdd.GUI.userPreferences.LanguageManager;
+import com.bdd.mer.components.AttributableEERComponent;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.association.Association;
 import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.mer.components.line.GuardedLine;
 import com.bdd.mer.components.line.Line;
 import com.bdd.mer.components.line.guard.cardinality.Cardinality;
+import com.bdd.mer.components.line.guard.cardinality.StaticCardinality;
+import com.bdd.mer.components.line.lineMultiplicity.DoubleLine;
+import com.bdd.mer.components.line.lineShape.SquaredLine;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.PluralDerivation;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.actions.Action;
-import com.bdd.mer.structures.Pair;
+import com.bdd.GUI.Diagram;
+import com.bdd.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class Relationship extends AttributableComponent {
+public class Relationship extends AttributableEERComponent {
 
     /**
      * Participant of the relationship.
@@ -36,11 +40,11 @@ public class Relationship extends AttributableComponent {
      * @param text Name of the relationship.
      * @param x X coordinate of the relationship.
      * @param y Y coordinate of the relationship.
-     * @param drawingPanel {@code DrawingPanel} in which the relationship lives.
+     * @param diagram {@code Diagram} in which the relationship lives.
      */
-    public Relationship(String text, int x, int y, DrawingPanel drawingPanel) {
+    public Relationship(String text, int x, int y, Diagram diagram) {
 
-        super(text, x, y, drawingPanel);
+        super(text, x, y, diagram);
 
         this.participants = new HashMap<>();
         this.forma = new Polygon();
@@ -88,8 +92,8 @@ public class Relationship extends AttributableComponent {
 
             out.add((Component) participant.getKey());
 
-            if (participant.getKey() instanceof AttributableComponent attributableComponent) {
-                out.addAll(attributableComponent.getAttributes());
+            if (participant.getKey() instanceof AttributableEERComponent attributableEERComponent) {
+                out.addAll(attributableEERComponent.getAttributes());
             }
 
             out.addAll(participant.getValue());
@@ -172,6 +176,23 @@ public class Relationship extends AttributableComponent {
         return out;
     }
 
+    /**
+     * Add an association to the diagram.
+     */
+    // There must be selected at least an entity and a relationship (unary relationship)
+    private void addAssociation() {
+
+        if (this.allMaxCardinalitiesAreN()) {
+
+            Association association = new Association(this, this.diagram);
+
+            this.diagram.addComponent(association);
+            this.diagram.repaint();
+        } else {
+
+            JOptionPane.showMessageDialog(this.diagram, "An association can only be created for N:N or N:N:N relationships.");
+        }
+    }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
@@ -220,23 +241,28 @@ public class Relationship extends AttributableComponent {
     @Override
     protected JPopupMenu getPopupMenu() {
 
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        JMenuItem actionItem = new JMenuItem("action.addAttribute");
+        actionItem.addActionListener(_ -> this.addAttribute());
+        popupMenu.add(actionItem);
+
         if (association == null) {
-            return this.getActionManager().getPopupMenu(
-                    this,
-                    Action.ADD_ATTRIBUTE,
-                    Action.ADD_ASSOCIATION,
-                    Action.RENAME,
-                    Action.DELETE
-            );
-        } else {
-            return this.getActionManager().getPopupMenu(
-                    this,
-                    Action.ADD_ATTRIBUTE,
-                    Action.RENAME,
-                    Action.DELETE
-            );
+
+            actionItem = new JMenuItem("action.addAssociation");
+            actionItem.addActionListener(_ -> this.addAssociation());
+            popupMenu.add(actionItem);
         }
 
+        actionItem = new JMenuItem("action.rename");
+        actionItem.addActionListener(_ -> this.rename());
+        popupMenu.add(actionItem);
+
+        actionItem = new JMenuItem("action.delete");
+        actionItem.addActionListener(_ -> this.delete());
+        popupMenu.add(actionItem);
+
+        return popupMenu;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -317,5 +343,365 @@ public class Relationship extends AttributableComponent {
     @Override
     public String getIdentifier() {
         return this.getText();
+    }
+
+    /* ---------------------------------------------------------------------------------------------------------- */
+    /*                                           Add Relationship                                                 */
+    /* ---------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Adds a new <Code>Relationship</Code> to the <Code>this</Code>.
+     * <p></p>
+     * Between one and three entities (strong or weak) or associations must be selected.
+     */
+    public void addRelationship() {
+
+        int selectedComponents = this.getSelectedComponents().size();
+
+        if (this.onlyTheseClassesAreSelected(EntityWrapper.class, Association.class)
+                && this.isNumberOfSelectedComponentsBetween(1, 3)) {
+
+            String name = JOptionPane.showInputDialog(
+                    this,
+                    null,
+                    LanguageManager.getMessage("input.name"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (name != null) {
+                if (!name.isEmpty()) {
+
+                    Relationship newRelationship = null;
+
+                    List<Line> lines = new ArrayList<>();
+
+                    List<Cardinality> cardinalities = new ArrayList<>();
+
+                    if (selectedComponents >= 2 && selectedComponents <= 3) {
+
+                        Point center = this.getCenterOfSelectedComponents();
+
+                        newRelationship = new Relationship(name, center.x, center.y, this);
+
+                        for (Component component : this.getSelectedComponents()) {
+
+                            // It's safe, due to I asked at the stat if only objects from the Entity and Association classes are selected.
+                            Relatable castedComponent = (Relatable) component;
+
+                            Cardinality cardinality;
+
+                            if (selectedComponents == 2) {
+                                cardinality = new Cardinality("1", "N", this);
+                            } else {
+                                cardinality = new Cardinality("0", "N", this);
+                            }
+
+                            cardinalities.add(cardinality);
+
+                            GuardedLine guardedLine = new GuardedLine.Builder(
+                                    this,
+                                    (Component) castedComponent,
+                                    newRelationship,
+                                    cardinality).build();
+
+                            // This must be improved later.
+                            // If an association is related, the line cannot wait until then the association is drawn.
+                            // It must be drawn first.
+                            if (component instanceof Association) {
+                                guardedLine.setDrawingPriority(0);
+                            }
+
+                            lines.add(guardedLine);
+
+                            newRelationship.addParticipant(castedComponent, guardedLine);
+
+                        }
+
+                    } else if (selectedComponents == 1) {
+
+                        newRelationship = new Relationship(
+                                name,
+                                this.getMouseX() + 90,
+                                this.getMouseY() - 90,
+                                this
+                        );
+
+                        Relatable castedComponent = (Relatable) this.getSelectedComponents().getFirst();
+
+                        Cardinality firstCardinality = new Cardinality("1", "N", this);
+                        Cardinality secondCardinality = new Cardinality("1", "N", this);
+
+                        GuardedLine firstCardinalityLine = new GuardedLine.Builder(
+                                this,
+                                (Component) castedComponent,
+                                newRelationship,
+                                firstCardinality).lineShape(new SquaredLine()).build();
+                        lines.add(firstCardinalityLine);
+
+                        GuardedLine secondCardinalityLine = new GuardedLine.Builder(
+                                this,
+                                newRelationship,
+                                (Component) castedComponent,
+                                secondCardinality).lineShape(new SquaredLine()).build();
+                        lines.add(secondCardinalityLine);
+
+                        cardinalities.add(firstCardinality);
+                        cardinalities.add(secondCardinality);
+
+                        newRelationship.addParticipant(castedComponent, firstCardinalityLine);
+                        newRelationship.addParticipant(castedComponent, secondCardinalityLine);
+                    }
+
+                    // It can never be null, due to it is asked the exact amount of components previously.
+                    // But the IDE doesn't know it.
+                    assert newRelationship != null;
+
+                    for (Cardinality cardinality : cardinalities) {
+                        this.addComponent(cardinality);
+                    }
+
+                    for (Line line : lines) {
+                        this.addComponent(line);
+                    }
+
+                    this.addComponent(newRelationship);
+
+                    this.cleanSelectedComponents();
+
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.emptyName"));
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.relationshipCreation"));
+        }
+    }
+
+    /**
+     * Given a cardinality, changes its values.
+     *
+     * @param cardinality <Code>Cardinality</Code> whose values will be changed.
+     */
+    public void changeCardinality(Cardinality cardinality) {
+
+        JTextField cardinalidadMinimaCampo = new JTextField(3);
+        JTextField cardinalidadMaximaCampo = new JTextField(3);
+
+        JPanel miPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.minimum")));
+        miPanel.add(cardinalidadMinimaCampo);
+        miPanel.add(new JLabel(LanguageManager.getMessage("cardinality.maximum")));
+        miPanel.add(cardinalidadMaximaCampo);
+
+        setFocus(cardinalidadMinimaCampo);
+
+        int resultado = JOptionPane.showConfirmDialog(null, miPanel, LanguageManager.getMessage("input.twoValues"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+        if (resultado == JOptionPane.OK_OPTION) {
+            String minText = cardinalidadMinimaCampo.getText().trim();
+            String maxText = cardinalidadMaximaCampo.getText().trim();
+
+            Optional<Integer> minValue = parseInteger(minText);
+
+            // Validates if the fields are not empty.
+            if (minText.isEmpty() || maxText.isEmpty()) {
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.emptyFields"), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validates if the minimum cardinality is a valid number.
+            if (minValue.isEmpty() || minValue.get() < 0) {
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMinimum"), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validates if the maximum cardinality is a valid number or a letter.
+            if (!isIntegerOrLetter(maxText) || (isInteger(maxText) && Integer.parseInt(maxText) < 1)) {
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMaximum"), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // If the maximum cardinality is a number, it must be greater than the minimum cardinality.
+            if (isInteger(maxText)) {
+                int maxValue = Integer.parseInt(maxText);
+                if (minValue.get() > maxValue) {
+                    JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidRange"), "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            // If everything is valid, the cardinality is updated.
+            cardinality.setText(Cardinality.giveFormat(minText, maxText));
+
+            // Here only the area of the cardinality could be repainted, but, if the cardinality now has a considerable
+            // greater number, it'll lead to visual noise until all the panel is repainted.
+            this.repaint();
+        }
+    }
+
+    /**
+     * It parses a text to <Code>Integer</Code> if it's possible.
+     *
+     * @param text Text to be parsed.
+     * @return {@code Optional<Integer>} containing the parsed text if it was possible.
+     */
+    private Optional<Integer> parseInteger(String text) {
+        try {
+            return Optional.of(Integer.parseInt(text));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Validates if a text is an integer xor a letter.
+     *
+     * @param text Text to be checked.
+     * @return <Code>TRUE</Code> if the text is an integer xor a letter. It returns <Code>FALSE</Code> in any other
+     * case.
+     */
+    private boolean isIntegerOrLetter(String text) {
+        return text.matches("\\d+") || text.matches("[a-zA-Z]");
+    }
+
+    /**
+     * Validates if a text is strictly a number.
+     *
+     * @param text Text to be checked.
+     * @return <Code>TRUE</Code> if the text is an integer. It returns <Code>FALSE</Code> in any other case.
+     */
+    private boolean isInteger(String text) {
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                           Add Dependency                                                       */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Adds a new <Code>Dependency</Code> to the <Code>this</Code>.
+     * <p></p>
+     * Two strong entities must be selected.
+     */
+    public void addDependency() {
+
+        if (this.onlyTheseClassesAreSelected(EntityWrapper.class) && this.isNumberOfSelectedComponents(2)) {
+
+            String name = JOptionPane.showInputDialog(
+                    this,
+                    null,
+                    LanguageManager.getMessage("input.name"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (name != null) {
+
+                Point center = this.getCenterOfSelectedComponents();
+
+                Relationship newRelationship = new Relationship(name, center.x, center.y, this);
+
+                EntityWrapper entitySelected = selectWeakEntity();
+
+                if (entitySelected != null) {
+
+                    entitySelected.setWeakVersion(newRelationship);
+
+                    Cardinality cardinality = null, staticCardinality = null;
+                    GuardedLine strongLine = null, weakLine = null;
+
+                    for (EntityWrapper entity : this.getSelectedComponentsByClass(EntityWrapper.class)) {
+
+                        if (entity.equals(entitySelected)) {
+
+                            cardinality = new Cardinality("1", "N", this);
+
+                            strongLine = new GuardedLine.Builder(
+                                    this,
+                                    entity,
+                                    newRelationship,
+                                    cardinality
+                            ).lineMultiplicity(new DoubleLine(3)).build();
+
+                            newRelationship.addParticipant(entity, strongLine);
+
+                        } else {
+
+                            // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
+                            staticCardinality = new StaticCardinality("1", "1", this);
+
+                            weakLine = new GuardedLine.Builder(
+                                    this,
+                                    entity,
+                                    newRelationship,
+                                    staticCardinality
+                            ).build();
+
+                            newRelationship.addParticipant(entity, weakLine);
+                        }
+                    }
+
+                    // These checks are only added so the IDE don't tell me they can be null.
+
+                    if (weakLine != null) {
+                        this.addComponent(weakLine);
+                    }
+
+                    if (strongLine != null) {
+                        this.addComponent(strongLine);
+                    }
+
+                    if (cardinality != null) {
+                        this.addComponent(cardinality);
+                    }
+
+                    if (staticCardinality != null) {
+                        this.addComponent(staticCardinality);
+                    }
+
+                    this.addComponent(newRelationship);
+
+                    this.cleanSelectedComponents();
+                }
+
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, LanguageManager.getMessage("warning.dependencyCreation"));
+        }
+    }
+
+    /**
+     * From the list of selected entities, allows the user to select the weak entity.
+     *
+     * @return {@code Entity} to be the weak entity of the dependency.
+     */
+    private EntityWrapper selectWeakEntity() {
+
+        Object[] opciones = {this.getSelectedComponentsByClass(EntityWrapper.class).getFirst().getText(),
+                this.getSelectedComponentsByClass(EntityWrapper.class).getLast().getText()};
+
+        // THe JOptionPane with buttons is shown.
+        int selection = JOptionPane.showOptionDialog(
+                this,
+                LanguageManager.getMessage("input.weakEntity"),
+                LanguageManager.getMessage("input.option"),
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                opciones,
+                opciones[0]);
+
+        return switch (selection) {
+            case 0 -> (this.getSelectedComponentsByClass(EntityWrapper.class).getFirst());
+            case 1 -> (this.getSelectedComponentsByClass(EntityWrapper.class).getLast());
+            default -> {
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("input.weakEntity"));
+                yield selectWeakEntity();
+            }
+        };
     }
 }

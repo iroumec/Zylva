@@ -1,8 +1,6 @@
-package com.bdd.mer.components;
+package com.bdd.GUI;
 
-import com.bdd.mer.actions.ActionManager;
-import com.bdd.mer.frame.DrawingPanel;
-import com.bdd.mer.frame.userPreferences.LanguageManager;
+import com.bdd.GUI.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -13,7 +11,7 @@ import java.util.List;
 import java.awt.*;
 import java.util.Set;
 
-public abstract class Component implements Serializable {
+public abstract class Component implements Serializable, Cloneable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Attributes                                                    */
@@ -47,7 +45,7 @@ public abstract class Component implements Serializable {
     /**
      * Drawing panel where the component lives.
      */
-    protected DrawingPanel drawingPanel;
+    protected Diagram diagram;
 
     /**
      * JPopupMenu of the component.
@@ -62,10 +60,10 @@ public abstract class Component implements Serializable {
      * Constructs a <code>Component</code> with an empty text and coordinates in (0, 0). This constructor is useful
      * for those components which don't have a text nor their coordinates matter or are calculated.
      *
-     * @param drawingPanel The drawing panel where the component lives.
+     * @param diagram The drawing panel where the component lives.
      */
-    public Component(@NotNull DrawingPanel drawingPanel) {
-        this("", 0, 0, drawingPanel);
+    public Component(@NotNull Diagram diagram) {
+        this("", 0, 0, diagram);
     }
 
     /**
@@ -73,9 +71,9 @@ public abstract class Component implements Serializable {
      * which don't have a text.
      *
      * @param text The text of the component.
-     * @param drawingPanel The drawing panel where the component lives.
+     * @param diagram The drawing panel where the component lives.
      */
-    public Component(@NotNull String text, @NotNull DrawingPanel drawingPanel) { this(text, 0 , 0, drawingPanel); }
+    public Component(@NotNull String text, @NotNull Diagram diagram) { this(text, 0 , 0, diagram); }
 
     /**
      * Constructs a <code>Component</code> with an empty text. This constructor is useful for those components
@@ -83,9 +81,9 @@ public abstract class Component implements Serializable {
      *
      * @param x The x coordinate of the component in the drawing panel.
      * @param y The y coordinate of the component in the drawing panel.
-     * @param drawingPanel The drawing panel where the component lives.
+     * @param diagram The drawing panel where the component lives.
      */
-    public Component(int x, int y, @NotNull DrawingPanel drawingPanel) { this("", x, y, drawingPanel); }
+    public Component(int x, int y, @NotNull Diagram diagram) { this("", x, y, diagram); }
 
     /**
      * Constructs a <code>Component</code>.
@@ -93,15 +91,15 @@ public abstract class Component implements Serializable {
      * @param text The text of the component.
      * @param x The x coordinate of the component in the drawing panel.
      * @param y The y coordinate of the component in the drawing panel.
-     * @param drawingPanel The drawing panel where the component lives.
+     * @param diagram The drawing panel where the component lives.
      */
-    public Component(@NotNull String text, int x, int y, @NotNull DrawingPanel drawingPanel)  {
+    public Component(@NotNull String text, int x, int y, @NotNull Diagram diagram)  {
         this.selected = false;
         this.text = text;
         this.x = x;
         this.y = y;
 
-        this.drawingPanel = drawingPanel;
+        this.diagram = diagram;
         this.popupMenu = this.getPopupMenu();
     }
 
@@ -112,6 +110,7 @@ public abstract class Component implements Serializable {
     /**
      * @return A {@code JPopupMenu} loaded with the actions the component can do.
      */
+    @SuppressWarnings("duplicated")
     protected abstract JPopupMenu getPopupMenu();
 
     /**
@@ -121,9 +120,9 @@ public abstract class Component implements Serializable {
     public void resetPopupMenu() { this.popupMenu = getPopupMenu(); }
 
     /**
-     * @return The {@code DrawingPanel} where the component lives.
+     * @return The {@code Diagram} where the component lives.
      */
-    public DrawingPanel getPanelDibujo() { return this.drawingPanel; }
+    public Diagram getPanelDibujo() { return this.diagram; }
 
     /**
      * Draws the component.
@@ -242,10 +241,6 @@ public abstract class Component implements Serializable {
 
     public boolean canBeSelectedBySelectionArea() { return true; }
 
-    public boolean canBeDeleted() { return true; }
-
-    public ActionManager getActionManager() { return this.drawingPanel.getActionManager(); }
-
     public void resetLanguage() {
         this.popupMenu = this.getPopupMenu();
     }
@@ -263,8 +258,8 @@ public abstract class Component implements Serializable {
         return this.text;
     }
 
-    public void setDrawingPanel(DrawingPanel drawingPanel) {
-        this.drawingPanel = drawingPanel;
+    public void setDrawingPanel(Diagram diagram) {
+        this.diagram = diagram;
     }
 
     /**
@@ -277,7 +272,7 @@ public abstract class Component implements Serializable {
         do {
 
             newText= JOptionPane.showInputDialog(
-                    this.drawingPanel,
+                    this.diagram,
                     null,
                     LanguageManager.getMessage("input.newText"),
                     JOptionPane.QUESTION_MESSAGE
@@ -285,14 +280,14 @@ public abstract class Component implements Serializable {
 
             // "newText" can be null when the user pressed "cancel"
             if (newText != null && newText.isEmpty()) {
-                JOptionPane.showMessageDialog(this.drawingPanel, LanguageManager.getMessage("warning.oneCharacter"));
+                JOptionPane.showMessageDialog(this.diagram, LanguageManager.getMessage("warning.oneCharacter"));
             }
         } while (newText != null && newText.isEmpty());
 
         // If "Cancel" was not pressed
         if (newText != null) {
             this.setText(newText);
-            this.drawingPanel.repaint();
+            this.diagram.repaint();
         }
     }
 
@@ -302,7 +297,7 @@ public abstract class Component implements Serializable {
     protected void delete() {
 
         int confirmation = JOptionPane.showConfirmDialog(
-                this.drawingPanel,
+                this.diagram,
                 LanguageManager.getMessage("input.delete"),
                 LanguageManager.getMessage("title.delete"),
                 JOptionPane.YES_NO_OPTION,
@@ -315,10 +310,28 @@ public abstract class Component implements Serializable {
             componentsForRemoval.add(this);
 
             for (Component component : componentsForRemoval) {
-                this.drawingPanel.removeComponent(component);
+                this.diagram.removeComponent(component);
             }
         }
 
-        this.drawingPanel.repaint();
+        this.diagram.repaint();
+    }
+
+    @Override
+    public Component clone() {
+        try {
+            Component clone = (Component) super.clone();
+            clone.drawingPriority = this.getDrawingPriority();
+            clone.selected = this.selected;
+            clone.text = this.text;
+            clone.x = this.x;
+            clone.y = this.y;
+            clone.shape = this.shape;
+            clone.diagram = this.diagram;
+            clone.popupMenu = this.getPopupMenu();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
