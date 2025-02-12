@@ -32,6 +32,7 @@ public class MainAttribute extends Attribute {
 
         JMenuItem menuItem = new JMenuItem("action.addAttribute");
         menuItem.addActionListener(_ -> this.addRawAttribute());
+        // noinspection DuplicatedCode
         popupMenu.add(menuItem);
 
         // noinspection DuplicatedCode

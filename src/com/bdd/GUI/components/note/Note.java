@@ -137,6 +137,11 @@ public final class Note extends Component {
     }
 
     @Override
+    protected void cleanReferencesTo(Component component) {
+
+    }
+
+    @Override
     public boolean canBeDeleted() {
         return true;
     }

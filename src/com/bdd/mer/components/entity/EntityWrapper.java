@@ -275,18 +275,8 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanPresence() {
+    protected void cleanReferencesTo(Component component) {
 
-        // This is important in case the relationship has three or more children.
-        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
-            relationship.cleanRelatable(this);
-        }
-
-        // This is important in case the entity we want to delete is a child and
-        // the hierarchy has three or more children.
-        for (Hierarchy hierarchy : this.hierarchies) {
-            hierarchy.cleanEntity(this);
-        }
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -329,36 +319,10 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         return false;
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public List<Component> getComponentsForRemoval() {
-
-        List<Component> out = super.getComponentsForRemoval();
-
-        // If a relationship has three or more participating entities, if I delete one, it can still exist.
-        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
-            if (relationship.getNumberOfParticipants() <= 2) {
-                out.addAll(relationship.getComponentsForRemoval());
-                out.add(relationship);
-            }
-        }
-
-        // If a hierarchy has three or more children, if I delete one, it can still exist.
-        for (Hierarchy hierarchy : hierarchies) {
-            if (hierarchy.isParent(this) || (hierarchy.isChild(this) && hierarchy.getNumberOfChildren() <= 2)) {
-                out.addAll(hierarchy.getComponentsForRemoval());
-                out.add(hierarchy);
-            }
-        }
-
-        /*
+            /*
         Whether an association where an entity participates must be deleted or not when the latter is deleted, it
         depends on the relationship forming the association.
          */
-
-        return out;
-    }
 
     @Override
     public String toString() {
@@ -368,20 +332,6 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     @Override
     public String getIdentifier() {
         return this.getText();
-    }
-
-    @Override
-    public List<Attribute> getMainAttributes() {
-
-        List<Attribute> out = new ArrayList<>(super.getMainAttributes());
-
-        for (Hierarchy hierarchy : this.hierarchies) {
-            if (hierarchy.isChild(this)) {
-                out.addAll(hierarchy.getParent().getMainAttributes());
-            }
-        }
-
-        return out;
     }
 
     @Override

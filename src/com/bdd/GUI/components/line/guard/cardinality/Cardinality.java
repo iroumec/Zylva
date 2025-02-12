@@ -1,5 +1,6 @@
 package com.bdd.GUI.components.line.guard.cardinality;
 
+import com.bdd.GUI.components.line.Line;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.GUI.components.line.guard.Guard;
 import com.bdd.GUI.Diagram;
@@ -11,8 +12,8 @@ import java.util.Optional;
 
 public class Cardinality extends Guard {
 
-    public Cardinality(String firstValue, String secondValue, Diagram diagram) {
-        super(giveFormat(firstValue, secondValue), diagram);
+    public Cardinality(String firstValue, String secondValue, Line line, Diagram diagram) {
+        super(giveFormat(firstValue, secondValue), line, diagram);
     }
 
     public static String giveFormat(String firstValue, String secondValue) {

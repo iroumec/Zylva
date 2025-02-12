@@ -125,8 +125,16 @@ public class Association extends EERComponent implements Relatable, Derivable {
 
         this.relationship = null;
         this.relationshipsManager = null;
+    }
 
-        super.cleanPresence();
+    @Override
+    protected void cleanReferencesTo(Component component) {
+
+        if (component.equals(this.relationship)) {
+            this.delete();
+        }
+
+        this.removeRelationship(relationship);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

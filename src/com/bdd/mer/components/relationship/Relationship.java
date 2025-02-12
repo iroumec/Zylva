@@ -6,7 +6,6 @@ import com.bdd.mer.components.AttributableEERComponent;
 import com.bdd.GUI.components.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
-import com.bdd.GUI.components.line.GuardedLine;
 import com.bdd.GUI.components.line.Line;
 import com.bdd.GUI.components.line.guard.cardinality.Cardinality;
 import com.bdd.GUI.components.line.guard.cardinality.StaticCardinality;
@@ -25,12 +24,12 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class Relationship extends AttributableEERComponent {
+public final class Relationship extends AttributableEERComponent {
 
     /**
      * Participant of the relationship.
      */
-    private final Map<Relatable, List<GuardedLine>> participants;
+    private final Map<Relatable, List<Line>> participants;
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private Polygon shape;
     private Association association;
@@ -54,9 +53,9 @@ public class Relationship extends AttributableEERComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    private void addParticipant(Relatable relatableComponent, GuardedLine line) {
+    private void addParticipant(Relatable relatableComponent, Line line) {
 
-        List<GuardedLine> lines = this.participants.get(relatableComponent);
+        List<Line> lines = this.participants.get(relatableComponent);
 
         // The participant doesn't exist.
         if (lines == null) {
@@ -73,7 +72,7 @@ public class Relationship extends AttributableEERComponent {
 
     private void removeParticipant(Relatable relatable) {
 
-        List<GuardedLine> lines = this.participants.get(relatable);
+        List<Line> lines = this.participants.get(relatable);
 
         this.participants.remove(relatable);
         relatable.removeRelationship(this);
@@ -89,7 +88,7 @@ public class Relationship extends AttributableEERComponent {
 
         Set<Component> out = new HashSet<>(this.getAttributes());
 
-        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
 
             out.add((Component) participant.getKey());
 
@@ -122,26 +121,6 @@ public class Relationship extends AttributableEERComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void cleanRelatable(Relatable relatable) {
-
-        if (getNumberOfParticipants() > 2) {
-
-            List<GuardedLine> line = this.participants.get(relatable);
-
-            for (GuardedLine guardedLine : line) {
-                guardedLine.delete();
-            }
-
-            this.removeParticipant(relatable);
-        }
-
-        // In another case, we don't have to do anything because, if cleanRelatable was called, it is because
-        // the entity will be eliminated and, so, the relationship also if it doesn't enter the if statement's body.
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     private void updateDiagonals(int textWidth, int textHeight, int margin) {
         horizontalDiagonal = textWidth + 2 * margin; // Diagonal horizontal basada en el ancho del texto
         verticalDiagonal = textHeight + 2 * margin; // Diagonal vertical basada en el alto del texto
@@ -158,13 +137,13 @@ public class Relationship extends AttributableEERComponent {
 
     public boolean allMaxCardinalitiesAreN() {
 
-        List<GuardedLine> guardedLines = this.getLines();
+        List<Line> lines = this.getLines();
 
-        for (GuardedLine guardedLine : guardedLines) {
+        for (Line line : lines) {
 
             // I know all the guarded lines will have a cardinality guard.
             // Maybe it's not a bad idea to use a generic type to make sure...
-            Pair<String, String> cardinality = Cardinality.removeFormat(guardedLine.getText());
+            Pair<String, String> cardinality = Cardinality.removeFormat(line.getText());
 
             String maxCardinality = cardinality.second();
 
@@ -179,11 +158,11 @@ public class Relationship extends AttributableEERComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    private List<GuardedLine> getLines() {
+    private List<Line> getLines() {
 
-        List<GuardedLine> out = new ArrayList<>();
+        List<Line> out = new ArrayList<>();
 
-        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
             out.addAll(participant.getValue());
         }
 
@@ -286,7 +265,7 @@ public class Relationship extends AttributableEERComponent {
     public void cleanPresence() {
 
         // We break the bound between the relationship and their participants.
-        for (Map.Entry<Relatable, List<GuardedLine>> pair : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<Line>> pair : this.participants.entrySet()) {
             pair.getKey().removeRelationship(this);
         }
 
@@ -297,6 +276,28 @@ public class Relationship extends AttributableEERComponent {
         super.cleanPresence();
     }
 
+    @Override
+    protected void cleanReferencesTo(Component component) {
+
+        if (component instanceof Relatable && this.participants.containsKey(component)) {
+
+            if (this.participants.size() <= 2) {
+                this.delete();
+            } else {
+
+                // If the relationship has three members, it can still exist.
+                List<Line> lines = this.participants.get(component);
+
+                this.participants.remove(component);
+
+                for (Line line : lines) {
+                    line.delete();
+                }
+            }
+        }
+
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -304,9 +305,9 @@ public class Relationship extends AttributableEERComponent {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
 
-            List<GuardedLine> lines = participant.getValue();
+            List<Line> lines = participant.getValue();
 
             for (Line line : lines) {
                 out.addAll(line.getComponentsForRemoval());
@@ -335,11 +336,11 @@ public class Relationship extends AttributableEERComponent {
             derivation.addAttribute(this, attribute);
         }
 
-        for (Map.Entry<Relatable, List<GuardedLine>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
 
-            List<GuardedLine> lines = participant.getValue();
+            List<Line> lines = participant.getValue();
 
-            for (GuardedLine line : lines) {
+            for (Line line : lines) {
 
                 try {
                     Pair<String, String> cardinalities = Cardinality.removeFormat(line.getText());
@@ -407,30 +408,29 @@ public class Relationship extends AttributableEERComponent {
 
             for (Relatable relatable : relatableComponents) {
 
+                Line line = new Line.Builder(
+                        diagram,
+                        (Component) relatable,
+                        newRelationship).build();
+
                 Cardinality cardinality;
 
                 if (numberOfComponents == 2) {
-                    cardinality = new Cardinality("1", "N", diagram);
+                    cardinality = new Cardinality("1", "N", line, diagram);
                 } else {
-                    cardinality = new Cardinality("0", "N", diagram);
+                    cardinality = new Cardinality("0", "N", line, diagram);
                 }
                 newComponents.add(cardinality);
-
-                GuardedLine guardedLine = new GuardedLine.Builder(
-                        diagram,
-                        (Component) relatable,
-                        newRelationship,
-                        cardinality).build();
 
                 // This must be improved later.
                 // If an association is related, the line cannot wait until then the association is drawn.
                 // It must be drawn first.
                 if (relatable instanceof Association) {
-                    guardedLine.setDrawingPriority(0);
+                    line.setDrawingPriority(0);
                 }
-                newComponents.add(guardedLine);
+                newComponents.add(line);
 
-                newRelationship.addParticipant(relatable, guardedLine);
+                newRelationship.addParticipant(relatable, line);
 
                 newComponents.add(newRelationship);
             }
@@ -462,28 +462,26 @@ public class Relationship extends AttributableEERComponent {
                 diagram
         );
 
-        Cardinality firstCardinality = new Cardinality("1", "N", diagram);
-        Cardinality secondCardinality = new Cardinality("1", "N", diagram);
-
-        GuardedLine firstCardinalityLine = new GuardedLine.Builder(
+        Line firstLine = new Line.Builder(
                 diagram,
                 (Component) relatable,
-                newRelationship,
-                firstCardinality).lineShape(new SquaredLine()).build();
-        newComponents.add(firstCardinalityLine);
+                newRelationship).lineShape(new SquaredLine()).build();
+        newComponents.add(firstLine);
 
-        GuardedLine secondCardinalityLine = new GuardedLine.Builder(
+        Line secondLine = new Line.Builder(
                 diagram,
                 newRelationship,
-                (Component) relatable,
-                secondCardinality).lineShape(new SquaredLine()).build();
-        newComponents.add(secondCardinalityLine);
+                (Component) relatable).lineShape(new SquaredLine()).build();
+        newComponents.add(secondLine);
+
+        Cardinality firstCardinality = new Cardinality("1", "N", firstLine, diagram);
+        Cardinality secondCardinality = new Cardinality("1", "N", secondLine, diagram);
 
         newComponents.add(firstCardinality);
         newComponents.add(secondCardinality);
 
-        newRelationship.addParticipant(relatable, firstCardinalityLine);
-        newRelationship.addParticipant(relatable, secondCardinalityLine);
+        newRelationship.addParticipant(relatable, firstLine);
+        newRelationship.addParticipant(relatable, secondLine);
 
         newComponents.add(newRelationship);
 
@@ -528,34 +526,32 @@ public class Relationship extends AttributableEERComponent {
             entitySelected.setWeakVersion(newRelationship);
 
             Cardinality cardinality = null, staticCardinality = null;
-            GuardedLine strongLine = null, weakLine = null;
+            Line strongLine = null, weakLine = null;
 
             for (EntityWrapper entity : entities) {
 
                 if (entity.equals(entitySelected)) {
 
-                    cardinality = new Cardinality("1", "N", diagram);
-
-                    strongLine = new GuardedLine.Builder(
+                    strongLine = new Line.Builder(
                             diagram,
                             entity,
-                            newRelationship,
-                            cardinality
+                            newRelationship
                     ).lineMultiplicity(new DoubleLine(3)).build();
+
+                    cardinality = new Cardinality("1", "N", strongLine, diagram);
 
                     newRelationship.addParticipant(entity, strongLine);
 
                 } else {
 
-                    // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
-                    staticCardinality = new StaticCardinality("1", "1", diagram);
-
-                    weakLine = new GuardedLine.Builder(
+                    weakLine = new Line.Builder(
                             diagram,
                             entity,
-                            newRelationship,
-                            staticCardinality
+                            newRelationship
                     ).build();
+
+                    // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
+                    staticCardinality = new StaticCardinality("1", "1", weakLine, diagram);
 
                     newRelationship.addParticipant(entity, weakLine);
                 }

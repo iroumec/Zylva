@@ -125,9 +125,7 @@ public abstract class Diagram extends JPanel {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public void removeComponent(@NotNull Component componentToRemove) {
-        componentToRemove.cleanPresence();
         this.components.remove(componentToRemove);
-        repaint(componentToRemove.getBounds());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

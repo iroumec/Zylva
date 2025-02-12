@@ -7,10 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.awt.*;
-import java.util.Set;
+import java.util.Map;
 
 public abstract class Component implements Serializable {
 
@@ -102,6 +102,8 @@ public abstract class Component implements Serializable {
 
         this.diagram = diagram;
         this.popupMenu = this.getPopupMenu();
+
+        Windows.addComponent(diagram, this);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -232,8 +234,6 @@ public abstract class Component implements Serializable {
         return new ArrayList<>();
     }
 
-    public void cleanPresence();
-
     // The color and the stroke are changed if the entity is selected.
     public void setSelectionOptions(Graphics2D graphics2D) {
         graphics2D.setColor(new Color(120, 190, 235));
@@ -254,9 +254,16 @@ public abstract class Component implements Serializable {
 
     public void setDrawingPriority(int priority) { this.drawingPriority = priority; }
 
+
+
     @Override
     public String toString() {
-        return this.text;
+
+        if (this.text.isEmpty()) {
+            return super.toString();
+        } else {
+            return this.text;
+        }
     }
 
     public void setDrawingPanel(Diagram diagram) {
@@ -313,15 +320,58 @@ public abstract class Component implements Serializable {
         }
     }
 
+    /**
+     * Cleans its presence from other entities.
+     */
+    protected abstract void cleanPresence();
+
+    /**
+     * Cleans its presence to other entities.
+     *
+     * @param component Component that is being removed.
+     */
+    protected abstract void cleanReferencesTo(Component component);
+
+    /**
+     * Each component knows when it must be deleted.
+     */
     public void delete() {
 
-        Set<Component> componentsForRemoval = new HashSet<>(this.getComponentsForRemoval());
-        componentsForRemoval.add(this);
+        this.cleanPresence();
 
-        for (Component component : componentsForRemoval) {
-            this.diagram.removeComponent(component);
-        }
+        this.diagram.removeComponent(this);
+
+        Windows.notifyRemoving(this.diagram, this);
 
         this.diagram.repaint();
+    }
+
+    private static class Windows {
+
+        private static final Map<Diagram, List<Component>> components = new HashMap<>();
+
+        private static void addComponent(Diagram diagram, Component component) {
+
+            if (components.containsKey(diagram)) {
+                List<Component> componentsOfTheDiagram = components.get(diagram);
+                componentsOfTheDiagram.add(component);
+            } else {
+                List<Component> componentsOfTheDiagram = new ArrayList<>();
+                componentsOfTheDiagram.add(component);
+                components.put(diagram, componentsOfTheDiagram);
+            }
+
+        }
+
+        private static void notifyRemoving(Diagram diagram, Component component) {
+
+            List<Component> componentsToNotify = components.get(diagram);
+
+            for (Component componentToNotify : componentsToNotify) {
+                componentToNotify.cleanReferencesTo(component);
+            }
+
+        }
+
     }
 }

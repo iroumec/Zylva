@@ -1,7 +1,6 @@
 package com.bdd.mer.components.hierarchy;
 
 import com.bdd.GUI.components.Component;
-import com.bdd.GUI.components.line.GuardedLine;
 import com.bdd.GUI.components.line.guard.Discriminant;
 import com.bdd.GUI.components.line.lineMultiplicity.DoubleLine;
 import com.bdd.GUI.structures.Pair;
@@ -139,22 +138,6 @@ public class Hierarchy extends EERComponent implements Derivable {
      */
     public int getNumberOfChildren() {
         return this.children.size();
-    }
-
-    /**
-     * Clean all the references to an entity.
-     *
-     * @param entity Entity to be cleaned.
-     */
-    public void cleanEntity(EntityWrapper entity) {
-
-        if (!isParent(entity) && (!isChild(entity) || getNumberOfChildren() > 2)) {
-            this.children.remove(entity);
-        }
-
-        // In another case, we don't have to do anything because, if cleanEntity was called, it is because
-        // the entity will be eliminated and, so, the hierarchy also if it doesn't enter into the if statement's body.
-
     }
 
     /**
@@ -307,7 +290,26 @@ public class Hierarchy extends EERComponent implements Derivable {
 
         Hierarchy newHierarchy = new Hierarchy(symbol, parent, diagram);
 
-        Discriminant discriminant = null;
+        Line parentLine;
+
+        if (totalButton.isSelected()) {
+
+            parentLine = new Line.Builder(diagram, parent, newHierarchy)
+                    .lineMultiplicity(new DoubleLine(3)).build();
+
+        } else {
+
+            parentLine = new Line.Builder(diagram, parent, newHierarchy)
+                    .strokeWidth(2).build();
+
+            // This way, increasing the stroke, it's noticeable who is the parent of the hierarchy.
+        }
+
+        newHierarchy.setParentLine(parentLine);
+
+        List<Component> componentsToAdd = new ArrayList<>();
+
+        componentsToAdd.add(parentLine);
 
         if (symbol.equals(HierarchySymbol.DISJUNCT)) {
 
@@ -318,45 +320,8 @@ public class Hierarchy extends EERComponent implements Derivable {
                     JOptionPane.QUESTION_MESSAGE // Message Source.
             );
 
-            discriminant = new Discriminant(discriminantText, diagram);
-        }
+            Discriminant discriminant = new Discriminant(discriminantText, parentLine, diagram);
 
-        Line parentLine;
-
-        if (totalButton.isSelected()) {
-
-            if (discriminant != null) {
-
-                parentLine = new GuardedLine.Builder(diagram, parent, newHierarchy, discriminant)
-                        .lineMultiplicity(new DoubleLine(3)).build();
-            } else {
-
-                parentLine = new Line.Builder(diagram, parent, newHierarchy)
-                        .lineMultiplicity(new DoubleLine(3)).build();
-            }
-
-        } else {
-
-            if (discriminant != null) {
-
-                parentLine = new GuardedLine.Builder(diagram, parent, newHierarchy, discriminant)
-                        .strokeWidth(2).build();
-            } else {
-
-                parentLine = new Line.Builder(diagram, parent, newHierarchy)
-                        .strokeWidth(2).build();
-            }
-
-            // This way, setting the stroke, it's noticeable who is the parent of the hierarchy.
-        }
-
-        newHierarchy.setParentLine(parentLine);
-
-        List<Component> componentsToAdd = new ArrayList<>();
-
-        componentsToAdd.add(parentLine);
-
-        if (discriminant != null) {
             componentsToAdd.add(discriminant);
         }
 
@@ -525,6 +490,23 @@ public class Hierarchy extends EERComponent implements Derivable {
 
     @Override
     public boolean canBeDeleted() { return !isThereMultipleInheritance(); }
+
+    @Override
+    public void cleanReferencesTo(Component component) {
+
+        // If a hierarchy has three or more children, if I delete one, it can still exist.
+        if (component instanceof EntityWrapper entity) {
+
+            if (this.isParent(entity) || (this.isChild(entity) && this.getNumberOfChildren() <= 2)) {
+
+                this.delete();
+            } else {
+
+                this.children.remove(entity);
+            }
+        }
+
+    }
 
     @Override
     public void delete() {

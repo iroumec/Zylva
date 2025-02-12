@@ -1,5 +1,6 @@
 package com.bdd.mer.components.attribute;
 
+import com.bdd.GUI.components.Component;
 import com.bdd.mer.components.AttributableEERComponent;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
@@ -216,6 +217,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
         item = new JMenuItem("action.swapMultivalued");
         item.addActionListener(_ -> this.swapMultivalued());
+        // noinspection DuplicatedCode
         popupMenu.add(item);
 
         item = new JMenuItem("action.rename");
@@ -239,6 +241,15 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         this.owner.removeAttribute(this);
         this.owner = null;
         super.cleanPresence();
+    }
+
+    @Override
+    protected void cleanReferencesTo(Component component) {
+
+        if (component.equals(this.owner)) {
+            this.delete();
+        }
+
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

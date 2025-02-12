@@ -381,6 +381,5 @@ public abstract class AttributableEERComponent extends EERComponent implements D
     @Override
     public void cleanPresence() {
         this.attributes.clear();
-        super.cleanPresence();
     }
 }

@@ -1,29 +1,28 @@
 package com.bdd.GUI.components.line.guard;
 
 import com.bdd.GUI.components.Component;
-import com.bdd.GUI.components.line.GuardedLine;
 import com.bdd.GUI.Diagram;
+import com.bdd.GUI.components.line.Line;
 
 import java.awt.*;
 
 public abstract class Guard extends Component {
 
-    private GuardedLine guardedLine;
+    private Line line;
 
-    public Guard(String text, Diagram diagram) {
+    public Guard(String text, Line line, Diagram diagram) {
         super(text, diagram);
+        this.line = line;
+        line.setText(this.getText());
 
-        setDrawingPriority(3);
-    }
-
-    public void setLine(GuardedLine guardedLine) {
-        this.guardedLine = guardedLine;
+        // The guard will always be drawn above its line.
+        setDrawingPriority(line.getDrawingPriority() + 1);
     }
 
     @Override
     public void draw(Graphics2D g2) {
 
-        Point point = this.guardedLine.getCenterPoint();
+        Point point = this.line.getCenterPoint();
 
         int x = point.x;
         int y = point.y;
@@ -57,9 +56,18 @@ public abstract class Guard extends Component {
 
     @Override
     public void cleanPresence() {
-        this.guardedLine = null;
+        line.setText("");
+        this.line = null;
     }
 
     @Override
     public boolean canBeDeleted() { return true; }
+
+    @Override
+    public void cleanReferencesTo(Component component) {
+
+        if (component.equals(line)) {
+            this.delete();
+        }
+    }
 }

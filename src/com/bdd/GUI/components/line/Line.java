@@ -22,13 +22,13 @@ public class Line extends Component {
     private final LineShape lineShape;
     private final LineMultiplicity lineMultiplicity;
 
-    Line(Init<?> init) {
-        super(init.diagram);
-        this.firstComponent = init.firstComponent;
-        this.secondComponent = init.secondComponent;
-        this.lineShape = init.lineShape;
-        this.lineMultiplicity = init.lineMultiplicity;
-        this.strokeWidth = init.strokeWidth;
+    Line(Builder builder) {
+        super(builder.diagram);
+        this.firstComponent = builder.firstComponent;
+        this.secondComponent = builder.secondComponent;
+        this.lineShape = builder.lineShape;
+        this.lineMultiplicity = builder.lineMultiplicity;
+        this.strokeWidth = builder.strokeWidth;
         setDrawingPriority(2);
     }
 
@@ -74,6 +74,13 @@ public class Line extends Component {
     }
 
     @Override
+    public void cleanReferencesTo(Component component) {
+        if (component.equals(this.firstComponent) || component.equals(this.secondComponent)) {
+            this.delete();
+        }
+    }
+
+    @Override
     public Rectangle getBounds() {
 
         Point centerPoint = this.getCenterPoint();
@@ -86,8 +93,8 @@ public class Line extends Component {
     /*                                                     Builder                                                    */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    // This is created due to hierarchy related problems. It wasn't necessary in case the Line was final.
-    protected static abstract class Init<T extends Init<T>> {
+    public static class Builder {
+
         // Required parameters
         private final Diagram diagram;
         private final Component firstComponent;
@@ -98,44 +105,29 @@ public class Line extends Component {
         private LineMultiplicity lineMultiplicity = new SingleLine();
         private int strokeWidth = 1;
 
-        protected abstract T self();
-
-        public Init(Diagram diagram, Component firstComponent, Component secondComponent) {
+        public Builder(Diagram diagram, Component firstComponent, Component secondComponent) {
             this.diagram = diagram;
             this.firstComponent = firstComponent;
             this.secondComponent = secondComponent;
         }
 
-        public T lineShape(LineShape lineShape) {
+        public Builder lineShape(LineShape lineShape) {
             this.lineShape = lineShape;
-            return self();
+            return this;
         }
 
-        public T lineMultiplicity(LineMultiplicity lineMultiplicity) {
+        public Builder lineMultiplicity(LineMultiplicity lineMultiplicity) {
             this.lineMultiplicity = lineMultiplicity;
-            return self();
+            return this;
         }
 
-        public T strokeWidth(int strokeWidth) {
+        public Builder strokeWidth(int strokeWidth) {
             this.strokeWidth = strokeWidth;
-            return self();
+            return this;
         }
 
         public Line build() {
             return new Line(this);
         }
     }
-
-    public static class Builder extends Init<Builder> {
-
-        public Builder(Diagram diagram, Component firstComponent, Component secondComponent) {
-            super(diagram, firstComponent, secondComponent);
-        }
-
-        @Override
-        protected Builder self() {
-            return this;
-        }
-    }
-
 }

@@ -1,13 +1,14 @@
 package com.bdd.GUI.components.line.guard;
 
 import com.bdd.GUI.Diagram;
+import com.bdd.GUI.components.line.Line;
 
 import javax.swing.*;
 
 public class Discriminant extends Guard {
 
-    public Discriminant(String text, Diagram diagram) {
-        super(text, diagram);
+    public Discriminant(String text, Line line, Diagram diagram) {
+        super(text, line, diagram);
     }
 
     @Override
