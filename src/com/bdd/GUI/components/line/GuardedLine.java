@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GuardedLine extends Line {
 
-    private final Guard guard;
+    private Guard guard;
 
      GuardedLine(Init<?> init) {
         super(init);
@@ -66,4 +66,10 @@ public class GuardedLine extends Line {
 
     @Override
     public String getText() { return this.guard.getText(); }
+
+    @Override
+    public void cleanPresence() {
+        this.guard = null;
+        super.cleanPresence();
+    }
 }

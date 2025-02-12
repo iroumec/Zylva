@@ -15,7 +15,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /**
      * {@code Attribute}'s symbol.
      */
-    private final AttributeSymbol symbol;
+    private AttributeSymbol symbol;
 
     /**
      * {@code Attribute}'s arrow.
@@ -30,7 +30,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /**
      * {@code Attribute}'s owner.
      */
-    private final AttributableEERComponent owner;
+    private AttributableEERComponent owner;
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                         Initializing Related Methods                                           */
@@ -223,7 +223,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         popupMenu.add(item);
 
         item = new JMenuItem("action.delete");
-        item.addActionListener(_ -> this.delete());
+        item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 
         return popupMenu;
@@ -233,9 +233,12 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
     @Override
     public void cleanPresence() {
-
+        this.symbol = null;
+        this.arrow = null;
+        this.ending = null;
         this.owner.removeAttribute(this);
-
+        this.owner = null;
+        super.cleanPresence();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

@@ -12,8 +12,8 @@ import java.awt.*;
 
 public class Line extends Component {
 
-    private final Component firstComponent;
-    private final Component secondComponent;
+    private Component firstComponent;
+    private Component secondComponent;
 
     /**
      * The interface {@code Stroke} is not used here because it's not serializable.
@@ -44,7 +44,7 @@ public class Line extends Component {
 
     @Override
     protected JPopupMenu getPopupMenu() {
-        return null;
+        return new JPopupMenu();
     }
 
     @Override
@@ -64,7 +64,13 @@ public class Line extends Component {
 
     @Override
     public void cleanPresence() {
+        this.firstComponent = null;
+        this.secondComponent = null;
+    }
 
+    @Override
+    public boolean canBeDeleted() {
+        return true;
     }
 
     @Override

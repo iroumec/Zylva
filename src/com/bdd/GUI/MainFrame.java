@@ -11,6 +11,8 @@ import com.bdd.mer.components.relationship.Relationship;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainFrame extends JFrame {
 
@@ -27,7 +29,6 @@ public class MainFrame extends JFrame {
         /* ---------------------------------------------------------------------------------------------------------- */
 
         // Creation of the drawing panel, the bar menu and the menu.
-        UndoManager undoManager = new UndoManager(10);
         this.diagram = new EERDiagram();
         this.menuBar = new MenuBar(this, diagram);
         JPanel menu = new JPanel();
@@ -117,18 +118,33 @@ public class MainFrame extends JFrame {
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 
-                undoManager.saveState(diagram);
+                List<Component> componentsToRemove = new ArrayList<>();
 
-                try {
-
-                    for (Component component : diagram.getSelectedComponents()) {
-                        component.delete();
+                for (Component component : diagram.getSelectedComponents()) {
+                    if (component.canBeDeleted()) {
+                        componentsToRemove.add(component);
+                    } else {
+                        return;
                     }
-                } catch (Exception err) {
-                    undoManager.saveState(diagram);
                 }
 
-                diagram.cleanSelectedComponents();
+                for (Component component : componentsToRemove) {
+                    diagram.removeComponent(component);
+                }
+
+                diagram.repaint();
+            }
+        });
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                            Clean Diagram                                                   */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        JButton cleanKey = new JButton("Clean key");
+        cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
+        cleanKey.getActionMap().put("cleanDiagram", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                diagram.reset();
             }
         });
 
@@ -151,6 +167,7 @@ public class MainFrame extends JFrame {
         getContentPane().add(addHierarchyKey);
         getContentPane().add(addNoteKey);
         getContentPane().add(deleteKey);
+        getContentPane().add(cleanKey);
 //        getContentPane().add(addAssociationKey);
 
         add(diagram, BorderLayout.CENTER);

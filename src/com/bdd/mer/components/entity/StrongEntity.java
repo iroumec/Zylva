@@ -1,9 +1,12 @@
 package com.bdd.mer.components.entity;
 
 import com.bdd.mer.components.relationship.Relationship;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Strong entity.
@@ -38,4 +41,13 @@ record StrongEntity(EntityWrapper entityWrapper) implements Entity {
         return true;
     }
 
+    @Override
+    public String getIdentifier() {
+        return this.entityWrapper.getIdentifier();
+    }
+
+    @Override
+    public List<DerivationObject> getDerivationObjects() {
+        return new ArrayList<>();
+    }
 }

@@ -1,12 +1,13 @@
 package com.bdd.mer.components.entity;
 
 import com.bdd.mer.components.relationship.Relationship;
+import com.bdd.mer.derivation.Derivable;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
 
-interface Entity extends Serializable {
+interface Entity extends Serializable, Derivable {
 
     /**
      * Fills the {@code Entity}'s shape.

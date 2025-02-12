@@ -8,6 +8,7 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
+import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -381,5 +382,20 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         }
 
         return out;
+    }
+
+    @Override
+    public List<DerivationObject> getDerivationObjects() {
+
+        List<DerivationObject> out = new ArrayList<>(super.getDerivationObjects());
+        out.addAll(this.entity.getDerivationObjects());
+
+        return out;
+    }
+
+    @Override
+    public void delete() {
+        this.entity = null;
+        this.diagram = null;
     }
 }

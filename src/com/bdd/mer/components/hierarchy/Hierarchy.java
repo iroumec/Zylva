@@ -408,7 +408,7 @@ public class Hierarchy extends EERComponent implements Derivable {
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem actionItem = new JMenuItem("action.delete");
-        actionItem.addActionListener(_ -> this.delete());
+        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
         actionItem = new JMenuItem("action.swapExclusivity");
@@ -522,6 +522,9 @@ public class Hierarchy extends EERComponent implements Derivable {
 
         return out;
     }
+
+    @Override
+    public boolean canBeDeleted() { return !isThereMultipleInheritance(); }
 
     @Override
     public void delete() {

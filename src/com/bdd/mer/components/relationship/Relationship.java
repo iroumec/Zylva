@@ -32,7 +32,7 @@ public class Relationship extends AttributableEERComponent {
      */
     private final Map<Relatable, List<GuardedLine>> participants;
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
-    private final Polygon forma;
+    private Polygon shape;
     private Association association;
 
     /**
@@ -48,7 +48,7 @@ public class Relationship extends AttributableEERComponent {
         super(text, x, y, diagram);
 
         this.participants = new HashMap<>();
-        this.forma = new Polygon();
+        this.shape = new Polygon();
         setDrawingPriority(6);
     }
 
@@ -116,9 +116,22 @@ public class Relationship extends AttributableEERComponent {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    public List<Relatable> getParticipants() {
+        return new ArrayList<>(this.participants.keySet());
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     public void cleanRelatable(Relatable relatable) {
 
         if (getNumberOfParticipants() > 2) {
+
+            List<GuardedLine> line = this.participants.get(relatable);
+
+            for (GuardedLine guardedLine : line) {
+                guardedLine.delete();
+            }
+
             this.removeParticipant(relatable);
         }
 
@@ -217,14 +230,14 @@ public class Relationship extends AttributableEERComponent {
         // It is not necessary to do this all the time. Only if the text is changed.
         this.updateDiagonals(anchoTexto, altoTexto, margin);
 
-        forma.reset();
-        forma.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
-        forma.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
-        forma.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
-        forma.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
+        shape.reset();
+        shape.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
+        shape.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
+        shape.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
+        shape.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
 
         g2.setColor(Color.WHITE);
-        g2.fillPolygon(forma);
+        g2.fillPolygon(shape);
 
         g2.setColor(Color.BLACK);
         g2.drawString(this.getText(), xTexto, yTexto);
@@ -233,8 +246,8 @@ public class Relationship extends AttributableEERComponent {
             this.setSelectionOptions(g2);
         }
 
-        g2.drawPolygon(forma);
-        this.setShape(forma);
+        g2.drawPolygon(shape);
+        this.setShape(shape);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -277,6 +290,11 @@ public class Relationship extends AttributableEERComponent {
             pair.getKey().removeRelationship(this);
         }
 
+        this.participants.clear();
+        this.shape = null;
+        this.association = null;
+
+        super.cleanPresence();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

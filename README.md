@@ -63,16 +63,13 @@ java -jar .../ZylvaEERD.jar
 
 # What's next?
 
-After the 1.0 version, which will bring optimization and improvements in the performance, my plan is:
-
-- Derivation!
-- Improving the code's efficiency at the same time I acquire more knowledge about Java and algorithms.
+- Undo/Redo.
+- Normalization.
 - Adding more personalization tools.
-- Adding the possibility to have various *tabs* open at the same time.
-- Adding performance configurations for old computers.
+- Expanding the app to more types of diagrams.
+- Optimization and improvements in the performance.
 - Adding the possibility of using a command-line interface.
-- More languages!
-- Expanding the app to more types of diagrams!
+- Adding the possibility to have various *tabs* open at the same time.
 
 # About the author.
 

@@ -12,7 +12,7 @@ import java.util.List;
 import java.awt.*;
 import java.util.Set;
 
-public abstract class Component implements Serializable, Cloneable {
+public abstract class Component implements Serializable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Attributes                                                    */
@@ -232,7 +232,7 @@ public abstract class Component implements Serializable, Cloneable {
         return new ArrayList<>();
     }
 
-    public abstract void cleanPresence();
+    public void cleanPresence();
 
     // The color and the stroke are changed if the entity is selected.
     public void setSelectionOptions(Graphics2D graphics2D) {
@@ -292,10 +292,12 @@ public abstract class Component implements Serializable, Cloneable {
         }
     }
 
+    public abstract boolean canBeDeleted();
+
     /**
      * Deletes the component and their close-related components.
      */
-    public void delete() {
+    public final void deleteWithConfirmation() {
 
         int confirmation = JOptionPane.showConfirmDialog(
                 this.diagram,
@@ -307,32 +309,19 @@ public abstract class Component implements Serializable, Cloneable {
 
         if (confirmation == JOptionPane.YES_OPTION) {
 
-            Set<Component> componentsForRemoval = new HashSet<>(this.getComponentsForRemoval());
-            componentsForRemoval.add(this);
+            this.delete();
+        }
+    }
 
-            for (Component component : componentsForRemoval) {
-                this.diagram.removeComponent(component);
-            }
+    public void delete() {
+
+        Set<Component> componentsForRemoval = new HashSet<>(this.getComponentsForRemoval());
+        componentsForRemoval.add(this);
+
+        for (Component component : componentsForRemoval) {
+            this.diagram.removeComponent(component);
         }
 
         this.diagram.repaint();
-    }
-
-    @Override
-    public Component clone() {
-        try {
-            Component clone = (Component) super.clone();
-            clone.drawingPriority = this.getDrawingPriority();
-            clone.selected = this.selected;
-            clone.text = this.text;
-            clone.x = this.x;
-            clone.y = this.y;
-            clone.shape = this.shape;
-            clone.diagram = this.diagram;
-            clone.popupMenu = this.getPopupMenu();
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
     }
 }

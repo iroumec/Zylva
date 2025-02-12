@@ -40,7 +40,7 @@ public class MainAttribute extends Attribute {
         popupMenu.add(menuItem);
 
         menuItem = new JMenuItem("action.delete");
-        menuItem.addActionListener(_ -> this.delete());
+        menuItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(menuItem);
 
         return popupMenu;

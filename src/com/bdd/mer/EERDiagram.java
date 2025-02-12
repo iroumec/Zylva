@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class EERDiagram extends Diagram {
+public final class EERDiagram extends Diagram {
 
     @Override
     public void addComponent(@NotNull Component component) {

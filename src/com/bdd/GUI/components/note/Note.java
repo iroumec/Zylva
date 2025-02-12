@@ -80,7 +80,7 @@ public final class Note extends Component {
         popupMenu.add(actionItem);
 
         actionItem = new JMenuItem("action.delete");
-        actionItem.addActionListener(_ -> this.delete());
+        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
         return popupMenu;
@@ -136,4 +136,8 @@ public final class Note extends Component {
         // Do nothing.
     }
 
+    @Override
+    public boolean canBeDeleted() {
+        return true;
+    }
 }

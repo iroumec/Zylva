@@ -57,6 +57,9 @@ public abstract class Guard extends Component {
 
     @Override
     public void cleanPresence() {
-        // Do nothing.
+        this.guardedLine = null;
     }
+
+    @Override
+    public boolean canBeDeleted() { return true; }
 }

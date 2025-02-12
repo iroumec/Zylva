@@ -16,12 +16,12 @@ import java.util.List;
 
 public class Association extends EERComponent implements Relatable, Derivable {
 
-    private final RelatableImplementation relationshipsManager;
-
     /**
      * Core {@code Relationship} forming the association.
      */
-    private final Relationship relationship;
+    private Relationship relationship;
+
+    private RelatableImplementation relationshipsManager;
 
     /**
      * Constructs an {@code Association}.
@@ -123,6 +123,10 @@ public class Association extends EERComponent implements Relatable, Derivable {
             relationship.cleanRelatable(this);
         }
 
+        this.relationship = null;
+        this.relationshipsManager = null;
+
+        super.cleanPresence();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

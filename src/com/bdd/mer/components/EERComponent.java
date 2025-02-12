@@ -15,6 +15,7 @@ public abstract class EERComponent extends Component {
         ensureEERDiagram(diagram);
     }
 
+    @SuppressWarnings("unused")
     public EERComponent(@NotNull String text, @NotNull Diagram diagram) {
         super(text, diagram);
         ensureEERDiagram(diagram);
@@ -92,5 +93,11 @@ public abstract class EERComponent extends Component {
         }
 
         return name;
+    }
+
+    // TODO: this must be improved.
+    @Override
+    public boolean canBeDeleted() {
+        return true;
     }
 }
