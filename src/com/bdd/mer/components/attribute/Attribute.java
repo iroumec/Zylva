@@ -102,14 +102,13 @@ public class Attribute extends AttributableEERComponent implements Derivable {
             this.setSelectionOptions(g2);
         }
 
-        Rectangle ownerBounds = this.owner.getBounds();
-        Point textPosition = calculateTextPosition(ownerBounds);
+        Point textPosition = calculateTextPosition();
         String displayText = prepareText();
         Rectangle textBounds = calculateTextBounds(g2, displayText, textPosition);
 
         setShape(textBounds);
         drawText(g2, displayText, textPosition);
-        drawConnectingLine(g2, ownerBounds, textPosition);
+        drawConnectingLine(g2, textPosition);
 
         resetGraphics(g2);
 
@@ -119,14 +118,19 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /**
      * Calculates the text position based on the owner.
      *
-     * @param ownerBounds Owner's bounds.
      * @return A {@code Point} containing the position of the text.
      */
-    private Point calculateTextPosition(Rectangle ownerBounds) {
-        int attributePosition = this.owner.getAttributePosition(this);
+    private Point calculateTextPosition() {
 
-        int x = ((int) ownerBounds.getCenterX() + (int) ownerBounds.getMaxX()) / 2;
-        int y = (int) ownerBounds.getMaxY() + 10 + attributePosition * 16;
+        int attributePosition = this.owner.getAbsoluteAttributePosition(this);
+
+        Rectangle ownerBounds = this.owner.getBounds();
+
+        // Dependiendo del nivel de laa jerarquía, es dónde se dibuja.
+
+        int x = (int) ownerBounds.getMaxX() + 5;
+        int y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2 +
+                attributePosition * 16;
 
         return new Point(x, y);
     }
@@ -165,20 +169,29 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     private void drawText(Graphics2D g2, String text, Point position) {
         g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
-        g2.drawString(text, position.x, position.y);
+        g2.drawString(text, position.x, position.y + 1); // Necessary correction.
     }
 
     /**
      * Draws a line to the owner.
      *
      * @param g2 Graphics context.
-     * @param ownerBounds Owner's bounds.
      * @param textPosition Position of the attribute's text.
      */
-    private void drawConnectingLine(Graphics2D g2, Rectangle ownerBounds, Point textPosition) {
-        int x = textPosition.x;
-        int y = (int) ownerBounds.getCenterY();
-        g2.drawLine(x, y, x, textPosition.y);
+    private void drawConnectingLine(Graphics2D g2, Point textPosition) {
+
+        int attributePosition = this.owner.getRelativeAttributePosition(this);
+
+        if (attributePosition == 0) {
+
+            owner.drawStartLineToAttribute(g2, textPosition);
+        } else {
+
+            // It's under another attribute.
+            Rectangle attributeBounds = owner.getAttributeBounds(attributePosition - 1);
+
+            g2.drawLine(textPosition.x, (int) attributeBounds.getMaxY(), textPosition.x, textPosition.y);
+        }
     }
 
 
@@ -231,7 +244,27 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         return popupMenu;
     }
 
+    @Override
+    public int getAbsoluteAttributePosition(Attribute attribute) {
+        return this.owner.getAbsoluteAttributePosition(this)
+                + this.getRelativeAttributePosition(attribute) + 1;
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+
+        Rectangle bounds = this.getBounds();
+
+        // Vertical line that comes from inside the relationship (in entities is not visible).
+        int x = (int) bounds.getMaxX();
+        int y = (int) bounds.getMaxY();
+        g2.drawLine(x, y, x, textPosition.y);
+
+        // Horizontal line that comes from inside the attributable component.
+        g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
+    }
 
     @Override
     protected void cleanReferencesTo(Component component) {

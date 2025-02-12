@@ -303,6 +303,20 @@ public final class Relationship extends AttributableEERComponent {
         return out;
     }
 
+    @Override
+    public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+
+        Rectangle bounds = this.getBounds();
+
+        // Vertical line that comes from inside the relationship (in entities is not visible).
+        int x = ((int) bounds.getCenterX() + (int) bounds.getMaxX()) / 2;
+        int y = (int) bounds.getCenterY();
+        g2.drawLine(x, y, x, textPosition.y);
+
+        // Horizontal line that comes from inside the attributable component.
+        g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override

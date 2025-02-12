@@ -305,14 +305,19 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-            /*
-        Whether an association where an entity participates must be deleted or not when the latter is deleted, it
-        depends on the relationship forming the association.
-         */
-
     @Override
     public String toString() {
         return this.getText();
+    }
+
+    @Override
+    public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+
+        Rectangle bounds = this.getBounds();
+
+        int x = (int) bounds.getMaxX();
+
+        g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
     }
 
     @Override

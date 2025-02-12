@@ -41,10 +41,22 @@ public abstract class AttributableEERComponent extends EERComponent implements D
     /**
      * @param attribute {@code Attribute} whose position is wanted to be known.
      * @return Position of the attribute in the hierarchy.
-     *
+     * <p></p>
      * This allows complex trees of attributes to be drawn.
+     * It analyzes all the levels of the hierarchy.
      */
-    public int getAttributePosition(Attribute attribute) {
+    public int getAbsoluteAttributePosition(Attribute attribute) {
+
+        return this.getRelativeAttributePosition(attribute);
+    }
+
+    /**
+     * Just considers the position below its owner.
+     *
+     * @param attribute {@code Attribute} whose relative position is wanted to be known.
+     * @return Relative position of the attribute.
+     */
+    public int getRelativeAttributePosition(Attribute attribute) {
 
         int out = 0;
         List<Attribute> attributes = this.getAttributes();
@@ -57,11 +69,18 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
             out++;
             out += attributeInEntity.getNumberOfAttributes();
-
         }
 
         return out;
+    }
 
+    public Rectangle getAttributeBounds(int attributePosition) {
+
+        if (attributePosition > attributes.size() - 1) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        return attributes.get(attributePosition).getBounds();
     }
 
     /**
@@ -275,6 +294,8 @@ public abstract class AttributableEERComponent extends EERComponent implements D
             addAttribute(attributeSymbol);
         }
     }
+
+    public abstract void drawStartLineToAttribute(Graphics2D g2, Point textPosition);
 
     /**
      * Adds an attribute in a way that it's correctly drawn.
