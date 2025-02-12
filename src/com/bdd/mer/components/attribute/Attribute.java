@@ -1,6 +1,6 @@
 package com.bdd.mer.components.attribute;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.AttributableEERComponent;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
@@ -16,7 +16,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /**
      * {@code Attribute}'s symbol.
      */
-    private AttributeSymbol symbol;
+    private final AttributeSymbol symbol;
 
     /**
      * {@code Attribute}'s arrow.
@@ -31,7 +31,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /**
      * {@code Attribute}'s owner.
      */
-    private AttributableEERComponent owner;
+    private final AttributableEERComponent owner;
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                         Initializing Related Methods                                           */
@@ -224,7 +224,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.delete");
+        item = new JMenuItem("action.setForDelete");
         item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 
@@ -234,22 +234,21 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanPresence() {
-        this.symbol = null;
-        this.arrow = null;
-        this.ending = null;
-        this.owner.removeAttribute(this);
-        this.owner = null;
-        super.cleanPresence();
+    protected void cleanReferencesTo(Component component) {
+        /*
+        Method lef empty in purpose.
+
+        There is no important reference in the class that would not produce its elimination in the
+        notifyRemovingOf() method.
+         */
     }
 
     @Override
-    protected void cleanReferencesTo(Component component) {
+    protected void notifyRemovingOf(Component component) {
 
         if (component.equals(this.owner)) {
-            this.delete();
+            this.setForDelete();
         }
-
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

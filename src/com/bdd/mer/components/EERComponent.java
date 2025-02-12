@@ -1,6 +1,6 @@
 package com.bdd.mer.components;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;

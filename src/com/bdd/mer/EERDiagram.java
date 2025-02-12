@@ -1,6 +1,6 @@
 package com.bdd.mer;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.components.line.guard.Guard;
 import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.entity.EntityWrapper;

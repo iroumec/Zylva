@@ -3,7 +3,7 @@ package com.bdd.mer.components.relationship;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.AttributableEERComponent;
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.GUI.components.line.Line;
@@ -22,7 +22,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Stream;
 
 public final class Relationship extends AttributableEERComponent {
 
@@ -31,7 +30,7 @@ public final class Relationship extends AttributableEERComponent {
      */
     private final Map<Relatable, List<Line>> participants;
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
-    private Polygon shape;
+    private final Polygon shape;
     private Association association;
 
     /**
@@ -66,20 +65,6 @@ public final class Relationship extends AttributableEERComponent {
         lines.add(line);
 
         this.participants.put(relatableComponent, lines);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    private void removeParticipant(Relatable relatable) {
-
-        List<Line> lines = this.participants.get(relatable);
-
-        this.participants.remove(relatable);
-        relatable.removeRelationship(this);
-
-        for (Line line : lines) {
-            this.getPanelDibujo().removeComponent(line);
-        }
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -252,8 +237,8 @@ public final class Relationship extends AttributableEERComponent {
         actionItem.addActionListener(_ -> this.rename());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem("action.delete");
-        actionItem.addActionListener(_ -> this.delete());
+        actionItem = new JMenuItem("action.setForDelete");
+        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
         return popupMenu;
@@ -262,36 +247,31 @@ public final class Relationship extends AttributableEERComponent {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanPresence() {
+    protected void cleanReferencesTo(Component component) {
 
-        // We break the bound between the relationship and their participants.
-        for (Map.Entry<Relatable, List<Line>> pair : this.participants.entrySet()) {
-            pair.getKey().removeRelationship(this);
+        if (component instanceof Relatable relatable) {
+
+            // If component is a participant, it is assumed that its lines were removed in the
+            // notifyRemovingOf() method.
+            this.participants.remove(relatable);
         }
 
-        this.participants.clear();
-        this.shape = null;
-        this.association = null;
-
-        super.cleanPresence();
     }
 
     @Override
-    protected void cleanReferencesTo(Component component) {
+    protected void notifyRemovingOf(Component component) {
 
         if (component instanceof Relatable relatable && this.participants.containsKey(relatable)) {
 
             if (this.participants.size() <= 2) {
-                this.delete();
+
+                this.setForDelete();
             } else {
 
-                // If the relationship has three members, it can still exist.
                 List<Line> lines = this.participants.get(relatable);
 
-                this.removeParticipant(relatable);
-
                 for (Line line : lines) {
-                    line.delete();
+                    line.setForDelete();
                 }
             }
         }
@@ -412,6 +392,7 @@ public final class Relationship extends AttributableEERComponent {
                         diagram,
                         (Component) relatable,
                         newRelationship).build();
+                newComponents.add(line);
 
                 Cardinality cardinality;
 
@@ -428,12 +409,11 @@ public final class Relationship extends AttributableEERComponent {
                 if (relatable instanceof Association) {
                     line.setDrawingPriority(0);
                 }
-                newComponents.add(line);
 
                 newRelationship.addParticipant(relatable, line);
-
-                newComponents.add(newRelationship);
             }
+
+            newComponents.add(newRelationship);
 
         } else { // Number of components is equals to one.
 
@@ -501,7 +481,7 @@ public final class Relationship extends AttributableEERComponent {
      */
     public static void addDependency(EERDiagram diagram, List<Component> components) {
 
-        List<EntityWrapper> entities = Stream.of(components)
+        List<EntityWrapper> entities = components.stream()
                 .filter(c -> c instanceof EntityWrapper)
                 .map(c -> (EntityWrapper) c)
                 .toList();

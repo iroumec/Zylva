@@ -1,6 +1,6 @@
 package com.bdd.mer.components.relationship;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.relationship.relatable.Relatable;
@@ -19,9 +19,9 @@ public class Association extends EERComponent implements Relatable, Derivable {
     /**
      * Core {@code Relationship} forming the association.
      */
-    private Relationship relationship;
+    private final Relationship relationship;
 
-    private RelatableImplementation relationshipsManager;
+    private final RelatableImplementation relationshipsManager;
 
     /**
      * Constructs an {@code Association}.
@@ -104,8 +104,8 @@ public class Association extends EERComponent implements Relatable, Derivable {
         item.addActionListener(_ -> Relationship.addReflexiveRelationship((EERDiagram) this.diagram, this));
         popupMenu.add(item);
 
-        item = new JMenuItem("action.delete");
-        item.addActionListener(_ -> this.delete());
+        item = new JMenuItem("action.setForDelete");
+        item.addActionListener(_ -> this.setForDelete());
         popupMenu.add(item);
 
         return popupMenu;
@@ -114,20 +114,19 @@ public class Association extends EERComponent implements Relatable, Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanPresence() {
-        this.relationship.setAssociation(null);
-        this.relationship = null;
-        this.relationshipsManager = null;
+    protected void cleanReferencesTo(Component component) {
+
+        if (!component.equals(this.relationship)) {
+            this.removeRelationship(relationship);
+        }
     }
 
     @Override
-    protected void cleanReferencesTo(Component component) {
+    protected void notifyRemovingOf(Component component) {
 
         if (component.equals(this.relationship)) {
-            this.delete();
+            this.setForDelete();
         }
-
-        this.removeRelationship(relationship);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -137,7 +136,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
 
         List<Component> out = super.getComponentsForRemoval();
 
-        // If a relationship has three or more participating entities, if I delete one, it can still exist.
+        // If a relationship has three or more participating entities, if I setForDelete one, it can still exist.
         for (Relationship relationship : this.relationshipsManager.getRelationships()) {
             if (relationship.getNumberOfParticipants() <= 2) {
                 out.addAll(relationship.getComponentsForRemoval());

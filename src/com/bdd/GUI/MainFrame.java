@@ -1,7 +1,7 @@
 package com.bdd.GUI;
 
-import com.bdd.GUI.components.Component;
 import com.bdd.GUI.components.note.Note;
+import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
 import com.bdd.GUI.menuBar.MenuBar;
 import com.bdd.mer.components.entity.EntityWrapper;
@@ -11,8 +11,6 @@ import com.bdd.mer.components.relationship.Relationship;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainFrame extends JFrame {
 
@@ -118,21 +116,21 @@ public class MainFrame extends JFrame {
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 
-                List<Component> componentsToRemove = new ArrayList<>();
+                int confirmation = JOptionPane.showConfirmDialog(
+                        diagram,
+                        LanguageManager.getMessage("input.delete"),
+                        LanguageManager.getMessage("title.delete"),
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
 
-                for (Component component : diagram.getSelectedComponents()) {
-                    if (component.canBeDeleted()) {
-                        componentsToRemove.add(component);
-                    } else {
-                        return;
+                if (confirmation == JOptionPane.YES_OPTION) {
+
+                    for (Component component : diagram.getSelectedComponents()) {
+
+                        component.setForDelete();
                     }
                 }
-
-                for (Component component : componentsToRemove) {
-                    diagram.removeComponent(component);
-                }
-
-                diagram.repaint();
             }
         });
 

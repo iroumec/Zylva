@@ -1,6 +1,6 @@
 package com.bdd.mer.components.hierarchy;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.components.line.guard.Discriminant;
 import com.bdd.GUI.components.line.lineMultiplicity.DoubleLine;
 import com.bdd.GUI.structures.Pair;
@@ -372,7 +372,7 @@ public class Hierarchy extends EERComponent implements Derivable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem actionItem = new JMenuItem("action.delete");
+        JMenuItem actionItem = new JMenuItem("action.setForDelete");
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
@@ -430,19 +430,6 @@ public class Hierarchy extends EERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanPresence() {
-
-        this.parent.removeHierarchy(this);
-
-        for (EntityWrapper entity : this.children) {
-            entity.removeHierarchy(this);
-        }
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
     public List<Component> getComponentsForRemoval() {
 
         List<Component> out = new ArrayList<>(this.parentLine.getComponentsForRemoval());
@@ -489,34 +476,35 @@ public class Hierarchy extends EERComponent implements Derivable {
     }
 
     @Override
-    public boolean canBeDeleted() { return !isThereMultipleInheritance(); }
-
-    @Override
-    public void cleanReferencesTo(Component component) {
-
-        // If a hierarchy has three or more children, if I delete one, it can still exist.
-        if (component instanceof EntityWrapper entity) {
-
-            if (this.isParent(entity) || (this.isChild(entity) && this.getNumberOfChildren() <= 2)) {
-
-                this.delete();
-            } else {
-
-                this.children.remove(entity);
-            }
-        }
-
-    }
-
-    @Override
-    public void delete() {
+    public boolean canBeDeleted() {
 
         if (isThereMultipleInheritance()) {
 
             JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.multipleInheritance"));
-            throw new RuntimeException("Multiple Inheritance.");
-        } else {
-            super.delete();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public void cleanReferencesTo(Component component) {
+
+        if (component instanceof EntityWrapper entity) {
+            this.children.remove(entity);
+        }
+    }
+
+    @Override
+    protected void notifyRemovingOf(Component component) {
+
+        // If a hierarchy has three or more children, if I setForDelete one, it can still exist.
+        if (component instanceof EntityWrapper entity) {
+
+            if (this.isParent(entity) || (this.isChild(entity) && this.getNumberOfChildren() <= 2)) {
+
+                this.setForDelete();
+            }
         }
     }
 }

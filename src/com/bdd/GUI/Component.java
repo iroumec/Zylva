@@ -1,16 +1,13 @@
-package com.bdd.GUI.components;
+package com.bdd.GUI;
 
-import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.awt.*;
-import java.util.Map;
 
 public abstract class Component implements Serializable {
 
@@ -102,8 +99,6 @@ public abstract class Component implements Serializable {
 
         this.diagram = diagram;
         this.popupMenu = this.getPopupMenu();
-
-        Windows.addComponent(diagram, this);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -121,11 +116,6 @@ public abstract class Component implements Serializable {
      * depends on another variable.
      */
     public void resetPopupMenu() { this.popupMenu = getPopupMenu(); }
-
-    /**
-     * @return The {@code Diagram} where the component lives.
-     */
-    public Diagram getPanelDibujo() { return this.diagram; }
 
     /**
      * Draws the component.
@@ -234,6 +224,10 @@ public abstract class Component implements Serializable {
         return new ArrayList<>();
     }
 
+    private void setDiagram(Diagram diagram) {
+        this.diagram = diagram;
+    }
+
     // The color and the stroke are changed if the entity is selected.
     public void setSelectionOptions(Graphics2D graphics2D) {
         graphics2D.setColor(new Color(120, 190, 235));
@@ -299,8 +293,6 @@ public abstract class Component implements Serializable {
         }
     }
 
-    public abstract boolean canBeDeleted();
-
     /**
      * Deletes the component and their close-related components.
      */
@@ -316,62 +308,102 @@ public abstract class Component implements Serializable {
 
         if (confirmation == JOptionPane.YES_OPTION) {
 
-            this.delete();
+            this.setForDelete();
         }
     }
 
     /**
-     * Cleans its presence from other entities.
-     */
-    protected abstract void cleanPresence();
-
-    /**
-     * Cleans its presence to other entities.
+     * Cleans all the references to the component.
+     * <p></p>
+     * At the moment of implementing this method, it must be taken into consideration that the component attached
+     * is no longer available in the diagram. So, all references to it must be eliminated.
+     * <p></p>
+     * If the component cannot exist after deleting all the references to the attached component,
+     * the method {@code notifyRemovingOf()} has been bad implemented. This method shouldn't efectuate any
+     * deletion for the correct working of the application.
      *
-     * @param component Component that is being removed.
+     * @param component Component no longer available in the diagram.
      */
     protected abstract void cleanReferencesTo(Component component);
 
     /**
-     * Each component knows when it must be deleted.
+     * The component notified handle the removing of the component attached in case of being related to it.
+     * <p></p>
+     * Despite the component notified depends in existence on the component attached in the notification,
+     * it's not guaranteed that it will be removed until all related components have been analyzed. For that reason,
+     * the component should not implement any change in its values at the moment of implementing this method.
+     *
+     * @param component Component attached. If everything goes okay, it will be removed from the diagram.
      */
-    public void delete() {
+    protected abstract void notifyRemovingOf(Component component);
 
-        this.cleanPresence();
+    private static int componentsBeingProcessed = 0;
+    private static final List<Component> deletionList = new ArrayList<>();
 
-        this.diagram.removeComponent(this);
+    public abstract boolean canBeDeleted();
 
-        Windows.notifyRemoving(this.diagram, this);
+    /**
+     * Each component knows when it must be deleted.
+     * <p></p>
+     * This method doesn't guarantee that the entity will be removed.
+     */
+    public final void setForDelete() {
+
+        // In case of multiple references to a same component.
+        if (deletionList.contains(this)) {
+            return;
+        }
+
+        boolean startOfDeletion = (componentsBeingProcessed == 0);
+
+        componentsBeingProcessed++;
+
+        if (this.canBeDeleted()) {
+
+            notifyRemoving(this);
+
+            deletionList.add(this);
+
+            componentsBeingProcessed--;
+        }
+
+        if (startOfDeletion) {
+
+            if (componentsBeingProcessed == 0) {
+                this.finishDeletion();
+            } else {
+                deletionList.clear();
+            }
+        }
+    }
+
+    private void finishDeletion() {
+
+        for (Component component : deletionList) {
+            this.diagram.removeComponent(component);
+        }
+
+        for (Component componentNotRemoved : this.diagram.getListComponents()) {
+
+            for (Component componentRemoved : deletionList) {
+
+                componentNotRemoved.cleanReferencesTo(componentRemoved);
+            }
+        }
 
         this.diagram.repaint();
     }
 
-    private static class Windows {
+    private void notifyRemoving(Component component) {
 
-        private static final Map<Diagram, List<Component>> components = new HashMap<>();
+        List<Component> componentsToNotify = new ArrayList<>(this.diagram.getListComponents());
 
-        private static void addComponent(Diagram diagram, Component component) {
+        for (Component c : componentsToNotify) {
 
-            if (components.containsKey(diagram)) {
-                List<Component> componentsOfTheDiagram = components.get(diagram);
-                componentsOfTheDiagram.add(component);
-            } else {
-                List<Component> componentsOfTheDiagram = new ArrayList<>();
-                componentsOfTheDiagram.add(component);
-                components.put(diagram, componentsOfTheDiagram);
+            // If it was not removed from the diagram already.
+            if (this.diagram.existsComponent(c)) {
+                c.notifyRemovingOf(component);
             }
-
         }
-
-        private static void notifyRemoving(Diagram diagram, Component component) {
-
-            List<Component> componentsToNotify = components.get(diagram);
-
-            for (Component componentToNotify : componentsToNotify) {
-                componentToNotify.cleanReferencesTo(component);
-            }
-
-        }
-
     }
 }

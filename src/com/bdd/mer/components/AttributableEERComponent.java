@@ -1,6 +1,6 @@
 package com.bdd.mer.components;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.attribute.MainAttribute;
@@ -39,13 +39,6 @@ public abstract class AttributableEERComponent extends EERComponent implements D
     }
 
     /**
-     * Removes an {@code Attribute} from the component.
-     *
-     * @param attribute {@code Attribute} to be removed.
-     */
-    public void removeAttribute(Attribute attribute) { this.attributes.remove(attribute); }
-
-    /**
      * @param attribute {@code Attribute} whose position is wanted to be known.
      * @return Position of the attribute in the hierarchy.
      *
@@ -67,7 +60,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         }
 
-        return -1;
+        return out;
 
     }
 
@@ -131,6 +124,15 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      * @return {@code TRUE} if the component has a {@code MainAttribute}. {@code FALSE} in any other case.
      */
     public boolean hasMainAttribute() {
+
+        List<Attribute> attributes = this.getAttributes();
+
+        for (Attribute attribute : attributes) {
+            if (attribute.isMain()) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -286,6 +288,8 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         attribute.setDrawingPriority(0);
 
+        this.attributes.add(attribute);
+
         this.diagram.addComponent(attribute);
 
         // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
@@ -349,6 +353,14 @@ public abstract class AttributableEERComponent extends EERComponent implements D
     }
 
     @Override
+    protected void cleanReferencesTo(Component component) {
+
+        if (component instanceof Attribute attribute) {
+            this.attributes.remove(attribute);
+        }
+    }
+
+    @Override
     public List<DerivationObject> getDerivationObjects() {
 
         // noinspection Dup
@@ -363,10 +375,5 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         out.add(derivation);
 
         return out;
-    }
-
-    @Override
-    public void cleanPresence() {
-        this.attributes.clear();
     }
 }

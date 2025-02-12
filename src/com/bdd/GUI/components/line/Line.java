@@ -1,6 +1,6 @@
 package com.bdd.GUI.components.line;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.components.line.lineMultiplicity.LineMultiplicity;
 import com.bdd.GUI.components.line.lineMultiplicity.SingleLine;
 import com.bdd.GUI.components.line.lineShape.DirectLine;
@@ -12,8 +12,8 @@ import java.awt.*;
 
 public class Line extends Component {
 
-    private Component firstComponent;
-    private Component secondComponent;
+    private final Component firstComponent;
+    private final Component secondComponent;
 
     /**
      * The interface {@code Stroke} is not used here because it's not serializable.
@@ -62,10 +62,15 @@ public class Line extends Component {
         g2.setStroke(currentStroke);
     }
 
+    // Maybe the line's name could be cleaned.
     @Override
-    public void cleanPresence() {
-        this.firstComponent = null;
-        this.secondComponent = null;
+    protected void cleanReferencesTo(Component component) {
+        /*
+        Method lef empty in purpose.
+
+        There is no important reference in the class that would not produce its elimination in the
+        notifyRemovingOf() method.
+         */
     }
 
     @Override
@@ -74,9 +79,10 @@ public class Line extends Component {
     }
 
     @Override
-    public void cleanReferencesTo(Component component) {
+    public void notifyRemovingOf(Component component) {
+
         if (component.equals(this.firstComponent) || component.equals(this.secondComponent)) {
-            this.delete();
+            this.setForDelete();
         }
     }
 

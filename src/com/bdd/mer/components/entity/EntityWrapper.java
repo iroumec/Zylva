@@ -2,8 +2,7 @@ package com.bdd.mer.components.entity;
 
 import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.AttributableEERComponent;
-import com.bdd.GUI.components.Component;
-import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.GUI.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
@@ -265,8 +264,8 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.delete");
-        item.addActionListener(_ -> this.delete());
+        item = new JMenuItem("action.setForDelete");
+        item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 
         return popupMenu;
@@ -275,8 +274,9 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    protected void cleanReferencesTo(Component component) {
+    protected void notifyRemovingOf(Component component) {
 
+        // Do nothing.
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -305,20 +305,6 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    @Override
-    public boolean hasMainAttribute() {
-
-        List<Attribute> attributes = this.getAttributes();
-
-        for (Attribute attribute : attributes) {
-            if (attribute.isMain()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
             /*
         Whether an association where an entity participates must be deleted or not when the latter is deleted, it
         depends on the relationship forming the association.
@@ -327,6 +313,14 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     @Override
     public String toString() {
         return this.getText();
+    }
+
+    @Override
+    protected void cleanReferencesTo(Component component) {
+
+        if (component instanceof Relationship relationship) {
+            this.removeRelationship(relationship);
+        }
     }
 
     @Override
@@ -341,11 +335,5 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         out.addAll(this.entity.getDerivationObjects());
 
         return out;
-    }
-
-    @Override
-    public void delete() {
-        this.entity = null;
-        this.diagram = null;
     }
 }

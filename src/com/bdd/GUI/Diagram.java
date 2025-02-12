@@ -1,6 +1,5 @@
 package com.bdd.GUI;
 
-import com.bdd.GUI.components.Component;
 import com.bdd.GUI.userPreferences.Preference;
 import com.bdd.GUI.userPreferences.UserPreferences;
 import org.jetbrains.annotations.NotNull;
@@ -124,7 +123,7 @@ public abstract class Diagram extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void removeComponent(@NotNull Component componentToRemove) {
+    final void removeComponent(@NotNull Component componentToRemove) {
         this.components.remove(componentToRemove);
     }
 
@@ -152,10 +151,11 @@ public abstract class Diagram extends JPanel {
 
         for (Component selectedComponent : selectedComponents) {
            selectedComponent.setSelected(Boolean.FALSE);
-           repaint(selectedComponent.getBounds());
         }
 
         selectedComponents.clear();
+
+        this.repaint();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -192,6 +192,11 @@ public abstract class Diagram extends JPanel {
         }
 
         return false;
+    }
+
+    public boolean existsComponent(Component component) {
+
+        return this.components.contains(component);
     }
 
     public void resetLanguage() {

@@ -1,6 +1,6 @@
 package com.bdd.GUI.components.line.guard;
 
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.components.line.Line;
 
@@ -8,7 +8,7 @@ import java.awt.*;
 
 public abstract class Guard extends Component {
 
-    private Line line;
+    private final Line line;
 
     public Guard(String text, Line line, Diagram diagram) {
         super(text, diagram);
@@ -55,19 +55,23 @@ public abstract class Guard extends Component {
     }
 
     @Override
-    public void cleanPresence() {
-        line.setText("");
-        this.line = null;
-    }
-
-    @Override
     public boolean canBeDeleted() { return true; }
 
     @Override
     public void cleanReferencesTo(Component component) {
+        /*
+        Method lef empty in purpose.
+
+        There is no important reference in the class that would not produce its elimination in the
+        notifyRemovingOf() method.
+         */
+    }
+
+    @Override
+    public void notifyRemovingOf(Component component) {
 
         if (component.equals(line)) {
-            this.delete();
+            this.setForDelete();
         }
     }
 }

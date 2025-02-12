@@ -1,7 +1,7 @@
 package com.bdd.GUI.components.note;
 
 import com.bdd.GUI.Diagram;
-import com.bdd.GUI.components.Component;
+import com.bdd.GUI.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
 
 import javax.swing.*;
@@ -79,7 +79,7 @@ public final class Note extends Component {
         actionItem.addActionListener(_ -> this.rename());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem("action.delete");
+        actionItem = new JMenuItem("action.setForDelete");
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
@@ -132,12 +132,12 @@ public final class Note extends Component {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanPresence() {
-        // Do nothing.
+    protected void cleanReferencesTo(Component component) {
+
     }
 
     @Override
-    protected void cleanReferencesTo(Component component) {
+    protected void notifyRemovingOf(Component component) {
 
     }
 
