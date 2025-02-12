@@ -115,14 +115,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
 
     @Override
     public void cleanPresence() {
-
         this.relationship.setAssociation(null);
-
-        // This is important in case the relationship has three or more children.
-        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
-            relationship.cleanRelatable(this);
-        }
-
         this.relationship = null;
         this.relationshipsManager = null;
     }

@@ -111,19 +111,6 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         return out;
     }
 
-    public List<Attribute> getMainAttributes() {
-
-        List<Attribute> out = new ArrayList<>();
-
-        for (Attribute attribute : this.attributes) {
-            if (attribute.isMain()) {
-                out.add(attribute);
-            }
-        }
-
-        return out;
-    }
-
     /**
      *
      * @return The number of attributes in the component.

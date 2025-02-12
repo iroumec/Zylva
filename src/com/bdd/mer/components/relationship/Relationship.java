@@ -279,16 +279,16 @@ public final class Relationship extends AttributableEERComponent {
     @Override
     protected void cleanReferencesTo(Component component) {
 
-        if (component instanceof Relatable && this.participants.containsKey(component)) {
+        if (component instanceof Relatable relatable && this.participants.containsKey(relatable)) {
 
             if (this.participants.size() <= 2) {
                 this.delete();
             } else {
 
                 // If the relationship has three members, it can still exist.
-                List<Line> lines = this.participants.get(component);
+                List<Line> lines = this.participants.get(relatable);
 
-                this.participants.remove(component);
+                this.removeParticipant(relatable);
 
                 for (Line line : lines) {
                     line.delete();
