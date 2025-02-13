@@ -3,9 +3,9 @@ package com.bdd.mer.components.attribute;
 import com.bdd.GUI.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.components.EERComponent;
-import com.bdd.mer.components.attribute.symbology.AttributeArrow;
-import com.bdd.mer.components.attribute.symbology.AttributeEnding;
-import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
+import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
+import com.bdd.mer.components.attribute.symbology.AttributeMultivalued;
+import com.bdd.mer.components.attribute.symbology.AttributeType;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
@@ -208,8 +208,8 @@ public abstract class AttributableEERComponent extends EERComponent implements D
             return;
         }
 
-        Attribute attribute = new Attribute(this, name, AttributeSymbol.COMMON, AttributeArrow.NON_OPTIONAL,
-                AttributeEnding.NON_MULTIVALUED);
+        Attribute attribute = new Attribute(this, name, AttributeType.COMMON, AttributeOptionality.NON_OPTIONAL,
+                AttributeMultivalued.NON_MULTIVALUED);
 
         this.addAttribute(attribute);
     }
@@ -218,15 +218,15 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      * This method adds it a common attribute.
      */
     public void addAttribute() {
-        addAttribute(AttributeSymbol.COMMON);
+        addAttribute(AttributeType.COMMON);
     }
 
     /**
      * Given an attributable component, this method adds it an attribute according to the specified symbol.
      *
-     * @param attributeSymbol The type of the attribute.
+     * @param attributeType The type of the attribute.
      */
-    public void addAttribute(AttributeSymbol attributeSymbol) {
+    public void addAttribute(AttributeType attributeType) {
 
         // Create the components of the panel
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
@@ -259,10 +259,10 @@ public abstract class AttributableEERComponent extends EERComponent implements D
                 return;
             }
 
-            AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
-            AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
+            AttributeOptionality arrowBody = (boxOptional.isSelected()) ? AttributeOptionality.OPTIONAL : AttributeOptionality.NON_OPTIONAL;
+            AttributeMultivalued arrowEnding = (boxMultivalued.isSelected()) ? AttributeMultivalued.MULTIVALUED : AttributeMultivalued.NON_MULTIVALUED;
 
-            Attribute newAttribute = new Attribute(this, name, attributeSymbol, arrowBody, arrowEnding);
+            Attribute newAttribute = new Attribute(this, name, attributeType, arrowBody, arrowEnding);
 
             this.addAttribute(newAttribute);
         }
@@ -273,13 +273,13 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      */
     public void addComplexAttribute() {
 
-        AttributeSymbol attributeSymbol = selectAttributeType();
+        AttributeType attributeType = selectAttributeType();
 
-        if (attributeSymbol == null) {
+        if (attributeType == null) {
             return; // The option was canceled.
         }
 
-        if (attributeSymbol.equals(AttributeSymbol.MAIN)) {
+        if (attributeType.equals(AttributeType.MAIN)) {
 
             if (this.hasMainAttribute()) {
                 JOptionPane.showMessageDialog(this.diagram, LanguageManager.getMessage("warning.mainAttribute"));
@@ -298,7 +298,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         } else {
 
-            addAttribute(attributeSymbol);
+            addAttribute(attributeType);
         }
     }
 
@@ -341,7 +341,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      * @return The attribute symbol selected.
      */
     @SuppressWarnings("Duplicates")
-    private AttributeSymbol selectAttributeType() {
+    private AttributeType selectAttributeType() {
 
         // The radio buttons are created.
         JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
@@ -376,11 +376,11 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         }
 
         if (commonAttributeOption.isSelected()) {
-            return AttributeSymbol.COMMON;
+            return AttributeType.COMMON;
         } else if (alternativeAttributeOption.isSelected()) {
-            return AttributeSymbol.ALTERNATIVE;
+            return AttributeType.ALTERNATIVE;
         } else {
-            return AttributeSymbol.MAIN;
+            return AttributeType.MAIN;
         }
     }
 

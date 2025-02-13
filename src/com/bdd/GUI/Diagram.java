@@ -130,7 +130,9 @@ public abstract class Diagram extends JPanel {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     final void removeComponent(@NotNull Component componentToRemove) {
+
         this.components.remove(componentToRemove);
+        this.selectedComponents.clear();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -536,11 +538,13 @@ public abstract class Diagram extends JPanel {
         if (userSelection == JFileChooser.APPROVE_OPTION) {
 
             File fileToLoad = fileChooser.getSelectedFile();
+            FileInputStream fileIn = null;
+            ObjectInputStream in = null;
 
             try {
 
-                FileInputStream fileIn = new FileInputStream(fileToLoad);
-                ObjectInputStream in = new ObjectInputStream(fileIn);
+                fileIn = new FileInputStream(fileToLoad);
+                in = new ObjectInputStream(fileIn);
 
                 @SuppressWarnings("unchecked")
                 List<Component> components = (List<Component>) in.readObject();
@@ -560,6 +564,20 @@ public abstract class Diagram extends JPanel {
                 fileIn.close();
 
             } catch (IOException i) {
+
+                try {
+
+                    if (in != null) {
+                        in.close();
+                    }
+
+                    if (fileIn != null) {
+                        fileIn.close();
+                    }
+                } catch (IOException io) {
+
+                    // Unexpected.
+                }
 
                 JOptionPane.showMessageDialog(null,"The program didn't find the specified file.");
 

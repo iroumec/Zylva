@@ -2,12 +2,13 @@ package com.bdd.GUI.components.line.guard;
 
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.components.line.Line;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
 public class Discriminant extends Guard {
 
-    public Discriminant(String text, Line line, Diagram diagram) {
+    public Discriminant(@NotNull String text, Line line, Diagram diagram) {
         super(text, line, diagram);
     }
 

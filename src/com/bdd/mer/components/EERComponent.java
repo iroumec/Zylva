@@ -7,8 +7,16 @@ import com.bdd.mer.EERDiagram;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.regex.Pattern;
 
 public abstract class EERComponent extends Component {
+
+    /**
+     * Regex that defines if the name is valid.
+     * <p>
+     * Save as a constant due to it doesn't change and the compile process is expensive.
+     */
+    private final static Pattern validNamePattern = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     protected EERComponent() {
         super();
@@ -25,11 +33,6 @@ public abstract class EERComponent extends Component {
     @SuppressWarnings("unused")
     public EERComponent(@NotNull String text, @NotNull Diagram diagram) {
         super(text, diagram);
-        ensureEERDiagram(diagram);
-    }
-
-    public EERComponent(@NotNull String text, int x, int y, @NotNull Diagram diagram) {
-        super(text, x, y, diagram);
         ensureEERDiagram(diagram);
     }
 
@@ -55,24 +58,25 @@ public abstract class EERComponent extends Component {
 
         boolean nameIsEmpty = false;
         boolean nameIsDuplicated = false;
+        boolean nameIsInvalid = false;
 
         if (name != null) {
 
             nameIsEmpty = name.trim().isEmpty();
+            nameIsInvalid = !validNamePattern.matcher(name).matches();
 
-            if (!nameIsEmpty) {
-
+            if (!nameIsEmpty && !nameIsInvalid) {
                 nameIsDuplicated = diagram.existsComponent(name);
             }
         }
 
-        while (name != null && (nameIsEmpty || nameIsDuplicated)) {
+        while (name != null && (nameIsEmpty || nameIsDuplicated || nameIsInvalid)) {
 
             if (nameIsEmpty) {
-
                 JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.emptyName"));
+            } else if (nameIsInvalid) {
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.invalidName"));
             } else {
-
                 JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.nameDuplicated"));
             }
 
@@ -84,11 +88,10 @@ public abstract class EERComponent extends Component {
             );
 
             if (name != null) {
-
                 nameIsEmpty = name.trim().isEmpty();
+                nameIsInvalid = !validNamePattern.matcher(name).matches();
 
-                if (!nameIsEmpty) {
-
+                if (!nameIsEmpty && !nameIsInvalid) {
                     nameIsDuplicated = diagram.existsComponent(name);
                 }
             }

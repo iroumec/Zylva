@@ -1,8 +1,8 @@
 package com.bdd.mer.components.attribute;
 
-import com.bdd.mer.components.attribute.symbology.AttributeArrow;
-import com.bdd.mer.components.attribute.symbology.AttributeEnding;
-import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
+import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
+import com.bdd.mer.components.attribute.symbology.AttributeMultivalued;
+import com.bdd.mer.components.attribute.symbology.AttributeType;
 
 import javax.swing.*;
 
@@ -15,7 +15,7 @@ public class MainAttribute extends Attribute {
      * @param text {@code Attributes}'s text.
      */
     public MainAttribute(AttributableEERComponent owner, String text) {
-        super(owner, text, AttributeSymbol.MAIN, AttributeArrow.NON_OPTIONAL, AttributeEnding.NON_MULTIVALUED);
+        super(owner, text, AttributeType.MAIN, AttributeOptionality.NON_OPTIONAL, AttributeMultivalued.NON_MULTIVALUED);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -43,4 +43,6 @@ public class MainAttribute extends Attribute {
 
         return popupMenu;
     }
+
+    public boolean isMain() { return true; }
 }

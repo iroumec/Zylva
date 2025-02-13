@@ -3,6 +3,7 @@ package com.bdd.GUI.components.line.guard;
 import com.bdd.GUI.Component;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.components.line.Line;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -10,7 +11,7 @@ public abstract class Guard extends Component {
 
     private final Line line;
 
-    public Guard(String text, Line line, Diagram diagram) {
+    public Guard(@NotNull String text, Line line, Diagram diagram) {
         super(text, diagram);
         this.line = line;
         line.setText(this.getText());

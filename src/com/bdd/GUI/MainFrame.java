@@ -8,6 +8,8 @@ import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -126,6 +128,17 @@ public class MainFrame extends JFrame {
                 if (confirmation == JOptionPane.YES_OPTION) {
 
                     for (Component component : diagram.getSelectedComponents()) {
+
+                        if (!component.canBeDeleted()) {
+
+                            diagram.cleanSelectedComponents();
+                            return;
+                        }
+                    }
+
+                    List<Component> componentsToRemove = new ArrayList<>(diagram.getSelectedComponents());
+
+                    for (Component component : componentsToRemove) {
 
                         component.setForDelete();
                     }

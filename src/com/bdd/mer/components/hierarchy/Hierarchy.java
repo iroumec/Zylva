@@ -12,13 +12,13 @@ import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * In a total hierarchy, all instance of the parent must also be an instance of at least one of the children.
@@ -184,7 +184,12 @@ public class Hierarchy extends EERComponent implements Derivable {
 
         EntityWrapper parent = selectParent(diagram, entities);
 
-        main: if (parent != null && !parent.isAlreadyParent()) {
+        // The action was canceled.
+        if (parent == null) {
+            return;
+        }
+
+        main: if (!parent.isAlreadyParent()) {
 
             List<EntityWrapper> subtipos = getChildrenList(parent, entities);
 
@@ -238,7 +243,6 @@ public class Hierarchy extends EERComponent implements Derivable {
 
             Component.addComponent(newHierarchy, diagram);
         } else {
-
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.alreadyParent"));
         }
     }
@@ -324,6 +328,11 @@ public class Hierarchy extends EERComponent implements Derivable {
                     JOptionPane.QUESTION_MESSAGE // Message Source.
             );
 
+            // The action was canceled.
+            if (discriminantText == null) {
+                return null;
+            }
+
             Discriminant discriminant = new Discriminant(discriminantText, parentLine, diagram);
 
             componentsToAdd.add(discriminant);
@@ -337,7 +346,7 @@ public class Hierarchy extends EERComponent implements Derivable {
      *
      * @return {@code Hierarchy} selected to be the parent of the {@code Hierarchy}.
      */
-    public static EntityWrapper selectParent(Diagram diagram, List<EntityWrapper> entities) {
+    public static @Nullable EntityWrapper selectParent(Diagram diagram, List<EntityWrapper> entities) {
 
         Object[] opciones = new Object[entities.size()];
 
@@ -349,8 +358,13 @@ public class Hierarchy extends EERComponent implements Derivable {
         int selection = JOptionPane.showOptionDialog(diagram, LanguageManager.getMessage("hierarchy.selectParent"), "Selección",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
 
-        return (entities.get(selection));
+        try {
 
+            return entities.get(selection);
+        } catch (Exception e) {
+
+            return null;
+        }
     }
 
     /**

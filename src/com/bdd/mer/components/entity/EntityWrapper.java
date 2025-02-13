@@ -77,11 +77,6 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
      */
     public boolean addHierarchy(Hierarchy newHierarchy) {
 
-        if (!Component.liveInTheSameDiagram(this, newHierarchy)) {
-            // TODO: put here a language manager.
-            throw new IllegalArgumentException("The hierarchy lives in a different diagram.");
-        }
-
         if (newHierarchy.isChild(this)) {
             for (Hierarchy hierarchy : this.hierarchies) {
                 if (hierarchy.isChild(this)) {

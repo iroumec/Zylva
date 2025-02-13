@@ -1,9 +1,9 @@
 package com.bdd.mer.components.attribute;
 
 import com.bdd.GUI.Component;
-import com.bdd.mer.components.attribute.symbology.AttributeArrow;
-import com.bdd.mer.components.attribute.symbology.AttributeEnding;
-import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
+import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
+import com.bdd.mer.components.attribute.symbology.AttributeMultivalued;
+import com.bdd.mer.components.attribute.symbology.AttributeType;
 import com.bdd.mer.derivation.Derivable;
 
 import javax.swing.*;
@@ -11,20 +11,22 @@ import java.awt.*;
 
 public class Attribute extends AttributableEERComponent implements Derivable {
 
+    // Al this symbols should be changed.
+
     /**
      * {@code Attribute}'s symbol.
      */
-    private final AttributeSymbol symbol;
+    private final AttributeType symbol;
 
     /**
      * {@code Attribute}'s arrow.
      */
-    private AttributeArrow arrow;
+    private AttributeOptionality arrow;
 
     /**
      * {@code Attribute}'s ending.
      */
-    private AttributeEnding ending;
+    private AttributeMultivalued ending;
 
     /**
      * {@code Attribute}'s owner.
@@ -49,7 +51,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      * @param arrow {@code Attribute}'s arrow.
      * @param ending {@code Attribute}'s ending.
      */
-    public Attribute(AttributableEERComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending) {
+    public Attribute(AttributableEERComponent owner, String text, AttributeType symbol, AttributeOptionality arrow, AttributeMultivalued ending) {
         super(text, owner.getX(), owner.getY());
         this.owner = owner;
         this.symbol = symbol;
@@ -68,10 +70,10 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     public void swapOptionality() {
 
-        if (this.arrow == AttributeArrow.OPTIONAL) {
-            this.arrow = AttributeArrow.NON_OPTIONAL;
+        if (this.arrow == AttributeOptionality.OPTIONAL) {
+            this.arrow = AttributeOptionality.NON_OPTIONAL;
         } else {
-            this.arrow = AttributeArrow.OPTIONAL;
+            this.arrow = AttributeOptionality.OPTIONAL;
         }
 
         this.diagram.repaint();
@@ -82,10 +84,10 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     public void swapMultivalued() {
 
-        if (this.ending == AttributeEnding.MULTIVALUED) {
-            this.ending = AttributeEnding.NON_MULTIVALUED;
+        if (this.ending == AttributeMultivalued.MULTIVALUED) {
+            this.ending = AttributeMultivalued.NON_MULTIVALUED;
         } else {
-            this.ending = AttributeEnding.MULTIVALUED;
+            this.ending = AttributeMultivalued.MULTIVALUED;
         }
 
         this.diagram.repaint();
@@ -95,7 +97,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      *
      * @return {@code TRUE} if the {@code Attribute} is main.
      */
-    public boolean isMain() { return this.symbol.equals(AttributeSymbol.MAIN); }
+    public boolean isMain() { return false; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                       Overridden Methods and Related                                           */
@@ -226,7 +228,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     private void drawConnectingLine(Graphics2D g2, Point textPosition) {
         Stroke currentStroke = g2.getStroke();
 
-        if (this.arrow == AttributeArrow.OPTIONAL) {
+        if (this.arrow == AttributeOptionality.OPTIONAL) {
 
             // Set the dashed pattern
             float[] dashPattern = {2f, 2f};  // 5 pixels on, 5 pixels off
@@ -247,7 +249,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
     private void drawArrowAtEnd(Graphics2D g2, Point textPosition) {
 
-        if (this.ending == AttributeEnding.MULTIVALUED) {
+        if (this.ending == AttributeMultivalued.MULTIVALUED) {
 
             int arrowHeight = 3;
             int arrowWidth = 3;
@@ -265,12 +267,12 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         int y = textPosition.y - circleRadius;
         int doubleRadius = circleRadius * 2;
 
-        if (this.symbol == AttributeSymbol.COMMON) {
+        if (this.symbol == AttributeType.COMMON) {
             g2.drawOval(x, y, doubleRadius, doubleRadius);
-        } else if (this.symbol == AttributeSymbol.ALTERNATIVE) {
+        } else if (this.symbol == AttributeType.ALTERNATIVE) {
             g2.drawOval(x, y, doubleRadius, doubleRadius);
-            g2.fillArc(x, y, doubleRadius, doubleRadius, 270, 180);  // Right middle filled.
-        } else if (this.symbol == AttributeSymbol.MAIN) {
+            g2.fillArc(x, y, doubleRadius, doubleRadius, 90, 180);  // Left middle filled.
+        } else if (this.symbol == AttributeType.MAIN) {
             g2.fillOval(x, y, doubleRadius, doubleRadius);
         }
     }
@@ -281,15 +283,15 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     }
 
     public boolean isMultivalued () {
-        return this.ending == AttributeEnding.MULTIVALUED;
+        return this.ending == AttributeMultivalued.MULTIVALUED;
     }
 
     public boolean isOptional() {
-        return this.arrow == AttributeArrow.OPTIONAL;
+        return this.arrow == AttributeOptionality.OPTIONAL;
     }
 
     public boolean isAlternative() {
-        return this.symbol == AttributeSymbol.ALTERNATIVE;
+        return this.symbol == AttributeType.ALTERNATIVE;
     }
 
 
