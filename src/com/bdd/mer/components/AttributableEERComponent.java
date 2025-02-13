@@ -295,6 +295,10 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         }
     }
 
+    public int getLevel() {
+        return 0;
+    }
+
     public abstract void drawStartLineToAttribute(Graphics2D g2, Point textPosition);
 
     /**

@@ -33,6 +33,11 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     private final AttributableEERComponent owner;
 
+    private final static int lineLength = 25;
+    private final static int circleRadius = 5;
+    // Necessary to draw everything correctly.
+    private final static int minorCorrection = 3;
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                         Initializing Related Methods                                           */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -71,6 +76,8 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         } else {
             this.arrow = AttributeArrow.OPTIONAL;
         }
+
+        this.diagram.repaint();
     }
 
     /**
@@ -83,6 +90,8 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         } else {
             this.ending = AttributeEnding.MULTIVALUED;
         }
+
+        this.diagram.repaint();
     }
 
     /**
@@ -103,16 +112,30 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         }
 
         Point textPosition = calculateTextPosition();
-        String displayText = prepareText();
-        Rectangle textBounds = calculateTextBounds(g2, displayText, textPosition);
+        Rectangle textBounds = calculateTextBounds(g2, this.getText(), textPosition);
 
         setShape(textBounds);
-        drawText(g2, displayText, textPosition);
+        drawText(g2, this.getText(), textPosition);
+        drawOwnerLine(g2, textPosition);
         drawConnectingLine(g2, textPosition);
+        drawArrowAtEnd(g2, textPosition);
+        drawCircleAtEnd(g2, textPosition);
+
+        setShape(new Rectangle(
+                textBounds.x + lineLength + circleRadius * 2 + minorCorrection,
+                textBounds.y + minorCorrection * 2,
+                textBounds.width,
+                textBounds.height)
+        );
 
         resetGraphics(g2);
 
-        //g2.draw(this.getShape());
+        g2.draw(this.getShape());
+    }
+
+    @Override
+    public int getLevel() {
+        return this.owner.getLevel() + 1;
     }
 
     /**
@@ -126,22 +149,20 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
         Rectangle ownerBounds = this.owner.getBounds();
 
-        // Dependiendo del nivel de laa jerarquía, es dónde se dibuja.
+        int x, y;
 
-        int x = (int) ownerBounds.getMaxX() + 5;
-        int y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2 +
+        if (this.getLevel() == 1) {
+
+            x = (int) ownerBounds.getMaxX() + 5;
+        } else {
+
+            x = (int) ownerBounds.getMinX() + 5;
+        }
+
+        y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2 +
                 attributePosition * 16;
 
         return new Point(x, y);
-    }
-
-    /**
-     * Prepares the text to be shown.
-     *
-     * @return Prepared text.
-     */
-    private String prepareText() {
-        return this.arrow + this.ending.toString() + this.symbol + this.getText();
     }
 
     /**
@@ -169,7 +190,10 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     private void drawText(Graphics2D g2, String text, Point position) {
         g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
-        g2.drawString(text, position.x, position.y + 1); // Necessary correction.
+        g2.drawString(text,
+                position.x + lineLength + circleRadius * 2 + minorCorrection,
+                position.y + minorCorrection)
+        ;
     }
 
     /**
@@ -178,7 +202,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      * @param g2 Graphics context.
      * @param textPosition Position of the attribute's text.
      */
-    private void drawConnectingLine(Graphics2D g2, Point textPosition) {
+    private void drawOwnerLine(Graphics2D g2, Point textPosition) {
 
         int attributePosition = this.owner.getRelativeAttributePosition(this);
 
@@ -187,13 +211,73 @@ public class Attribute extends AttributableEERComponent implements Derivable {
             owner.drawStartLineToAttribute(g2, textPosition);
         } else {
 
+            if (this.getText().equals("eve")) {
+                System.out.println("debug");
+            }
+
             // It's under another attribute.
             Rectangle attributeBounds = owner.getAttributeBounds(attributePosition - 1);
 
-            g2.drawLine(textPosition.x, (int) attributeBounds.getMaxY(), textPosition.x, textPosition.y);
+            g2.drawLine(
+                    textPosition.x,
+                    (int) attributeBounds.getMaxY() - minorCorrection * 2,
+                    textPosition.x,
+                    textPosition.y
+            );
         }
     }
 
+    private void drawConnectingLine(Graphics2D g2, Point textPosition) {
+        Stroke currentStroke = g2.getStroke();
+
+        if (this.arrow == AttributeArrow.OPTIONAL) {
+
+            // Set the dashed pattern
+            float[] dashPattern = {2f, 2f};  // 5 pixels on, 5 pixels off
+            BasicStroke dashedStroke = new BasicStroke(1,
+                    BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER,
+                    10f, dashPattern,
+                    0f
+            );
+
+            g2.setStroke(dashedStroke);
+        }
+
+        g2.drawLine(textPosition.x, textPosition.y, textPosition.x + lineLength, textPosition.y);
+
+        g2.setStroke(currentStroke);
+    }
+
+    private void drawArrowAtEnd(Graphics2D g2, Point textPosition) {
+
+        if (this.ending == AttributeEnding.MULTIVALUED) {
+
+            int arrowHeight = 3;
+            int arrowWidth = 3;
+
+            int x = textPosition.x + lineLength;
+
+            g2.drawLine(x - arrowWidth, textPosition.y + arrowHeight, x, textPosition.y);
+            g2.drawLine(x - arrowWidth, textPosition.y - arrowHeight, x, textPosition.y);
+        }
+    }
+
+    private void drawCircleAtEnd(Graphics2D g2, Point textPosition) {
+
+        int x = textPosition.x + lineLength;
+        int y = textPosition.y - circleRadius;
+        int doubleRadius = circleRadius * 2;
+
+        if (this.symbol == AttributeSymbol.COMMON) {
+            g2.drawOval(x, y, doubleRadius, doubleRadius);
+        } else if (this.symbol == AttributeSymbol.ALTERNATIVE) {
+            g2.drawOval(x, y, doubleRadius, doubleRadius);
+            g2.fillArc(x, y, doubleRadius, doubleRadius, 270, 180);  // Right middle filled.
+        } else if (this.symbol == AttributeSymbol.MAIN) {
+            g2.fillOval(x, y, doubleRadius, doubleRadius);
+        }
+    }
 
     private void resetGraphics(Graphics2D g2) {
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -258,7 +342,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         Rectangle bounds = this.getBounds();
 
         // Vertical line that comes from inside the relationship (in entities is not visible).
-        int x = (int) bounds.getMaxX();
+        int x = (int) bounds.getMinX() - circleRadius - minorCorrection;
         int y = (int) bounds.getMaxY();
         g2.drawLine(x, y, x, textPosition.y);
 
