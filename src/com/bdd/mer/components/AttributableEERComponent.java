@@ -55,8 +55,8 @@ public abstract class AttributableEERComponent extends EERComponent implements D
                 return out;
             }
 
-            out++;
             out += attributeInEntity.getNumberOfAttributes();
+            out++;
         }
 
         return out;

@@ -145,23 +145,25 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     private Point calculateTextPosition() {
 
-        int attributePosition = this.owner.getRelativeAttributePosition(this);
+        int attributePosition = this.owner.getAbsoluteAttributePosition(this);
 
         Rectangle ownerBounds = this.owner.getBounds();
 
         int x, y;
 
-        y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2 +
-                attributePosition * 16;
+        y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2;
 
         if (this.getLevel() == 1) {
 
             x = (int) ownerBounds.getMaxX() + 5;
         } else {
 
+            attributePosition ++; // Due to attributes of level > 1 are drawn under the owner attribute.
             x = (int) ownerBounds.getMinX() + 5;
             y -= minorCorrection;
         }
+
+        y += attributePosition * 16;
 
         return new Point(x, y);
     }
@@ -325,16 +327,6 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         return popupMenu;
     }
 
-    @Override
-    public int getAbsoluteAttributePosition(Attribute attribute) {
-        return this.owner.getAbsoluteAttributePosition(this)
-                + this.getRelativeAttributePosition(attribute) + 1;
-    }
-
-    public int getRelativeAttributePosition(Attribute attribute) {
-        return this.owner.getAbsoluteAttributePosition(this) + 1;
-    }
-
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -342,10 +334,11 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
         Rectangle bounds = this.getBounds();
 
-        // Vertical line that comes from inside the relationship (in entities is not visible).
+        // Vertical line that comes from inside the relationship.
         int x = (int) bounds.getMinX() - circleRadius - minorCorrection;
         int y = (int) bounds.getMaxY();
-        g2.drawLine(x, y, x, textPosition.y);
+        g2.drawLine(x, y - 1, x, textPosition.y);
+        // This minus one is important so there is no space between the circle and the line.
 
         // Horizontal line that comes from inside the attributable component.
         g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
