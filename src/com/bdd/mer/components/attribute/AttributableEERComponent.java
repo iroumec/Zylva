@@ -3,9 +3,16 @@ package com.bdd.mer.components.attribute;
 import com.bdd.GUI.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.components.EERComponent;
-import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
-import com.bdd.mer.components.attribute.symbology.AttributeMultivalued;
-import com.bdd.mer.components.attribute.symbology.AttributeType;
+import com.bdd.mer.components.attribute.cardinality.Cardinality;
+import com.bdd.mer.components.attribute.cardinality.Multivalued;
+import com.bdd.mer.components.attribute.cardinality.Univalued;
+import com.bdd.mer.components.attribute.presence.Obligatory;
+import com.bdd.mer.components.attribute.presence.Optional;
+import com.bdd.mer.components.attribute.presence.Presence;
+import com.bdd.mer.components.attribute.rol.Alternative;
+import com.bdd.mer.components.attribute.rol.Common;
+import  com.bdd.mer.components.attribute.rol.Main;
+import com.bdd.mer.components.attribute.rol.Rol;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
@@ -200,25 +207,53 @@ public abstract class AttributableEERComponent extends EERComponent implements D
     /*                                                Add Attribute                                                   */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void addRawAttribute() {
+    /**
+     * This method allows the user to select an attribute type.
+     *
+     * @return The attribute symbol selected.
+     */
+    @SuppressWarnings("Duplicates")
+    public void addAttribute() {
 
-        String name = getValidName(this.diagram);
+        // The radio buttons are created.
+        JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
+        JRadioButton alternativeAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.alternative"));
+        JRadioButton mainAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.main"));
 
-        if (name == null) {
+        // The radio buttons are grouped so only one can be selected at the same time.
+        ButtonGroup group = new ButtonGroup();
+        group.add(mainAttributeOption);
+        group.add(alternativeAttributeOption);
+        group.add(commonAttributeOption);
+
+        // A panel for containing the radio buttons is created.
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        // A panel for the group of radio buttons is created.
+        JPanel panelAttribute = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelAttribute.add(mainAttributeOption);
+        panelAttribute.add(alternativeAttributeOption);
+        panelAttribute.add(commonAttributeOption);
+
+        // The pair of options are added to the panel.
+        panel.add(panelAttribute);
+
+        int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.attributeType"),
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+
+        // In case the user closes the dialog...
+        if (result != JOptionPane.OK_OPTION) {
             return;
         }
 
-        Attribute attribute = new Attribute(this, name, AttributeType.COMMON, AttributeOptionality.NON_OPTIONAL,
-                AttributeMultivalued.NON_MULTIVALUED);
-
-        this.addAttribute(attribute);
-    }
-
-    /**
-     * This method adds it a common attribute.
-     */
-    public void addAttribute() {
-        addAttribute(AttributeType.COMMON);
+        if (commonAttributeOption.isSelected()) {
+            addAttribute(Common.getInstance());
+        } else if (alternativeAttributeOption.isSelected()) {
+            addAttribute(Alternative.getInstance()); // Alternative attributes cannot be multivalued.
+        } else {
+            addAttribute(Main.getInstance(), Obligatory.getInstance(), Univalued.getInstance());
+        }
     }
 
     /**
@@ -226,7 +261,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      *
      * @param attributeType The type of the attribute.
      */
-    public void addAttribute(AttributeType attributeType) {
+    public void addAttribute(Rol rol) {
 
         // Create the components of the panel
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
@@ -249,23 +284,17 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         dialog.setVisible(true);
 
-        // Get the selected value after the dialog is closed
+        // TODO: Why an object?
         Object selectedValue = pane.getValue();
-        if (selectedValue != null && (int) selectedValue == JOptionPane.OK_OPTION) {
 
-            String name = getValidName(this.diagram);
-
-            if (name == null) {
-                return;
-            }
-
-            AttributeOptionality arrowBody = (boxOptional.isSelected()) ? AttributeOptionality.OPTIONAL : AttributeOptionality.NON_OPTIONAL;
-            AttributeMultivalued arrowEnding = (boxMultivalued.isSelected()) ? AttributeMultivalued.MULTIVALUED : AttributeMultivalued.NON_MULTIVALUED;
-
-            Attribute newAttribute = new Attribute(this, name, attributeType, arrowBody, arrowEnding);
-
-            this.addAttribute(newAttribute);
+        if (selectedValue == null || (int) selectedValue != JOptionPane.OK_OPTION) {
+            return;
         }
+
+        Presence arrowBody = (boxOptional.isSelected()) ? Optional.getInstance() : Obligatory.getInstance();
+        Cardinality arrowEnding = (boxMultivalued.isSelected()) ? Multivalued.getInstance() : Univalued.getInstance();
+
+        this.addAttribute(rol, arrowBody, arrowEnding);
     }
 
     /**
@@ -273,12 +302,13 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      */
     public void addComplexAttribute() {
 
-        AttributeType attributeType = selectAttributeType();
+        Rol attributeType = selectAttributeType();
 
         if (attributeType == null) {
             return; // The option was canceled.
         }
 
+        // TODO: improved this equals.
         if (attributeType.equals(AttributeType.MAIN)) {
 
             if (this.hasMainAttribute()) {
@@ -302,11 +332,20 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         }
     }
 
-    public int getLevel() {
-        return 0;
-    }
+    public void addAttribute(Rol rol, Presence presence, Cardinality cardinality) {
 
-    public abstract void drawStartLineToAttribute(Graphics2D g2, Point textPosition);
+        String name = getValidName(this.diagram);
+
+        if (name == null) {
+            return;
+        }
+
+        this.addAttribute(new Attribute.Builder(rol, name, this)
+                .presence(presence)
+                .cardinality(cardinality)
+                .build()
+        );
+    }
 
     /**
      * Adds an attribute in a way that it's correctly drawn.
@@ -341,7 +380,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      * @return The attribute symbol selected.
      */
     @SuppressWarnings("Duplicates")
-    private AttributeType selectAttributeType() {
+    private Rol selectAttributeType() {
 
         // The radio buttons are created.
         JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
@@ -376,13 +415,19 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         }
 
         if (commonAttributeOption.isSelected()) {
-            return AttributeType.COMMON;
+            return Common.getInstance();
         } else if (alternativeAttributeOption.isSelected()) {
-            return AttributeType.ALTERNATIVE;
+            addAttribute(Alternative.getInstance());
         } else {
-            return AttributeType.MAIN;
+            addAttribute(Main.getInstance(), Obligatory.getInstance(), Univalued.getInstance());
         }
     }
+
+    public int getLevel() {
+        return 0;
+    }
+
+    public abstract void drawStartLineToAttribute(Graphics2D g2, Point textPosition);
 
     @Override
     protected void cleanReferencesTo(Component component) {

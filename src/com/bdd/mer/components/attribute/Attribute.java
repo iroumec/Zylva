@@ -1,9 +1,11 @@
 package com.bdd.mer.components.attribute;
 
 import com.bdd.GUI.Component;
-import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
-import com.bdd.mer.components.attribute.symbology.AttributeMultivalued;
-import com.bdd.mer.components.attribute.symbology.AttributeType;
+import com.bdd.mer.components.attribute.cardinality.Cardinality;
+import com.bdd.mer.components.attribute.cardinality.Univalued;
+import com.bdd.mer.components.attribute.presence.Obligatory;
+import com.bdd.mer.components.attribute.presence.Presence;
+import com.bdd.mer.components.attribute.rol.Rol;
 import com.bdd.mer.derivation.Derivable;
 
 import javax.swing.*;
@@ -13,50 +15,26 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
     // Al this symbols should be changed.
 
-    /**
-     * {@code Attribute}'s symbol.
-     */
-    private final AttributeType symbol;
-
-    /**
-     * {@code Attribute}'s arrow.
-     */
-    private AttributeOptionality arrow;
-
-    /**
-     * {@code Attribute}'s ending.
-     */
-    private AttributeMultivalued ending;
+    private final Rol rol;
+    private Presence presence;
+    private Cardinality cardinality;
 
     /**
      * {@code Attribute}'s owner.
      */
     private final AttributableEERComponent owner;
 
-    private final static int lineLength = 25;
-    private final static int circleRadius = 5;
+    public final static int lineLength = 25;
+    public final static int circleRadius = 5;
     // Necessary to draw everything correctly.
-    private final static int minorCorrection = 3;
+    public final static int minorCorrection = 3;
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                         Initializing Related Methods                                           */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * Constructs an {@code Attribute}.
-     *
-     * @param owner {@code Attribute}'s owner.
-     * @param text {@code Attribute}'s text.
-     * @param symbol {@code Attribute}'s symbol.
-     * @param arrow {@code Attribute}'s arrow.
-     * @param ending {@code Attribute}'s ending.
-     */
-    public Attribute(AttributableEERComponent owner, String text, AttributeType symbol, AttributeOptionality arrow, AttributeMultivalued ending) {
-        super(text, owner.getX(), owner.getY());
-        this.owner = owner;
-        this.symbol = symbol;
-        this.arrow = arrow;
-        this.ending = ending;
+    Attribute(Builder builder) {
+        super(builder.text, builder.owner.getX(), builder.owner.getY());
+        this.owner = builder.owner;
+        this.rol = builder.rol;
+        this.presence = builder.presence;
+        this.cardinality = builder.cardinality;
 
         setDrawingPriority(0);
     }
@@ -65,30 +43,16 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /*                                            Drawing Related Methods                                             */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    /**
-     * Swaps the optionality of the {@code Attribute}.
-     */
-    public void swapOptionality() {
+    public void swapPresence() {
 
-        if (this.arrow == AttributeOptionality.OPTIONAL) {
-            this.arrow = AttributeOptionality.NON_OPTIONAL;
-        } else {
-            this.arrow = AttributeOptionality.OPTIONAL;
-        }
+        this.presence = this.presence.getOpposite();
 
         this.diagram.repaint();
     }
 
-    /**
-     * Change the number of values of the {@code Attribute}.
-     */
-    public void swapMultivalued() {
+    public void swapCardinality() {
 
-        if (this.ending == AttributeMultivalued.MULTIVALUED) {
-            this.ending = AttributeMultivalued.NON_MULTIVALUED;
-        } else {
-            this.ending = AttributeMultivalued.MULTIVALUED;
-        }
+        this.cardinality = this.cardinality.getOpposite();
 
         this.diagram.repaint();
     }
@@ -116,9 +80,9 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         setShape(textBounds);
         drawText(g2, this.getText(), textPosition);
         drawOwnerLine(g2, textPosition);
-        drawConnectingLine(g2, textPosition);
-        drawArrowAtEnd(g2, textPosition);
-        drawCircleAtEnd(g2, textPosition);
+        this.presence.draw(g2, textPosition.x, textPosition.y, textPosition.x + lineLength, textPosition.y);
+        this.cardinality.draw(g2, textPosition.x + lineLength, textPosition.y);
+        this.rol.draw(g2, textPosition.x + lineLength, textPosition.y - circleRadius, circleRadius);
 
         setShape(new Rectangle(
                 textBounds.x + lineLength + circleRadius * 2 + minorCorrection,
@@ -225,58 +189,6 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         }
     }
 
-    private void drawConnectingLine(Graphics2D g2, Point textPosition) {
-        Stroke currentStroke = g2.getStroke();
-
-        if (this.arrow == AttributeOptionality.OPTIONAL) {
-
-            // Set the dashed pattern
-            float[] dashPattern = {2f, 2f};  // 5 pixels on, 5 pixels off
-            BasicStroke dashedStroke = new BasicStroke(1,
-                    BasicStroke.CAP_BUTT,
-                    BasicStroke.JOIN_MITER,
-                    10f, dashPattern,
-                    0f
-            );
-
-            g2.setStroke(dashedStroke);
-        }
-
-        g2.drawLine(textPosition.x, textPosition.y, textPosition.x + lineLength, textPosition.y);
-
-        g2.setStroke(currentStroke);
-    }
-
-    private void drawArrowAtEnd(Graphics2D g2, Point textPosition) {
-
-        if (this.ending == AttributeMultivalued.MULTIVALUED) {
-
-            int arrowHeight = 3;
-            int arrowWidth = 3;
-
-            int x = textPosition.x + lineLength;
-
-            g2.drawLine(x - arrowWidth, textPosition.y + arrowHeight, x, textPosition.y);
-            g2.drawLine(x - arrowWidth, textPosition.y - arrowHeight, x, textPosition.y);
-        }
-    }
-
-    private void drawCircleAtEnd(Graphics2D g2, Point textPosition) {
-
-        int x = textPosition.x + lineLength;
-        int y = textPosition.y - circleRadius;
-        int doubleRadius = circleRadius * 2;
-
-        if (this.symbol == AttributeType.COMMON) {
-            g2.drawOval(x, y, doubleRadius, doubleRadius);
-        } else if (this.symbol == AttributeType.ALTERNATIVE) {
-            g2.drawOval(x, y, doubleRadius, doubleRadius);
-            g2.fillArc(x, y, doubleRadius, doubleRadius, 90, 180);  // Left middle filled.
-        } else if (this.symbol == AttributeType.MAIN) {
-            g2.fillOval(x, y, doubleRadius, doubleRadius);
-        }
-    }
-
     private void resetGraphics(Graphics2D g2) {
         g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         g2.setColor(Color.BLACK);
@@ -294,7 +206,45 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         return this.symbol == AttributeType.ALTERNATIVE;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                  Builder                                                       */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
+    static class Builder {
+
+        // Required parameters.
+        public final Rol rol;
+        public final String text;
+        public final AttributableEERComponent owner;
+
+        // Optional parameters - initialized with a default value.
+        public Presence presence = Obligatory.getInstance();
+        public Cardinality cardinality = Univalued.getInstance();
+
+        public Builder(Rol rol, String text, AttributableEERComponent owner) {
+            this.rol = rol;
+            this.text = text;
+            this.owner = owner;
+        }
+
+        public Builder presence(Presence presence) {
+            this.presence = presence;
+            return this;
+        }
+
+        public Builder cardinality(Cardinality cardinality) {
+            this.cardinality = cardinality;
+            return this;
+        }
+
+        public Attribute build() {
+            return new Attribute(this);
+        }
+    }
+
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -307,11 +257,11 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         popupMenu.add(item);
 
         item = new JMenuItem("action.swapOptionality");
-        item.addActionListener(_ -> this.swapOptionality());
+        item.addActionListener(_ -> this.swapPresence());
         popupMenu.add(item);
 
         item = new JMenuItem("action.swapMultivalued");
-        item.addActionListener(_ -> this.swapMultivalued());
+        item.addActionListener(_ -> this.swapCardinality());
         // noinspection DuplicatedCode
         popupMenu.add(item);
 
@@ -343,6 +293,8 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     protected void notifyRemovingOf(Component component) {
 
@@ -356,13 +308,12 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     @Override
     public boolean canBeSelectedBySelectionArea() { return false; }
 
-    @Override
-    public String toString() {
-        return this.getText();
-    }
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public String getIdentifier() {
         return this.getText();
     }
+
+
 }

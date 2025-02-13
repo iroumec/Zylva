@@ -31,6 +31,7 @@ public abstract class DerivationObject {
         this.commonElements.add(new SingleElement(attribute));
     }
 
+    // This should be moved to each class.
     public void addAttribute(Derivable owner, Attribute attribute) {
 
         // There is no distinction if the attribute is multivalued optional or not.
