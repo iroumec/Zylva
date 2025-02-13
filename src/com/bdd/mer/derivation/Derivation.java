@@ -25,7 +25,6 @@ public class Derivation {
     }
 
     public void addCommonElement(Element element) {
-        element.clearAllDecorations();
         this.commonElements.addElement(element);
     }
 
