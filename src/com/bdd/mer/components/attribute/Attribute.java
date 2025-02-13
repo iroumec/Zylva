@@ -145,11 +145,14 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      */
     private Point calculateTextPosition() {
 
-        int attributePosition = this.owner.getAbsoluteAttributePosition(this);
+        int attributePosition = this.owner.getRelativeAttributePosition(this);
 
         Rectangle ownerBounds = this.owner.getBounds();
 
         int x, y;
+
+        y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2 +
+                attributePosition * 16;
 
         if (this.getLevel() == 1) {
 
@@ -157,10 +160,8 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         } else {
 
             x = (int) ownerBounds.getMinX() + 5;
+            y -= minorCorrection;
         }
-
-        y = ((int) ownerBounds.getCenterY() + (int) ownerBounds.getMaxY()) / 2 +
-                attributePosition * 16;
 
         return new Point(x, y);
     }
@@ -210,10 +211,6 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
             owner.drawStartLineToAttribute(g2, textPosition);
         } else {
-
-            if (this.getText().equals("eve")) {
-                System.out.println("debug");
-            }
 
             // It's under another attribute.
             Rectangle attributeBounds = owner.getAttributeBounds(attributePosition - 1);
@@ -334,6 +331,10 @@ public class Attribute extends AttributableEERComponent implements Derivable {
                 + this.getRelativeAttributePosition(attribute) + 1;
     }
 
+    public int getRelativeAttributePosition(Attribute attribute) {
+        return this.owner.getAbsoluteAttributePosition(this) + 1;
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
@@ -348,16 +349,6 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
         // Horizontal line that comes from inside the attributable component.
         g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
-    }
-
-    @Override
-    protected void cleanReferencesTo(Component component) {
-        /*
-        Method lef empty in purpose.
-
-        There is no important reference in the class that would not produce its elimination in the
-        notifyRemovingOf() method.
-         */
     }
 
     @Override

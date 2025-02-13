@@ -47,7 +47,19 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      */
     public int getAbsoluteAttributePosition(Attribute attribute) {
 
-        return this.getRelativeAttributePosition(attribute);
+        int out = 0;
+
+        for (Attribute attributeInEntity : this.attributes) {
+
+            if (attributeInEntity.equals(attribute)) {
+                return out;
+            }
+
+            out++;
+            out += attributeInEntity.getNumberOfAttributes();
+        }
+
+        return out;
     }
 
     /**
@@ -59,16 +71,14 @@ public abstract class AttributableEERComponent extends EERComponent implements D
     public int getRelativeAttributePosition(Attribute attribute) {
 
         int out = 0;
-        List<Attribute> attributes = this.getAttributes();
 
-        for (Attribute attributeInEntity : attributes) {
+        for (Attribute attributeInEntity : this.attributes) {
 
             if (attributeInEntity.equals(attribute)) {
                 return out;
             }
 
             out++;
-            out += attributeInEntity.getNumberOfAttributes();
         }
 
         return out;
@@ -144,7 +154,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      */
     public boolean hasMainAttribute() {
 
-        List<Attribute> attributes = this.getAttributes();
+        List<Attribute> attributes = this.attributes;
 
         for (Attribute attribute : attributes) {
             if (attribute.isMain()) {

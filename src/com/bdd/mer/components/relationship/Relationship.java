@@ -249,6 +249,8 @@ public final class Relationship extends AttributableEERComponent {
     @Override
     protected void cleanReferencesTo(Component component) {
 
+        super.cleanReferencesTo(component);
+
         if (component instanceof Relatable relatable) {
 
             // If component is a participant, it is assumed that its lines were removed in the

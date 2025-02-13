@@ -323,6 +323,8 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     @Override
     protected void cleanReferencesTo(Component component) {
 
+        super.cleanReferencesTo(component);
+
         if (component instanceof Relationship relationship) {
             this.removeRelationship(relationship);
         }
