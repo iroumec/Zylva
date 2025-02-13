@@ -17,7 +17,7 @@ import javax.swing.*;
 public final class EERDiagram extends Diagram {
 
     @Override
-    public void addComponent(@NotNull Component component) {
+    protected void addComponent(@NotNull Component component) {
         if (!(component instanceof EERComponent)
                 && !(component instanceof Line) && !(component instanceof Guard) && !(component instanceof Note)) {
             throw new IllegalArgumentException(

@@ -54,14 +54,22 @@ public abstract class Component implements Serializable {
     /*                                                Constructors                                                    */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    protected Component() {
+        this(0, 0);
+    }
+
     /**
      * Constructs a <code>Component</code> with an empty text and coordinates in (0, 0). This constructor is useful
      * for those components which don't have a text nor their coordinates matter or are calculated.
      *
      * @param diagram The drawing panel where the component lives.
      */
-    public Component(@NotNull Diagram diagram) {
+    protected Component(@NotNull Diagram diagram) {
         this("", 0, 0, diagram);
+    }
+
+    protected Component(int x, int y) {
+        this("", x, y);
     }
 
     /**
@@ -101,6 +109,15 @@ public abstract class Component implements Serializable {
         this.popupMenu = this.getPopupMenu();
     }
 
+    protected Component(@NotNull String text, int x, int y) {
+        this.selected = false;
+        this.text = text;
+        this.x = x;
+        this.y = y;
+
+        this.popupMenu = this.getPopupMenu();
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Method                                                        */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -116,13 +133,6 @@ public abstract class Component implements Serializable {
      * depends on another variable.
      */
     public void resetPopupMenu() { this.popupMenu = getPopupMenu(); }
-
-    /**
-     * Draws the component.
-     *
-     * @param g2 Graphics context.
-     */
-    public abstract void draw(Graphics2D g2);
 
     /**
      *
@@ -248,7 +258,41 @@ public abstract class Component implements Serializable {
 
     public void setDrawingPriority(int priority) { this.drawingPriority = priority; }
 
+    /**
+     * Adds the new component to the same diagram as this component.
+     *
+     * @param component Component to be added.
+     */
+    protected void addComponent(@NotNull Component component) {
+        this.diagram.addComponent(component);
+        component.setDiagram(this.diagram);
+    }
 
+    /**
+     * This way, the subclasses don't hace direct access to the diagram.
+     *
+     * @param component Component to be added.
+     * @param diagram Diagram in which the component will be added.
+     */
+    protected static void addComponent(@NotNull Component component, @NotNull Diagram diagram) {
+        diagram.addComponent(component);
+        component.setDiagram(diagram);
+    }
+
+    /**
+     *
+     * @return {@code TRUE} if the components live in the same diagram and {@code FALSE} in any other case.
+     */
+    protected static boolean liveInTheSameDiagram(@NotNull Component firstComponent,
+                                                  @NotNull Component secondComponent) {
+
+        return firstComponent.diagram.equals(secondComponent.diagram);
+    }
+
+    /**
+     *
+     * @return {@code TRUE} if the components have the same name.
+     */
 
     @Override
     public String toString() {
@@ -292,6 +336,10 @@ public abstract class Component implements Serializable {
             this.diagram.repaint();
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                 Deletion Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
      * Deletes the component and their close-related components.
@@ -406,4 +454,17 @@ public abstract class Component implements Serializable {
             }
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                                 Abstract Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    // Maybe this should be moved to a class drawable.
+
+    /**
+     * Draws the component.
+     *
+     * @param g2 Graphics context.
+     */
+    public abstract void draw(Graphics2D g2);
 }

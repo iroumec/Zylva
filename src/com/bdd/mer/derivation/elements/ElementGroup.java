@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ElementGroup extends Element {
+public final class ElementGroup extends Element {
 
     private final List<Element> elements;
 

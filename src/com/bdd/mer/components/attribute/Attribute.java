@@ -1,12 +1,10 @@
 package com.bdd.mer.components.attribute;
 
 import com.bdd.GUI.Component;
-import com.bdd.mer.components.AttributableEERComponent;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,10 +48,9 @@ public class Attribute extends AttributableEERComponent implements Derivable {
      * @param symbol {@code Attribute}'s symbol.
      * @param arrow {@code Attribute}'s arrow.
      * @param ending {@code Attribute}'s ending.
-     * @param diagram {@code Diagram} where the {@code Attribute} lives.
      */
-    public Attribute(AttributableEERComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending, Diagram diagram) {
-        super(text, owner.getX(), owner.getY(), diagram);
+    public Attribute(AttributableEERComponent owner, String text, AttributeSymbol symbol, AttributeArrow arrow, AttributeEnding ending) {
+        super(text, owner.getX(), owner.getY());
         this.owner = owner;
         this.symbol = symbol;
         this.arrow = arrow;
@@ -130,7 +127,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
         resetGraphics(g2);
 
-        g2.draw(this.getShape());
+        //g2.draw(this.getShape());
     }
 
     @Override

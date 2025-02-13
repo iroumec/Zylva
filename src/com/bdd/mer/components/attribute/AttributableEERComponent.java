@@ -1,14 +1,12 @@
-package com.bdd.mer.components;
+package com.bdd.mer.components.attribute;
 
 import com.bdd.GUI.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
-import com.bdd.mer.components.attribute.Attribute;
-import com.bdd.mer.components.attribute.MainAttribute;
+import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.attribute.symbology.AttributeArrow;
 import com.bdd.mer.components.attribute.symbology.AttributeEnding;
 import com.bdd.mer.components.attribute.symbology.AttributeSymbol;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.GUI.Diagram;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
 
@@ -30,10 +28,9 @@ public abstract class AttributableEERComponent extends EERComponent implements D
      * @param text Component's name.
      * @param x X coordinate value in the {@code Diagram}.
      * @param y Y coordinate value in the {@code Diagram}.
-     * @param diagram {@code Diagram} where the component lives.
      */
-    protected AttributableEERComponent(String text, int x, int y, Diagram diagram) {
-        super(text, x, y, diagram);
+    protected AttributableEERComponent(String text, int x, int y) {
+        super(text, x, y);
 
         this.attributes = new ArrayList<>();
     }
@@ -212,7 +209,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
         }
 
         Attribute attribute = new Attribute(this, name, AttributeSymbol.COMMON, AttributeArrow.NON_OPTIONAL,
-                AttributeEnding.NON_MULTIVALUED, this.diagram);
+                AttributeEnding.NON_MULTIVALUED);
 
         this.addAttribute(attribute);
     }
@@ -265,7 +262,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
             AttributeArrow arrowBody = (boxOptional.isSelected()) ? AttributeArrow.OPTIONAL : AttributeArrow.NON_OPTIONAL;
             AttributeEnding arrowEnding = (boxMultivalued.isSelected()) ? AttributeEnding.MULTIVALUED : AttributeEnding.NON_MULTIVALUED;
 
-            Attribute newAttribute = new Attribute(this, name, attributeSymbol, arrowBody, arrowEnding, this.diagram);
+            Attribute newAttribute = new Attribute(this, name, attributeSymbol, arrowBody, arrowEnding);
 
             this.addAttribute(newAttribute);
         }
@@ -295,7 +292,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
                 return;
             }
 
-            Attribute newAttribute = new MainAttribute(this, name, this.diagram);
+            Attribute newAttribute = new MainAttribute(this, name);
 
             this.addAttribute(newAttribute);
 
@@ -325,7 +322,7 @@ public abstract class AttributableEERComponent extends EERComponent implements D
 
         this.attributes.add(attribute);
 
-        this.diagram.addComponent(attribute);
+        Component.addComponent(attribute, diagram);
 
         // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
         // Maybe it would be good to search other possible solutions because this is not so efficient...

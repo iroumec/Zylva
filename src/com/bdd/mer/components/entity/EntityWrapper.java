@@ -1,7 +1,7 @@
 package com.bdd.mer.components.entity;
 
 import com.bdd.mer.EERDiagram;
-import com.bdd.mer.components.AttributableEERComponent;
+import com.bdd.mer.components.attribute.AttributableEERComponent;
 import com.bdd.GUI.Component;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
@@ -38,14 +38,35 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
      * @param text Name of the entity.
      * @param x X coordinate of the entity.
      * @param y Y coordinate of the entity.
-     * @param diagram {@code Diagram} in which the entity participates.
      */
-    public EntityWrapper(String text, int x, int y, EERDiagram diagram) {
-        super(text, x, y, diagram);
+    private EntityWrapper(String text, int x, int y) {
+        super(text, x, y);
         this.hierarchies = new ArrayList<>();
         this.entity = new StrongEntity(this); // By default, a strong entity is created.
         this.relationshipsManager = new RelatableImplementation();
         setDrawingPriority(7);
+    }
+
+    /**
+     * Adds a new entity to the specified diagram.
+     *
+     * @param diagram {@code EERDiagram}.
+     */
+    public static void addEntity(EERDiagram diagram) {
+
+        String name = getValidName(diagram);
+
+        if (name == null) {
+            return;
+        }
+
+        EntityWrapper entity = new EntityWrapper(
+                name,
+                diagram.getMouseX(),
+                diagram.getMouseY()
+        );
+
+        Component.addComponent(entity, diagram);
     }
 
     /**
@@ -55,6 +76,11 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
      * @return {@code TRUE} if the {@code Hierarchy} was successfully added. {@code False} in any other case.
      */
     public boolean addHierarchy(Hierarchy newHierarchy) {
+
+        if (!Component.liveInTheSameDiagram(this, newHierarchy)) {
+            // TODO: put here a language manager.
+            throw new IllegalArgumentException("The hierarchy lives in a different diagram.");
+        }
 
         if (newHierarchy.isChild(this)) {
             for (Hierarchy hierarchy : this.hierarchies) {
@@ -86,13 +112,14 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     public boolean isAlreadyParent() {
 
         for (Hierarchy hierarchy : this.hierarchies) {
+
             if (hierarchy.isParent(this)) {
+
                 return true;
             }
         }
 
         return false;
-
     }
 
     /**
@@ -106,13 +133,14 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     private boolean hasAHierarchyInCommon(EntityWrapper entity) {
 
         for (Hierarchy hierarchy : this.hierarchies) {
+
             if (hierarchy.isChild(this) && hierarchy.isChild(entity)) {
+
                 return true;
             }
         }
 
         return false;
-
     }
 
     /**
@@ -128,7 +156,6 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
             if (hierarchy.isParent(this)) {
 
                 out.addAll(hierarchy.getChildren());
-
             }
         }
 
@@ -151,13 +178,12 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         for (EntityWrapper child : thisEntityHierarchicalChildren) { // It could be optimized.
 
             if (secondEntityHierarchicalChildren.contains(child)) {
+
                 return true;
             }
-
         }
 
         return false;
-
     }
 
 
@@ -169,6 +195,7 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     public void setWeakVersion(Relationship relationship) {
 
         if (this.entity.getClass() == StrongEntity.class) {
+
             this.entity = new WeakEntity(this, relationship);
         }
     }
@@ -179,26 +206,9 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     public void setStrongVersion() {
 
         if (this.entity.getClass() == WeakEntity.class) {
+
             this.entity = new StrongEntity(this);
         }
-    }
-
-    public static void addEntity(EERDiagram diagram) {
-
-        String name = getValidName(diagram);
-
-        if (name == null) {
-            return;
-        }
-
-        EntityWrapper entityWrapper = new EntityWrapper(
-                name,
-                diagram.getMouseX(),
-                diagram.getMouseY(),
-                diagram
-        );
-
-        diagram.addComponent(entityWrapper);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -208,34 +218,28 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     @Override
     public void draw(Graphics2D g2) {
 
-        // Calcula el ancho del texto
         FontMetrics fm = g2.getFontMetrics();
         int anchoTexto = fm.stringWidth(this.getText());
         int altoTexto = fm.getHeight();
 
-        // Calcula la posición del texto para centrarlo en el recuadro
-        int xTexto = getX() - anchoTexto / 2;
-        int yTexto = getY() + altoTexto / 2;
+        int xText = getX() - anchoTexto / 2;
+        int yText = getY() + altoTexto / 2;
 
-        // Cambia el grosor del recuadro.
         g2.setStroke(new BasicStroke(1));
 
-        // Dibuja el recuadro de la entidad
-        int margen = 10; // Margen alrededor del texto
+        int margin = 10;
 
-        int rectX = getX() - anchoTexto / 2 - margen;
-        int rectY = getY() - altoTexto / 2 - margen;
-        int rectAncho = anchoTexto + 2 * margen;
-        int rectAlto = altoTexto + 2 * margen;
+        int rectX = getX() - anchoTexto / 2 - margin;
+        int rectY = getY() - altoTexto / 2 - margin;
+        int rectAncho = anchoTexto + 2 * margin;
+        int rectAlto = altoTexto + 2 * margin;
 
         RoundRectangle2D shape = new RoundRectangle2D.Float(rectX, rectY, rectAncho, rectAlto, 10, 10);
         this.entity.fillShape(g2, shape);
 
-        // Name of the entity.
         g2.setColor(Color.BLACK);
-        g2.drawString(super.getText(), xTexto, yTexto);
+        g2.drawString(super.getText(), xText, yText);
 
-        // Cambia el color de dibujo basándote si la entidad está seleccionada o no
         if (this.isSelected()) {
             this.setSelectionOptions(g2);
         }
@@ -275,8 +279,7 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
 
     @Override
     protected void notifyRemovingOf(Component component) {
-
-        // Do nothing.
+        // Empty on purpose.
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -306,11 +309,6 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public String toString() {
-        return this.getText();
-    }
-
-    @Override
     public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
 
         Rectangle bounds = this.getBounds();
@@ -319,6 +317,8 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
 
         g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected void cleanReferencesTo(Component component) {
@@ -330,10 +330,14 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         }
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public String getIdentifier() {
         return this.getText();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<DerivationObject> getDerivationObjects() {

@@ -7,7 +7,6 @@ import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.GUI.Diagram;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,42 +26,15 @@ public class Association extends EERComponent implements Relatable, Derivable {
      * Constructs an {@code Association}.
      *
      * @param relationship Core {@code Relationship} forming the association.
-     * @param diagram {@code Diagram} where the Association lives.
      */
-    Association(Relationship relationship, Diagram diagram) {
-        super(diagram);
+    Association(Relationship relationship) {
+        super();
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
         this.relationship.setAssociation(this);
 
         setDrawingPriority(1);
     }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void draw(Graphics2D g2) {
-
-        Rectangle shape = this.calculateBounds();
-
-        g2.setColor(Color.WHITE);
-        g2.fill(shape);
-
-        g2.setStroke(new BasicStroke(1));
-        g2.setColor(Color.BLACK);
-
-        if (this.isSelected()) {
-            this.setSelectionOptions(g2);
-        }
-
-        g2.draw(shape);
-
-        this.setShape(shape);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
 
     @SuppressWarnings("Duplicates")
     private Rectangle calculateBounds() {
@@ -91,6 +63,30 @@ public class Association extends EERComponent implements Relatable, Derivable {
         this.setY((maxY + minY) / 2);
 
         return new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void draw(Graphics2D g2) {
+
+        Rectangle shape = this.calculateBounds();
+
+        g2.setColor(Color.WHITE);
+        g2.fill(shape);
+
+        g2.setStroke(new BasicStroke(1));
+        g2.setColor(Color.BLACK);
+
+        if (this.isSelected()) {
+            this.setSelectionOptions(g2);
+        }
+
+        g2.draw(shape);
+
+        this.setShape(shape);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -161,6 +157,8 @@ public class Association extends EERComponent implements Relatable, Derivable {
         this.relationshipsManager.removeRelationship(relationship);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     /**
      * @return Always an empty list, due to its derivation process is contained in its relationship.
      */
@@ -168,6 +166,8 @@ public class Association extends EERComponent implements Relatable, Derivable {
     public List<DerivationObject> getDerivationObjects() {
         return new ArrayList<>();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     /**
      * @return Its relationship's identifier.

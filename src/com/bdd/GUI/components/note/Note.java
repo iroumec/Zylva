@@ -16,10 +16,9 @@ public final class Note extends Component {
      * @param text  The text that will appear in the note.
      * @param x The x coordinate in the panel.
      * @param y The y coordinate in the panel.
-     * @param diagram The drawing panel where the note lives.
      */
-    private Note(String text, int x, int y, Diagram diagram) {
-        super(text, x, y, diagram);
+    private Note(String text, int x, int y) {
+        super(text, x, y);
         setDrawingPriority(8);
     }
 
@@ -62,7 +61,7 @@ public final class Note extends Component {
         );
 
         if (text != null) {
-            diagram.addComponent(new Note(text, diagram.getMouseX(), diagram.getMouseY(), diagram));
+            Component.addComponent(new Note(text, diagram.getMouseX(), diagram.getMouseY()), diagram);
         }
     }
 
@@ -130,6 +129,10 @@ public final class Note extends Component {
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
+
+    /*
+    Maybe a distinction between independent and dependent components would be okay.
+     */
 
     @Override
     protected void cleanReferencesTo(Component component) {

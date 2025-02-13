@@ -29,7 +29,7 @@ public class Derivation {
         this.commonElements.addElement(element);
     }
 
-    public List<SingleElement> getReplacementNeeded() {
+    List<SingleElement> getReplacementNeeded() {
 
         List<SingleElement> out = new ArrayList<>(this.commonElements.getReplacementsNeeded());
         out.addAll(this.identificationElements.getReplacementsNeeded());

@@ -10,19 +10,21 @@ import javax.swing.*;
 
 public abstract class EERComponent extends Component {
 
-    public EERComponent(@NotNull Diagram diagram) {
-        super(diagram);
-        ensureEERDiagram(diagram);
+    protected EERComponent() {
+        super();
+    }
+
+    protected EERComponent(int x, int y) {
+        super(x, y);
+    }
+
+    protected EERComponent(String text, int x, int y) {
+        super(text, x, y);
     }
 
     @SuppressWarnings("unused")
     public EERComponent(@NotNull String text, @NotNull Diagram diagram) {
         super(text, diagram);
-        ensureEERDiagram(diagram);
-    }
-
-    public EERComponent(int x, int y, @NotNull Diagram diagram) {
-        super(x, y, diagram);
         ensureEERDiagram(diagram);
     }
 

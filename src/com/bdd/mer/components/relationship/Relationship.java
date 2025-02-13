@@ -2,7 +2,7 @@ package com.bdd.mer.components.relationship;
 
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
-import com.bdd.mer.components.AttributableEERComponent;
+import com.bdd.mer.components.attribute.AttributableEERComponent;
 import com.bdd.GUI.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
@@ -15,7 +15,6 @@ import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.PluralDerivation;
-import com.bdd.GUI.Diagram;
 import com.bdd.GUI.structures.Pair;
 
 import javax.swing.*;
@@ -39,11 +38,10 @@ public final class Relationship extends AttributableEERComponent {
      * @param text Name of the relationship.
      * @param x X coordinate of the relationship.
      * @param y Y coordinate of the relationship.
-     * @param diagram {@code Diagram} in which the relationship lives.
      */
-    private Relationship(String text, int x, int y, Diagram diagram) {
+    private Relationship(String text, int x, int y) {
 
-        super(text, x, y, diagram);
+        super(text, x, y);
 
         this.participants = new HashMap<>();
         this.shape = new Polygon();
@@ -155,16 +153,16 @@ public final class Relationship extends AttributableEERComponent {
     }
 
     /**
-     * Add an association to the diagram.
+     * Surrounds the relationships with an association.
      */
-    // There must be selected at least an entity and a relationship (unary relationship)
     private void createAssociation() {
 
         if (this.allMaxCardinalitiesAreN()) {
 
-            Association association = new Association(this, this.diagram);
+            Association association = new Association(this);
 
-            this.diagram.addComponent(association);
+            Component.addComponent(association, diagram);
+            this.addComponent(association);
             this.diagram.repaint();
         } else {
 
@@ -400,7 +398,7 @@ public final class Relationship extends AttributableEERComponent {
 
             Point center = diagram.getCenterOfComponents(components);
 
-            newRelationship = new Relationship(name, center.x, center.y, diagram);
+            newRelationship = new Relationship(name, center.x, center.y);
 
             for (Relatable relatable : relatableComponents) {
 
@@ -437,7 +435,7 @@ public final class Relationship extends AttributableEERComponent {
         }
 
         for (Component newComponent : newComponents) {
-            diagram.addComponent(newComponent);
+            Component.addComponent(newComponent, diagram);
         }
     }
 
@@ -454,8 +452,7 @@ public final class Relationship extends AttributableEERComponent {
         Relationship newRelationship = new Relationship(
                 name,
                 diagram.getMouseX() + 90,
-                diagram.getMouseY() - 90,
-                diagram
+                diagram.getMouseY() - 90
         );
 
         Line firstLine = new Line.Builder(
@@ -482,7 +479,7 @@ public final class Relationship extends AttributableEERComponent {
         newComponents.add(newRelationship);
 
         for (Component newComponent : newComponents) {
-            diagram.addComponent(newComponent);
+            Component.addComponent(newComponent, diagram);
         }
     }
 
@@ -513,7 +510,7 @@ public final class Relationship extends AttributableEERComponent {
 
         Point center = diagram.getCenterOfComponents(components);
 
-        Relationship newRelationship = new Relationship(name, center.x, center.y, diagram);
+        Relationship newRelationship = new Relationship(name, center.x, center.y);
 
         EntityWrapper entitySelected = selectWeakEntity(entities, diagram);
 
@@ -521,57 +518,45 @@ public final class Relationship extends AttributableEERComponent {
 
             entitySelected.setWeakVersion(newRelationship);
 
-            Cardinality cardinality = null, staticCardinality = null;
-            Line strongLine = null, weakLine = null;
+            List<Component> componentsToAdd = new ArrayList<>();
 
             for (EntityWrapper entity : entities) {
 
                 if (entity.equals(entitySelected)) {
 
-                    strongLine = new Line.Builder(
+                    Line strongLine = new Line.Builder(
                             diagram,
                             entity,
                             newRelationship
                     ).lineMultiplicity(new DoubleLine(3)).build();
+                    componentsToAdd.add(strongLine);
 
-                    cardinality = new Cardinality("1", "N", strongLine, diagram);
+                    Cardinality cardinality = new Cardinality("1", "N", strongLine, diagram);
+                    componentsToAdd.add(cardinality);
 
                     newRelationship.addParticipant(entity, strongLine);
-
                 } else {
 
-                    weakLine = new Line.Builder(
+                    Line weakLine = new Line.Builder(
                             diagram,
                             entity,
                             newRelationship
                     ).build();
+                    componentsToAdd.add(weakLine);
 
                     // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
-                    staticCardinality = new StaticCardinality("1", "1", weakLine, diagram);
+                    Cardinality staticCardinality = new StaticCardinality("1", "1", weakLine, diagram);
+                    componentsToAdd.add(staticCardinality);
 
                     newRelationship.addParticipant(entity, weakLine);
                 }
             }
 
-            // These checks are only added so the IDE don't tell me they can be null.
+            componentsToAdd.add(newRelationship);
 
-            if (weakLine != null) {
-                diagram.addComponent(weakLine);
+            for (Component newComponent : componentsToAdd) {
+                Component.addComponent(newComponent, diagram);
             }
-
-            if (strongLine != null) {
-                diagram.addComponent(strongLine);
-            }
-
-            if (cardinality != null) {
-                diagram.addComponent(cardinality);
-            }
-
-            if (staticCardinality != null) {
-                diagram.addComponent(staticCardinality);
-            }
-
-            diagram.addComponent(newRelationship);
         }
     }
 

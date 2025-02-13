@@ -1,11 +1,7 @@
-package com.bdd.GUI.menuBar;
+package com.bdd.GUI;
 
 import com.bdd.mer.derivation.DerivationManager;
-import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
-import com.bdd.GUI.MainFrame;
-import com.bdd.GUI.menuBar.exportation.FileManager;
-import com.bdd.GUI.menuBar.exportation.ExportPNG;
 
 import javax.swing.*;
 
@@ -27,15 +23,17 @@ class FileMenu extends JMenu {
 
         // Export to PNG.
         exportPNG = new JMenuItem(LanguageManager.getMessage("fileMenu.exportPNG"));
-        exportPNG.addActionListener(_ -> ExportPNG.exportToPng(diagram));
+        exportPNG.addActionListener(_ -> diagram.exportToPng());
 
         // Save diagram.
         saveDiagram = new JMenuItem(LanguageManager.getMessage("fileMenu.saveDiagram"));
-        saveDiagram.addActionListener(_ -> FileManager.saveDiagram(diagram));
+        saveDiagram.addActionListener(_ -> diagram.saveDiagram());
 
         // Load diagram.
         loadDiagram = new JMenuItem(LanguageManager.getMessage("fileMenu.loadDiagram"));
-        loadDiagram.addActionListener(_ -> FileManager.loadDiagram(diagram));
+        // TODO: loading the diagram should be a static method which returns a new diagram an opens a new tab with it.
+        // The previous diagram, if it had elements, it should be maintained in another tab.
+        loadDiagram.addActionListener(_ -> diagram.loadDiagram());
 
         // Derivate diagram.
         derivateDiagram = new JMenuItem("Derivate"/*LanguageManager.getMessage("fileMenu.derivateDiagram")*/);

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SingleElement extends Element {
+public final class SingleElement extends Element {
 
     private final String name;
     private final Holder holder;

@@ -8,7 +8,7 @@ import com.bdd.mer.derivation.elements.containers.Replacer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class SingularDerivation extends DerivationObject {
+public final class SingularDerivation extends DerivationObject {
 
     // Useful for the derivation of hierarchies.
     private final Derivable derivable;

@@ -20,20 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-/*
-En una jerarquía total, toda instancia del supertipo debe ser instancia también de alguno
-de los subtipos.
-
-Una jerarquía exclusiva se nota con una doble línea del supertipo al ícono de jerarquía.
-Por otro lado, si la jerarquía es parcial, se utiliza una única línea.
- */
-
-/*
-En una jerarquía exclusiva, los ejemplares de los subtipos son conjuntos disjuntos (solo pueden
-pertenecer a un subtipo a la vez).
-
-Una jerarquía exclusiva se nota con la letra "d" (Disjunct), mientras que una jerarquía compartida
-se nota con la letra "o" (Overlapping).
+/**
+ * In a total hierarchy, all instance of the parent must also be an instance of at least one of the children.
+ * This is notated with a double line coming from the parent to the hierarchy icon. In the other hand, a partial
+ * hierarchy is notated with a single line.
+ * <p>
+ * In an exclusive hierarchy (AKA disjunct hierarchy), the instances of the children are disjunct sets (this is, each
+ * instance can only be an instance of one of the children). This is notated with the letter "d" (disjunct). In the
+ * other hand, an overlapping hierarchy is notated with the letter "o" (overlapping).
  */
 public class Hierarchy extends EERComponent implements Derivable {
 
@@ -62,11 +56,10 @@ public class Hierarchy extends EERComponent implements Derivable {
      *
      * @param symbol {@code Hierarchy}'s symbol, denoting its exclusivity.
      * @param parent {@code Hierarchy}'s parent entity.
-     * @param diagram {@code Diagram} where the {@code Hierarchy} lives.
      */
-    public Hierarchy(HierarchySymbol symbol, EntityWrapper parent, Diagram diagram) {
+    private Hierarchy(HierarchySymbol symbol, EntityWrapper parent) {
 
-        super(parent.getX(), parent.getY() + 60, diagram);
+        super(parent.getX(), parent.getY() + 60);
 
         this.symbol = symbol;
         this.parent = parent;
@@ -175,7 +168,7 @@ public class Hierarchy extends EERComponent implements Derivable {
      */
     public static void addHierarchy(Diagram diagram, List<Component> components) {
 
-        List<EntityWrapper> entities = Stream.of(components)
+        List<EntityWrapper> entities = components.stream()
                 .filter(c -> c instanceof EntityWrapper)
                 .map(c -> (EntityWrapper) c)
                 .toList();
@@ -186,6 +179,7 @@ public class Hierarchy extends EERComponent implements Derivable {
         // The number of entities and components are different in case not all the components are entities.
         if (numberOfEntities != numberOfComponents || numberOfEntities < 3) {
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.threeEntities"));
+            return;
         }
 
         EntityWrapper parent = selectParent(diagram, entities);
@@ -203,38 +197,48 @@ public class Hierarchy extends EERComponent implements Derivable {
             Hierarchy newHierarchy = newHierarchyData.first();
             List<Component> componentsToAdd = newHierarchyData.second();
 
-            for (EntityWrapper subtipo : subtipos) {
-                newHierarchy.addChild(subtipo);
+            try {
+                for (EntityWrapper subtipo : subtipos) {
+                    newHierarchy.addChild(subtipo);
 
-                if (!subtipo.addHierarchy(newHierarchy)) {
+                    if (!subtipo.addHierarchy(newHierarchy)) {
 
-                    // Repairing action.
-                    parent.removeHierarchy(newHierarchy);
-                    for (EntityWrapper s : subtipos) {
-                        s.removeHierarchy(newHierarchy);
+                        // Repairing action.
+                        parent.removeHierarchy(newHierarchy);
+                        for (EntityWrapper s : subtipos) {
+                            s.removeHierarchy(newHierarchy);
 
-                        String message = LanguageManager.getMessage("warning.theEntity") + " "
-                                + '\"' + subtipo.getText() + '\"'
-                                + " " + LanguageManager.getMessage("warning.alreadyParticipatesInHierarchy") + " "
-                                + LanguageManager.getMessage("warning.multipleInheritanceOnlyAllowed");
+                            String message = LanguageManager.getMessage("warning.theEntity") + " "
+                                    + '\"' + subtipo.getText() + '\"'
+                                    + " " + LanguageManager.getMessage("warning.alreadyParticipatesInHierarchy") + " "
+                                    + LanguageManager.getMessage("warning.multipleInheritanceOnlyAllowed");
 
-                        JOptionPane.showMessageDialog(diagram, message);
+                            JOptionPane.showMessageDialog(diagram, message);
 
-                        // Exit.
-                        break main;
+                            // Exit.
+                            break main;
+                        }
                     }
+                }
+
+                parent.addHierarchy(newHierarchy);
+            } catch (Exception e) {
+
+                JOptionPane.showMessageDialog(diagram, e);
+                parent.removeHierarchy(newHierarchy);
+
+                for (EntityWrapper s : subtipos) {
+                    s.removeHierarchy(newHierarchy);
                 }
             }
 
-            parent.addHierarchy(newHierarchy);
-
             for (Component component : componentsToAdd) {
-                diagram.addComponent(component);
+                Component.addComponent(component, diagram);
             }
 
-            diagram.addComponent(newHierarchy);
-
+            Component.addComponent(newHierarchy, diagram);
         } else {
+
             JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.alreadyParent"));
         }
     }
@@ -288,7 +292,7 @@ public class Hierarchy extends EERComponent implements Derivable {
 
         HierarchySymbol symbol = (exclusiveButton.isSelected()) ? HierarchySymbol.DISJUNCT : HierarchySymbol.OVERLAPPING;
 
-        Hierarchy newHierarchy = new Hierarchy(symbol, parent, diagram);
+        Hierarchy newHierarchy = new Hierarchy(symbol, parent);
 
         Line parentLine;
 
@@ -361,6 +365,30 @@ public class Hierarchy extends EERComponent implements Derivable {
         out.remove((parent));
 
         return out;
+    }
+
+    /**
+     *
+     * @return {@code TRUE} if the hierarchy is exclusive or disjunct.
+     */
+    public boolean isExclusive() {
+        return this.isDisjunct();
+    }
+
+    /**
+     *
+     * @return {@code TRUE} if the hierarchy is exclusive or disjunct.
+     */
+    public boolean isDisjunct() {
+        return this.symbol == HierarchySymbol.DISJUNCT;
+    }
+
+    /**
+     *
+     * @return The discriminant of the hierarchy.
+     */
+    public String getDiscriminant() {
+        return this.parentLine.getText();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -441,18 +469,12 @@ public class Hierarchy extends EERComponent implements Derivable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public boolean isExclusive() {
-        return this.symbol == HierarchySymbol.DISJUNCT;
-    }
-
-    public String getDiscriminant() {
-        return this.parentLine.getText();
-    }
-
     @Override
     public String getIdentifier() {
         return "";
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<DerivationObject> getDerivationObjects() {
@@ -475,6 +497,8 @@ public class Hierarchy extends EERComponent implements Derivable {
         return out;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public boolean canBeDeleted() {
 
@@ -487,6 +511,8 @@ public class Hierarchy extends EERComponent implements Derivable {
         return true;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void cleanReferencesTo(Component component) {
 
@@ -494,6 +520,8 @@ public class Hierarchy extends EERComponent implements Derivable {
             this.children.remove(entity);
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected void notifyRemovingOf(Component component) {

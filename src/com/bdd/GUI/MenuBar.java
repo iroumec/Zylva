@@ -1,8 +1,6 @@
-package com.bdd.GUI.menuBar;
+package com.bdd.GUI;
 
-import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
-import com.bdd.GUI.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;

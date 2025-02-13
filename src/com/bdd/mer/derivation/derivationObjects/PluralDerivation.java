@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class PluralDerivation extends DerivationObject {
+public final class PluralDerivation extends DerivationObject {
 
     private Derivation mainDerivation;
     private final List<Member> members;
