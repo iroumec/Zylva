@@ -313,7 +313,6 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
     @Override
     public List<DerivationObject> getDerivationObjects() {
 
-        // noinspection Dup
         List<DerivationObject> out = new ArrayList<>();
 
         DerivationObject derivation = new SingularDerivation(this.getIdentifier());

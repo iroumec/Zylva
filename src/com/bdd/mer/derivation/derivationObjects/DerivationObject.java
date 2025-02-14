@@ -32,6 +32,7 @@ public abstract class DerivationObject {
     }
 
     // This should be moved to each class.
+    // TODO: delegate this to the attribute.
     public void addAttribute(Derivable owner, Attribute attribute) {
 
         // There is no distinction if the attribute is multivalued optional or not.

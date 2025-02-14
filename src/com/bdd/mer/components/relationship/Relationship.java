@@ -75,6 +75,8 @@ public final class Relationship extends DescAttrEERComp {
 
             out.add((Component) participant.getKey());
 
+            // TODO: wrong because of the instance of and because of the acces to the attributes.
+            // TODO: replace with getMin and getMax point ocuppied or something similar.
             if (participant.getKey() instanceof DescAttrEERComp descAttrEERComp) {
                 out.addAll(descAttrEERComp.getAttributes());
             }
@@ -83,17 +85,6 @@ public final class Relationship extends DescAttrEERComp {
         }
 
         return out;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    /**
-     * This method let you know the number of participants in the relationship.
-     *
-     * @return The number of participants in the relationship.
-     */
-    public int getNumberOfParticipants() {
-        return this.participants.size();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

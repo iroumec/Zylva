@@ -1,7 +1,5 @@
 package com.bdd.mer.components.attribute;
 
-import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
-
 import java.awt.*;
 
 public final class OptionalPresence implements Presence {
