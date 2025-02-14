@@ -98,6 +98,13 @@ public class LanguageManager {
         if (messages == null) {
             initialize();
         }
-        return messages.getString(key);
+
+        try {
+
+            return messages.getString(key);
+        } catch (MissingResourceException e) {
+
+            return LanguageManager.getMessage("language." + LanguageManager.getCurrentLanguage());
+        }
     }
 }

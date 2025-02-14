@@ -1,11 +1,6 @@
 package com.iroumec.gui;
 
-import com.iroumec.GUI.components.note.Note;
-import com.iroumec.GUI.userPreferences.LanguageManager;
-import main.java.com.iroumec.bdd.eerd.EERDiagram;
-import main.java.com.iroumec.bdd.eerd.components.entity.EntityWrapper;
-import main.java.com.iroumec.bdd.eerd.components.entity.Hierarchy;
-import main.java.com.iroumec.bdd.eerd.components.relationship.Relationship;
+import com.iroumec.Diagram;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -15,13 +10,13 @@ import java.awt.event.*;
 
 public class MainFrame extends JFrame {
 
-    private final EERDiagram diagram;
+    private final Diagram diagram;
     private final MenuBar menuBar;
 
-    public MainFrame() {
+    public MainFrame(String title, Diagram diagram) {
 
         setUndecorated(false);  // Removing of the title bar.
-        setTitle("Zylva EERD");
+        setTitle(title);
         setSize(800, 600);
         setLocationRelativeTo(null);
 

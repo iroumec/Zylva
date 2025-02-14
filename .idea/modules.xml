@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/bdd/EERuserInterface/EERuserInterface.iml" filepath="$PROJECT_DIR$/bdd/EERuserInterface/EERuserInterface.iml" />
       <module fileurl="file://$PROJECT_DIR$/Zylva.iml" filepath="$PROJECT_DIR$/Zylva.iml" />
       <module fileurl="file://$PROJECT_DIR$/bdd/bdd.iml" filepath="$PROJECT_DIR$/bdd/bdd.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
@@ -9,7 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/common/diagram/diagram.iml" filepath="$PROJECT_DIR$/common/diagram/diagram.iml" />
       <module fileurl="file://$PROJECT_DIR$/bdd/eerd/eerd.iml" filepath="$PROJECT_DIR$/bdd/eerd/eerd.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/gui/gui.iml" filepath="$PROJECT_DIR$/common/gui/gui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/common/language/language.iml" filepath="$PROJECT_DIR$/common/language/language.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/userPreferences/userPreferences.iml" filepath="$PROJECT_DIR$/common/userPreferences/userPreferences.iml" />
     </modules>
   </component>
 </project>

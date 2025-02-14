@@ -1,7 +1,8 @@
 package main.java;
 
-import com.iroumec.GUI.MainFrame;
 import com.formdev.flatlaf.FlatLightLaf;
+import com.iroumec.eerd.EERDiagram;
+import com.iroumec.gui.MainFrame;
 
 import javax.swing.*;
 
@@ -14,7 +15,7 @@ public class Zylva {
         } catch (Exception _) {
         }
 
-        MainFrame frame = new MainFrame();
+        MainFrame frame = new MainFrame("Zylva", new EERDiagram());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }

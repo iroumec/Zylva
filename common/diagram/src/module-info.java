@@ -2,7 +2,7 @@ module diagram {
     requires java.logging;
 
     requires userPreferences;
-    requires org.jetbrains.annotations;
+    requires common;
     requires java.desktop;
 
     exports com.iroumec to gui;

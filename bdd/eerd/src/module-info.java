@@ -1,4 +1,5 @@
 module eerd {
+    exports com.iroumec.eerd;
 
     requires diagram; requires userPreferences;
     requires common;

@@ -1,6 +1,8 @@
 package com.iroumec;
 
 import com.iroumec.components.Component;
+import com.iroumec.executables.GUIExecutable;
+import com.iroumec.executables.Item;
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.userPreferences.Preference;
 import com.iroumec.userPreferences.UserPreferences;
@@ -622,5 +624,33 @@ public abstract class Diagram extends JPanel {
         int rectHeight = (maxY - minY) + 2 * margin;
 
         return new Rectangle(minX - margin, minY - margin, rectWidth, rectHeight);
+    }
+
+    public List<Item> getFileMenuItems() {
+
+        List<Item> out = new ArrayList<>();
+
+        Item exportToPNG = new Item("fileMenu.exportToPNG", false);
+        exportToPNG.addActionListener(_ -> this.exportToPng());
+        out.add(exportToPNG);
+
+        Item saveDiagram = new Item("fileMenu.saveDiagram", false);
+        saveDiagram.addActionListener(_ -> this.saveDiagram());
+        out.add(saveDiagram);
+
+        Item loadDiagram = new Item("fileMenu.loadDiagram", false);
+        loadDiagram.addActionListener(_ -> this.loadDiagram());
+        out.add(loadDiagram);
+
+        Item changeLanguage = new Item("fileMenu.changeLanguage", true);
+        changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage());
+        out.add(changeLanguage);
+
+        // TODO: que cambie el texto dependiendo de si está activado o no.
+        Item swapAntialiasing = new Item("fileMenu.swapAntialiasing", false);
+        swapAntialiasing.addActionListener(_ -> this.setAntialiasing(!this.isAntialiasingActive()));
+        out.add(swapAntialiasing);
+
+        return out;
     }
 }

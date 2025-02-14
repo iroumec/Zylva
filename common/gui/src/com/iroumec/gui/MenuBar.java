@@ -1,6 +1,7 @@
 package com.iroumec.gui;
 
-import com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.Diagram;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +42,7 @@ public class MenuBar extends JMenuBar {
         /*                                            File Menu                                                       */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        this.fileMenu = new FileMenu(mainFrame, diagram, LanguageManager.getMessage("menuBar.file"));
+        this.fileMenu = new FileMenu(this);
 
         fileMenu.setBackground(UIManager.getColor("control"));
         fileMenu.addMouseListener(new MouseAdapter() {
