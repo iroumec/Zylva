@@ -1,6 +1,8 @@
 module eerd {
-    requires java.desktop;
 
-    requires bdd;
+    requires diagram; requires userPreferences;
+    requires common;
     requires derivation;
+    requires org.jetbrains.annotations;
+    requires java.desktop;
 }

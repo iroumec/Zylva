@@ -1,6 +1,6 @@
 module userPreferences {
+    requires org.jetbrains.annotations;
     requires java.desktop;
-    requires java.prefs;
 
     exports com.iroumec.userPreferences;
 }

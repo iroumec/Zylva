@@ -1,22 +1,11 @@
 package com.iroumec.eerd.components.relationship;
 
-import main.java.com.iroumec.GUI.userPreferences.LanguageManager;
-import main.java.com.iroumec.bdd.eerd.EERDiagram;
+import com.iroumec.components.line.Line;
 import com.iroumec.eerd.components.attribute.external.DescAttrEERComp;
-import main.java.com.iroumec.GUI.Component;
 import com.iroumec.eerd.components.attribute.external.Attribute;
 import com.iroumec.eerd.components.entity.EntityWrapper;
-import main.java.com.iroumec.GUI.components.line.Line;
-import main.java.com.iroumec.GUI.components.line.guard.cardinality.Cardinality;
-import main.java.com.iroumec.GUI.components.line.guard.cardinality.StaticCardinality;
-import main.java.com.iroumec.GUI.components.line.lineMultiplicity.DoubleLine;
-import main.java.com.iroumec.GUI.components.line.lineShape.SquaredLine;
 import com.iroumec.eerd.components.relationship.relatable.Relatable;
-import main.java.com.iroumec.bdd.derivation.Derivable;
-import main.java.com.iroumec.bdd.derivation.Derivation;
-import main.java.com.iroumec.bdd.derivation.derivationObjects.DerivationObject;
-import main.java.com.iroumec.bdd.derivation.derivationObjects.PluralDerivation;
-import main.java.com.iroumec.GUI.structures.Pair;
+import com.iroumec.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;

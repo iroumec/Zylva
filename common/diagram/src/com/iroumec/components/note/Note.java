@@ -1,8 +1,8 @@
 package com.iroumec.components.note;
 
-import com.iroumec.GUI.Diagram;
-import com.iroumec.GUI.Component;
-import com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.Diagram;
+import com.iroumec.components.Component;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;

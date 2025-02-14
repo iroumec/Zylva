@@ -1,9 +1,9 @@
 package com.iroumec.eerd.components;
 
-import main.java.com.iroumec.GUI.Component;
-import main.java.com.iroumec.GUI.Diagram;
-import main.java.com.iroumec.GUI.userPreferences.LanguageManager;
-import main.java.com.iroumec.bdd.eerd.EERDiagram;
+import com.iroumec.components.Component;
+import com.iroumec.Diagram;
+import com.iroumec.userPreferences.LanguageManager;
+import com.iroumec.eerd.EERDiagram;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

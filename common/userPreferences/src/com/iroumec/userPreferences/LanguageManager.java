@@ -1,7 +1,5 @@
 package com.iroumec.userPreferences;
 
-import com.iroumec.GUI.MainFrame;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
@@ -26,10 +24,8 @@ public class LanguageManager {
      * The language of the text appearing to the frame is changed to the selected language.
      * <p>
      * The preference is saved for future executions of the program.
-     *
-     * @param mainFrame The frame whose language is wanted to be changed.
      */
-    public static void changeLanguage(MainFrame mainFrame) {
+    public static void changeLanguage() {
         // Map display names to acronyms, sorted by display names (due to the TreeMap()).
         Map<String, String> languages = new TreeMap<>();
         languages.put(LanguageManager.getMessage("language.english"), "en");
@@ -64,7 +60,7 @@ public class LanguageManager {
             String selectedDisplayLanguage = (String) languageComboBox.getSelectedItem();
             if (selectedDisplayLanguage != null) {
                 String selectedAcronym = languages.get(selectedDisplayLanguage);
-                applyLanguage(selectedAcronym, mainFrame);
+                applyLanguage(selectedAcronym);
                 frame.dispose();
                 JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged"));
             }
@@ -83,16 +79,13 @@ public class LanguageManager {
      * This method applies a language to the interface.
      *
      * @param language The language the interface will switch to.
-     * @param mainFrame The frame containing all the interface.
      */
-    private static void applyLanguage(String language, MainFrame mainFrame) {
+    private static void applyLanguage(String language) {
 
         currentLocale = Locale.forLanguageTag(language);
         messages = ResourceBundle.getBundle("resources/messages", currentLocale);
 
         UserPreferences.savePreference(Preference.LANGUAGE, language);
-
-        mainFrame.resetLanguage();
     }
 
     /**

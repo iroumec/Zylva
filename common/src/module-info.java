@@ -1,8 +1,6 @@
 module common {
-    requires org.jetbrains.annotations;
-
-    requires derivation;
     requires java.desktop;
+    requires org.jetbrains.annotations;
 
     exports com.iroumec.structures;
 }

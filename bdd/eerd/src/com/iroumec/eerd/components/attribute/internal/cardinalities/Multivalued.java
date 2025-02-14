@@ -1,11 +1,11 @@
 package com.iroumec.eerd.components.attribute.internal.cardinalities;
 
+import com.iroumec.derivation.Derivation;
+import com.iroumec.derivation.elements.ElementDecorator;
+import com.iroumec.derivation.elements.SingleElement;
+import com.iroumec.derivation.elements.containers.Replacer;
 import com.iroumec.eerd.components.attribute.external.Attribute;
 import com.iroumec.eerd.components.attribute.external.DescAttrEERComp;
-import main.java.com.iroumec.bdd.derivation.Derivation;
-import main.java.com.iroumec.bdd.derivation.elements.ElementDecorator;
-import main.java.com.iroumec.bdd.derivation.elements.SingleElement;
-import main.java.com.iroumec.bdd.derivation.elements.containers.Replacer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

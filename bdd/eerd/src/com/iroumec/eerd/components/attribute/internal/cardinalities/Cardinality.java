@@ -1,8 +1,8 @@
 package com.iroumec.eerd.components.attribute.internal.cardinalities;
 
+import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.components.attribute.external.Attribute;
 import com.iroumec.eerd.components.attribute.external.DescAttrEERComp;
-import main.java.com.iroumec.bdd.derivation.Derivation;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

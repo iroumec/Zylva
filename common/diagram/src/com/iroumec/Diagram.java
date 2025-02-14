@@ -1,13 +1,16 @@
 package com.iroumec;
 
-import com.iroumec.userPreferences;
+import com.iroumec.components.Component;
+import com.iroumec.userPreferences.LanguageManager;
+import com.iroumec.userPreferences.Preference;
+import com.iroumec.userPreferences.UserPreferences;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.*;
-import java.awt.Component;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -18,9 +21,9 @@ import java.util.logging.Logger;
 
 public abstract class Diagram extends JPanel {
 
-    private List<java.awt.Component> components = new ArrayList<>();
-    private java.awt.Component draggedComponent = null;
-    private Set<java.awt.Component> selectedComponents = new HashSet<>();
+    private List<com.iroumec.components.Component> components = new ArrayList<>();
+    private com.iroumec.components.Component draggedComponent = null;
+    private Set<com.iroumec.components.Component> selectedComponents = new HashSet<>();
     private final Rectangle selectionArea;
     private int selectionAreaStartX, selectionAreaStartY;
     private boolean selectingArea;
@@ -74,7 +77,7 @@ public abstract class Diagram extends JPanel {
 
         g2d.draw(selectionArea);
 
-        for (java.awt.Component component : this.components) {
+        for (com.iroumec.components.Component component : this.components) {
             g2d.setColor(Color.BLACK);
             g2d.setStroke(new BasicStroke(1));
             component.draw(g2d);
@@ -85,7 +88,7 @@ public abstract class Diagram extends JPanel {
 
     public boolean noComponenteThere(int x, int y) {
 
-        for (java.awt.Component component : this.components) {
+        for (com.iroumec.components.Component component : this.components) {
             if (component.getBounds().contains((new Point(x, y)))) {
                 return false;
             }
@@ -97,7 +100,7 @@ public abstract class Diagram extends JPanel {
 
     public void selectComponents() {
 
-        for (java.awt.Component component : this.components) {
+        for (com.iroumec.components.Component component : this.components) {
 
             if (component.canBeSelectedBySelectionArea() && selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
 
@@ -111,11 +114,11 @@ public abstract class Diagram extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    protected void addComponent(@NotNull java.awt.Component component) {
+    protected void addComponent(@NotNull com.iroumec.components.Component component) {
         int index = Collections.binarySearch(
                 this.components,
                 component,
-                Comparator.comparing(java.awt.Component::getDrawingPriority) // Cambiado aquí
+                Comparator.comparing(com.iroumec.components.Component::getDrawingPriority) // Cambiado aquí
         );
         if (index < 0) {
             index = -index - 1;
@@ -127,7 +130,7 @@ public abstract class Diagram extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    final void removeComponent(@NotNull java.awt.Component componentToRemove) {
+    final void removeComponent(@NotNull com.iroumec.components.Component componentToRemove) {
 
         this.components.remove(componentToRemove);
         this.selectedComponents.clear();
@@ -142,12 +145,12 @@ public abstract class Diagram extends JPanel {
     public void sortComponents() {
 
         // The algorithm used is a Timsort, a combination of a Merge Sort and an Insertion Sort.
-        this.components.sort(Comparator.comparing(java.awt.Component::getDrawingPriority));
+        this.components.sort(Comparator.comparing(com.iroumec.components.Component::getDrawingPriority));
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<java.awt.Component> getSelectedComponents() {
+    public List<com.iroumec.components.Component> getSelectedComponents() {
         return (new ArrayList<>(selectedComponents));
     }
 
@@ -155,7 +158,7 @@ public abstract class Diagram extends JPanel {
 
     public void cleanSelectedComponents() {
 
-        for (java.awt.Component selectedComponent : selectedComponents) {
+        for (com.iroumec.components.Component selectedComponent : selectedComponents) {
            selectedComponent.setSelected(Boolean.FALSE);
         }
 
@@ -187,11 +190,11 @@ public abstract class Diagram extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<java.awt.Component> getListComponents() { return new ArrayList<>(this.components); }
+    public List<com.iroumec.components.Component> getListComponents() { return new ArrayList<>(this.components); }
 
     public boolean existsComponent(String componentName) {
 
-        for (java.awt.Component component : this.components) {
+        for (com.iroumec.components.Component component : this.components) {
             if (!component.getText().isEmpty() && component.getText().equals(componentName)) {
                 return true;
             }
@@ -200,7 +203,7 @@ public abstract class Diagram extends JPanel {
         return false;
     }
 
-    public boolean existsComponent(java.awt.Component component) {
+    public boolean existsComponent(com.iroumec.components.Component component) {
 
         return this.components.contains(component);
     }
@@ -209,12 +212,12 @@ public abstract class Diagram extends JPanel {
 
         this.backgroundPopupMenu = this.getBackgroundPopupMenu();
 
-        for (java.awt.Component component : this.components) {
+        for (com.iroumec.components.Component component : this.components) {
             component.resetLanguage();
         }
     }
 
-    public Point getCenterOfComponents(List<java.awt.Component> components) {
+    public Point getCenterOfComponents(List<com.iroumec.components.Component> components) {
 
         if (components.isEmpty()) {
             return new Point(this.getMouseX(), this.getMouseY());
@@ -222,7 +225,7 @@ public abstract class Diagram extends JPanel {
 
         double sumX = 0, sumY = 0;
 
-        for (java.awt.Component component : components) {
+        for (com.iroumec.components.Component component : components) {
 
             sumX += component.getX();
             sumY += component.getY();
@@ -311,8 +314,8 @@ public abstract class Diagram extends JPanel {
             if (e.isControlDown()) {
                 this.handleControlClick();
             } else {
-                List<java.awt.Component> components = getListComponents().reversed();
-                for (java.awt.Component component : components) {
+                List<com.iroumec.components.Component> components = getListComponents().reversed();
+                for (com.iroumec.components.Component component : components) {
                     if (component.getBounds().contains(e.getPoint())) {
                         draggedComponent = component;
                         offsetX = e.getX() - draggedComponent.getX();
@@ -327,7 +330,7 @@ public abstract class Diagram extends JPanel {
     }
 
     private void handleControlClick() {
-        for (java.awt.Component component : components.reversed()) {
+        for (com.iroumec.components.Component component : components.reversed()) {
             if (component.getBounds().contains(new Point(Diagram.this.mouseX, Diagram.this.mouseY))) {
                 selectedComponents.add(component);
                 component.setSelected(Boolean.TRUE);
@@ -342,7 +345,7 @@ public abstract class Diagram extends JPanel {
         if (e.isPopupTrigger()) {
             boolean componentClicked = false;
 
-            for (java.awt.Component component : getListComponents().reversed()) {
+            for (com.iroumec.components.Component component : getListComponents().reversed()) {
                 if (component.getBounds().contains(e.getPoint())) {
                     cleanSelectedComponents();
                     selectedComponents.add(component);
@@ -426,7 +429,7 @@ public abstract class Diagram extends JPanel {
         draggedComponent.setY(e.getY() - offsetY);
     }
 
-    void exportToPng() {
+    public void exportToPng() {
 
         // The minimal area of exportation is calculated.
         Rectangle exportArea = getMinimalExportationArea();
@@ -485,7 +488,7 @@ public abstract class Diagram extends JPanel {
         }
     }
 
-    void saveDiagram() {
+    public void saveDiagram() {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(LanguageManager.getMessage("fileManager.saveDiagram.dialog"));
@@ -522,7 +525,7 @@ public abstract class Diagram extends JPanel {
         }
     }
 
-    void loadDiagram() {
+    public void loadDiagram() {
 
         JFileChooser fileChooser = new JFileChooser();
 
@@ -545,11 +548,11 @@ public abstract class Diagram extends JPanel {
                 in = new ObjectInputStream(fileIn);
 
                 @SuppressWarnings("unchecked")
-                List<java.awt.Component> components = (List<java.awt.Component>) in.readObject();
+                List<com.iroumec.components.Component> components = (List<com.iroumec.components.Component>) in.readObject();
 
                 this.reset();
 
-                for (java.awt.Component component : components.reversed()) {
+                for (com.iroumec.components.Component component : components.reversed()) {
 
                     this.addComponent(component);
                     component.setDrawingPanel(this);

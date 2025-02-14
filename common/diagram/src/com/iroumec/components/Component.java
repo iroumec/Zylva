@@ -1,6 +1,7 @@
-package com.iroumec;
+package com.iroumec.components;
 
-import com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.Diagram;
+import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

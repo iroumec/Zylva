@@ -1,7 +1,5 @@
 package com.iroumec.derivation;
 
-import com.iroumec.GUI.Diagram;
-import com.iroumec.derivation.derivationObjects.DerivationObject;
 import com.iroumec.derivation.elements.Element;
 import com.iroumec.derivation.elements.ElementDecorator;
 import com.iroumec.derivation.elements.SingleElement;
@@ -11,29 +9,17 @@ import java.util.*;
 
 public final class DerivationManager {
 
-    public static void derivate(Diagram diagram) {
+    public static void derivate(List<Derivable> derivables) {
 
         Map<String, Derivation> derivations = new HashMap<>();
         List<Constraint> constraints = new ArrayList<>();
 
-        List<Derivable> derivablesComponents = diagram.getListComponents().stream()
-                .filter(component -> component instanceof Derivable)
-                .map(component -> (Derivable) component)
-                .toList();
+        for (Derivable derivable : derivables) {
 
-        for (Derivable derivableComponent : derivablesComponents) {
+            for (Derivation derivation : derivable.getDerivations()) {
 
-            List<DerivationObject> derivationObjects = derivableComponent.getDerivations();
-
-            for (DerivationObject derivationObject : derivationObjects) {
-
-                derivationObject.generateDerivation();
-
-                for (Derivation derivation : derivationObject.getDerivations()) {
-                    addDerivation(derivation, derivations);
-                }
+                addDerivation(derivation, derivations);
             }
-
         }
 
         fillReferences(derivations, constraints);

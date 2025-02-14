@@ -1,6 +1,7 @@
 package com.iroumec.gui;
 
-import com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.Diagram;
+import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.derivation.DerivationManager;
 
 import javax.swing.*;

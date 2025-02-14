@@ -1,7 +1,7 @@
 package com.iroumec.eerd.components.attribute.internal.presences;
 
-import main.java.com.iroumec.bdd.derivation.elements.Element;
-import main.java.com.iroumec.bdd.derivation.elements.containers.Holder;
+import com.iroumec.derivation.elements.Element;
+import com.iroumec.derivation.elements.containers.Holder;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

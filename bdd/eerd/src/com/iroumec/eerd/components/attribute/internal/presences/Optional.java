@@ -1,10 +1,10 @@
 package com.iroumec.eerd.components.attribute.internal.presences;
 
-import main.java.com.iroumec.bdd.derivation.elements.Element;
-import main.java.com.iroumec.bdd.derivation.elements.ElementDecorator;
-import main.java.com.iroumec.bdd.derivation.elements.containers.Holder;
-import main.java.com.iroumec.bdd.derivation.elements.containers.Replacer;
-import main.java.com.iroumec.bdd.derivation.elements.containers.sources.Common;
+import com.iroumec.derivation.elements.Element;
+import com.iroumec.derivation.elements.ElementDecorator;
+import com.iroumec.derivation.elements.containers.Holder;
+import com.iroumec.derivation.elements.containers.Replacer;
+import com.iroumec.eerd.components.attribute.internal.roles.Common;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

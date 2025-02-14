@@ -1,6 +1,6 @@
 package com.iroumec.eerd.components.attribute.external;
 
-import main.java.com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
 import com.iroumec.eerd.components.attribute.internal.cardinalities.Univalued;
 import com.iroumec.eerd.components.attribute.internal.presences.Obligatory;
@@ -9,7 +9,7 @@ import com.iroumec.eerd.components.attribute.internal.presences.Presence;
 import com.iroumec.eerd.components.attribute.internal.roles.Alternative;
 import com.iroumec.eerd.components.attribute.internal.roles.Main;
 import com.iroumec.eerd.components.attribute.internal.roles.Rol;
-import main.java.com.iroumec.bdd.derivation.Derivation;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;

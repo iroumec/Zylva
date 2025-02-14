@@ -1,6 +1,6 @@
 package com.iroumec.components.line.guard;
 
-import com.iroumec.GUI.Diagram;
+import com.iroumec.Diagram;
 import com.iroumec.components.line.Line;
 import org.jetbrains.annotations.NotNull;
 

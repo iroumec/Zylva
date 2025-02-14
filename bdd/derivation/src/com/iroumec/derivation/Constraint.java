@@ -2,7 +2,7 @@ package com.iroumec.derivation;
 
 import com.iroumec.derivation.elements.Element;
 import com.iroumec.derivation.elements.ElementDecorator;
-import com.iroumec.GUI.*;
+import com.iroumec.structures.Pair;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,12 +1,11 @@
 package com.iroumec.eerd.components.attribute.external;
 
-import main.java.com.iroumec.GUI.Component;
+import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
 import com.iroumec.eerd.components.attribute.internal.cardinalities.Univalued;
 import com.iroumec.eerd.components.attribute.internal.presences.Obligatory;
 import com.iroumec.eerd.components.attribute.internal.presences.Presence;
 import com.iroumec.eerd.components.attribute.internal.roles.Rol;
-import main.java.com.iroumec.bdd.derivation.Derivation;
 
 import javax.swing.*;
 import java.awt.*;

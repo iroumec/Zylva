@@ -1,12 +1,11 @@
 package com.iroumec.eerd.components.relationship;
 
-import main.java.com.iroumec.GUI.Component;
-import main.java.com.iroumec.bdd.eerd.EERDiagram;
+import com.iroumec.eerd.EERDiagram;
 import com.iroumec.eerd.components.EERComponent;
 import com.iroumec.eerd.components.relationship.relatable.Relatable;
 import com.iroumec.eerd.components.relationship.relatable.RelatableImplementation;
-import main.java.com.iroumec.bdd.derivation.Derivable;
-import main.java.com.iroumec.bdd.derivation.Derivation;
+import com.iroumec.derivation.Derivable;
+import com.iroumec.derivation.Derivation;
 
 import javax.swing.*;
 import java.awt.*;

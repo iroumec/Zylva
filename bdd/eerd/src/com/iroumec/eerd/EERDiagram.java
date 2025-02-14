@@ -1,15 +1,15 @@
 package com.iroumec.eerd;
 
-import main.java.com.iroumec.GUI.Component;
-import main.java.com.iroumec.GUI.components.line.guard.Guard;
-import main.java.com.iroumec.bdd.eerd.components.EERComponent;
-import main.java.com.iroumec.bdd.eerd.components.entity.EntityWrapper;
-import main.java.com.iroumec.GUI.components.line.Line;
-import main.java.com.iroumec.GUI.components.note.Note;
-import main.java.com.iroumec.bdd.eerd.components.entity.Hierarchy;
-import main.java.com.iroumec.bdd.eerd.components.relationship.Relationship;
-import main.java.com.iroumec.GUI.Diagram;
-import main.java.com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.components.Component;
+import com.iroumec.Diagram;
+import com.iroumec.components.line.Line;
+import com.iroumec.components.line.guard.Guard;
+import com.iroumec.components.note.Note;
+import com.iroumec.eerd.components.EERComponent;
+import com.iroumec.eerd.components.entity.EntityWrapper;
+import com.iroumec.eerd.components.entity.Hierarchy;
+import com.iroumec.eerd.components.relationship.Relationship;
+import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
