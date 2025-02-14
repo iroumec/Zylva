@@ -1,8 +1,9 @@
 module bdd {
-    requires java.base;
+    exports com.iroumec.eerd;
     requires java.logging;
-    requires java.desktop;
     requires java.sql;
 
     requires common;
+    requires org.jetbrains.annotations;
+    requires java.desktop;
 }
