@@ -472,18 +472,6 @@ public class Hierarchy extends EERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public List<Component> getComponentsForRemoval() {
-
-        List<Component> out = new ArrayList<>(this.parentLine.getComponentsForRemoval());
-
-        out.add(this.parentLine);
-
-        return out;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
     public String getIdentifier() {
         return "";
     }

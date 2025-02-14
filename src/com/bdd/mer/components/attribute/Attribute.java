@@ -1,19 +1,12 @@
 package com.bdd.mer.components.attribute;
 
 import com.bdd.GUI.Component;
-import com.bdd.mer.components.attribute.cardinality.Cardinality;
-import com.bdd.mer.components.attribute.cardinality.Univalued;
-import com.bdd.mer.components.attribute.presence.Obligatory;
-import com.bdd.mer.components.attribute.presence.Presence;
-import com.bdd.mer.components.attribute.rol.Rol;
 import com.bdd.mer.derivation.Derivable;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class Attribute extends AttributableEERComponent implements Derivable {
-
-    // Al this symbols should be changed.
+public class Attribute extends DescAttrEERComp implements Derivable {
 
     private final Rol rol;
     private Presence presence;
@@ -22,7 +15,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /**
      * {@code Attribute}'s owner.
      */
-    private final AttributableEERComponent owner;
+    private final DescAttrEERComp owner;
 
     public final static int lineLength = 25;
     public final static int circleRadius = 5;
@@ -56,12 +49,6 @@ public class Attribute extends AttributableEERComponent implements Derivable {
 
         this.diagram.repaint();
     }
-
-    /**
-     *
-     * @return {@code TRUE} if the {@code Attribute} is main.
-     */
-    public boolean isMain() { return false; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                       Overridden Methods and Related                                           */
@@ -194,18 +181,6 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         g2.setColor(Color.BLACK);
     }
 
-    public boolean isMultivalued () {
-        return this.ending == AttributeMultivalued.MULTIVALUED;
-    }
-
-    public boolean isOptional() {
-        return this.arrow == AttributeOptionality.OPTIONAL;
-    }
-
-    public boolean isAlternative() {
-        return this.symbol == AttributeType.ALTERNATIVE;
-    }
-
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Builder                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -215,13 +190,13 @@ public class Attribute extends AttributableEERComponent implements Derivable {
         // Required parameters.
         public final Rol rol;
         public final String text;
-        public final AttributableEERComponent owner;
+        public final DescAttrEERComp owner;
 
-        // Optional parameters - initialized with a default value.
-        public Presence presence = Obligatory.getInstance();
-        public Cardinality cardinality = Univalued.getInstance();
+        // OptionalPresence parameters - initialized with a default value.
+        public Presence presence = ObligatoryPresence.getInstance();
+        public Cardinality cardinality = UnivaluedCardinality.getInstance();
 
-        public Builder(Rol rol, String text, AttributableEERComponent owner) {
+        public Builder(Rol rol, String text, DescAttrEERComp owner) {
             this.rol = rol;
             this.text = text;
             this.owner = owner;
@@ -250,22 +225,9 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        JPopupMenu popupMenu = new JPopupMenu();
+        JPopupMenu popupMenu = this.rol.getPopupMenu(this);
 
-        JMenuItem item = new JMenuItem("action.addAttribute");
-        item.addActionListener(_ -> this.addAttribute());
-        popupMenu.add(item);
-
-        item = new JMenuItem("action.swapOptionality");
-        item.addActionListener(_ -> this.swapPresence());
-        popupMenu.add(item);
-
-        item = new JMenuItem("action.swapMultivalued");
-        item.addActionListener(_ -> this.swapCardinality());
-        // noinspection DuplicatedCode
-        popupMenu.add(item);
-
-        item = new JMenuItem("action.rename");
+        JMenuItem item = new JMenuItem("action.rename");
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
@@ -279,7 +241,7 @@ public class Attribute extends AttributableEERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+    protected void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
 
         Rectangle bounds = this.getBounds();
 

@@ -106,7 +106,7 @@ public class Line extends Component {
         private final Component firstComponent;
         private final Component secondComponent;
 
-        // Optional parameters - initialized to default values
+        // OptionalPresence parameters - initialized to default values
         private LineShape lineShape = new DirectLine();
         private LineMultiplicity lineMultiplicity = new SingleLine();
         private int strokeWidth = 1;

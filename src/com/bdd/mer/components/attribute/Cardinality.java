@@ -1,4 +1,4 @@
-package com.bdd.mer.components.attribute.cardinality;
+package com.bdd.mer.components.attribute;
 
 import java.awt.*;
 

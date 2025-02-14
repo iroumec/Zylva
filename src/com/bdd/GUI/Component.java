@@ -159,7 +159,7 @@ public abstract class Component implements Serializable {
      *
      * @param isSelected New selection state.
      */
-    public void setSelected(boolean isSelected) { this.selected = isSelected; }
+    protected void setSelected(boolean isSelected) { this.selected = isSelected; }
 
     /**
      *
@@ -227,11 +227,6 @@ public abstract class Component implements Serializable {
      */
     public void showPopupMenu(java.awt.Component origin, int x, int y) {
         this.popupMenu.show(origin, x, y);
-    }
-
-    public List<Component> getComponentsForRemoval() {
-
-        return new ArrayList<>();
     }
 
     private void setDiagram(Diagram diagram) {

@@ -1,8 +1,8 @@
 package com.bdd.mer.components.entity;
 
 import com.bdd.mer.EERDiagram;
-import com.bdd.mer.components.attribute.AttributableEERComponent;
 import com.bdd.GUI.Component;
+import com.bdd.mer.components.attribute.IdAttrEERComp;
 import com.bdd.mer.components.hierarchy.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityWrapper extends AttributableEERComponent implements Relatable {
+public class EntityWrapper extends IdAttrEERComp implements Relatable {
 
     /**
      * Wrapped entity.
@@ -251,7 +251,7 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem item = new JMenuItem("action.addAttribute");
-        item.addActionListener(_ -> this.addComplexAttribute());
+        item.addActionListener(_ -> this.addAttribute());
         popupMenu.add(item);
 
         item = new JMenuItem("action.addReflexiveRelationship");
@@ -304,7 +304,7 @@ public class EntityWrapper extends AttributableEERComponent implements Relatable
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+    protected void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
 
         Rectangle bounds = this.getBounds();
 

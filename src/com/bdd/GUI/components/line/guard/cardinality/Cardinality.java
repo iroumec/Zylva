@@ -107,7 +107,7 @@ public class Cardinality extends Guard {
      * It parses a text to <Code>Integer</Code> if it's possible.
      *
      * @param text Text to be parsed.
-     * @return {@code Optional<Integer>} containing the parsed text if it was possible.
+     * @return {@code OptionalPresence<Integer>} containing the parsed text if it was possible.
      */
     private Optional<Integer> parseInteger(String text) {
         try {

@@ -32,7 +32,7 @@ public class MenuBar extends JMenuBar {
             public void mouseDragged(MouseEvent e) {
                 // Mouse position in the frame.
                 Point p = mainFrame.getLocation();
-                // Main frame location is updated.
+                // MainRol frame location is updated.
                 mainFrame.setLocation(p.x + e.getX() - point.x, p.y + e.getY() - point.y);
             }
         });

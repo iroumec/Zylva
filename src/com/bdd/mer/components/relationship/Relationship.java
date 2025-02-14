@@ -2,7 +2,7 @@ package com.bdd.mer.components.relationship;
 
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
-import com.bdd.mer.components.attribute.AttributableEERComponent;
+import com.bdd.mer.components.attribute.DescAttrEERComp;
 import com.bdd.GUI.Component;
 import com.bdd.mer.components.attribute.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
@@ -22,7 +22,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public final class Relationship extends AttributableEERComponent {
+public final class Relationship extends DescAttrEERComp {
 
     /**
      * Participant of the relationship.
@@ -75,8 +75,8 @@ public final class Relationship extends AttributableEERComponent {
 
             out.add((Component) participant.getKey());
 
-            if (participant.getKey() instanceof AttributableEERComponent attributableEERComponent) {
-                out.addAll(attributableEERComponent.getAttributes());
+            if (participant.getKey() instanceof DescAttrEERComp descAttrEERComp) {
+                out.addAll(descAttrEERComp.getAttributes());
             }
 
             out.addAll(participant.getValue());
@@ -278,33 +278,8 @@ public final class Relationship extends AttributableEERComponent {
 
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     @Override
-    public List<Component> getComponentsForRemoval() {
-
-        List<Component> out = super.getComponentsForRemoval();
-
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
-
-            List<Line> lines = participant.getValue();
-
-            for (Line line : lines) {
-                out.addAll(line.getComponentsForRemoval());
-                out.add(line);
-            }
-        }
-
-        if (this.association != null) {
-            out.addAll(this.association.getComponentsForRemoval());
-            out.add(this.association);
-        }
-
-        return out;
-    }
-
-    @Override
-    public void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+    protected void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
 
         Rectangle bounds = this.getBounds();
 

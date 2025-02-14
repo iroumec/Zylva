@@ -128,24 +128,6 @@ public class Association extends EERComponent implements Relatable, Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public List<Component> getComponentsForRemoval() {
-
-        List<Component> out = super.getComponentsForRemoval();
-
-        // If a relationship has three or more participating entities, if I setForDelete one, it can still exist.
-        for (Relationship relationship : this.relationshipsManager.getRelationships()) {
-            if (relationship.getNumberOfParticipants() <= 2) {
-                out.addAll(relationship.getComponentsForRemoval());
-                out.add(relationship);
-            }
-        }
-
-        return out;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
     public void addRelationship(Relationship relationship) {
         this.relationshipsManager.addRelationship(relationship);
     }

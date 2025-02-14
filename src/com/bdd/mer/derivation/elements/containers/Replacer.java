@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Replace the derivation reference for the derivation according to the source.
  * <p></p>
- * If the source is a {@code Common}, there will be not RIR.
+ * If the source is a {@code CommonRol}, there will be not RIR.
  */
 public class Replacer implements Holder {
 

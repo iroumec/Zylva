@@ -1,33 +1,33 @@
-package com.bdd.mer.components.attribute.cardinality;
+package com.bdd.mer.components.attribute;
 
 import java.awt.*;
 
-public class Multivalued implements Cardinality {
+public class MultivaluedCardinality implements Cardinality {
 
     private final int arrowWidth;
     private final int arrowHeight;
-    private final static Multivalued defaultInstance = new Multivalued(3, 3);
+    private final static MultivaluedCardinality defaultInstance = new MultivaluedCardinality(3, 3);
 
-    private Multivalued(int arrowWidth, int arrowHeight) {
+    private MultivaluedCardinality(int arrowWidth, int arrowHeight) {
 
         this.arrowWidth = arrowWidth;
         this.arrowHeight = arrowHeight;
     }
 
-    public static Multivalued getInstance() {
+    public static MultivaluedCardinality getInstance() {
 
         return defaultInstance;
     }
 
     @SuppressWarnings("unused")
-    public Multivalued getInstance(int arrowWidth, int arrowHeight) {
+    public MultivaluedCardinality getInstance(int arrowWidth, int arrowHeight) {
 
-        return new Multivalued(arrowWidth, arrowHeight);
+        return new MultivaluedCardinality(arrowWidth, arrowHeight);
     }
 
     @Override
     public Cardinality getOpposite() {
-        return Univalued.getInstance();
+        return UnivaluedCardinality.getInstance();
     }
 
     @Override

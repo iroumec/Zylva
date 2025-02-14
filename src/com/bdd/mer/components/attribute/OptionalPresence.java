@@ -1,16 +1,16 @@
-package com.bdd.mer.components.attribute.presence;
+package com.bdd.mer.components.attribute;
 
 import com.bdd.mer.components.attribute.symbology.AttributeOptionality;
 
 import java.awt.*;
 
-public final class Optional implements Presence {
+public final class OptionalPresence implements Presence {
 
-    private final static Optional instance = new Optional();
+    private final static OptionalPresence instance = new OptionalPresence();
 
-    private Optional() {}
+    private OptionalPresence() {}
 
-    public static Optional getInstance() {
+    public static OptionalPresence getInstance() {
 
         return instance;
     }
@@ -18,7 +18,7 @@ public final class Optional implements Presence {
     @Override
     public Presence getOpposite() {
 
-        return Obligatory.getInstance();
+        return ObligatoryPresence.getInstance();
     }
 
     @Override
