@@ -1,14 +1,14 @@
 package com.iroumec.eerd.components.attribute;
 
 import com.iroumec.derivation.Derivation;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Univalued;
-import com.iroumec.eerd.components.attribute.internal.presences.Obligatory;
-import com.iroumec.eerd.components.attribute.internal.presences.Optional;
-import com.iroumec.eerd.components.attribute.internal.presences.Presence;
-import com.iroumec.eerd.components.attribute.internal.roles.Alternative;
-import com.iroumec.eerd.components.attribute.internal.roles.Main;
-import com.iroumec.eerd.components.attribute.internal.roles.Rol;
+import com.iroumec.eerd.components.attribute.cardinalities.Cardinality;
+import com.iroumec.eerd.components.attribute.cardinalities.Univalued;
+import com.iroumec.eerd.components.attribute.presences.Obligatory;
+import com.iroumec.eerd.components.attribute.presences.Optional;
+import com.iroumec.eerd.components.attribute.presences.Presence;
+import com.iroumec.eerd.components.attribute.roles.Alternative;
+import com.iroumec.eerd.components.attribute.roles.Main;
+import com.iroumec.eerd.components.attribute.roles.Rol;
 import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;

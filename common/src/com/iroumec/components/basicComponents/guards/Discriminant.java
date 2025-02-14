@@ -1,12 +1,12 @@
-package com.iroumec.components.basicComponents.line.guard;
+package com.iroumec.components.basicComponents.guards;
 
-import com.iroumec.components.Diagram;
+import com.iroumec.components.basicComponents.Guard;
 import com.iroumec.components.basicComponents.Line;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class Discriminant extends Guard {
+public final class Discriminant extends Guard {
 
     public Discriminant(@NotNull String text, Line line) {
         super(text, line);

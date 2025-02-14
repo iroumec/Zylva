@@ -10,7 +10,7 @@ import com.iroumec.components.basicComponents.line.lineShape.LineShape;
 import javax.swing.*;
 import java.awt.*;
 
-public class Line extends Component {
+public final class Line extends Component {
 
     private final Component firstComponent;
     private final Component secondComponent;

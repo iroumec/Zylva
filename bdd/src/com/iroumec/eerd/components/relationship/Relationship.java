@@ -2,11 +2,13 @@ package com.iroumec.eerd.components.relationship;
 
 import com.iroumec.components.Component;
 import com.iroumec.components.basicComponents.Line;
+import com.iroumec.components.basicComponents.guards.StaticCardinality;
+import com.iroumec.components.basicComponents.line.lineMultiplicity.DoubleLine;
+import com.iroumec.components.basicComponents.line.lineShape.SquaredLine;
 import com.iroumec.eerd.EERDiagram;
 import com.iroumec.eerd.components.association.Association;
 import com.iroumec.eerd.components.attribute.DescAttrEERComp;
-import com.iroumec.eerd.components.attribute.Attribute;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
+import com.iroumec.components.basicComponents.guards.Cardinality;
 import com.iroumec.eerd.components.entity.EntityWrapper;
 import com.iroumec.eerd.components.relationship.relatable.Relatable;
 import com.iroumec.structures.Pair;
@@ -372,9 +374,9 @@ public final class Relationship extends DescAttrEERComp {
                 Cardinality cardinality;
 
                 if (numberOfComponents == 2) {
-                    cardinality = new Cardinality("1", "N", line, diagram);
+                    cardinality = new Cardinality("1", "N", line);
                 } else {
-                    cardinality = new Cardinality("0", "N", line, diagram);
+                    cardinality = new Cardinality("0", "N", line);
                 }
                 newComponents.add(cardinality);
 
@@ -428,8 +430,8 @@ public final class Relationship extends DescAttrEERComp {
                 (Component) relatable).lineShape(new SquaredLine()).build();
         newComponents.add(secondLine);
 
-        Cardinality firstCardinality = new Cardinality("1", "N", firstLine, diagram);
-        Cardinality secondCardinality = new Cardinality("1", "N", secondLine, diagram);
+        Cardinality firstCardinality = new Cardinality("1", "N", firstLine);
+        Cardinality secondCardinality = new Cardinality("1", "N", secondLine);
 
         newComponents.add(firstCardinality);
         newComponents.add(secondCardinality);
@@ -492,7 +494,7 @@ public final class Relationship extends DescAttrEERComp {
                     ).lineMultiplicity(new DoubleLine(3)).build();
                     componentsToAdd.add(strongLine);
 
-                    Cardinality cardinality = new Cardinality("1", "N", strongLine, diagram);
+                    Cardinality cardinality = new Cardinality("1", "N", strongLine);
                     componentsToAdd.add(cardinality);
 
                     newRelationship.addParticipant(entity, strongLine);
@@ -506,7 +508,7 @@ public final class Relationship extends DescAttrEERComp {
                     componentsToAdd.add(weakLine);
 
                     // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
-                    Cardinality staticCardinality = new StaticCardinality("1", "1", weakLine, diagram);
+                    Cardinality staticCardinality = new StaticCardinality("1", "1", weakLine);
                     componentsToAdd.add(staticCardinality);
 
                     newRelationship.addParticipant(entity, weakLine);

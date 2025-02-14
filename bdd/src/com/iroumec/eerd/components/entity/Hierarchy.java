@@ -3,7 +3,7 @@ package com.iroumec.eerd.components.entity;
 import com.iroumec.components.Component;
 import com.iroumec.components.Diagram;
 import com.iroumec.components.basicComponents.Line;
-import com.iroumec.components.basicComponents.line.guard.Discriminant;
+import com.iroumec.components.basicComponents.guards.Discriminant;
 import com.iroumec.components.basicComponents.line.lineMultiplicity.DoubleLine;
 import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
@@ -338,7 +338,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
                 return null;
             }
 
-            Discriminant discriminant = new Discriminant(discriminantText, parentLine, diagram);
+            Discriminant discriminant = new Discriminant(discriminantText, parentLine);
 
             componentsToAdd.add(discriminant);
         }

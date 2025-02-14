@@ -1,5 +1,6 @@
 package com.iroumec.gui;
 
+import com.iroumec.components.Diagram;
 import com.iroumec.executables.Item;
 import com.iroumec.userPreferences.LanguageManager;
 
@@ -14,10 +15,16 @@ final class FileMenu extends JMenu {
     private final MenuBar owner;
     private final List<Item> items;
 
-    public FileMenu(MenuBar owner) {
+    public FileMenu(MenuBar owner, Diagram diagram) {
         this.setText(LanguageManager.getMessage(LANGUAGE_KEY));
         this.owner = owner;
         this.items = new ArrayList<>();
+
+        List<Item> items = diagram.getFileMenuItems();
+
+        for (Item item : items) {
+            this.addExecutableItem(item);
+        }
     }
 
     public void addExecutableItem(Item item) {

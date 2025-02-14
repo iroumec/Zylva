@@ -2,7 +2,6 @@ package com.iroumec.components;
 
 import com.iroumec.executables.Button;
 import com.iroumec.executables.Item;
-import com.iroumec.gui.FileMenu;
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.userPreferences.Preference;
 import com.iroumec.userPreferences.UserPreferences;

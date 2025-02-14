@@ -1,4 +1,4 @@
-package com.iroumec.eerd.components.attribute.internal.cardinalities;
+package com.iroumec.eerd.components.attribute.cardinalities;
 
 import com.iroumec.derivation.Derivation;
 import com.iroumec.derivation.elements.ElementDecorator;

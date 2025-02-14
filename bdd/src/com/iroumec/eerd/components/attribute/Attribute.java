@@ -2,11 +2,11 @@ package com.iroumec.eerd.components.attribute;
 
 import com.iroumec.components.Component;
 import com.iroumec.derivation.Derivation;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Univalued;
-import com.iroumec.eerd.components.attribute.internal.presences.Obligatory;
-import com.iroumec.eerd.components.attribute.internal.presences.Presence;
-import com.iroumec.eerd.components.attribute.internal.roles.Rol;
+import com.iroumec.eerd.components.attribute.cardinalities.Cardinality;
+import com.iroumec.eerd.components.attribute.cardinalities.Univalued;
+import com.iroumec.eerd.components.attribute.presences.Obligatory;
+import com.iroumec.eerd.components.attribute.presences.Presence;
+import com.iroumec.eerd.components.attribute.roles.Rol;
 
 import javax.swing.*;
 import java.awt.*;

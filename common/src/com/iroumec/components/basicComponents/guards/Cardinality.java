@@ -1,8 +1,8 @@
-package com.iroumec.components.basicComponents.line.guard.cardinality;
+package com.iroumec.components.basicComponents.guards;
 
 import com.iroumec.components.basicComponents.Line;
 import com.iroumec.userPreferences.LanguageManager;
-import com.iroumec.components.basicComponents.line.guard.Guard;
+import com.iroumec.components.basicComponents.Guard;
 import com.iroumec.structures.Pair;
 
 import javax.swing.*;

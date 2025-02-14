@@ -1,4 +1,4 @@
-package com.iroumec.eerd.components.attribute.internal.presences;
+package com.iroumec.eerd.components.attribute.presences;
 
 import com.iroumec.derivation.elements.Element;
 import com.iroumec.derivation.elements.ElementDecorator;

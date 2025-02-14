@@ -1,4 +1,4 @@
-package com.iroumec.eerd.components.attribute.internal.roles;
+package com.iroumec.eerd.components.attribute.roles;
 
 import com.iroumec.derivation.Derivation;
 import com.iroumec.derivation.elements.SingleElement;
@@ -6,10 +6,10 @@ import com.iroumec.derivation.elements.containers.Final;
 import com.iroumec.derivation.elements.containers.Holder;
 import com.iroumec.eerd.components.attribute.Attribute;
 import com.iroumec.eerd.components.attribute.DescAttrEERComp;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Univalued;
-import com.iroumec.eerd.components.attribute.internal.presences.Obligatory;
-import com.iroumec.eerd.components.attribute.internal.presences.Presence;
+import com.iroumec.eerd.components.attribute.cardinalities.Cardinality;
+import com.iroumec.eerd.components.attribute.cardinalities.Univalued;
+import com.iroumec.eerd.components.attribute.presences.Obligatory;
+import com.iroumec.eerd.components.attribute.presences.Presence;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

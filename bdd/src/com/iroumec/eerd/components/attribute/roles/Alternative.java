@@ -1,14 +1,16 @@
-package com.iroumec.eerd.components.attribute.internal.roles;
+package com.iroumec.eerd.components.attribute.roles;
 
 import com.iroumec.derivation.Derivation;
 import com.iroumec.derivation.elements.Element;
+import com.iroumec.derivation.elements.ElementDecorator;
 import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.derivation.elements.containers.Final;
 import com.iroumec.derivation.elements.containers.Holder;
 import com.iroumec.eerd.components.attribute.Attribute;
-import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
 import com.iroumec.eerd.components.attribute.DescAttrEERComp;
-import com.iroumec.eerd.components.attribute.internal.presences.Presence;
+import com.iroumec.eerd.components.attribute.cardinalities.Cardinality;
+import com.iroumec.eerd.components.attribute.cardinalities.Univalued;
+import com.iroumec.eerd.components.attribute.presences.Presence;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -16,13 +18,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Common implements Rol {
+public final class Alternative implements Rol {
 
-    private final static Common instance = new Common();
+    private static final Alternative instance = new Alternative();
 
-    private Common() {}
+    private Alternative() {}
 
-    public static Common getInstance() {
+    public static Alternative getInstance() {
 
         return instance;
     }
@@ -33,52 +35,43 @@ public final class Common implements Rol {
         JPopupMenu popupMenu = new JPopupMenu();
 
         JMenuItem item = new JMenuItem("action.addAttribute");
-        item.addActionListener(_ -> attribute.addAttribute());
+        item.addActionListener(_ -> attribute.addAttribute(Univalued.getInstance()));
         popupMenu.add(item);
 
         item = new JMenuItem("action.swapOptionality");
         item.addActionListener(_ -> attribute.swapPresence());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.swapMultivalued");
-        item.addActionListener(_ -> attribute.swapCardinality());
-        popupMenu.add(item);
-
         return popupMenu;
     }
 
     @Override
-    @SuppressWarnings("unused")
+    @SuppressWarnings("Duplicates")
     public List<Derivation> getDerivations(@NotNull DescAttrEERComp owner,
                                            @NotNull Attribute attribute,
                                            @NotNull Presence presence,
                                            @NotNull Cardinality cardinality) {
 
+        List<Derivation> out = new ArrayList<>();
+        Derivation derivation = new Derivation(owner.getIdentifier());
 
-
-        if (cardinality.generatesDerivation()) {
-            return cardinality.getDerivations(owner, attribute);
+        // TODO: transform this in function.
+        Holder holder;
+        if (attribute.isCompound()) {
+            // The presence will be always obligatory.
+            holder = presence.getHolder();
         } else {
-
-            List<Derivation> out = new ArrayList<>();
-
-            Derivation derivation = new Derivation(owner.getIdentifier());
-
-            Holder holder;
-            if (attribute.isCompound()) {
-                // The presence will be always obligatory.
-                holder = presence.getHolder();
-            } else {
-                holder = Final.getInstance();
-            }
-
-            Element element = new SingleElement(attribute.getIdentifier(), holder);
-            derivation.addCommonElement(element);
-
-            out.add(derivation);
-
-            return out;
+            holder = Final.getInstance();
         }
+
+        Element element = new SingleElement(attribute.getIdentifier(), holder);
+        element.addDecoration(ElementDecorator.ALTERNATIVE);
+        presence.addDecoration(element);
+
+        derivation.addCommonElement(element);
+        out.add(derivation);
+
+        return out;
     }
 
     @Override
@@ -87,5 +80,6 @@ public final class Common implements Rol {
         int doubleRadius = radius * 2;
 
         g2.drawOval(x, y, doubleRadius, doubleRadius);
+        g2.fillArc(x, y, doubleRadius, doubleRadius, 90, 180);  // Left middle filled.
     }
 }

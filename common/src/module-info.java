@@ -6,7 +6,8 @@ module common {
     exports com.iroumec.components.basicComponents;
     exports com.iroumec.structures;
     exports com.iroumec.components.basicComponents.line.lineMultiplicity;
-    exports com.iroumec.components.basicComponents.line.guard;
+    exports com.iroumec.components.basicComponents.guards;
+    exports com.iroumec.components.basicComponents.line.lineShape;
     requires java.desktop;
     requires org.jetbrains.annotations;
     requires java.prefs;

@@ -1,7 +1,6 @@
-package com.iroumec.components.basicComponents.line.guard;
+package com.iroumec.components.basicComponents;
 
 import com.iroumec.components.Component;
-import com.iroumec.components.basicComponents.Line;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

@@ -27,6 +27,7 @@ public final class Button extends JButton {
         this.requieresLanguageReset = requieresLanguageReset;
     }
 
+    @SuppressWarnings("unused")
     public void resetLanguage() {
 
         if (key != null) {
@@ -35,6 +36,7 @@ public final class Button extends JButton {
 
     }
 
+    @SuppressWarnings("unused")
     public boolean requireLanguageReset() {
         return this.requieresLanguageReset;
     }

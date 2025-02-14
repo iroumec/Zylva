@@ -28,7 +28,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
      *
      * @param relationship Core {@code Relationship} forming the association.
      */
-    Association(Relationship relationship) {
+    public Association(Relationship relationship) {
         super();
         this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
