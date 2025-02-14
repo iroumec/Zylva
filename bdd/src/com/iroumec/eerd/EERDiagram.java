@@ -81,14 +81,6 @@ public final class EERDiagram extends Diagram {
     }
 
     @Override
-    public List<Button> getMenuBarButtons() {
-
-        List<Button> out = super.getMenuBarButtons();
-
-        return out;
-    }
-
-    @Override
     public List<Button> getMainFrameKeys() {
 
         List<Button> out = super.getMainFrameKeys();

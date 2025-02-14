@@ -15,7 +15,7 @@ class MenuBar extends JMenuBar {
     private final static String CLEAN_KEY = "clean";
     private final Button cleanFrameButton, helpButton;
 
-    // TODO: separate this gigant constructor in various methods.
+    // TODO: separate this giant constructor in various methods.
     public MenuBar(MainFrame mainFrame, Diagram diagram) {
 
         this.owner = mainFrame;
