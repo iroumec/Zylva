@@ -79,7 +79,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
         if (newHierarchy.isChild(this)) {
             for (Hierarchy hierarchy : this.hierarchies) {
                 if (hierarchy.isChild(this)) {
-                    if (!hierarchy.getParent().hasAHierarchyInCommon(newHierarchy.getParent())) {
+                    if (hierarchy.parentsHaveHierarchyInCommon(newHierarchy)) {
                         return false;
                     }
                 }
@@ -124,7 +124,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
      * @param entity Entity to be compared.
      * @return {@code TRUE} if they have a hierarchy in common.
      */
-    private boolean hasAHierarchyInCommon(EntityWrapper entity) {
+    boolean hasAHierarchyInCommon(EntityWrapper entity) {
 
         for (Hierarchy hierarchy : this.hierarchies) {
 

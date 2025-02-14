@@ -72,16 +72,21 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @param entity Child to be added.
      */
-    public void addChild(EntityWrapper entity) {
+    private void addChild(EntityWrapper entity) {
         this.children.add(entity);
     }
 
     /**
      *
-     * @return The parent of the hierarchy.
+     * @return {@code TRUE} if the parent of this hierarchy has a hierarchy in common
+     * with the parent of the hierarchy passed as parameter.
      */
-    public EntityWrapper getParent() { return this.parent; }
+    boolean parentsHaveHierarchyInCommon(Hierarchy secondHierarchy) {
 
+        return this.parent.hasAHierarchyInCommon(secondHierarchy.parent);
+
+
+    }
     /**
      *
      * @return A list containing the children of the hierarchy.
@@ -128,7 +133,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @return Number of children in the hierarchy.
      */
-    public int getNumberOfChildren() {
+    private int getNumberOfChildren() {
         return this.children.size();
     }
 
@@ -137,9 +142,10 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @param line New {@code Line} drawn to the parent.
      */
-    public void setParentLine(Line line) {
+    private void setParentLine(Line line) {
         this.parentLine = line;
     }
+    // TODO: necessary?
 
     /**
      * Swaps the hierarchy's exclusivity.
@@ -252,7 +258,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      * @param parent Entity parent of the hierarchy.
      * @return {@code Hierarchy} according to the options selected by the user.
      */
-    public static Pair<Hierarchy, List<Component>> getHierarchy(Diagram diagram, EntityWrapper parent) {
+    private static Pair<Hierarchy, List<Component>> getHierarchy(Diagram diagram, EntityWrapper parent) {
 
         // The radio buttons are created.
         JRadioButton exclusiveButton = new JRadioButton(LanguageManager.getMessage("hierarchy.exclusive"), true);
@@ -345,7 +351,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @return {@code Hierarchy} selected to be the parent of the {@code Hierarchy}.
      */
-    public static @Nullable EntityWrapper selectParent(Diagram diagram, List<EntityWrapper> entities) {
+    private static @Nullable EntityWrapper selectParent(Diagram diagram, List<EntityWrapper> entities) {
 
         Object[] opciones = new Object[entities.size()];
 
@@ -372,7 +378,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      * @param parent {@code Entity} chosen as the parent of the hierarchy.
      * @return {@code List<Entity>} containing the children entities of the hierarchy.
      */
-    public static List<EntityWrapper> getChildrenList(EntityWrapper parent, List<EntityWrapper> entities) {
+    private static List<EntityWrapper> getChildrenList(EntityWrapper parent, List<EntityWrapper> entities) {
 
         List<EntityWrapper> out = new ArrayList<>(entities);
         out.remove((parent));
@@ -384,7 +390,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @return {@code TRUE} if the hierarchy is exclusive or disjunct.
      */
-    public boolean isExclusive() {
+    private boolean isExclusive() {
         return this.isDisjunct();
     }
 
@@ -392,7 +398,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @return {@code TRUE} if the hierarchy is exclusive or disjunct.
      */
-    public boolean isDisjunct() {
+    private boolean isDisjunct() {
         return this.symbol == HierarchySymbol.DISJUNCT;
     }
 
@@ -400,7 +406,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      *
      * @return The discriminant of the hierarchy.
      */
-    public String getDiscriminant() {
+    private String getDiscriminant() {
         return this.parentLine.getText();
     }
 
@@ -482,6 +488,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
 
         List<DerivationObject> out = new ArrayList<>();
 
+        // TODO: I cannot be asking for the type...
         if (this.isExclusive()) {
             DerivationObject parentDerivation = new SingularDerivation(this.parent.getIdentifier());
             parentDerivation.addAttribute(this.getDiscriminant());

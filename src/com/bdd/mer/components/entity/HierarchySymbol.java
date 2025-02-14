@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public enum HierarchySymbol implements Serializable {
 
+    // TODO: this must be improved.
+
     DISJUNCT("d"),
     OVERLAPPING("o");
 
