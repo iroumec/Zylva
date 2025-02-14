@@ -383,7 +383,7 @@ public abstract class Component implements Serializable {
     private static int componentsBeingProcessed = 0;
     private static final List<Component> deletionList = new ArrayList<>();
 
-    public abstract boolean canBeDeleted();
+    protected abstract boolean canBeDeleted();
 
     /**
      * Each component knows when it must be deleted.

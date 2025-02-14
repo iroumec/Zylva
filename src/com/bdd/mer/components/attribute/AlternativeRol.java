@@ -3,13 +3,13 @@ package com.bdd.mer.components.attribute;
 import javax.swing.*;
 import java.awt.*;
 
-public class AlternativeRol implements Rol {
+final class AlternativeRol implements Rol {
 
     private static final AlternativeRol instance = new AlternativeRol();
 
     private AlternativeRol() {}
 
-    public static AlternativeRol getInstance() {
+    static AlternativeRol getInstance() {
 
         return instance;
     }

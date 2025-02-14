@@ -2,13 +2,13 @@ package com.bdd.mer.components.attribute;
 
 import java.awt.*;
 
-public class UnivaluedCardinality implements Cardinality {
+final class UnivaluedCardinality implements Cardinality {
 
     private final static UnivaluedCardinality instance = new UnivaluedCardinality();
 
     private UnivaluedCardinality() {}
 
-    public static UnivaluedCardinality getInstance() {
+    static UnivaluedCardinality getInstance() {
         return instance;
     }
 

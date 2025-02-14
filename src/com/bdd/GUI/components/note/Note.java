@@ -145,7 +145,7 @@ public final class Note extends Component {
     }
 
     @Override
-    public boolean canBeDeleted() {
+    protected boolean canBeDeleted() {
         return true;
     }
 }

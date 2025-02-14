@@ -4,7 +4,7 @@ import com.bdd.GUI.components.note.Note;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
 import com.bdd.mer.components.entity.EntityWrapper;
-import com.bdd.mer.components.hierarchy.Hierarchy;
+import com.bdd.mer.components.entity.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 
 import javax.swing.*;

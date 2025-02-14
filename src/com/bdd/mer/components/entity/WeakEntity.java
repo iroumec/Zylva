@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Weak entity. This is an entity whose identification or existence depends on another one.
  */
-class WeakEntity implements Entity {
+final class WeakEntity implements Entity {
 
     final EntityWrapper entityWrapper;
 
@@ -57,10 +57,14 @@ class WeakEntity implements Entity {
         return !this.relationship.equals(relationship);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public String getIdentifier() {
         return this.entityWrapper.getIdentifier();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<DerivationObject> getDerivationObjects() {

@@ -2,13 +2,13 @@ package com.bdd.mer.components.attribute;
 
 import java.awt.*;
 
-public final class ObligatoryPresence implements Presence {
+final class ObligatoryPresence implements Presence {
 
     private static final ObligatoryPresence instance = new ObligatoryPresence();
 
     private ObligatoryPresence() {}
 
-    public static ObligatoryPresence getInstance() {
+    static ObligatoryPresence getInstance() {
         return instance;
     }
 

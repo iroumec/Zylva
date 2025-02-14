@@ -6,7 +6,7 @@ import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.GUI.components.line.Line;
 import com.bdd.GUI.components.note.Note;
-import com.bdd.mer.components.hierarchy.Hierarchy;
+import com.bdd.mer.components.entity.Hierarchy;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;

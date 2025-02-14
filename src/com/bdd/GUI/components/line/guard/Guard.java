@@ -56,7 +56,7 @@ public abstract class Guard extends Component {
     }
 
     @Override
-    public boolean canBeDeleted() { return true; }
+    protected boolean canBeDeleted() { return true; }
 
     @Override
     public void cleanReferencesTo(Component component) {

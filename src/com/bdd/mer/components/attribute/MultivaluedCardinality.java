@@ -2,7 +2,7 @@ package com.bdd.mer.components.attribute;
 
 import java.awt.*;
 
-public class MultivaluedCardinality implements Cardinality {
+final class MultivaluedCardinality implements Cardinality {
 
     private final int arrowWidth;
     private final int arrowHeight;
@@ -14,13 +14,13 @@ public class MultivaluedCardinality implements Cardinality {
         this.arrowHeight = arrowHeight;
     }
 
-    public static MultivaluedCardinality getInstance() {
+    static MultivaluedCardinality getInstance() {
 
         return defaultInstance;
     }
 
     @SuppressWarnings("unused")
-    public MultivaluedCardinality getInstance(int arrowWidth, int arrowHeight) {
+    MultivaluedCardinality getInstance(int arrowWidth, int arrowHeight) {
 
         return new MultivaluedCardinality(arrowWidth, arrowHeight);
     }

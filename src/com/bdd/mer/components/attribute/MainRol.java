@@ -3,13 +3,13 @@ package com.bdd.mer.components.attribute;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainRol implements Rol {
+final class MainRol implements Rol {
 
     private final static MainRol instance = new MainRol();
 
     private MainRol() {}
 
-    public static MainRol getInstance() {
+    static MainRol getInstance() {
 
         return instance;
     }

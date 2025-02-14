@@ -3,13 +3,13 @@ package com.bdd.mer.components.attribute;
 import javax.swing.*;
 import java.awt.*;
 
-public class CommonRol implements Rol {
+final class CommonRol implements Rol {
 
     private final static CommonRol instance = new CommonRol();
 
     private CommonRol() {}
 
-    public static CommonRol getInstance() {
+    static CommonRol getInstance() {
 
         return instance;
     }

@@ -6,7 +6,7 @@ import com.bdd.mer.derivation.Derivable;
 import javax.swing.*;
 import java.awt.*;
 
-public class Attribute extends DescAttrEERComp implements Derivable {
+public final class Attribute extends DescAttrEERComp implements Derivable {
 
     private final Rol rol;
     private Presence presence;

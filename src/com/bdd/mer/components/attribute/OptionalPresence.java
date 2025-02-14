@@ -2,13 +2,13 @@ package com.bdd.mer.components.attribute;
 
 import java.awt.*;
 
-public final class OptionalPresence implements Presence {
+final class OptionalPresence implements Presence {
 
     private final static OptionalPresence instance = new OptionalPresence();
 
     private OptionalPresence() {}
 
-    public static OptionalPresence getInstance() {
+    static OptionalPresence getInstance() {
 
         return instance;
     }

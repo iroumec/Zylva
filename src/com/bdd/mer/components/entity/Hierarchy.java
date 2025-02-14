@@ -1,11 +1,10 @@
-package com.bdd.mer.components.hierarchy;
+package com.bdd.mer.components.entity;
 
 import com.bdd.GUI.Component;
 import com.bdd.GUI.components.line.guard.Discriminant;
 import com.bdd.GUI.components.line.lineMultiplicity.DoubleLine;
 import com.bdd.GUI.structures.Pair;
 import com.bdd.mer.components.EERComponent;
-import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.GUI.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
@@ -29,7 +28,7 @@ import java.util.List;
  * instance can only be an instance of one of the children). This is notated with the letter "d" (disjunct). In the
  * other hand, an overlapping hierarchy is notated with the letter "o" (overlapping).
  */
-public class Hierarchy extends EERComponent implements Derivable {
+public final class Hierarchy extends EERComponent implements Derivable {
 
     /**
      * The symbol of the hierarchy, also denoting its exclusivity.
@@ -502,7 +501,7 @@ public class Hierarchy extends EERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public boolean canBeDeleted() {
+    protected boolean canBeDeleted() {
 
         if (isThereMultipleInheritance()) {
 
@@ -516,7 +515,7 @@ public class Hierarchy extends EERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanReferencesTo(Component component) {
+    protected void cleanReferencesTo(Component component) {
 
         if (component instanceof EntityWrapper entity) {
             this.children.remove(entity);

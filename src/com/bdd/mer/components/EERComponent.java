@@ -102,7 +102,7 @@ public abstract class EERComponent extends Component {
 
     // TODO: this must be improved.
     @Override
-    public boolean canBeDeleted() {
+    protected boolean canBeDeleted() {
         return true;
     }
 }

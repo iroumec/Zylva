@@ -1,4 +1,4 @@
-package com.bdd.mer.components.hierarchy;
+package com.bdd.mer.components.entity;
 
 import java.io.Serializable;
 
