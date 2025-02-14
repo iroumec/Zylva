@@ -3,7 +3,7 @@ package com.iroumec.eerd.components.attribute.internal.presences;
 import com.iroumec.derivation.elements.Element;
 import com.iroumec.derivation.elements.containers.Holder;
 import com.iroumec.derivation.elements.containers.Replacer;
-import com.iroumec.eerd.components.attribute.internal.roles.Common;
+import com.iroumec.derivation.elements.containers.sources.Common;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

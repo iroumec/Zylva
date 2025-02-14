@@ -58,6 +58,8 @@ public abstract class Component implements Serializable {
         this(0, 0);
     }
 
+    protected Component(String text) { this(text, 0, 0); }
+
     /**
      * Constructs a <code>Component</code> with an empty text and coordinates in (0, 0). This constructor is useful
      * for those components which don't have a text nor their coordinates matter or are calculated.

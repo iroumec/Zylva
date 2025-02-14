@@ -1,6 +1,5 @@
 package com.iroumec.components.basicComponents.line.guard.cardinality;
 
-import com.iroumec.GUI.Diagram;
 import com.iroumec.components.basicComponents.Line;
 
 import javax.swing.*;
@@ -12,8 +11,8 @@ import javax.swing.*;
 // I think it's not correct to it being a subclass... It's just a cardinality with a different JPopupMenu.
 public class StaticCardinality extends Cardinality {
 
-    public StaticCardinality(String firstValue, String secondValue, Line line, Diagram diagram) {
-        super(firstValue, secondValue, line, diagram);
+    public StaticCardinality(String firstValue, String secondValue, Line line) {
+        super(firstValue, secondValue, line);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

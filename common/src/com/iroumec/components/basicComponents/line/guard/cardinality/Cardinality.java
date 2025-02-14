@@ -1,9 +1,8 @@
 package com.iroumec.components.basicComponents.line.guard.cardinality;
 
 import com.iroumec.components.basicComponents.Line;
-import com.iroumec.GUI.userPreferences.LanguageManager;
+import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.components.basicComponents.line.guard.Guard;
-import com.iroumec.GUI.Diagram;
 import com.iroumec.structures.Pair;
 
 import javax.swing.*;
@@ -12,8 +11,8 @@ import java.util.Optional;
 
 public class Cardinality extends Guard {
 
-    public Cardinality(String firstValue, String secondValue, Line line, Diagram diagram) {
-        super(giveFormat(firstValue, secondValue), line, diagram);
+    public Cardinality(String firstValue, String secondValue, Line line) {
+        super(giveFormat(firstValue, secondValue), line);
     }
 
     public static String giveFormat(String firstValue, String secondValue) {

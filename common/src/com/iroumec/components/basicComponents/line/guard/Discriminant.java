@@ -8,8 +8,8 @@ import javax.swing.*;
 
 public class Discriminant extends Guard {
 
-    public Discriminant(@NotNull String text, Line line, Diagram diagram) {
-        super(text, line, diagram);
+    public Discriminant(@NotNull String text, Line line) {
+        super(text, line);
     }
 
     @Override

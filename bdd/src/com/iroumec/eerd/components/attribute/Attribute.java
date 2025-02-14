@@ -1,5 +1,6 @@
 package com.iroumec.eerd.components.attribute;
 
+import com.iroumec.components.Component;
 import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
 import com.iroumec.eerd.components.attribute.internal.cardinalities.Univalued;

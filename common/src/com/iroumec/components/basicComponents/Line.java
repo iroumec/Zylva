@@ -1,10 +1,11 @@
 package com.iroumec.components.basicComponents;
 
 import com.iroumec.components.Diagram;
-import com.iroumec.components.line.lineMultiplicity.LineMultiplicity;
-import com.iroumec.components.line.lineMultiplicity.SingleLine;
-import com.iroumec.components.line.lineShape.DirectLine;
-import com.iroumec.components.line.lineShape.LineShape;
+import com.iroumec.components.Component;
+import com.iroumec.components.basicComponents.line.lineMultiplicity.LineMultiplicity;
+import com.iroumec.components.basicComponents.line.lineMultiplicity.SingleLine;
+import com.iroumec.components.basicComponents.line.lineShape.DirectLine;
+import com.iroumec.components.basicComponents.line.lineShape.LineShape;
 
 import javax.swing.*;
 import java.awt.*;

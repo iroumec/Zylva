@@ -1,18 +1,24 @@
 package com.iroumec.gui;
 
-import com.iroumec.Diagram;
+import com.iroumec.components.Diagram;
+import com.iroumec.executables.Button;
 import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class MenuBar extends JMenuBar {
+class MenuBar extends JMenuBar {
 
-    private final FileMenu fileMenu;
-    private final JButton cleanFrameButton, helpButton;
+    private final MainFrame owner;
+    private final static String HELP_KEY = "help";
+    private final static String CLEAN_KEY = "clean";
+    private final Button cleanFrameButton, helpButton;
 
+    // TODO: separate this gigant constructor in various methods.
     public MenuBar(MainFrame mainFrame, Diagram diagram) {
+
+        this.owner = mainFrame;
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                      Mouse Interactions Related                                            */
@@ -42,8 +48,7 @@ public class MenuBar extends JMenuBar {
         /*                                            File Menu                                                       */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        this.fileMenu = new FileMenu(this);
-
+        FileMenu fileMenu = new FileMenu(this);
         fileMenu.setBackground(UIManager.getColor("control"));
         fileMenu.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
@@ -56,42 +61,39 @@ public class MenuBar extends JMenuBar {
             }
         });
         fileMenu.setBorderPainted(Boolean.FALSE);
-
         add(fileMenu);
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                           Clean Frame Button                                               */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        // Añado un botón para limpiar la ventana
-        this.cleanFrameButton = new JButton(LanguageManager.getMessage("menuBar.clean"));
+        this.cleanFrameButton = new Button(LanguageManager.getMessage(CLEAN_KEY));
         cleanFrameButton.addActionListener(_ -> {
             diagram.reset();
             diagram.repaint();
         });
         add(cleanFrameButton);
 
-        // Al pasar el mouse por encima, el fondo se coloca en rojo
+        // The button turns red when it detects the mouse.
         cleanFrameButton.setBackground(UIManager.getColor("control"));
         cleanFrameButton.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 cleanFrameButton.setBackground(new Color(215, 239, 249));
             }
 
-            // Cuando saco el puntero, el botón vuelve a su color original
+            // It returns to its original color.
             public void mouseExited(MouseEvent e) {
                 cleanFrameButton.setBackground(UIManager.getColor("control"));
             }
         });
         cleanFrameButton.setBorderPainted(Boolean.FALSE);
-
         cleanFrameButton.setFocusable(false); // If this is not disabled, when enter is pressed, the frame is cleaned.
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                              Help Button                                                   */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        helpButton = new JButton(LanguageManager.getMessage("menuBar.help"));
+        this.helpButton = new Button(LanguageManager.getMessage(HELP_KEY));
         helpButton.addActionListener(_ -> {
 
             // The texts are define here and a stringBuilder is used so that they're automatically
@@ -131,9 +133,9 @@ public class MenuBar extends JMenuBar {
     }
 
     public void resetLanguage() {
-        this.fileMenu.setText(LanguageManager.getMessage("menuBar.file"));
-        this.fileMenu.resetLanguage();
-        this.cleanFrameButton.setText(LanguageManager.getMessage("menuBar.clean"));
-        this.helpButton.setText(LanguageManager.getMessage("menuBar.help"));
+
+        this.cleanFrameButton.setText(LanguageManager.getMessage(CLEAN_KEY));
+        this.helpButton.setText(LanguageManager.getMessage(HELP_KEY));
+        this.owner.resetLanguage();
     }
 }

@@ -1,7 +1,16 @@
 package com.iroumec.eerd.components.entity;
 
+import com.iroumec.components.Component;
+import com.iroumec.components.Diagram;
+import com.iroumec.components.basicComponents.Line;
+import com.iroumec.components.basicComponents.line.guard.Discriminant;
+import com.iroumec.components.basicComponents.line.lineMultiplicity.DoubleLine;
 import com.iroumec.derivation.Derivable;
+import com.iroumec.derivation.Derivation;
+import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.eerd.components.EERComponent;
+import com.iroumec.structures.Pair;
+import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;

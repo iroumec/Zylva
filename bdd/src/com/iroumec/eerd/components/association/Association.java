@@ -1,5 +1,6 @@
 package com.iroumec.eerd.components.association;
 
+import com.iroumec.components.Component;
 import com.iroumec.eerd.EERDiagram;
 import com.iroumec.eerd.components.EERComponent;
 import com.iroumec.eerd.components.relationship.Relationship;

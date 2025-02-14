@@ -1,5 +1,6 @@
 package com.iroumec.components.basicComponents;
 
+import com.iroumec.components.Component;
 import com.iroumec.components.Diagram;
 import com.iroumec.userPreferences.LanguageManager;
 

@@ -2,6 +2,7 @@ package com.iroumec.components;
 
 import com.iroumec.executables.Button;
 import com.iroumec.executables.Item;
+import com.iroumec.gui.FileMenu;
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.userPreferences.Preference;
 import com.iroumec.userPreferences.UserPreferences;
@@ -653,9 +654,162 @@ public abstract class Diagram extends JPanel {
         return out;
     }
 
-    public List<Button> getMenuBarButtons() {}
+    public List<Button> getMenuBarButtons() {
 
-    public List<Button> getMainFrameButtons() {
+        List<Button> out = new ArrayList<>();
 
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                      Mouse Interactions Related                                            */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                            File Menu                                                       */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        this.fileMenu = new FileMenu(this);
+
+        fileMenu.setBackground(UIManager.getColor("control"));
+        fileMenu.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                fileMenu.setBackground(new Color(215, 239, 249));
+            }
+
+            // Cuando saco el puntero, el botón vuelve a su color original
+            public void mouseExited(MouseEvent e) {
+                fileMenu.setBackground(UIManager.getColor("control"));
+            }
+        });
+        fileMenu.setBorderPainted(Boolean.FALSE);
+
+        add(fileMenu);
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                           Clean Frame Button                                               */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        // Añado un botón para limpiar la ventana
+        this.cleanFrameButton = new JButton(LanguageManager.getMessage("menuBar.clean"));
+        cleanFrameButton.addActionListener(_ -> {
+            diagram.reset();
+            diagram.repaint();
+        });
+        add(cleanFrameButton);
+
+        // Al pasar el mouse por encima, el fondo se coloca en rojo
+        cleanFrameButton.setBackground(UIManager.getColor("control"));
+        cleanFrameButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                cleanFrameButton.setBackground(new Color(215, 239, 249));
+            }
+
+            // Cuando saco el puntero, el botón vuelve a su color original
+            public void mouseExited(MouseEvent e) {
+                cleanFrameButton.setBackground(UIManager.getColor("control"));
+            }
+        });
+        cleanFrameButton.setBorderPainted(Boolean.FALSE);
+
+        cleanFrameButton.setFocusable(false); // If this is not disabled, when enter is pressed, the frame is cleaned.
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                              Help Button                                                   */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        helpButton = new JButton(LanguageManager.getMessage("menuBar.help"));
+        helpButton.addActionListener(_ -> {
+
+            // The texts are define here and a stringBuilder is used so that they're automatically
+            // updated when the language is changed.
+            String controls = LanguageManager.getMessage("menuBar.controls") + ": "
+                    + "\nCtrl + E: " + LanguageManager.getMessage("add.entity")
+                    + "\nCtrl + R: " + LanguageManager.getMessage("add.relationship")
+                    + "\nCtrl + D: " + LanguageManager.getMessage("add.dependency")
+                    + "\nCtrl + H: " + LanguageManager.getMessage("add.hierarchy")
+                    + "\nCtrl + N: " + LanguageManager.getMessage("add.note")
+                    + "\nCtrl + A: " + LanguageManager.getMessage("add.association")
+                    + "\nSupr: " + LanguageManager.getMessage("menuBar.delete");
+
+            String credits = LanguageManager.getMessage("credits.author")
+                    + '\n' + LanguageManager.getMessage("credits.credits")
+                    + "\nhttps://github.com/iroumec";
+
+            JOptionPane.showMessageDialog(null, controls + "\n\n" + credits); // Show the updated message
+        });
+
+        // The button becomes blue when the mouse enter its bounds.
+        helpButton.setBackground(UIManager.getColor("control"));
+        helpButton.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                helpButton.setBackground(new Color(215, 239, 249));
+            }
+
+            public void mouseExited(MouseEvent e) {
+                helpButton.setBackground(UIManager.getColor("control"));
+            }
+        });
+        helpButton.setBorderPainted(Boolean.FALSE);
+
+        helpButton.setFocusable(false);
+
+        add(helpButton);
+    }
+
+    public List<Button> getMainFrameKeys() {
+
+        List<Button> out = new ArrayList<>();
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                              Delete Key                                                    */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        Button deleteKey = new Button();
+        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
+        deleteKey.getActionMap().put("Supr", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+
+                int confirmation = JOptionPane.showConfirmDialog(
+                        Diagram.this,
+                        LanguageManager.getMessage("input.delete"),
+                        LanguageManager.getMessage("title.delete"),
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (confirmation == JOptionPane.YES_OPTION) {
+
+                    for (Component component : Diagram.this.getSelectedComponents()) {
+
+                        if (!component.canBeDeleted()) {
+
+                            Diagram.this.cleanSelectedComponents();
+                            return;
+                        }
+                    }
+
+                    List<Component> componentsToRemove = new ArrayList<>(Diagram.this.getSelectedComponents());
+
+                    for (Component component : componentsToRemove) {
+
+                        component.setForDelete();
+                    }
+                }
+            }
+        });
+        out.add(deleteKey);
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+        /*                                            Clean Diagram                                                   */
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        Button cleanKey = new Button();
+        cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
+        cleanKey.getActionMap().put("cleanDiagram", new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                Diagram.this.reset();
+            }
+        });
+        out.add(cleanKey);
+
+        return out;
     }
 }

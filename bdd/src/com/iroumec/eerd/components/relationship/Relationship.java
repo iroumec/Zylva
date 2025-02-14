@@ -1,12 +1,16 @@
 package com.iroumec.eerd.components.relationship;
 
+import com.iroumec.components.Component;
 import com.iroumec.components.basicComponents.Line;
+import com.iroumec.eerd.EERDiagram;
 import com.iroumec.eerd.components.association.Association;
 import com.iroumec.eerd.components.attribute.DescAttrEERComp;
 import com.iroumec.eerd.components.attribute.Attribute;
+import com.iroumec.eerd.components.attribute.internal.cardinalities.Cardinality;
 import com.iroumec.eerd.components.entity.EntityWrapper;
 import com.iroumec.eerd.components.relationship.relatable.Relatable;
 import com.iroumec.structures.Pair;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,8 +70,8 @@ public final class Relationship extends DescAttrEERComp {
 
             out.add((Component) participant.getKey());
 
-            // TODO: wrong because of the instance of and because of the acces to the attributes.
-            // TODO: replace with getMin and getMax point ocuppied or something similar.
+            // TODO: wrong because of the instance of and because of the access to the attributes.
+            // TODO: replace with getMin and getMax point occupied or something similar.
             if (participant.getKey() instanceof DescAttrEERComp descAttrEERComp) {
                 out.addAll(descAttrEERComp.getAttributes());
             }
@@ -276,41 +280,41 @@ public final class Relationship extends DescAttrEERComp {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    @Override
-    public List<Derivation> getDerivations() {
-
-        List<DerivationObject> out = new ArrayList<>();
-
-        PluralDerivation derivation = new PluralDerivation(this.getIdentifier());
-
-        for (Attribute attribute : this.getAttributes(1)) {
-            derivation.addAttribute(this, attribute);
-        }
-
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
-
-            List<Line> lines = participant.getValue();
-
-            for (Line line : lines) {
-
-                try {
-                    Pair<String, String> cardinalities = Cardinality.removeFormat(line.getText());
-
-                    derivation.addMember(new PluralDerivation.Member(
-                            ((Derivable) participant.getKey()).getIdentifier(),
-                            cardinalities.first(),
-                            cardinalities.second()
-                    ));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        out.add(derivation);
-
-        return out;
-    }
+//    @Override
+//    public List<Derivation> getDerivations() {
+//
+//        List<DerivationObject> out = new ArrayList<>();
+//
+//        PluralDerivation derivation = new PluralDerivation(this.getIdentifier());
+//
+//        for (Attribute attribute : this.getAttributes(1)) {
+//            derivation.addAttribute(this, attribute);
+//        }
+//
+//        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+//
+//            List<Line> lines = participant.getValue();
+//
+//            for (Line line : lines) {
+//
+//                try {
+//                    Pair<String, String> cardinalities = Cardinality.removeFormat(line.getText());
+//
+//                    derivation.addMember(new PluralDerivation.Member(
+//                            ((Derivable) participant.getKey()).getIdentifier(),
+//                            cardinalities.first(),
+//                            cardinalities.second()
+//                    ));
+//                } catch (Exception e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        }
+//
+//        out.add(derivation);
+//
+//        return out;
+//    }
 
     @Override
     public String getIdentifier() {

@@ -4,7 +4,7 @@ import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 
-public class Item extends JMenuItem {
+public final class Item extends JMenuItem {
 
     private final String key;
     private final boolean requieresLanguageReset;

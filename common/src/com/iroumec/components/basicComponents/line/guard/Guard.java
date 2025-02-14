@@ -1,6 +1,6 @@
 package com.iroumec.components.basicComponents.line.guard;
 
-import com.iroumec.components.Diagram;
+import com.iroumec.components.Component;
 import com.iroumec.components.basicComponents.Line;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +10,8 @@ public abstract class Guard extends Component {
 
     private final Line line;
 
-    public Guard(@NotNull String text, Line line, Diagram diagram) {
-        super(text, diagram);
+    public Guard(@NotNull String text, Line line) {
+        super(text);
         this.line = line;
         line.setText(this.getText());
 

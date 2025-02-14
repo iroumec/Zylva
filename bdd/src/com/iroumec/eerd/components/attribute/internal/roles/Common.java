@@ -48,6 +48,7 @@ public final class Common implements Rol {
     }
 
     @Override
+    @SuppressWarnings("unused")
     public List<Derivation> getDerivations(@NotNull DescAttrEERComp owner,
                                            @NotNull Attribute attribute,
                                            @NotNull Presence presence,
