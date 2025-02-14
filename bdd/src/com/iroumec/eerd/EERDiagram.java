@@ -5,7 +5,7 @@ import com.iroumec.components.Diagram;
 import com.iroumec.components.basicComponents.Note;
 import com.iroumec.eerd.components.EERComponent;
 import com.iroumec.eerd.components.entity.EntityWrapper;
-import com.iroumec.eerd.components.entity.Hierarchy;
+import com.iroumec.eerd.components.hierarchy.Hierarchy;
 import com.iroumec.eerd.components.relationship.Relationship;
 import com.iroumec.executables.Button;
 import com.iroumec.userPreferences.LanguageManager;

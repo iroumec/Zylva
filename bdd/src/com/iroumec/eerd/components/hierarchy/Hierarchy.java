@@ -1,4 +1,4 @@
-package com.iroumec.eerd.components.entity;
+package com.iroumec.eerd.components.hierarchy;
 
 import com.iroumec.components.Component;
 import com.iroumec.components.Diagram;
@@ -9,6 +9,7 @@ import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
 import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.eerd.components.EERComponent;
+import com.iroumec.eerd.components.entity.EntityWrapper;
 import com.iroumec.structures.Pair;
 import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.Nullable;
@@ -81,7 +82,7 @@ public final class Hierarchy extends EERComponent implements Derivable {
      * @return {@code TRUE} if the parent of this hierarchy has a hierarchy in common
      * with the parent of the hierarchy passed as parameter.
      */
-    boolean parentsHaveHierarchyInCommon(Hierarchy secondHierarchy) {
+    public boolean parentsHaveHierarchyInCommon(Hierarchy secondHierarchy) {
 
         return this.parent.hasAHierarchyInCommon(secondHierarchy.parent);
 

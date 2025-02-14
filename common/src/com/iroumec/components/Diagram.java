@@ -661,7 +661,7 @@ public abstract class Diagram extends JPanel {
         /*                                              Delete Key                                                    */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        Button deleteKey = new Button();
+        Button deleteKey = new Button("Delete key");
         deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -700,7 +700,7 @@ public abstract class Diagram extends JPanel {
         /*                                            Clean Diagram                                                   */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        Button cleanKey = new Button();
+        Button cleanKey = new Button("Clean key");
         cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
         cleanKey.getActionMap().put("cleanDiagram", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {

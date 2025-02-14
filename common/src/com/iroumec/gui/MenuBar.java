@@ -1,7 +1,6 @@
 package com.iroumec.gui;
 
 import com.iroumec.components.Diagram;
-import com.iroumec.executables.Button;
 import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
@@ -13,7 +12,7 @@ class MenuBar extends JMenuBar {
     private final MainFrame owner;
     private final static String HELP_KEY = "help";
     private final static String CLEAN_KEY = "clean";
-    private final Button cleanFrameButton, helpButton;
+    private final JButton cleanFrameButton, helpButton;
 
     // TODO: separate this giant constructor in various methods.
     public MenuBar(MainFrame mainFrame, Diagram diagram) {
@@ -48,7 +47,7 @@ class MenuBar extends JMenuBar {
         /*                                            File Menu                                                       */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        FileMenu fileMenu = new FileMenu(this);
+        FileMenu fileMenu = new FileMenu(this, diagram);
         fileMenu.setBackground(UIManager.getColor("control"));
         fileMenu.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
@@ -67,7 +66,7 @@ class MenuBar extends JMenuBar {
         /*                                           Clean Frame Button                                               */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        this.cleanFrameButton = new Button(LanguageManager.getMessage(CLEAN_KEY));
+        this.cleanFrameButton = new JButton(LanguageManager.getMessage(CLEAN_KEY));
         cleanFrameButton.addActionListener(_ -> {
             diagram.reset();
             diagram.repaint();
@@ -93,7 +92,7 @@ class MenuBar extends JMenuBar {
         /*                                              Help Button                                                   */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        this.helpButton = new Button(LanguageManager.getMessage(HELP_KEY));
+        this.helpButton = new JButton(LanguageManager.getMessage(HELP_KEY));
         helpButton.addActionListener(_ -> {
 
             // The texts are define here and a stringBuilder is used so that they're automatically

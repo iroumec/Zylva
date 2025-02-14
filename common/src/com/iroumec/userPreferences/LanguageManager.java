@@ -25,14 +25,9 @@ public class LanguageManager {
      * <p>
      * The preference is saved for future executions of the program.
      */
-    public static void changeLanguage() {
-        // Map display names to acronyms, sorted by display names (due to the TreeMap()).
-        Map<String, String> languages = new TreeMap<>();
-        languages.put(LanguageManager.getMessage("language.english"), "en");
-        languages.put(LanguageManager.getMessage("language.spanish"), "es");
-        languages.put(LanguageManager.getMessage("language.french"), "fr");
-        languages.put(LanguageManager.getMessage("language.italian"), "it");
-        languages.put(LanguageManager.getMessage("language.portuguese"), "pt");
+    public static void changeLanguage(Language ... languages) {
+
+        Arrays.sort(languages, Comparator.comparing(Language::toString));
 
         // Create the frame.
         JFrame frame = new JFrame(LanguageManager.getMessage("language.selectOption"));
@@ -45,10 +40,9 @@ public class LanguageManager {
         panel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Reduce spacing around components.
 
         // ComboBox for language selection.
-        JComboBox<String> languageComboBox = new JComboBox<>(languages.keySet().toArray(new String[0]));
+        JComboBox<Language> languageComboBox = new JComboBox<>(languages);
         languageComboBox.setSelectedItem(LanguageManager.getMessage("language." + LanguageManager.getCurrentLanguage()));
         languageComboBox.setPreferredSize(new Dimension(200, 25)); // Set fixed size to reduce padding.
-
         panel.add(languageComboBox);
 
         // Confirmation button.
@@ -57,9 +51,9 @@ public class LanguageManager {
 
         // Add action to the button.
         confirmButton.addActionListener(_ -> {
-            String selectedDisplayLanguage = (String) languageComboBox.getSelectedItem();
-            if (selectedDisplayLanguage != null) {
-                String selectedAcronym = languages.get(selectedDisplayLanguage);
+            Language selectedLanguage = (Language) languageComboBox.getSelectedItem();
+            if (selectedLanguage != null) {
+                String selectedAcronym = selectedLanguage.getAcronym();
                 applyLanguage(selectedAcronym);
                 frame.dispose();
                 JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged"));
@@ -102,9 +96,9 @@ public class LanguageManager {
         try {
 
             return messages.getString(key);
-        } catch (MissingResourceException e) {
+        } catch (Exception e) {
 
-            return LanguageManager.getMessage("language." + LanguageManager.getCurrentLanguage());
+            return "language." + LanguageManager.getCurrentLanguage();
         }
     }
 }

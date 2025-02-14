@@ -3,6 +3,7 @@ package com.iroumec.eerd.components.entity;
 import com.iroumec.components.Component;
 import com.iroumec.eerd.EERDiagram;
 import com.iroumec.eerd.components.attribute.IdAttrEERComp;
+import com.iroumec.eerd.components.hierarchy.Hierarchy;
 import com.iroumec.eerd.components.relationship.Relationship;
 import com.iroumec.eerd.components.relationship.relatable.Relatable;
 import com.iroumec.eerd.components.relationship.relatable.RelatableImplementation;
@@ -73,7 +74,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
      * @param newHierarchy New {@code Hierarchy} to be related.
      * @return {@code TRUE} if the {@code Hierarchy} was successfully added. {@code False} in any other case.
      */
-    boolean addHierarchy(Hierarchy newHierarchy) {
+    public boolean addHierarchy(Hierarchy newHierarchy) {
 
         if (newHierarchy.isChild(this)) {
             for (Hierarchy hierarchy : this.hierarchies) {
@@ -94,7 +95,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
      *
      * @param hierarchy {@code Hierarchy} to be removed.
      */
-    void removeHierarchy(Hierarchy hierarchy) {
+    public void removeHierarchy(Hierarchy hierarchy) {
         hierarchies.remove(hierarchy);
     }
 
@@ -102,7 +103,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
      *
      * @return {@code TRUE} if the {@code Entity} is parent in any of their hierarchies.
      */
-    boolean isAlreadyParent() {
+    public boolean isAlreadyParent() {
 
         for (Hierarchy hierarchy : this.hierarchies) {
 
@@ -123,7 +124,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
      * @param entity Entity to be compared.
      * @return {@code TRUE} if they have a hierarchy in common.
      */
-    boolean hasAHierarchyInCommon(EntityWrapper entity) {
+    public boolean hasAHierarchyInCommon(EntityWrapper entity) {
 
         for (Hierarchy hierarchy : this.hierarchies) {
 
@@ -163,7 +164,7 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
      * @param entity Entity to be compared.
      * @return {@code TRUE} if they have a hierarchical child in common.
      */
-    boolean shareHierarchicalChild(EntityWrapper entity) {
+    public boolean shareHierarchicalChild(EntityWrapper entity) {
 
         List<EntityWrapper> thisEntityHierarchicalChildren = this.getHierarchicalChildren();
         List<EntityWrapper> secondEntityHierarchicalChildren = entity.getHierarchicalChildren();

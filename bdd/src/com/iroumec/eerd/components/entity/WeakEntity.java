@@ -1,9 +1,9 @@
 package com.iroumec.eerd.components.entity;
 
+import com.iroumec.derivation.Derivable;
+import com.iroumec.derivation.Derivation;
+import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.eerd.components.relationship.Relationship;
-import main.java.com.iroumec.bdd.derivation.Derivable;
-import main.java.com.iroumec.bdd.derivation.Derivation;
-import main.java.com.iroumec.bdd.derivation.elements.SingleElement;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -71,6 +71,7 @@ final class WeakEntity implements Entity {
 
         List<Derivation> out = new ArrayList<>();
 
+        // TODO: improve this.
         List<Derivable> participants = this.relationship.getParticipants().stream()
                 .filter(r -> r instanceof Derivable)
                 .map(r -> (Derivable) r)

@@ -1,4 +1,4 @@
-package com.iroumec.eerd.components.entity;
+package com.iroumec.eerd.components.hierarchy;
 
 import java.io.Serializable;
 

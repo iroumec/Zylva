@@ -1,7 +1,7 @@
 package com.iroumec.eerd.components.entity;
 
+import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.components.relationship.Relationship;
-import main.java.com.iroumec.bdd.derivation.Derivation;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
