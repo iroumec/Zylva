@@ -2,11 +2,10 @@ package com.bdd.mer.components.entity;
 
 import com.bdd.mer.EERDiagram;
 import com.bdd.GUI.Component;
-import com.bdd.mer.components.attribute.IdAttrEERComp;
+import com.bdd.mer.components.attribute.external.IdAttrEERComp;
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -329,16 +328,5 @@ public final class EntityWrapper extends IdAttrEERComp implements Relatable {
     @Override
     public String getIdentifier() {
         return this.getText();
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public List<DerivationObject> getDerivationObjects() {
-
-        List<DerivationObject> out = new ArrayList<>(super.getDerivationObjects());
-        out.addAll(this.entity.getDerivationObjects());
-
-        return out;
     }
 }

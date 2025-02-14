@@ -278,6 +278,7 @@ public abstract class Component implements Serializable {
      *
      * @return {@code TRUE} if the components live in the same diagram and {@code FALSE} in any other case.
      */
+    @SuppressWarnings("unused")
     protected static boolean liveInTheSameDiagram(@NotNull Component firstComponent,
                                                   @NotNull Component secondComponent) {
 

@@ -1,12 +1,18 @@
-package com.bdd.mer.components.attribute;
+package com.bdd.mer.components.attribute.external;
 
 import com.bdd.GUI.Component;
-import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.components.attribute.internal.cardinalities.Cardinality;
+import com.bdd.mer.components.attribute.internal.cardinalities.Univalued;
+import com.bdd.mer.components.attribute.internal.presences.Obligatory;
+import com.bdd.mer.components.attribute.internal.presences.Presence;
+import com.bdd.mer.components.attribute.internal.roles.Rol;
+import com.bdd.mer.derivation.Derivation;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
-public final class Attribute extends DescAttrEERComp implements Derivable {
+public final class Attribute extends DescAttrEERComp {
 
     private final Rol rol;
     private Presence presence;
@@ -181,6 +187,15 @@ public final class Attribute extends DescAttrEERComp implements Derivable {
         g2.setColor(Color.BLACK);
     }
 
+    /**
+     * Provided with legibility purposes.
+     *
+     * @return {@code TRUE} if the attribute is compound.
+     */
+    public boolean isCompound() {
+        return this.hasAttributes();
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Builder                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -192,9 +207,9 @@ public final class Attribute extends DescAttrEERComp implements Derivable {
         public final String text;
         public final DescAttrEERComp owner;
 
-        // OptionalPresence parameters - initialized with a default value.
-        public Presence presence = ObligatoryPresence.getInstance();
-        public Cardinality cardinality = UnivaluedCardinality.getInstance();
+        // Optional parameters - initialized with a default value.
+        public Presence presence = Obligatory.getInstance();
+        public Cardinality cardinality = Univalued.getInstance();
 
         public Builder(Rol rol, String text, DescAttrEERComp owner) {
             this.rol = rol;
@@ -277,5 +292,11 @@ public final class Attribute extends DescAttrEERComp implements Derivable {
         return this.getText();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
 
+    @Override
+    public List<Derivation> getDerivations() {
+
+        return this.rol.getDerivations(this.owner, this, this.presence, this.cardinality);
+    }
 }

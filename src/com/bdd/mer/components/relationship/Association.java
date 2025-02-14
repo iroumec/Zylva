@@ -6,7 +6,7 @@ import com.bdd.mer.components.EERComponent;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.components.relationship.relatable.RelatableImplementation;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
+import com.bdd.mer.derivation.Derivation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -145,7 +145,7 @@ public class Association extends EERComponent implements Relatable, Derivable {
      * @return Always an empty list, due to its derivation process is contained in its relationship.
      */
     @Override
-    public List<DerivationObject> getDerivationObjects() {
+    public List<Derivation> getDerivations() {
         return new ArrayList<>();
     }
 

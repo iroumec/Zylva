@@ -2,8 +2,8 @@ package com.bdd.mer.components.entity;
 
 import com.bdd.mer.components.relationship.Relationship;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
+import com.bdd.mer.derivation.Derivation;
+import com.bdd.mer.derivation.elements.SingleElement;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -67,9 +67,9 @@ final class WeakEntity implements Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public List<DerivationObject> getDerivationObjects() {
+    public List<Derivation> getDerivations() {
 
-        List<DerivationObject> out = new ArrayList<>();
+        List<Derivation> out = new ArrayList<>();
 
         List<Derivable> participants = this.relationship.getParticipants().stream()
                 .filter(r -> r instanceof Derivable)
@@ -80,13 +80,14 @@ final class WeakEntity implements Entity {
             throw new IllegalArgumentException("Expected 2 participants but got " + participants.size() + ".");
         }
 
+        Derivation derivation = new Derivation(this.getIdentifier());
+
         for (Derivable participant : participants) {
 
             if (!participant.equals(this.entityWrapper)) {
 
                 // The strong entity of the relationship has been found.
-                out.add(new SingularDerivation(this.getIdentifier(), participant));
-
+                derivation.addIdentificationElement(new SingleElement(participant.getIdentifier()));
             }
         }
 

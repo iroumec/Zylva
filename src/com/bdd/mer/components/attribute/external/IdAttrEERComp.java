@@ -1,6 +1,15 @@
-package com.bdd.mer.components.attribute;
+package com.bdd.mer.components.attribute.external;
 
 import com.bdd.GUI.userPreferences.LanguageManager;
+import com.bdd.mer.components.attribute.internal.cardinalities.Cardinality;
+import com.bdd.mer.components.attribute.internal.cardinalities.Univalued;
+import com.bdd.mer.components.attribute.internal.presences.Obligatory;
+import com.bdd.mer.components.attribute.internal.presences.Optional;
+import com.bdd.mer.components.attribute.internal.presences.Presence;
+import com.bdd.mer.components.attribute.internal.roles.Alternative;
+import com.bdd.mer.components.attribute.internal.roles.Main;
+import com.bdd.mer.components.attribute.internal.roles.Rol;
+import com.bdd.mer.derivation.Derivation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,51 +39,6 @@ public abstract class IdAttrEERComp extends DescAttrEERComp {
 
     boolean hasMainAttribute() {
         return mainAttribute != null;
-    }
-
-    @Override
-    @SuppressWarnings("Duplicates")
-    protected void addAttribute() {
-
-        // The radio buttons are created.
-        JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
-        JRadioButton alternativeAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.alternative"));
-        JRadioButton mainAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.main"));
-
-        // The radio buttons are grouped so only one can be selected at the same time.
-        ButtonGroup group = new ButtonGroup();
-        group.add(mainAttributeOption);
-        group.add(alternativeAttributeOption);
-        group.add(commonAttributeOption);
-
-        // A panel for containing the radio buttons is created.
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-        // A panel for the group of radio buttons is created.
-        JPanel panelAttribute = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelAttribute.add(mainAttributeOption);
-        panelAttribute.add(alternativeAttributeOption);
-        panelAttribute.add(commonAttributeOption);
-
-        // The pair of options are added to the panel.
-        panel.add(panelAttribute);
-
-        int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.attributeType"),
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
-
-        // In case the user closes the dialog...
-        if (result != JOptionPane.OK_OPTION) {
-            return;
-        }
-
-        if (commonAttributeOption.isSelected()) {
-            super.addAttribute();
-        } else if (alternativeAttributeOption.isSelected()) {
-            addAttribute(AlternativeRol.getInstance(), UnivaluedCardinality.getInstance()); // AlternativeRol attributes cannot be multivalued.
-        } else {
-            addMainAttribute();
-        }
     }
 
     /**
@@ -113,7 +77,7 @@ public abstract class IdAttrEERComp extends DescAttrEERComp {
             return;
         }
 
-        Presence presence = (boxOptional.isSelected()) ? OptionalPresence.getInstance() : ObligatoryPresence.getInstance();
+        Presence presence = (boxOptional.isSelected()) ? Optional.getInstance() : Obligatory.getInstance();
 
         this.addAttribute(rol, presence, cardinality);
     }
@@ -146,7 +110,7 @@ public abstract class IdAttrEERComp extends DescAttrEERComp {
             return;
         }
 
-        this.mainAttribute = new Attribute.Builder(MainRol.getInstance(), name, this).build();
+        this.mainAttribute = new Attribute.Builder(Main.getInstance(), name, this).build();
 
         this.makeCorrectionInDiagram(mainAttribute);
     }
@@ -154,6 +118,51 @@ public abstract class IdAttrEERComp extends DescAttrEERComp {
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    @SuppressWarnings("Duplicates")
+    public void addAttribute() {
+
+        // The radio buttons are created.
+        JRadioButton commonAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.common"), true);
+        JRadioButton alternativeAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.alternative"));
+        JRadioButton mainAttributeOption = new JRadioButton(LanguageManager.getMessage("attribute.main"));
+
+        // The radio buttons are grouped so only one can be selected at the same time.
+        ButtonGroup group = new ButtonGroup();
+        group.add(mainAttributeOption);
+        group.add(alternativeAttributeOption);
+        group.add(commonAttributeOption);
+
+        // A panel for containing the radio buttons is created.
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        // A panel for the group of radio buttons is created.
+        JPanel panelAttribute = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelAttribute.add(mainAttributeOption);
+        panelAttribute.add(alternativeAttributeOption);
+        panelAttribute.add(commonAttributeOption);
+
+        // The pair of options are added to the panel.
+        panel.add(panelAttribute);
+
+        int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.attributeType"),
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+
+        // In case the user closes the dialog...
+        if (result != JOptionPane.OK_OPTION) {
+            return;
+        }
+
+        if (commonAttributeOption.isSelected()) {
+            super.addAttribute();
+        } else if (alternativeAttributeOption.isSelected()) {
+            addAttribute(Alternative.getInstance(), Univalued.getInstance()); // Alternative attributes cannot be multivalued.
+        } else {
+            addMainAttribute();
+        }
+    }
 
     @Override
     protected int getAbsoluteAttributePosition(Attribute attribute) {
@@ -261,5 +270,18 @@ public abstract class IdAttrEERComp extends DescAttrEERComp {
 
             mainAttribute.setSelected(isSelected);
         }
+    }
+
+    @Override
+    public List<Derivation> getDerivations() {
+
+        List<Derivation> out = super.getDerivations();
+
+        if (this.hasMainAttribute()) {
+
+            out.addAll(this.mainAttribute.getDerivations());
+        }
+
+        return out;
     }
 }

@@ -23,7 +23,7 @@ public final class DerivationManager {
 
         for (Derivable derivableComponent : derivablesComponents) {
 
-            List<DerivationObject> derivationObjects = derivableComponent.getDerivationObjects();
+            List<DerivationObject> derivationObjects = derivableComponent.getDerivations();
 
             for (DerivationObject derivationObject : derivationObjects) {
 

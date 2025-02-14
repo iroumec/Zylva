@@ -2,9 +2,9 @@ package com.bdd.mer.components.relationship;
 
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.EERDiagram;
-import com.bdd.mer.components.attribute.DescAttrEERComp;
+import com.bdd.mer.components.attribute.external.DescAttrEERComp;
 import com.bdd.GUI.Component;
-import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.components.attribute.external.Attribute;
 import com.bdd.mer.components.entity.EntityWrapper;
 import com.bdd.GUI.components.line.Line;
 import com.bdd.GUI.components.line.guard.cardinality.Cardinality;
@@ -13,6 +13,7 @@ import com.bdd.GUI.components.line.lineMultiplicity.DoubleLine;
 import com.bdd.GUI.components.line.lineShape.SquaredLine;
 import com.bdd.mer.components.relationship.relatable.Relatable;
 import com.bdd.mer.derivation.Derivable;
+import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.derivationObjects.DerivationObject;
 import com.bdd.mer.derivation.derivationObjects.PluralDerivation;
 import com.bdd.GUI.structures.Pair;
@@ -286,7 +287,7 @@ public final class Relationship extends DescAttrEERComp {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public List<DerivationObject> getDerivationObjects() {
+    public List<Derivation> getDerivations() {
 
         List<DerivationObject> out = new ArrayList<>();
 

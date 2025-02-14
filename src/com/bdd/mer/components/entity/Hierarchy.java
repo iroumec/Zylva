@@ -7,10 +7,10 @@ import com.bdd.GUI.structures.Pair;
 import com.bdd.mer.components.EERComponent;
 import com.bdd.GUI.components.line.Line;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
+import com.bdd.mer.derivation.Derivation;
 import com.bdd.GUI.Diagram;
 import com.bdd.GUI.userPreferences.LanguageManager;
+import com.bdd.mer.derivation.elements.SingleElement;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -484,20 +484,21 @@ public final class Hierarchy extends EERComponent implements Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public List<DerivationObject> getDerivationObjects() {
+    public List<Derivation> getDerivations() {
 
-        List<DerivationObject> out = new ArrayList<>();
+        List<Derivation> out = new ArrayList<>();
 
         // TODO: I cannot be asking for the type...
         if (this.isExclusive()) {
-            DerivationObject parentDerivation = new SingularDerivation(this.parent.getIdentifier());
-            parentDerivation.addAttribute(this.getDiscriminant());
+            Derivation parentDerivation = new Derivation(this.parent.getIdentifier());
+            parentDerivation.addCommonElement(new SingleElement(this.getDiscriminant()));
             out.add(parentDerivation);
         }
 
         for (EntityWrapper child : this.children) {
 
-            DerivationObject childDerivation = new SingularDerivation(child.getIdentifier(), this.parent);
+            Derivation childDerivation = new Derivation(child.getIdentifier());
+            childDerivation.addIdentificationElement(new SingleElement(this.parent.getIdentifier()));
 
             out.add(childDerivation);
         }

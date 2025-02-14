@@ -1,11 +1,17 @@
-package com.bdd.mer.components.attribute;
+package com.bdd.mer.components.attribute.external;
 
 import com.bdd.GUI.Component;
 import com.bdd.GUI.userPreferences.LanguageManager;
 import com.bdd.mer.components.EERComponent;
+import com.bdd.mer.components.attribute.internal.cardinalities.Cardinality;
+import com.bdd.mer.components.attribute.internal.cardinalities.Multivalued;
+import com.bdd.mer.components.attribute.internal.cardinalities.Univalued;
+import com.bdd.mer.components.attribute.internal.presences.Obligatory;
+import com.bdd.mer.components.attribute.internal.presences.Optional;
+import com.bdd.mer.components.attribute.internal.presences.Presence;
+import com.bdd.mer.components.attribute.internal.roles.Common;
 import com.bdd.mer.derivation.Derivable;
-import com.bdd.mer.derivation.derivationObjects.DerivationObject;
-import com.bdd.mer.derivation.derivationObjects.SingularDerivation;
+import com.bdd.mer.derivation.Derivation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -160,7 +166,7 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
     /**
      * Given an attributable component, this method adds it an attribute according to the specified symbol.
      */
-    protected void addAttribute() {
+    public void addAttribute() {
 
         // Create the components of the panel
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
@@ -191,8 +197,8 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
             return;
         }
 
-        Presence presence = (boxOptional.isSelected()) ? OptionalPresence.getInstance() : ObligatoryPresence.getInstance();
-        Cardinality cardinality = (boxMultivalued.isSelected()) ? MultivaluedCardinality.getInstance() : UnivaluedCardinality.getInstance();
+        Presence presence = (boxOptional.isSelected()) ? Optional.getInstance() : Obligatory.getInstance();
+        Cardinality cardinality = (boxMultivalued.isSelected()) ? Multivalued.getInstance() : Univalued.getInstance();
 
         this.addAttribute(presence, cardinality);
     }
@@ -202,7 +208,7 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
      *
      * @param cardinality Cardinality of the attribute.
      */
-    protected void addAttribute(Cardinality cardinality) {
+    public void addAttribute(Cardinality cardinality) {
 
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
 
@@ -231,12 +237,12 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
             return;
         }
 
-        Presence presence = (boxOptional.isSelected()) ? OptionalPresence.getInstance() : ObligatoryPresence.getInstance();
+        Presence presence = (boxOptional.isSelected()) ? Optional.getInstance() : Obligatory.getInstance();
 
         this.addAttribute(presence, cardinality);
     }
 
-    protected void addAttribute(Presence presence, Cardinality cardinality) {
+    public void addAttribute(Presence presence, Cardinality cardinality) {
 
         String name = getValidName(this.diagram);
 
@@ -244,7 +250,7 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
             return;
         }
 
-        this.addAttribute(new Attribute.Builder(CommonRol.getInstance(), name, this)
+        this.addAttribute(new Attribute.Builder(Common.getInstance(), name, this)
                 .presence(presence)
                 .cardinality(cardinality)
                 .build()
@@ -311,17 +317,13 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
     }
 
     @Override
-    public List<DerivationObject> getDerivationObjects() {
+    public List<Derivation> getDerivations() {
 
-        List<DerivationObject> out = new ArrayList<>();
+        List<Derivation> out = new ArrayList<>();
 
-        DerivationObject derivation = new SingularDerivation(this.getIdentifier());
-
-        for (Attribute attribute : this.getAttributes(1)) {
-            derivation.addAttribute(this, attribute);
+        for (Attribute attribute : this.attributes) {
+            out.addAll(attribute.getDerivations());
         }
-
-        out.add(derivation);
 
         return out;
     }

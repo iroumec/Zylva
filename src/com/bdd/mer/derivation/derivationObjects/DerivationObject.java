@@ -1,6 +1,6 @@
 package com.bdd.mer.derivation.derivationObjects;
 
-import com.bdd.mer.components.attribute.Attribute;
+import com.bdd.mer.components.attribute.external.Attribute;
 import com.bdd.mer.derivation.Derivable;
 import com.bdd.mer.derivation.elements.ElementDecorator;
 import com.bdd.mer.derivation.Derivation;

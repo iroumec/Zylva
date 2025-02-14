@@ -4,7 +4,13 @@ import com.bdd.mer.derivation.Derivation;
 import com.bdd.mer.derivation.elements.Element;
 import com.bdd.mer.derivation.elements.ElementGroup;
 
-public class Identifier implements Source {
+public final class Identifier implements Source {
+
+    private final static Identifier INSTANCE = new Identifier();
+
+    private Identifier() {}
+
+    public static Identifier getInstance() { return INSTANCE; }
 
     @Override
     public Element getAbstractionElement(Derivation derivation) {

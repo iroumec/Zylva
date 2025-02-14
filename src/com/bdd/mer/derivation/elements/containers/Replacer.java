@@ -24,7 +24,7 @@ public class Replacer implements Holder {
     }
 
     public Replacer(ElementDecorator... modifiers) {
-        this(new Identifier(), modifiers);
+        this(Identifier.getInstance(), modifiers);
     }
 
     public Replacer(Source source, ElementDecorator... modifiers) {

@@ -15,7 +15,7 @@ public final class SingleElement extends Element {
     private final Holder holder;
 
     public SingleElement(String name) {
-        this(name, new Final());
+        this(name, Final.getInstance());
     }
 
     public SingleElement(String name, Holder holder) {
