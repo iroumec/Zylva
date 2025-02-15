@@ -122,25 +122,4 @@ public final class Note extends Component {
             yTexto += lineHeight;
         }
     }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    /*
-    Maybe a distinction between independent and dependent components would be okay.
-     */
-
-    @Override
-    protected void cleanReferencesTo(Component component) {
-
-    }
-
-    @Override
-    protected void notifyRemovingOf(Component component) {
-
-    }
-
-    @Override
-    protected boolean canBeDeleted() {
-        return true;
-    }
 }

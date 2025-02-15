@@ -1,25 +1,21 @@
 package com.iroumec.executables;
 
 import com.iroumec.userPreferences.LanguageManager;
+import com.iroumec.userPreferences.Multilingual;
 
 import javax.swing.*;
 
-public final class Item extends JMenuItem {
+public final class Item extends JMenuItem implements Multilingual {
 
     private final String key;
-    private final boolean requieresLanguageReset;
 
-    public Item(String languageKey, boolean requiereLanguageReset) {
+    public Item(String languageKey) {
         super(LanguageManager.getMessage(languageKey));
         this.key = languageKey;
-        this.requieresLanguageReset = requiereLanguageReset;
     }
 
+    @Override
     public void resetLanguage() {
         this.setText(LanguageManager.getMessage(key));
-    }
-
-    public boolean requireLanguageReset() {
-        return this.requieresLanguageReset;
     }
 }

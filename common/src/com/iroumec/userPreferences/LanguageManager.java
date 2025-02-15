@@ -9,6 +9,7 @@ import java.util.List;
 
 public class LanguageManager {
 
+    private final static List<Multilingual> languageResetList = new ArrayList<>();
     private static Locale currentLocale;
     private static ResourceBundle messages;
 
@@ -25,6 +26,10 @@ public class LanguageManager {
         List<ResourceBundle> resourceBundle = diagram.getResourceBundles(currentLocale);
 
         messages = new CombinedResourceBundle(resourceBundle.toArray(new ResourceBundle[0]));
+    }
+
+    public static void suscribeToLanguageResetList(Multilingual multilingual) {
+        languageResetList.add(multilingual);
     }
 
     /**
@@ -87,6 +92,12 @@ public class LanguageManager {
         messages = ResourceBundle.getBundle("resources/messages", currentLocale);
 
         UserPreferences.savePreference(Preference.LANGUAGE, language);
+    }
+
+    private static void notifyComponents() {
+        for (Multilingual multilingual : languageResetList) {
+            multilingual.resetLanguage();
+        }
     }
 
     /**

@@ -155,7 +155,7 @@ public final class EERDiagram extends Diagram {
     public List<Item> getFileMenuItems() {
         List<Item> out = super.getFileMenuItems();
 
-        Item derivate = new Item("fileMenu.derivate", false);
+        Item derivate = new Item("fileMenu.derivate");
         derivate.addActionListener(_ -> this.derivate());
         out.add(derivate);
 
@@ -228,6 +228,8 @@ public final class EERDiagram extends Diagram {
         }
 
     }
+
+    // TODO: what happen with the replaces that have no replacement?
 
     /**
      * The order in which the derivation are analyzed doesn't matter.

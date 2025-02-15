@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class Diagram extends JPanel {
+public abstract class Diagram extends JPanel implements Multilingual {
 
     private List<Component> components = new ArrayList<>();
     private Component draggedComponent = null;
@@ -623,27 +623,28 @@ public abstract class Diagram extends JPanel {
 
         List<Item> out = new ArrayList<>();
 
-        Item exportToPNG = new Item("fileMenu.exportToPNG", false);
+        Item exportToPNG = new Item("fileMenu.exportToPNG");
         exportToPNG.addActionListener(_ -> this.exportToPng());
         out.add(exportToPNG);
 
-        Item saveDiagram = new Item("fileMenu.saveDiagram", false);
+        Item saveDiagram = new Item("fileMenu.saveDiagram");
         saveDiagram.addActionListener(_ -> this.saveDiagram());
         out.add(saveDiagram);
 
-        Item loadDiagram = new Item("fileMenu.loadDiagram", false);
+        Item loadDiagram = new Item("fileMenu.loadDiagram");
         loadDiagram.addActionListener(_ -> this.loadDiagram());
         out.add(loadDiagram);
 
-        Item changeLanguage = new Item("fileMenu.changeLanguage", true);
+        Item changeLanguage = new Item("fileMenu.changeLanguage");
         changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage(
                 Language.ENGLISH,
                 Language.SPANISH
         ));
+        LanguageManager.suscribeToLanguageResetList(this);
         out.add(changeLanguage);
 
         // TODO: que cambie el texto dependiendo de si está activado o no.
-        Item swapAntialiasing = new Item("fileMenu.swapAntialiasing", false);
+        Item swapAntialiasing = new Item("fileMenu.swapAntialiasing");
         swapAntialiasing.addActionListener(_ -> this.setAntialiasing(!this.isAntialiasingActive()));
         out.add(swapAntialiasing);
 
@@ -653,10 +654,6 @@ public abstract class Diagram extends JPanel {
     public List<Button> getMainFrameKeys() {
 
         List<Button> out = new ArrayList<>();
-
-        /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                              Delete Key                                                    */
-        /* ---------------------------------------------------------------------------------------------------------- */
 
         Button deleteKey = new Button("Delete key");
         deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
@@ -693,11 +690,7 @@ public abstract class Diagram extends JPanel {
         });
         out.add(deleteKey);
 
-        /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                            Clean Diagram                                                   */
-        /* ---------------------------------------------------------------------------------------------------------- */
-
-        Button cleanKey = new Button("Clean key");
+        Button cleanKey = new Button("Clean diagram key");
         cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
         cleanKey.getActionMap().put("cleanDiagram", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {

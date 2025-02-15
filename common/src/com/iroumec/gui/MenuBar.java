@@ -2,14 +2,14 @@ package com.iroumec.gui;
 
 import com.iroumec.components.Diagram;
 import com.iroumec.userPreferences.LanguageManager;
+import com.iroumec.userPreferences.Multilingual;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-final class MenuBar extends JMenuBar {
+final class MenuBar extends JMenuBar implements Multilingual {
 
-    private final MainFrame owner;
     private final static String HELP_KEY = "menuBar.help";
     private final static String CLEAN_KEY = "menuBar.clean";
     private final JButton cleanFrameButton, helpButton;
@@ -17,37 +17,15 @@ final class MenuBar extends JMenuBar {
     // TODO: separate this giant constructor in various methods.
     public MenuBar(MainFrame mainFrame, Diagram diagram) {
 
-        this.owner = mainFrame;
+        LanguageManager.suscribeToLanguageResetList(this);
 
-        /* ---------------------------------------------------------------------------------------------------------- */
-        /*                                      Mouse Interactions Related                                            */
-        /* ---------------------------------------------------------------------------------------------------------- */
-
-        // Mouse position.
-        Point point = new Point();
-
-        // They are useful for when the frame is dragged.
-        addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                point.x = e.getX();
-                point.y = e.getY();
-            }
-        });
-
-        addMouseMotionListener(new MouseMotionAdapter() {
-            public void mouseDragged(MouseEvent e) {
-                // Mouse position in the frame.
-                Point p = mainFrame.getLocation();
-                // MainRol frame location is updated.
-                mainFrame.setLocation(p.x + e.getX() - point.x, p.y + e.getY() - point.y);
-            }
-        });
+        initializeMouseListeners(mainFrame);
 
         /* ---------------------------------------------------------------------------------------------------------- */
         /*                                            File Menu                                                       */
         /* ---------------------------------------------------------------------------------------------------------- */
 
-        FileMenu fileMenu = new FileMenu(this, diagram);
+        FileMenu fileMenu = new FileMenu(diagram);
         fileMenu.setBackground(UIManager.getColor("control"));
         fileMenu.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
@@ -127,10 +105,33 @@ final class MenuBar extends JMenuBar {
         add(helpButton);
     }
 
+    private void initializeMouseListeners(MainFrame mainFrame) {
+
+        // Mouse position.
+        Point point = new Point();
+
+        // They are useful for when the frame is dragged.
+        addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                point.x = e.getX();
+                point.y = e.getY();
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                // Mouse position in the frame.
+                Point p = mainFrame.getLocation();
+                // MainRol frame location is updated.
+                mainFrame.setLocation(p.x + e.getX() - point.x, p.y + e.getY() - point.y);
+            }
+        });
+    }
+
+    @Override
     public void resetLanguage() {
 
         this.cleanFrameButton.setText(LanguageManager.getMessage(CLEAN_KEY));
         this.helpButton.setText(LanguageManager.getMessage(HELP_KEY));
-        this.owner.resetLanguage();
     }
 }

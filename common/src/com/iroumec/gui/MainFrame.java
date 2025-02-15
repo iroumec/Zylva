@@ -9,8 +9,6 @@ import java.util.List;
 
 public final class MainFrame extends JFrame {
 
-    private final Diagram diagram;
-
     public MainFrame(String title, Diagram diagram) {
 
         setUndecorated(false);  // Removing of the title bar.
@@ -18,7 +16,6 @@ public final class MainFrame extends JFrame {
         setSize(800, 600);
         setLocationRelativeTo(null);
 
-        this.diagram = diagram;
         MenuBar menuBar = new MenuBar(this, diagram);
         JPanel menu = new JPanel();
         menu.setLayout(new BoxLayout(menu, BoxLayout.PAGE_AXIS));
@@ -28,7 +25,7 @@ public final class MainFrame extends JFrame {
         menu.setBackground(Color.LIGHT_GRAY);
 
         // TODO: don't use the Button clas here, but another class key.
-        List<Button> keys = this.diagram.getMainFrameKeys();
+        List<Button> keys = diagram.getMainFrameKeys();
 
         for (Button key : keys) {
             getContentPane().add(key);
@@ -36,9 +33,5 @@ public final class MainFrame extends JFrame {
 
         add(diagram, BorderLayout.CENTER);
         setJMenuBar(menuBar);
-    }
-
-    public void resetLanguage() {
-        this.diagram.resetLanguage();
     }
 }

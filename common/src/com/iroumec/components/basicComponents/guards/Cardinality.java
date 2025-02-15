@@ -3,7 +3,6 @@ package com.iroumec.components.basicComponents.guards;
 import com.iroumec.components.basicComponents.Line;
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.components.basicComponents.Guard;
-import com.iroumec.structures.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,20 +10,24 @@ import java.util.Optional;
 
 public class Cardinality extends Guard {
 
-    public Cardinality(String firstValue, String secondValue, Line line) {
-        super(giveFormat(firstValue, secondValue), line);
+    private final Line line;
+    private String minimumValue, maximumValue;
+
+    public Cardinality(String minimumValue, String maximumValue, Line line) {
+        super(giveFormat(minimumValue, maximumValue), line);
+        this.minimumValue = minimumValue;
+        this.maximumValue = maximumValue;
+        this.line = line;
     }
 
     public static String giveFormat(String firstValue, String secondValue) {
         return "(" + firstValue + ", " + secondValue + ")";
     }
 
-    public static Pair<String, String> removeFormat(String text) {
+    public String getMinimumCardinality() { return this.minimumValue; }
+    public String getMaximumCardinality() { return this.maximumValue; }
 
-        String[] cardinalities = text.replaceAll("[()]", "").split(", ");
-
-        return new Pair<>(cardinalities[0], cardinalities[1]);
-    }
+    public Line getLine() { return this.line; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
@@ -95,6 +98,8 @@ public class Cardinality extends Guard {
 
             // If everything is valid, the cardinality is updated.
             this.setText(Cardinality.giveFormat(minText, maxText));
+            this.minimumValue = minText;
+            this.maximumValue = maxText;
 
             // Here only the area of the cardinality could be repainted, but, if the cardinality now has a considerable
             // greater number, it'll lead to visual noise until all the panel is repainted.

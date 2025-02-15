@@ -64,7 +64,7 @@ public final class Line extends Component {
 
     // Maybe the line's name could be cleaned.
     @Override
-    protected void cleanReferencesTo(Component component) {
+    public void cleanReferencesTo(Component component) {
         /*
         Method lef empty in purpose.
 
@@ -74,7 +74,7 @@ public final class Line extends Component {
     }
 
     @Override
-    protected boolean canBeDeleted() {
+    public boolean canBeDeleted() {
         return true;
     }
 

@@ -11,10 +11,14 @@ public interface Deletable {
      * If the component cannot exist after deleting all the references to the attached component,
      * the method {@code notifyRemovingOf()} has been bad implemented. This method shouldn't efectuate any
      * deletion for the correct working of the application.
+     * <p></p>
+     * By default, due to not all deletable objects might have the need of cleaning references, it's left empty
+     * on purpose. Another reason why it could be left empty is that the class doesn't have any important reference
+     * that would not produce its elimination in the notifyRemovingOf() method (and so, this method wouldn't be called).
      *
      * @param component Component no longer available in the diagram.
      */
-    void cleanReferencesTo(Component component);
+    default void cleanReferencesTo(Component component) {}
 
     /**
      * The component notified handle the removing of the component attached in case of being related to it.
@@ -22,14 +26,17 @@ public interface Deletable {
      * Despite the component notified depends in existence on the component attached in the notification,
      * it's not guaranteed that it will be removed until all related components have been analyzed. For that reason,
      * the component should not implement any change in its values at the moment of implementing this method.
+     * <p></p>
+     * By default, due to not all deletable objects might have the need of notifying its removing, it's left empty
+     * on purpose.
      *
      * @param component Component attached. If everything goes okay, it will be removed from the diagram.
      */
-    void notifyRemovingOf(Component component);
+    default void notifyRemovingOf(Component component) {}
 
     /**
-     *
-     * @return A boolean indicating if the component can be deleted or not.
+     * @return A boolean indicating if the component can be deleted or not. By default, due to not all deletable objects
+     * might have problems with being deleted, it returns {@code TRUE}.
      */
-    boolean canBeDeleted();
+    default boolean canBeDeleted() { return true; }
 }

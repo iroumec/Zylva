@@ -54,19 +54,6 @@ public abstract class Guard extends Component {
     }
 
     @Override
-    protected boolean canBeDeleted() { return true; }
-
-    @Override
-    public void cleanReferencesTo(Component component) {
-        /*
-        Method lef empty in purpose.
-
-        There is no important reference in the class that would not produce its elimination in the
-        notifyRemovingOf() method.
-         */
-    }
-
-    @Override
     public void notifyRemovingOf(Component component) {
 
         if (component.equals(line)) {

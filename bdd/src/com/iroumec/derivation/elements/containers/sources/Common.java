@@ -8,7 +8,7 @@ public final class Common implements Source {
 
     private final static Common INSTANCE = new Common();
 
-    private Common() {}
+    public Common() {}
 
     public static Common getInstance() { return INSTANCE; }
 

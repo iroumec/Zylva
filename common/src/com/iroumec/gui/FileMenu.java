@@ -3,48 +3,33 @@ package com.iroumec.gui;
 import com.iroumec.components.Diagram;
 import com.iroumec.executables.Item;
 import com.iroumec.userPreferences.LanguageManager;
+import com.iroumec.userPreferences.Multilingual;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
-final class FileMenu extends JMenu {
+final class FileMenu extends JMenu implements Multilingual {
 
     private final static String LANGUAGE_KEY = "fileMenu";
 
-    private final MenuBar owner;
-    private final List<Item> items;
+    public FileMenu(Diagram diagram) {
 
-    public FileMenu(MenuBar owner, Diagram diagram) {
-        this.setText(LanguageManager.getMessage(LANGUAGE_KEY));
-        this.owner = owner;
-        this.items = new ArrayList<>();
+        super(LanguageManager.getMessage(LANGUAGE_KEY));
+
+        LanguageManager.suscribeToLanguageResetList(this);
 
         List<Item> items = diagram.getFileMenuItems();
 
         for (Item item : items) {
-            this.addExecutableItem(item);
+            LanguageManager.suscribeToLanguageResetList(item);
+            this.add(item);
         }
     }
 
-    public void addExecutableItem(Item item) {
+    @Override
+    public void resetLanguage() {
 
-        // TODO: the language don't have to be reset yet.
-        if (item.requireLanguageReset()) {
-            item.addActionListener(_ -> FileMenu.this.resetLanguage());
-        }
-
-        items.add(item);
-        this.add(item);
-    }
-
-    void resetLanguage() {
-
-        for (Item item : items) {
-            item.resetLanguage();
-        }
-
-        owner.resetLanguage();
+        this.setText(LanguageManager.getMessage(LANGUAGE_KEY));
 
         this.repaint();
     }

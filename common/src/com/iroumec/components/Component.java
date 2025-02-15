@@ -1,6 +1,7 @@
 package com.iroumec.components;
 
 import com.iroumec.userPreferences.LanguageManager;
+import com.iroumec.userPreferences.Multilingual;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.awt.*;
 import java.util.regex.Pattern;
 
-public abstract class Component implements Serializable, Deletable {
+public abstract class Component implements Serializable, Deletable, Multilingual {
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Attributes                                                    */
@@ -251,6 +252,7 @@ public abstract class Component implements Serializable, Deletable {
 
     public boolean canBeSelectedBySelectionArea() { return true; }
 
+    @Override
     public void resetLanguage() {
         this.popupMenu = this.getPopupMenu();
     }

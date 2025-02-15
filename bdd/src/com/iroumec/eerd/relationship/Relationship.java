@@ -6,13 +6,20 @@ import com.iroumec.components.basicComponents.guards.StaticCardinality;
 import com.iroumec.components.basicComponents.line.lineMultiplicity.DoubleLine;
 import com.iroumec.components.basicComponents.line.lineShape.SquaredLine;
 import com.iroumec.EERDiagram;
+import com.iroumec.derivation.Derivable;
+import com.iroumec.derivation.Derivation;
+import com.iroumec.derivation.elements.ElementDecorator;
+import com.iroumec.derivation.elements.SingleElement;
+import com.iroumec.derivation.elements.containers.Holder;
+import com.iroumec.derivation.elements.containers.Replacer;
+import com.iroumec.derivation.elements.containers.sources.Common;
 import com.iroumec.eerd.association.Association;
 import com.iroumec.eerd.attribute.DescAttrEERComp;
 import com.iroumec.components.basicComponents.guards.Cardinality;
 import com.iroumec.eerd.entity.EntityWrapper;
 import com.iroumec.eerd.relationship.relatable.Relatable;
-import com.iroumec.structures.Pair;
 import com.iroumec.userPreferences.LanguageManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,9 +29,9 @@ import java.util.List;
 public final class Relationship extends DescAttrEERComp {
 
     /**
-     * Participant of the relationship.
+     * Members of the relationship. A map is used for efficiency purposes.
      */
-    private final Map<Relatable, List<Line>> participants;
+    private final Map<Relatable, Member> members;
     private int horizontalDiagonal, verticalDiagonal; // Posición del centro del rombo
     private final Polygon shape;
     private Association association;
@@ -40,26 +47,23 @@ public final class Relationship extends DescAttrEERComp {
 
         super(text, x, y);
 
-        this.participants = new HashMap<>();
+        this.members = new HashMap<>();
         this.shape = new Polygon();
         setDrawingPriority(6);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    private void addParticipant(Relatable relatableComponent, Line line) {
+    private void addMember(Relatable relatableComponent, Cardinality cardinality) {
 
-        List<Line> lines = this.participants.get(relatableComponent);
+        Member member = this.members.get(relatableComponent);
 
-        // The participant doesn't exist.
-        if (lines == null) {
-            lines = new ArrayList<>();
+        if (member == null) {
+            member = new Member(relatableComponent);
             relatableComponent.addRelationship(this);
         }
 
-        lines.add(line);
-
-        this.participants.put(relatableComponent, lines);
+        member.addCardinality(cardinality);
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -68,7 +72,7 @@ public final class Relationship extends DescAttrEERComp {
 
         Set<Component> out = new HashSet<>(this.getAttributes());
 
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
+        for (Map.Entry<Relatable, Member> participant : this.members.entrySet()) {
 
             out.add((Component) participant.getKey());
 
@@ -77,8 +81,6 @@ public final class Relationship extends DescAttrEERComp {
             if (participant.getKey() instanceof DescAttrEERComp descAttrEERComp) {
                 out.addAll(descAttrEERComp.getAttributes());
             }
-
-            out.addAll(participant.getValue());
         }
 
         return out;
@@ -87,7 +89,7 @@ public final class Relationship extends DescAttrEERComp {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     public List<Relatable> getParticipants() {
-        return new ArrayList<>(this.participants.keySet());
+        return new ArrayList<>(this.members.keySet());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -106,20 +108,15 @@ public final class Relationship extends DescAttrEERComp {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public boolean allMaxCardinalitiesAreN() {
+    public boolean allDerivedMaxCardinalitiesAreEqualToN() {
 
-        List<Line> lines = this.getLines();
+        if (members.isEmpty()) {
+            return false;
+        }
 
-        for (Line line : lines) {
+        for (Member member : this.members.values()) {
 
-            // I know all the guarded lines will have a cardinality guard.
-            // Maybe it's not a bad idea to use a generic type to make sure...
-            Pair<String, String> cardinality = Cardinality.removeFormat(line.getText());
-
-            String maxCardinality = cardinality.second();
-
-            if (!maxCardinality.matches("[a-zA-Z]")) {
-                // If it's a number...
+            if (!member.areAllDerivedMaxCardinalitiesEqualToN()) {
                 return false;
             }
         }
@@ -127,25 +124,13 @@ public final class Relationship extends DescAttrEERComp {
         return true;
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    private List<Line> getLines() {
-
-        List<Line> out = new ArrayList<>();
-
-        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
-            out.addAll(participant.getValue());
-        }
-
-        return out;
-    }
-
     /**
      * Surrounds the relationships with an association.
      */
     private void createAssociation() {
 
-        if (this.allMaxCardinalitiesAreN()) {
+        // TODO: is the condition interpreted from the derivation point of view?
+        if (this.allDerivedMaxCardinalitiesAreEqualToN()) {
 
             Association association = new Association(this);
 
@@ -241,7 +226,7 @@ public final class Relationship extends DescAttrEERComp {
 
             // If component is a participant, it is assumed that its lines were removed in the
             // notifyRemovingOf() method.
-            this.participants.remove(relatable);
+            this.members.remove(relatable);
         }
 
     }
@@ -249,16 +234,16 @@ public final class Relationship extends DescAttrEERComp {
     @Override
     public void notifyRemovingOf(Component component) {
 
-        if (component instanceof Relatable relatable && this.participants.containsKey(relatable)) {
+        if (component instanceof Relatable relatable && this.members.containsKey(relatable)) {
 
-            if (this.participants.size() <= 2) {
+            if (this.members.size() <= 2) {
 
                 this.setForDelete();
             } else {
 
-                List<Line> lines = this.participants.get(relatable);
+                Member member = this.members.get(relatable);
 
-                for (Line line : lines) {
+                for (Line line : member.getLines()) {
                     line.setForDelete();
                 }
             }
@@ -282,41 +267,27 @@ public final class Relationship extends DescAttrEERComp {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-//    @Override
-//    public List<Derivation> getDerivations() {
-//
-//        List<DerivationObject> out = new ArrayList<>();
-//
-//        PluralDerivation derivation = new PluralDerivation(this.getIdentifier());
-//
-//        for (Attribute attribute : this.getAttributes(1)) {
-//            derivation.addAttribute(this, attribute);
-//        }
-//
-//        for (Map.Entry<Relatable, List<Line>> participant : this.participants.entrySet()) {
-//
-//            List<Line> lines = participant.getValue();
-//
-//            for (Line line : lines) {
-//
-//                try {
-//                    Pair<String, String> cardinalities = Cardinality.removeFormat(line.getText());
-//
-//                    derivation.addMember(new PluralDerivation.Member(
-//                            ((Derivable) participant.getKey()).getIdentifier(),
-//                            cardinalities.first(),
-//                            cardinalities.second()
-//                    ));
-//                } catch (Exception e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        }
-//
-//        out.add(derivation);
-//
-//        return out;
-//    }
+    @Override
+    public List<Derivation> getDerivations() {
+
+        List<Derivation> out = super.getDerivations();
+
+        Derivation mainDerivation = new Derivation(this.getIdentifier());
+
+        List<DerivationMember> derivationMembers = new ArrayList<>();
+
+        for (Member member : this.members.values()) {
+            derivationMembers.addAll(member.getDerivationMembers());
+        }
+
+        switch (derivationMembers.size()) {
+            case 2: out.addAll(getBinaryRelationshipDerivation(mainDerivation, derivationMembers)); break;
+            case 3: out.addAll(getTernaryRelationshipDerivation(mainDerivation, derivationMembers)); break;
+            default: throw new RuntimeException("Invalid number of members for a plural derivation.");
+        }
+
+        return out;
+    }
 
     @Override
     public String getIdentifier() {
@@ -387,7 +358,7 @@ public final class Relationship extends DescAttrEERComp {
                     line.setDrawingPriority(0);
                 }
 
-                newRelationship.addParticipant(relatable, line);
+                newRelationship.addMember(relatable, cardinality);
             }
 
             newComponents.add(newRelationship);
@@ -436,8 +407,8 @@ public final class Relationship extends DescAttrEERComp {
         newComponents.add(firstCardinality);
         newComponents.add(secondCardinality);
 
-        newRelationship.addParticipant(relatable, firstLine);
-        newRelationship.addParticipant(relatable, secondLine);
+        newRelationship.addMember(relatable, firstCardinality);
+        newRelationship.addMember(relatable, secondCardinality);
 
         newComponents.add(newRelationship);
 
@@ -497,7 +468,7 @@ public final class Relationship extends DescAttrEERComp {
                     Cardinality cardinality = new Cardinality("1", "N", strongLine);
                     componentsToAdd.add(cardinality);
 
-                    newRelationship.addParticipant(entity, strongLine);
+                    newRelationship.addMember(entity, cardinality);
                 } else {
 
                     Line weakLine = new Line.Builder(
@@ -511,7 +482,7 @@ public final class Relationship extends DescAttrEERComp {
                     Cardinality staticCardinality = new StaticCardinality("1", "1", weakLine);
                     componentsToAdd.add(staticCardinality);
 
-                    newRelationship.addParticipant(entity, weakLine);
+                    newRelationship.addMember(entity, staticCardinality);
                 }
             }
 
@@ -552,5 +523,399 @@ public final class Relationship extends DescAttrEERComp {
                 yield selectWeakEntity(entities, diagram);
             }
         };
+    }
+
+    // TODO: return all possible combinations.
+    // TODO: why does it return always an empty list?
+    private List<Derivation> getTernaryRelationshipDerivation(Derivation mainDerivation,
+                                                              List<DerivationMember> members) {
+
+        int oneCount = 0;
+
+        DerivationMember oneCardinalityMember = null;
+
+        for (DerivationMember member : members) {
+
+            if (member.maxCardinality.equals("1")) {
+
+                oneCount++;
+
+                if (oneCardinalityMember == null) {
+                    oneCardinalityMember = member;
+                }
+            }
+        }
+
+        Holder mostUsedHolder = new Replacer(ElementDecorator.FOREIGN);
+
+        switch (oneCount) {
+            case 0: // N:N:N
+
+                mainDerivation.addIdentificationElement(
+                        new SingleElement(members.getFirst().name, mostUsedHolder)
+                );
+                mainDerivation.addIdentificationElement(
+                        new SingleElement(members.get(1).name, mostUsedHolder)
+                );
+                mainDerivation.addIdentificationElement(
+                        new SingleElement(members.getLast().name, mostUsedHolder)
+                );
+
+                break;
+            case 1, 2, 3: // 1:N:N
+
+                for (DerivationMember member : members) {
+
+                    if (!member.equals(oneCardinalityMember)) {
+
+                        mainDerivation.addIdentificationElement(
+                                new SingleElement(member.name, mostUsedHolder)
+                        );
+                    } else {
+
+                        mainDerivation.addCommonElement(
+                                new SingleElement(member.name, new Replacer(ElementDecorator.FOREIGN))
+                        );
+                    }
+                }
+                break;
+            // 1:1:N -- The difference here is that there are more possible combinations. But the logic is the same as case 1 if we only want one combination.
+            //case 2: break;
+            // 1:1:1 -- Again, more possible, combinations.
+            //case 3: break;
+            default: throw new RuntimeException("Invalid cardinality for ternary relationship.");
+        }
+
+        return new ArrayList<>();
+    }
+
+    private List<Derivation> getBinaryRelationshipDerivation(Derivation mainDerivation,
+                                                             List<DerivationMember> members) {
+
+        List<Derivation> out = new ArrayList<>();
+
+        DerivationMember firstMember = members.getFirst();
+        DerivationMember secondMember = members.getLast();
+
+        if (firstMember.name.equals(secondMember.name)) {
+            out.addAll(getUnaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+            return out;
+        }
+
+        if (firstMember.maxCardinality.equals("1") || secondMember.maxCardinality.equals("1")) {
+
+            if (firstMember.maxCardinality.equals("1") && secondMember.maxCardinality.equals("1")) {
+                out.addAll(get1to1BinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+            } else {
+                out.addAll(get1toNBinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+            }
+        } else {
+            out.addAll(getNtoNBinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+        }
+
+        return out;
+    }
+
+    private List<Derivation> getUnaryRelationshipDerivations(Derivation mainDerivation,
+                                                             DerivationMember firstMember,
+                                                             DerivationMember secondMember) {
+
+        List<Derivation> out = new ArrayList<>();
+
+        if (firstMember.maxCardinality.equals("1") || secondMember.maxCardinality.equals("1")) {
+
+            if (firstMember.maxCardinality.equals("1") && secondMember.maxCardinality.equals("1")) {
+                // TODO: I couldn't find any rules for this kind of derivation. Is it possible?
+                out.addAll(get1to1BinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+            } else {
+                out.addAll(get1toNUnaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+            }
+        } else {
+            // There is no much difference between the unary and binary NtoN derivation.
+            out.addAll(getNtoNBinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+        }
+
+        return out;
+    }
+
+    private List<Derivation> get1toNUnaryRelationshipDerivations(Derivation mainDerivation,
+                                                                 DerivationMember firstMember,
+                                                                 DerivationMember secondMember) {
+
+        String minCardinality = (firstMember.maxCardinality.equals("1")) ? firstMember.minCardinality : secondMember.minCardinality;
+
+        Derivation derivation = new Derivation(firstMember.name);
+
+        if (minCardinality.equals("0")) {
+
+            if (!mainDerivation.isEmpty()) {
+                derivation.addCommonElement(new SingleElement(this.getIdentifier(),
+                        new Replacer(new Common(), ElementDecorator.OPTIONAL)));
+            }
+
+            derivation.addCommonElement(
+                    new SingleElement(secondMember.name,
+                            new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL, ElementDecorator.DUPLICATED))
+            );
+
+        } else { // It's equal to 1.
+
+            if (!mainDerivation.isEmpty()) {
+                derivation.addCommonElement(new SingleElement(this.getIdentifier(),
+                        new Replacer(new Common())));
+            }
+
+            derivation.addIdentificationElement(
+                    new SingleElement(secondMember.name,
+                            new Replacer(ElementDecorator.FOREIGN, ElementDecorator.DUPLICATED))
+            );
+        }
+
+        return List.of(derivation);
+    }
+
+    private List<Derivation> get1toNBinaryRelationshipDerivations(Derivation mainDerivation,
+                                                                  DerivationMember firstMember,
+                                                                  DerivationMember secondMember) {
+
+        DerivationMember oneSideMember = (firstMember.maxCardinality.equals("1")) ? firstMember : secondMember;
+        DerivationMember nSideMember = (firstMember.maxCardinality.equals("1")) ? secondMember : firstMember;
+
+        Derivation derivation = new Derivation(nSideMember.name);
+
+        List<ElementDecorator> decorators = new ArrayList<>();
+
+        // If the one side member has a cardinality of zero,
+        // the relationship's attributes are also optional.
+        if (oneSideMember.minCardinality.equals("0")) {
+            decorators.add(ElementDecorator.OPTIONAL);
+        }
+
+        // If the main derivation has common attributes, the derivation will take them.
+        if (!mainDerivation.isEmpty()) {
+            derivation.addCommonElement(
+                    new SingleElement(
+                            this.getIdentifier(),
+                            new Replacer(new Common(), decorators.toArray(new ElementDecorator[0]))
+                    )
+            );
+        }
+
+        decorators.add(ElementDecorator.FOREIGN);
+
+        derivation.addCommonElement(
+                new SingleElement(
+                        oneSideMember.name,
+                        new Replacer(decorators.toArray(new ElementDecorator[0]))
+                )
+        );
+
+        return List.of(derivation);
+    }
+
+    private List<Derivation> get1to1BinaryRelationshipDerivations(Derivation mainDerivation,
+                                                                  DerivationMember firstMember,
+                                                                  DerivationMember secondMember) {
+
+        List<Derivation> out = new ArrayList<>();
+
+        // The member who takes the identification attributes of the other member.
+        DerivationMember mainMember, secondaryMember;
+        Derivation derivation;
+        List<ElementDecorator> decorators = new ArrayList<>();
+        decorators.add(ElementDecorator.FOREIGN);
+        decorators.add(ElementDecorator.ALTERNATIVE);
+
+        // Case (0,1):(1,1).
+        if (!firstMember.minCardinality.equals(secondMember.minCardinality)) {
+
+            mainMember = (firstMember.minCardinality.equals("0")) ? firstMember : secondMember;
+
+        } else { // Cases (0,1):(0,1) and (1,1):(1,1). Here the member chosen doesn't matter. There are two valid derivations.
+
+            if (firstMember.minCardinality.equals("0")) { // Case (0,1):(0,1).
+                decorators.add(ElementDecorator.OPTIONAL);
+                decorators.remove(ElementDecorator.ALTERNATIVE);
+            }
+
+            Random selector = new Random();
+
+            mainMember = selector.nextBoolean() ? firstMember : secondMember;
+        }
+
+        secondaryMember = (mainMember.equals(firstMember)) ? secondMember : firstMember;
+
+        derivation = new Derivation(mainMember.name);
+
+        derivation.addCommonElement(
+                new SingleElement(secondaryMember.name,
+                        new Replacer(decorators.toArray(new ElementDecorator[0])))
+        );
+
+        if (!mainDerivation.isEmpty()) {
+
+            // The derivation member has all the common attributes of the relationship.
+            derivation.addCommonElement(
+                    new SingleElement(this.getIdentifier(), new Replacer(new Common()))
+            );
+        }
+
+        out.add(derivation);
+
+        return out;
+    }
+
+    private List<Derivation> getNtoNBinaryRelationshipDerivations(Derivation mainDerivation,
+                                                                  DerivationMember firstMember,
+                                                                  DerivationMember secondMember) {
+
+        // The names of the members will be replaced with their identification attributes.
+        mainDerivation.addIdentificationElement(
+                new SingleElement(firstMember.name, new Replacer(ElementDecorator.FOREIGN))
+        );
+
+        List<ElementDecorator> decoratorsForSecondMember = new ArrayList<>();
+        decoratorsForSecondMember.add(ElementDecorator.FOREIGN);
+
+        // N:N unary relationship.
+        if (firstMember.name.equals(secondMember.name)) {
+            decoratorsForSecondMember.add(ElementDecorator.DUPLICATED);
+        }
+
+        mainDerivation.addIdentificationElement(
+                new SingleElement(secondMember.name,
+                        new Replacer(decoratorsForSecondMember.toArray(new ElementDecorator[0])))
+        );
+
+        // TODO: improve this.
+        return new ArrayList<>();
+    }
+
+    private static class Member {
+
+        private final Relatable relatable;
+        private final List<Cardinality> cardinalities;
+
+        public Member(@NotNull Relatable relatable) {
+            this.relatable = relatable;
+            this.cardinalities = new ArrayList<>();
+        }
+
+        public void addCardinality(@NotNull Cardinality cardinality) {
+            this.cardinalities.add(cardinality);
+        }
+
+        public List<Line> getLines() {
+
+            List<Line> out = new ArrayList<>();
+
+            for (Cardinality cardinality : this.cardinalities) {
+                out.add(cardinality.getLine());
+            }
+
+            return out;
+        }
+
+        public boolean areAllDerivedMaxCardinalitiesEqualToN() {
+
+            for (Cardinality cardinality : this.cardinalities) {
+
+                String maxCardinality = cardinality.getMaximumCardinality();
+
+                // Letters or numbers greater than one.
+                if (!maxCardinality.matches("[a-zA-Z]|[2-9]\\d*")) {
+                    return false;
+                }
+            }
+
+            return this.cardinalities.size() == 1;
+        }
+
+        public List<DerivationMember> getDerivationMembers() {
+
+            List<DerivationMember> out = new ArrayList<>();
+
+            for (Cardinality cardinality : this.cardinalities) {
+                out.add(new DerivationMember(
+                        ((Derivable) relatable).getIdentifier(),
+                        cardinality.getMinimumCardinality(),
+                        cardinality.getMaximumCardinality())
+                );
+            }
+
+            return out;
+        }
+    }
+
+    private record DerivationMember(String name, String minCardinality, String maxCardinality) {
+
+            private DerivationMember(@NotNull String name, @NotNull String minCardinality, @NotNull String maxCardinality) {
+                this.name = name;
+                this.minCardinality = adaptMinCardinality(minCardinality);
+                this.maxCardinality = adaptMaxCardinality(maxCardinality);
+            }
+
+            /**
+             * Minimum cardinalities, in the derivation format, can only take two values: 0 or 1.
+             * If the minimum cardinality has a value greater than one, it'll be replaced by 1 and
+             * the user will have to specify a business rule for that minimum.
+             *
+             * @param minCardinality Minimum cardinality.
+             * @return The minimum cardinality adapted to the derivation rules.
+             */
+            private String adaptMinCardinality(@NotNull String minCardinality) {
+
+                if (minCardinality.isEmpty()) {
+                    throw new IllegalArgumentException("Min cardinality cannot be empty.");
+                }
+
+                try {
+                    int minCardinalityParse = Integer.parseInt(minCardinality);
+
+                    if (minCardinalityParse < 0) {
+                        throw new IllegalArgumentException("Min cardinality cannot be negative.");
+                    }
+
+                    if (minCardinalityParse > 1) {
+                        return "1";
+                    }
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Min cardinality must be a number.");
+                }
+
+                return minCardinality;
+            }
+
+            /**
+             * Minimum cardinalities, in the derivation format, can only take two values: 1 or N (another letter can be used).
+             * If the maximum cardinality has a value greater than one and different from N, it'll be replaced by N and
+             * the user will have to specify a business rule for that maximum.
+             *
+             * @param maxCardinality Maximum cardinality.
+             * @return The maximum cardinality adapted to the derivation rules.
+             */
+            private String adaptMaxCardinality(@NotNull String maxCardinality) {
+
+                if (maxCardinality.isEmpty()) {
+                    throw new IllegalArgumentException("Min cardinality cannot be empty.");
+                }
+
+                try { // It's a number.
+                    int maxCardinalityParse = Integer.parseInt(maxCardinality);
+
+                    if (maxCardinalityParse < 1) {
+                        throw new IllegalArgumentException("Max cardinality cannot be less than 1.");
+                    }
+
+                    if (maxCardinalityParse > 1) {
+                        return "N";
+                    }
+                } catch (NumberFormatException e) { // It's okay if it's a number.
+                    return maxCardinality;
+                }
+
+                return maxCardinality;
+            }
+
     }
 }
