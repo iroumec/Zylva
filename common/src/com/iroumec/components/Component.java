@@ -491,9 +491,13 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
             component.subscribers.forEach((key, subscribers) ->
 
-                    // TODO: Fix concurrent modifications.
+                    // TODO: Fix concurrent modifications. (Check if it's already fixed)
                     subscribers.forEach(subscriber -> {
-                        subscriber.removeAllSubscriptionsFrom(component);
+
+                        // The subscriptions to the component from its subscribers are removed.
+                        subscriber.subscriptions.values().forEach(subscriptions ->
+                                subscriptions.remove(component)
+                        );
 
                         if (key == Subscription.REFERENCE) {
                             subscriber.cleanReferencesTo(component);

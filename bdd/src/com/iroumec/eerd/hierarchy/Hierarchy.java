@@ -63,8 +63,6 @@ public final class Hierarchy extends Component implements Derivable {
         this.parent = parent;
         this.children = new ArrayList<>();
 
-        this.suscribeTo(parent, Subscription.DELETION);
-
         setDrawingPriority(5);
     }
 
@@ -75,8 +73,6 @@ public final class Hierarchy extends Component implements Derivable {
      */
     private void addChild(EntityWrapper entity) {
         this.children.add(entity);
-        this.suscribeTo(entity, Subscription.DELETION);
-        this.suscribeTo(entity, Subscription.REFERENCE);
     }
 
     /**
@@ -197,7 +193,7 @@ public final class Hierarchy extends Component implements Derivable {
 
         main: if (!parent.isAlreadyParent()) {
 
-            List<EntityWrapper> subtipos = getChildrenList(parent, entities);
+            List<EntityWrapper> children = getChildrenList(parent, entities);
 
             Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(diagram, parent);
 
@@ -205,18 +201,22 @@ public final class Hierarchy extends Component implements Derivable {
                 return;
             }
 
+            // TODO: no debería esperarse a la data para chequear si hay herencia múltiple. Apenas obtener al padre
+            // debería hacerse.
+
+            // Separar la obtención de data de la jerarquía, de ser posible.
             Hierarchy newHierarchy = newHierarchyData.first();
-            List<Component> componentsToAdd = newHierarchyData.second();
+            List<Component> data = newHierarchyData.second();
 
             try {
-                for (EntityWrapper subtipo : subtipos) {
+                for (EntityWrapper subtipo : children) {
                     newHierarchy.addChild(subtipo);
 
                     if (!subtipo.addHierarchy(newHierarchy)) {
 
                         // Repairing action.
                         parent.removeHierarchy(newHierarchy);
-                        for (EntityWrapper s : subtipos) {
+                        for (EntityWrapper s : children) {
                             s.removeHierarchy(newHierarchy);
 
                             String message = LanguageManager.getMessage("hierarchy.creationWarning.theEntity") + " "
@@ -235,19 +235,27 @@ public final class Hierarchy extends Component implements Derivable {
                 parent.addHierarchy(newHierarchy);
             } catch (Exception e) {
 
-                // TODO: the subscriptions must be traslated to here.
+                // TODO: the subscriptions must be moved to here.
 
                 JOptionPane.showMessageDialog(diagram, e);
                 parent.removeHierarchy(newHierarchy);
 
-                for (EntityWrapper s : subtipos) {
+                for (EntityWrapper s : children) {
                     s.removeHierarchy(newHierarchy);
                 }
             }
 
-            for (Component component : componentsToAdd) {
+            for (Component component : data) {
                 Component.addComponent(component, diagram);
             }
+
+            for (EntityWrapper child : children) {
+                newHierarchy.children.add(child);
+                newHierarchy.suscribeTo(child, Subscription.DELETION);
+                newHierarchy.suscribeTo(child, Subscription.REFERENCE);
+            }
+
+            newHierarchy.suscribeTo(parent, Subscription.DELETION);
 
             Component.addComponent(newHierarchy, diagram);
         } else {
