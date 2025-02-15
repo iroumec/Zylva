@@ -48,7 +48,7 @@ public final class Main implements Rol {
                                            @NotNull Cardinality cardinality) {
 
         List<Derivation> out = new ArrayList<>();
-        Derivation derivation = new Derivation(owner.getIdentifier());
+        Derivation derivation = new Derivation(owner.getText());
 
         Holder holder;
         if (attribute.isCompound()) {

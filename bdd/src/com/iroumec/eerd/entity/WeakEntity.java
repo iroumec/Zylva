@@ -1,5 +1,6 @@
 package com.iroumec.eerd.entity;
 
+import com.iroumec.components.Component;
 import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
 import com.iroumec.derivation.elements.SingleElement;
@@ -7,7 +8,6 @@ import com.iroumec.eerd.relationship.Relationship;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ import java.util.List;
  */
 final class WeakEntity implements Entity {
 
-    final EntityWrapper entityWrapper;
+    private final EntityWrapper entityWrapper;
 
     /**
      * Relationship where the entity is weak.
@@ -67,31 +67,25 @@ final class WeakEntity implements Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
+    public void cleanReferencesTo(Component component) {
+
+        if (this.relationship.equals(component)) {
+            this.entityWrapper.setStrongVersion();
+        }
+
+    }
+
+    @Override
     public List<Derivation> getDerivations() {
 
-        List<Derivation> out = new ArrayList<>();
-
-        // TODO: improve this.
-        List<Derivable> participants = this.relationship.getParticipants().stream()
-                .filter(r -> r instanceof Derivable)
-                .map(r -> (Derivable) r)
-                .toList();
-
-        if (participants.size() != 2) {
-            throw new IllegalArgumentException("Expected 2 participants but got " + participants.size() + ".");
-        }
+        // I assume the program will work perfectly and, so, the weak entity will always have a opposite, being
+        // this a strong entity or an association.
+        Derivable opposite = (Derivable) this.relationship.getOppositeMember(this.entityWrapper);
 
         Derivation derivation = new Derivation(this.getIdentifier());
 
-        for (Derivable participant : participants) {
+        derivation.addIdentificationElement(new SingleElement(opposite.getIdentifier()));
 
-            if (!participant.equals(this.entityWrapper)) {
-
-                // The strong entity of the relationship has been found.
-                derivation.addIdentificationElement(new SingleElement(participant.getIdentifier()));
-            }
-        }
-
-        return out;
+        return List.of(derivation);
     }
 }

@@ -12,12 +12,10 @@ import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.derivation.elements.containers.Holder;
 import com.iroumec.derivation.elements.containers.Replacer;
 import com.iroumec.derivation.elements.containers.sources.Common;
-import com.iroumec.eerd.association.Association;
 import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.eerd.entity.EntityWrapper;
 import com.iroumec.eerd.relationship.cardinalities.Dynamic;
 import com.iroumec.eerd.relationship.cardinalities.Static;
-import com.iroumec.eerd.relationship.relatable.Relatable;
 import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +24,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public final class Relationship extends DescriptiveAttributable {
+public final class Relationship extends DescriptiveAttributable implements Derivable {
 
     /**
      * Members of the relationship. A map is used for efficiency purposes.
@@ -61,7 +59,13 @@ public final class Relationship extends DescriptiveAttributable {
         if (member == null) {
             member = new Member(relatableComponent);
             this.members.put(relatableComponent, member);
-            relatableComponent.addRelationship(this);
+
+            // If the relatable component will be deleted, notify me, so I can evaluate if a need to be also
+            // deleted.
+            this.suscribeTo((Component) relatableComponent, Subscription.DELETION);
+
+            // If the relatable component was deleted, notify me as well so I can clean my references to it.
+            this.suscribeTo((Component) relatableComponent, Subscription.REFERENCE);
         }
 
         member.addCardinality(cardinality);
@@ -69,28 +73,15 @@ public final class Relationship extends DescriptiveAttributable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public Set<Component> getRelatedComponents() {
+    public List<Rectangle> getAssociationBounds() {
 
-        Set<Component> out = new HashSet<>(this.getAttributes());
+        List<Rectangle> out = super.getAttributeBounds();
 
-        for (Map.Entry<Relatable, Member> participant : this.members.entrySet()) {
+        this.members.keySet().forEach(member -> out.addAll(member.getAssociationBounds()));
 
-            out.add((Component) participant.getKey());
-
-            // TODO: wrong because of the instance of and because of the access to the attributes.
-            // TODO: replace with getMin and getMax point occupied or something similar.
-            if (participant.getKey() instanceof DescriptiveAttributable descriptiveAttributable) {
-                out.addAll(descriptiveAttributable.getAttributes());
-            }
-        }
+        out.add(this.getBounds());
 
         return out;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public List<Relatable> getParticipants() {
-        return new ArrayList<>(this.members.keySet());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -193,23 +184,23 @@ public final class Relationship extends DescriptiveAttributable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem actionItem = new JMenuItem("action.addAttribute");
+        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.addAttribute"));
         actionItem.addActionListener(_ -> this.addAttribute());
         popupMenu.add(actionItem);
 
         if (association == null) {
 
-            actionItem = new JMenuItem("action.addAssociation");
+            actionItem = new JMenuItem(LanguageManager.getMessage("action.addAssociation"));
             actionItem.addActionListener(_ -> this.createAssociation());
             popupMenu.add(actionItem);
         }
 
         //noinspection DuplicatedCode
-        actionItem = new JMenuItem("action.rename");
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.rename"));
         actionItem.addActionListener(_ -> this.rename());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem("action.delete");
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
@@ -271,7 +262,7 @@ public final class Relationship extends DescriptiveAttributable {
     @Override
     public List<Derivation> getDerivations() {
 
-        List<Derivation> out = super.getDerivations();
+        List<Derivation> out = new ArrayList<>();
 
         Derivation mainDerivation = new Derivation(this.getIdentifier());
 
@@ -338,7 +329,6 @@ public final class Relationship extends DescriptiveAttributable {
             for (Relatable relatable : relatableComponents) {
 
                 Line line = new Line.Builder(
-                        diagram,
                         (Component) relatable,
                         newRelationship).build();
                 newComponents.add(line);
@@ -391,13 +381,11 @@ public final class Relationship extends DescriptiveAttributable {
         );
 
         Line firstLine = new Line.Builder(
-                diagram,
                 (Component) relatable,
                 newRelationship).lineShape(new SquaredLine()).build();
         newComponents.add(firstLine);
 
         Line secondLine = new Line.Builder(
-                diagram,
                 newRelationship,
                 (Component) relatable).lineShape(new SquaredLine()).build();
         newComponents.add(secondLine);
@@ -460,7 +448,6 @@ public final class Relationship extends DescriptiveAttributable {
                 if (entity.equals(entitySelected)) {
 
                     Line strongLine = new Line.Builder(
-                            diagram,
                             entity,
                             newRelationship
                     ).lineMultiplicity(new DoubleLine(3)).build();
@@ -473,7 +460,6 @@ public final class Relationship extends DescriptiveAttributable {
                 } else {
 
                     Line weakLine = new Line.Builder(
-                            diagram,
                             entity,
                             newRelationship
                     ).build();
@@ -917,6 +903,14 @@ public final class Relationship extends DescriptiveAttributable {
 
                 return maxCardinality;
             }
+    }
 
+    public Relatable getOppositeMember(Relatable relatable) {
+
+        Optional<Relatable> result = this.members.keySet().stream()
+                .filter(member -> !member.equals(relatable))
+                .findFirst(); // It returns the first member that is different from relatable.
+
+        return result.orElse(null);
     }
 }

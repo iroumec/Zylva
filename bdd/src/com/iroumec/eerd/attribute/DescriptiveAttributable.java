@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Descriptive Attributable EER Component.
  */
-public abstract class DescriptiveAttributable extends Component implements Derivable {
+public abstract class DescriptiveAttributable extends Component {
 
     /**
      * List of {@code Attribute} of the component.
@@ -268,6 +268,18 @@ public abstract class DescriptiveAttributable extends Component implements Deriv
 
     protected abstract void drawStartLineToAttribute(Graphics2D g2, Point textPosition);
 
+    public List<Rectangle> getAttributeBounds() {
+
+        List<Rectangle> out = new ArrayList<>();
+
+        for (Attribute attribute : this.attributes) {
+            out.addAll(attribute.getAttributeBounds());
+            out.add(attribute.getBounds());
+        }
+
+        return out;
+    }
+
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -291,15 +303,15 @@ public abstract class DescriptiveAttributable extends Component implements Deriv
         }
     }
 
-    @Override
-    public List<Derivation> getDerivations() {
-
-        List<Derivation> out = new ArrayList<>();
-
-        for (Attribute attribute : this.attributes) {
-            out.addAll(attribute.getDerivations());
-        }
-
-        return out;
-    }
+//    @Override
+//    public List<Derivation> getDerivations() {
+//
+//        List<Derivation> out = new ArrayList<>();
+//
+//        for (Attribute attribute : this.attributes) {
+//            out.addAll(attribute.getDerivations());
+//        }
+//
+//        return out;
+//    }
 }

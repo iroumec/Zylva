@@ -1,5 +1,6 @@
 package com.iroumec.eerd.entity;
 
+import com.iroumec.components.Deletable;
 import com.iroumec.derivation.Derivable;
 import com.iroumec.eerd.relationship.Relationship;
 
@@ -7,7 +8,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.io.Serializable;
 
-interface Entity extends Serializable, Derivable {
+interface Entity extends Serializable, Derivable, Deletable {
 
     /**
      * Fills the {@code Entity}'s shape.

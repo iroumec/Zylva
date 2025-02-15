@@ -1,4 +1,4 @@
-package com.iroumec.executables;
+package com.iroumec.gui;
 
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.userPreferences.Multilingual;
@@ -11,6 +11,7 @@ public final class Item extends JMenuItem implements Multilingual {
 
     public Item(String languageKey) {
         super(LanguageManager.getMessage(languageKey));
+        LanguageManager.suscribeToLanguageResetList(this);
         this.key = languageKey;
     }
 

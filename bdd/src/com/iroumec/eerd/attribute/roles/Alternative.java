@@ -11,6 +11,7 @@ import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.eerd.attribute.cardinalities.Cardinality;
 import com.iroumec.eerd.attribute.cardinalities.Univalued;
 import com.iroumec.eerd.attribute.presences.Presence;
+import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -34,11 +35,11 @@ public final class Alternative implements Rol {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem item = new JMenuItem("action.addAttribute");
+        JMenuItem item = new JMenuItem(LanguageManager.getMessage("action.addAttribute"));
         item.addActionListener(_ -> attribute.addAttribute(Univalued.getInstance()));
         popupMenu.add(item);
 
-        item = new JMenuItem("action.swapPresence");
+        item = new JMenuItem(LanguageManager.getMessage("action.swapPresence"));
         item.addActionListener(_ -> attribute.swapPresence());
         popupMenu.add(item);
 
@@ -53,7 +54,7 @@ public final class Alternative implements Rol {
                                            @NotNull Cardinality cardinality) {
 
         List<Derivation> out = new ArrayList<>();
-        Derivation derivation = new Derivation(owner.getIdentifier());
+        Derivation derivation = new Derivation(owner.getText());
 
         // TODO: transform this in function.
         Holder holder;

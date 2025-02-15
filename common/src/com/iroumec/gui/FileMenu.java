@@ -1,7 +1,6 @@
 package com.iroumec.gui;
 
 import com.iroumec.components.Diagram;
-import com.iroumec.executables.Item;
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.userPreferences.Multilingual;
 

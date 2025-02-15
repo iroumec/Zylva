@@ -42,7 +42,7 @@ public final class Optional implements Presence {
         Stroke previousStroke = g2.getStroke();
 
         // Dashed pattern.
-        // TODO: constants should be converted to variables.
+        // TODO: I cannot make them final static due to serialization.
         float[] dashPattern = {2f, 2f};  // 5 pixels on, 5 pixels off
         BasicStroke dashedStroke = new BasicStroke(1,
                 BasicStroke.CAP_BUTT,

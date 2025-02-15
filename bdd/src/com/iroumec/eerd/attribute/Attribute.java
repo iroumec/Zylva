@@ -1,18 +1,20 @@
 package com.iroumec.eerd.attribute;
 
 import com.iroumec.components.Component;
+import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.attribute.cardinalities.Cardinality;
 import com.iroumec.eerd.attribute.cardinalities.Univalued;
 import com.iroumec.eerd.attribute.presences.Obligatory;
 import com.iroumec.eerd.attribute.presences.Presence;
 import com.iroumec.eerd.attribute.roles.Rol;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public final class Attribute extends DescriptiveAttributable {
+public final class Attribute extends DescriptiveAttributable implements Derivable {
 
     private final Rol rol;
     private Presence presence;
@@ -72,11 +74,6 @@ public final class Attribute extends DescriptiveAttributable {
 
         setShape(textBounds);
 
-        g2.drawString(this.getText(),
-                textBounds.x + lineLength + circleRadius * 2 + minorCorrection,
-                textBounds.y + minorCorrection
-        );
-
         drawOwnerLine(g2, textPosition);
         this.presence.draw(g2, textPosition.x, textPosition.y, textPosition.x + lineLength, textPosition.y);
         this.cardinality.draw(g2, textPosition.x + lineLength, textPosition.y);
@@ -88,6 +85,8 @@ public final class Attribute extends DescriptiveAttributable {
                 textBounds.width,
                 textBounds.height)
         );
+
+        g2.drawString(this.getText(), (int) this.getBounds().getX(), (int) this.getBounds().getMaxY() - minorCorrection);
 
         //g2.draw(this.getShape());
     }
@@ -215,21 +214,21 @@ public final class Attribute extends DescriptiveAttributable {
         }
     }
 
-
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
+    @SuppressWarnings("Duplicates")
     protected JPopupMenu getPopupMenu() {
 
         JPopupMenu popupMenu = this.rol.getPopupMenu(this);
 
-        JMenuItem item = new JMenuItem("action.rename");
+        JMenuItem item = new JMenuItem(LanguageManager.getMessage("action.rename"));
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.delete");
+        item = new JMenuItem(LanguageManager.getMessage("action.delete"));
         item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 

@@ -37,7 +37,7 @@ public class LanguageManager {
      * <p>
      * The preference is saved for future executions of the program.
      */
-    public static void changeLanguage(Language ... languages) {
+    public static void changeLanguage(Diagram diagram, Language ... languages) {
 
         Arrays.sort(languages, Comparator.comparing(Language::toString));
 
@@ -66,7 +66,7 @@ public class LanguageManager {
             Language selectedLanguage = (Language) languageComboBox.getSelectedItem();
             if (selectedLanguage != null) {
                 String selectedAcronym = selectedLanguage.getAcronym();
-                applyLanguage(selectedAcronym);
+                applyLanguage(diagram, selectedAcronym);
                 frame.dispose();
                 JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged"));
             }
@@ -86,12 +86,11 @@ public class LanguageManager {
      *
      * @param language The language the interface will switch to.
      */
-    private static void applyLanguage(String language) {
-
-        currentLocale = Locale.forLanguageTag(language);
-        messages = ResourceBundle.getBundle("resources/messages", currentLocale);
+    private static void applyLanguage(Diagram diagram, String language) {
 
         UserPreferences.savePreference(Preference.LANGUAGE, language);
+
+        initialize(diagram);
 
         notifyComponents();
     }

@@ -65,6 +65,7 @@ public final class Note extends Component {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
+    @SuppressWarnings("Duplicates")
     protected JPopupMenu getPopupMenu() {
 
         JPopupMenu popupMenu = new JPopupMenu();

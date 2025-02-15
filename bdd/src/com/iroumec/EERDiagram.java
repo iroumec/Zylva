@@ -11,15 +11,14 @@ import com.iroumec.derivation.elements.Element;
 import com.iroumec.derivation.elements.ElementDecorator;
 import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.derivation.exporters.DerivationExporter;
-import com.iroumec.eerd.association.Association;
+import com.iroumec.eerd.relationship.Association;
 import com.iroumec.eerd.attribute.Attribute;
 import com.iroumec.eerd.entity.EntityWrapper;
 import com.iroumec.eerd.hierarchy.Discriminant;
 import com.iroumec.eerd.hierarchy.Hierarchy;
 import com.iroumec.eerd.relationship.Cardinality;
 import com.iroumec.eerd.relationship.Relationship;
-import com.iroumec.executables.Button;
-import com.iroumec.executables.Item;
+import com.iroumec.gui.Item;
 import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +34,7 @@ public final class EERDiagram extends Diagram {
     protected void addComponent(@NotNull Component component) {
         Set<Class<?>> allowedTypes = Set.of(
                 Relationship.class, Cardinality.class, Hierarchy.class, Discriminant.class,
-                EntityWrapper.class, Attribute.class, Association.class, Line.class
+                EntityWrapper.class, Attribute.class, Association.class, Line.class, Note.class
         );
 
         if (allowedTypes.stream().noneMatch(type -> type.isInstance(component))) {
@@ -93,11 +92,11 @@ public final class EERDiagram extends Diagram {
     }
 
     @Override
-    public List<Button> getMainFrameKeys() {
+    public List<JButton> getMainFrameKeys() {
 
-        List<Button> out = super.getMainFrameKeys();
+        List<JButton> out = super.getMainFrameKeys();
 
-        Button addEntityKey = new Button();
+        JButton addEntityKey = new JButton();
         addEntityKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK), "actionE");
         addEntityKey.getActionMap().put("actionE", new AbstractAction() {
             @Override
@@ -108,7 +107,7 @@ public final class EERDiagram extends Diagram {
         });
         out.add(addEntityKey);
 
-        Button addRelationshipKey = new Button();
+        JButton addRelationshipKey = new JButton();
         addRelationshipKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK), "actionR");
         addRelationshipKey.getActionMap().put("actionR", new AbstractAction() {
             @Override
@@ -119,7 +118,7 @@ public final class EERDiagram extends Diagram {
         });
         out.add(addRelationshipKey);
 
-        Button addDependencyKey= new Button();
+        JButton addDependencyKey= new JButton();
         addDependencyKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK), "actionD");
         addDependencyKey.getActionMap().put("actionD", new AbstractAction() {
             @Override
@@ -130,7 +129,7 @@ public final class EERDiagram extends Diagram {
         });
         out.add(addDependencyKey);
 
-        Button addHierarchyKey= new Button();
+        JButton addHierarchyKey= new JButton();
         addHierarchyKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK), "actionH");
         addHierarchyKey.getActionMap().put("actionH", new AbstractAction() {
             @Override
@@ -141,7 +140,7 @@ public final class EERDiagram extends Diagram {
         });
         out.add(addHierarchyKey);
 
-        Button addNoteKey= new Button();
+        JButton addNoteKey= new JButton();
         addNoteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK), "actionN");
         addNoteKey.getActionMap().put("actionN", new AbstractAction() {
             @Override
@@ -232,8 +231,6 @@ public final class EERDiagram extends Diagram {
         }
 
     }
-
-    // TODO: what happen with the replaces that have no replacement?
 
     /**
      * The order in which the derivation are analyzed doesn't matter.

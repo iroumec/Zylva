@@ -1,6 +1,5 @@
 package com.iroumec.eerd.attribute;
 
-import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.attribute.cardinalities.Cardinality;
 import com.iroumec.eerd.attribute.cardinalities.Univalued;
 import com.iroumec.eerd.attribute.presences.Obligatory;
@@ -165,6 +164,18 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
     }
 
     @Override
+    public List<Rectangle> getAttributeBounds() {
+
+        List<Rectangle> out = super.getAttributeBounds();
+
+        if (this.mainAttribute != null) {
+            out.add(this.mainAttribute.getBounds());
+        }
+
+        return out;
+    }
+
+    @Override
     protected int getAbsoluteAttributePosition(Attribute attribute) {
 
         if (this.hasMainAttribute()) {
@@ -256,16 +267,16 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         }
     }
 
-    @Override
-    public List<Derivation> getDerivations() {
-
-        List<Derivation> out = super.getDerivations();
-
-        if (this.hasMainAttribute()) {
-
-            out.addAll(this.mainAttribute.getDerivations());
-        }
-
-        return out;
-    }
+//    @Override
+//    public List<Derivation> getDerivations() {
+//
+//        List<Derivation> out = super.getDerivations();
+//
+//        if (this.hasMainAttribute()) {
+//
+//            out.addAll(this.mainAttribute.getDerivations());
+//        }
+//
+//        return out;
+//    }
 }

@@ -1,12 +1,10 @@
-package com.iroumec.eerd.association;
+package com.iroumec.eerd.relationship;
 
 import com.iroumec.components.Component;
 import com.iroumec.EERDiagram;
-import com.iroumec.eerd.relationship.Relationship;
-import com.iroumec.eerd.relationship.relatable.Relatable;
-import com.iroumec.eerd.relationship.relatable.RelatableImplementation;
 import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,16 +18,13 @@ public class Association extends Component implements Relatable, Derivable {
      */
     private final Relationship relationship;
 
-    private final RelatableImplementation relationshipsManager;
-
     /**
      * Constructs an {@code Association}.
      *
      * @param relationship Core {@code Relationship} forming the association.
      */
-    public Association(Relationship relationship) {
+    Association(Relationship relationship) {
         super();
-        this.relationshipsManager = new RelatableImplementation();
         this.relationship = relationship;
         this.relationship.setAssociation(this);
 
@@ -42,16 +37,14 @@ public class Association extends Component implements Relatable, Derivable {
         int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE;
 
-        List<Component> components = new ArrayList<>(this.relationship.getRelatedComponents());
-        components.add(relationship);
+        List<Rectangle> bounds = new ArrayList<>(this.relationship.getAssociationBounds());
 
-        for (Component component : components) {
-            Rectangle bounds = component.getBounds();
+        for (Rectangle bound : bounds) {
 
-            minX = Math.min(minX, (int) bounds.getMinX());
-            minY = Math.min(minY, (int) bounds.getMinY());
-            maxX = Math.max(maxX, (int) bounds.getMaxX());
-            maxY = Math.max(maxY, (int) bounds.getMaxY());
+            minX = Math.min(minX, (int) bound.getMinX());
+            minY = Math.min(minY, (int) bound.getMinY());
+            maxX = Math.max(maxX, (int) bound.getMaxX());
+            maxY = Math.max(maxY, (int) bound.getMaxY());
         }
 
         int margin = 5;
@@ -96,25 +89,15 @@ public class Association extends Component implements Relatable, Derivable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem item = new JMenuItem("action.addReflexiveRelationship");
+        JMenuItem item = new JMenuItem(LanguageManager.getMessage("action.addReflexiveRelationship"));
         item.addActionListener(_ -> Relationship.addReflexiveRelationship((EERDiagram) this.diagram, this));
         popupMenu.add(item);
 
-        item = new JMenuItem("action.delete");
+        item = new JMenuItem(LanguageManager.getMessage("action.delete"));
         item.addActionListener(_ -> this.setForDelete());
         popupMenu.add(item);
 
         return popupMenu;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void cleanReferencesTo(Component component) {
-
-        if (!component.equals(this.relationship)) {
-            this.removeRelationship(relationship);
-        }
     }
 
     @Override
@@ -128,15 +111,8 @@ public class Association extends Component implements Relatable, Derivable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void addRelationship(Relationship relationship) {
-        this.relationshipsManager.addRelationship(relationship);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void removeRelationship(Relationship relationship) {
-        this.relationshipsManager.removeRelationship(relationship);
+    public List<Rectangle> getAssociationBounds() {
+        return List.of(this.getBounds());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

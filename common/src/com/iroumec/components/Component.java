@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.awt.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public abstract class Component implements Serializable, Deletable, Multilingual {
@@ -16,6 +16,20 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Attributes                                                    */
     /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * A component subscribes in DELETION to another when the latter's elimination implies the former's elimination.
+     * <p>
+     * A component suscribes in REFERENCE to another when the latter's elimination implies the former cleaning its
+     * references to the latter.
+     */
+    public enum Subscription {
+        DELETION,
+        REFERENCE
+    }
+
+    private final Map<Subscription, Set<Component>> subscribers;
+    private final Map<Subscription, Set<Component>> subscriptions;
 
     /**
      * Regex that defines if the name is valid.
@@ -70,38 +84,9 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
     protected Component(String text) { this(text, 0, 0); }
 
-    /**
-     * Constructs a <code>Component</code> with an empty text and coordinates in (0, 0). This constructor is useful
-     * for those components which don't have a text nor their coordinates matter or are calculated.
-     *
-     * @param diagram The drawing panel where the component lives.
-     */
-    protected Component(@NotNull Diagram diagram) {
-        this("", 0, 0, diagram);
-    }
-
     protected Component(int x, int y) {
         this("", x, y);
     }
-
-    /**
-     * Constructs a <code>Component</code> with coordinates in (0, 0). This constructor is useful for those components
-     * which don't have a text.
-     *
-     * @param text The text of the component.
-     * @param diagram The drawing panel where the component lives.
-     */
-    public Component(@NotNull String text, @NotNull Diagram diagram) { this(text, 0 , 0, diagram); }
-
-    /**
-     * Constructs a <code>Component</code> with an empty text. This constructor is useful for those components
-     * which don't have a text.
-     *
-     * @param x The x coordinate of the component in the drawing panel.
-     * @param y The y coordinate of the component in the drawing panel.
-     * @param diagram The drawing panel where the component lives.
-     */
-    public Component(int x, int y, @NotNull Diagram diagram) { this("", x, y, diagram); }
 
     /**
      * Constructs a <code>Component</code>.
@@ -109,28 +94,73 @@ public abstract class Component implements Serializable, Deletable, Multilingual
      * @param text The text of the component.
      * @param x The x coordinate of the component in the drawing panel.
      * @param y The y coordinate of the component in the drawing panel.
-     * @param diagram The drawing panel where the component lives.
      */
-    public Component(@NotNull String text, int x, int y, @NotNull Diagram diagram)  {
-        this.selected = false;
-        this.text = text;
-        this.x = x;
-        this.y = y;
-
-        this.diagram = diagram;
-        this.popupMenu = this.getPopupMenu();
-    }
-
     protected Component(@NotNull String text, int x, int y) {
         this.selected = false;
         this.text = text;
         this.x = x;
         this.y = y;
+
+        this.subscribers = new HashMap<>();
+        this.subscribers.put(Subscription.DELETION, new HashSet<>());
+        this.subscribers.put(Subscription.REFERENCE, new HashSet<>());
+
+        this.subscriptions = new HashMap<>();
+        this.subscriptions.put(Subscription.DELETION, new HashSet<>());
+        this.subscriptions.put(Subscription.REFERENCE, new HashSet<>());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Method                                                        */
     /* -------------------------------------------------------------------------------------------------------------- */
+
+    public void suscribeTo(Component component, Subscription subscription) {
+
+        // The subscription is added to the another component's subscribers.
+        Set<Component> subscribers = component.subscribers.get(subscription);
+        subscribers.add(this);
+
+        // The subscription is added to this component's subscriptions.
+        Set<Component> subscriptions = this.subscriptions.get(subscription);
+        subscriptions.add(component);
+    }
+
+    /**
+     * Removes all the subscriptions from the specified {@code Component}.
+     */
+    private void removeAllSubscriptionsFrom(Component component) {
+
+        for (Set<Component> subscriber : component.subscribers.values()) {
+            subscriber.remove(this);
+        }
+
+        for (Set<Component> subscription : this.subscriptions.values()) {
+            subscription.remove(component);
+        }
+    }
+
+    /**
+     * The component unsubscribes from all its suscriptions. This way, the component doesn't keep a reference
+     * to this subscriber which it's already in the deletion process.
+     */
+    private void clearSubscriberFromSubscriptions() {
+
+        this.subscriptions.values().forEach(subscriptions ->
+            subscriptions.forEach(component ->
+                component.removeSubscriber(this)
+            )
+        );
+    }
+
+    /**
+     * Removes the subscriber from its subscribers.
+     *
+     * @param subscriber Subscriber to be removed.
+     */
+    private void removeSubscriber(Component subscriber) {
+
+        this.subscribers.values().forEach(subscribers -> subscribers.remove(subscriber));
+    }
 
     /**
      * @return A {@code JPopupMenu} loaded with the actions the component can do.
@@ -436,7 +466,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
         if (this.canBeDeleted()) {
 
-            notifyRemoving(this);
+            notifyDeletion(this);
 
             deletionList.add(this);
 
@@ -455,30 +485,37 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
     private void finishDeletion() {
 
-        for (Component component : deletionList) {
+        deletionList.forEach(component -> {
+
+            component.subscribers.forEach((key, subscribers) ->
+
+                    subscribers.forEach(subscriber -> {
+                        subscriber.removeAllSubscriptionsFrom(component);
+
+                        if (key == Subscription.REFERENCE) {
+                            subscriber.cleanReferencesTo(component);
+                        }
+                    })
+            );
+
+            component.clearSubscriberFromSubscriptions();
+
+            component.subscribers.clear();
+            component.subscriptions.clear();
+
             this.diagram.removeComponent(component);
-        }
-
-        for (Component componentNotRemoved : this.diagram.getDiagramComponents()) {
-
-            for (Component componentRemoved : deletionList) {
-
-                componentNotRemoved.cleanReferencesTo(componentRemoved);
-            }
-        }
-
-        this.diagram.repaint();
+        });
     }
 
-    private void notifyRemoving(Component component) {
+    private void notifyDeletion(Component component) {
 
-        List<Component> componentsToNotify = new ArrayList<>(this.diagram.getDiagramComponents());
+        Set<Component> subscribedToDeletion = this.subscribers.get(Subscription.DELETION);
 
-        for (Component c : componentsToNotify) {
+        for (Component subscriptor : subscribedToDeletion) {
 
-            // If it was not removed from the diagram already.
-            if (this.diagram.existsComponent(c)) {
-                c.notifyRemovingOf(component);
+            // If it was not removed from the diagram already...
+            if (this.diagram.existsComponent(subscriptor)) {
+                subscriptor.notifyRemovingOf(component);
             }
         }
     }

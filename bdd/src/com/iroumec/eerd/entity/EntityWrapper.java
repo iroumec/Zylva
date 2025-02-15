@@ -2,11 +2,13 @@ package com.iroumec.eerd.entity;
 
 import com.iroumec.components.Component;
 import com.iroumec.EERDiagram;
+import com.iroumec.derivation.Derivable;
+import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.attribute.IdentifierAttributable;
 import com.iroumec.eerd.hierarchy.Hierarchy;
 import com.iroumec.eerd.relationship.Relationship;
-import com.iroumec.eerd.relationship.relatable.Relatable;
-import com.iroumec.eerd.relationship.relatable.RelatableImplementation;
+import com.iroumec.eerd.relationship.Relatable;
+import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,17 +16,12 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class EntityWrapper extends IdentifierAttributable implements Relatable {
+public final class EntityWrapper extends IdentifierAttributable implements Relatable, Derivable {
 
     /**
      * Wrapped entity.
      */
     private Entity entity;
-
-    /**
-     * {@code Entity}'s {@code RelationshipManager}.
-     */
-    private final RelatableImplementation relationshipsManager;
 
     /**
      * List of hierarchies in which the entity participates.
@@ -42,7 +39,6 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
         super(text, x, y);
         this.hierarchies = new ArrayList<>();
         this.entity = new StrongEntity(this); // By default, a strong entity is created.
-        this.relationshipsManager = new RelatableImplementation();
         setDrawingPriority(7);
     }
 
@@ -249,20 +245,20 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem item = new JMenuItem("action.addAttribute");
+        JMenuItem item = new JMenuItem(LanguageManager.getMessage("action.addAttribute"));
         item.addActionListener(_ -> this.addAttribute());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.addReflexiveRelationship");
+        item = new JMenuItem(LanguageManager.getMessage("action.addReflexiveRelationship"));
         item.addActionListener(_ -> Relationship.addReflexiveRelationship((EERDiagram) this.diagram, this));
         popupMenu.add(item);
 
         //noinspection DuplicatedCode
-        item = new JMenuItem("action.rename");
+        item = new JMenuItem(LanguageManager.getMessage("action.rename"));
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.delete");
+        item = new JMenuItem(LanguageManager.getMessage("action.delete"));
         item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 
@@ -272,25 +268,13 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void addRelationship(Relationship relationship) {
+    public List<Rectangle> getAssociationBounds() {
 
-        if (this.entity.relationshipCanBeManipulated(relationship)) {
-            this.relationshipsManager.addRelationship(relationship);
-        }
-    }
+        List<Rectangle> out = super.getAttributeBounds();
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+        out.add(this.getBounds());
 
-    @Override
-    public void removeRelationship(Relationship relationship) {
-
-        if (this.entity.relationshipCanBeManipulated(relationship)) {
-            this.relationshipsManager.removeRelationship(relationship);
-        } else {
-            // The only case in which it could be false when removing is the case where the relationship to be removed
-            // is the one a weakEntity is dependent of.
-            this.setStrongVersion();
-        }
+        return out;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -308,19 +292,18 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public void cleanReferencesTo(Component component) {
-
-        super.cleanReferencesTo(component);
-
-        if (component instanceof Relationship relationship) {
-            this.removeRelationship(relationship);
-        }
-    }
+    public void cleanReferencesTo(Component component) { this.entity.cleanReferencesTo(component); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public String getIdentifier() {
         return this.getText();
+    }
+
+    @Override
+    public List<Derivation> getDerivations() {
+
+        return this.entity.getDerivations();
     }
 }

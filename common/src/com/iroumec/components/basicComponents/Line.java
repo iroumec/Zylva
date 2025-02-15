@@ -1,6 +1,5 @@
 package com.iroumec.components.basicComponents;
 
-import com.iroumec.components.Diagram;
 import com.iroumec.components.Component;
 import com.iroumec.components.basicComponents.line.lineMultiplicity.LineMultiplicity;
 import com.iroumec.components.basicComponents.line.lineMultiplicity.SingleLine;
@@ -9,6 +8,7 @@ import com.iroumec.components.basicComponents.line.lineShape.LineShape;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public final class Line extends Component {
 
@@ -23,7 +23,7 @@ public final class Line extends Component {
     private final LineMultiplicity lineMultiplicity;
 
     Line(Builder builder) {
-        super(builder.diagram);
+        super();
         this.firstComponent = builder.firstComponent;
         this.secondComponent = builder.secondComponent;
         this.lineShape = builder.lineShape;
@@ -62,22 +62,6 @@ public final class Line extends Component {
         g2.setStroke(currentStroke);
     }
 
-    // Maybe the line's name could be cleaned.
-    @Override
-    public void cleanReferencesTo(Component component) {
-        /*
-        Method lef empty in purpose.
-
-        There is no important reference in the class that would not produce its elimination in the
-        notifyRemovingOf() method.
-         */
-    }
-
-    @Override
-    public boolean canBeDeleted() {
-        return true;
-    }
-
     @Override
     public void notifyRemovingOf(Component component) {
 
@@ -102,7 +86,6 @@ public final class Line extends Component {
     public static class Builder {
 
         // Required parameters
-        private final Diagram diagram;
         private final Component firstComponent;
         private final Component secondComponent;
 
@@ -111,8 +94,7 @@ public final class Line extends Component {
         private LineMultiplicity lineMultiplicity = new SingleLine();
         private int strokeWidth = 1;
 
-        public Builder(Diagram diagram, Component firstComponent, Component secondComponent) {
-            this.diagram = diagram;
+        public Builder(Component firstComponent, Component secondComponent) {
             this.firstComponent = firstComponent;
             this.secondComponent = secondComponent;
         }

@@ -1,7 +1,6 @@
 package com.iroumec.components;
 
-import com.iroumec.executables.Button;
-import com.iroumec.executables.Item;
+import com.iroumec.gui.Item;
 import com.iroumec.userPreferences.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -191,9 +190,9 @@ public abstract class Diagram extends JPanel implements Multilingual {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Component> getDiagramComponents() { return new ArrayList<>(this.components); }
+    protected List<Component> getDiagramComponents() { return new ArrayList<>(this.components); }
 
-    public boolean existsComponent(String componentName) {
+    boolean existsComponent(String componentName) {
 
         for (Component component : this.components) {
             if (!component.getText().isEmpty() && component.getText().equals(componentName)) {
@@ -204,11 +203,12 @@ public abstract class Diagram extends JPanel implements Multilingual {
         return false;
     }
 
-    public boolean existsComponent(Component component) {
+    boolean existsComponent(Component component) {
 
         return this.components.contains(component);
     }
 
+    @Override
     public void resetLanguage() {
 
         this.backgroundPopupMenu = this.getBackgroundPopupMenu();
@@ -240,7 +240,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         return new Point((int) centerX, (int) centerY);
     }
 
-    public void setAntialiasing(boolean antialiasing) {
+    private void setAntialiasing(boolean antialiasing) {
         this.antialiasing = antialiasing;
         UserPreferences.savePreference(Preference.ANTIALIASING, antialiasing);
         this.repaint();
@@ -489,7 +489,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         }
     }
 
-    public void saveDiagram() {
+    private void saveDiagram() {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle(LanguageManager.getMessage("saveFile"));
@@ -526,7 +526,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         }
     }
 
-    public void loadDiagram() {
+    private void loadDiagram() {
 
         JFileChooser fileChooser = new JFileChooser();
 
@@ -637,6 +637,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
 
         Item changeLanguage = new Item("fileMenu.changeLanguage");
         changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage(
+                Diagram.this,
                 Language.ENGLISH,
                 Language.SPANISH
         ));
@@ -651,11 +652,11 @@ public abstract class Diagram extends JPanel implements Multilingual {
         return out;
     }
 
-    public List<Button> getMainFrameKeys() {
+    public List<JButton> getMainFrameKeys() {
 
-        List<Button> out = new ArrayList<>();
+        List<JButton> out = new ArrayList<>();
 
-        Button deleteKey = new Button("Delete key");
+        JButton deleteKey = new JButton("Delete key");
         deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -690,7 +691,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         });
         out.add(deleteKey);
 
-        Button cleanKey = new Button("Clean diagram key");
+        JButton cleanKey = new JButton("Clean diagram key");
         cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
         cleanKey.getActionMap().put("cleanDiagram", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {

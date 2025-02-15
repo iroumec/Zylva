@@ -1,7 +1,6 @@
 package com.iroumec.gui;
 
 import com.iroumec.components.Diagram;
-import com.iroumec.executables.Button;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,10 +23,7 @@ public final class MainFrame extends JFrame {
         menu.setPreferredSize(dimension);
         menu.setBackground(Color.LIGHT_GRAY);
 
-        // TODO: don't use the Button clas here, but another class key.
-        List<Button> keys = diagram.getMainFrameKeys();
-
-        for (Button key : keys) {
+        for (JButton key : diagram.getMainFrameKeys()) {
             getContentPane().add(key);
         }
 

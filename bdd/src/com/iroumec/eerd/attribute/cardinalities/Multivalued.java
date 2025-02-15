@@ -50,7 +50,7 @@ public final class Multivalued implements Cardinality {
 
         derivation.addIdentificationElement(new SingleElement(attribute.getIdentifier()));
 
-        derivation.addIdentificationElement(new SingleElement(owner.getIdentifier(),
+        derivation.addIdentificationElement(new SingleElement(owner.getText(),
                 new Replacer(ElementDecorator.FOREIGN))
         );
 

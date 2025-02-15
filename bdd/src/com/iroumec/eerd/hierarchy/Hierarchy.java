@@ -306,12 +306,12 @@ public final class Hierarchy extends Component implements Derivable {
 
         if (totalButton.isSelected()) {
 
-            parentLine = new Line.Builder(diagram, parent, newHierarchy)
+            parentLine = new Line.Builder(parent, newHierarchy)
                     .lineMultiplicity(new DoubleLine(3)).build();
 
         } else {
 
-            parentLine = new Line.Builder(diagram, parent, newHierarchy)
+            parentLine = new Line.Builder(parent, newHierarchy)
                     .strokeWidth(2).build();
 
             // This way, increasing the stroke, it's noticeable who is the parent of the hierarchy.
@@ -418,11 +418,11 @@ public final class Hierarchy extends Component implements Derivable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem actionItem = new JMenuItem("action.delete");
+        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem("action.swapExclusivity");
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.swapExclusivity"));
         actionItem.addActionListener(_ -> this.swapExclusivity());
         popupMenu.add(actionItem);
 
