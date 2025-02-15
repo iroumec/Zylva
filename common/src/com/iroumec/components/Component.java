@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.awt.*;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 public abstract class Component implements Serializable, Deletable, Multilingual {
@@ -106,7 +107,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
         this.subscribers.put(Subscription.DELETION, new HashSet<>());
         this.subscribers.put(Subscription.REFERENCE, new HashSet<>());
 
-        this.subscriptions = new HashMap<>();
+        this.subscriptions = new ConcurrentHashMap<>();
         this.subscriptions.put(Subscription.DELETION, new HashSet<>());
         this.subscriptions.put(Subscription.REFERENCE, new HashSet<>());
     }
@@ -490,6 +491,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
             component.subscribers.forEach((key, subscribers) ->
 
+                    // TODO: Fix concurrent modifications.
                     subscribers.forEach(subscriber -> {
                         subscriber.removeAllSubscriptionsFrom(component);
 

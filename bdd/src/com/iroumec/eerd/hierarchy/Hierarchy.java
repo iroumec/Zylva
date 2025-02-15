@@ -87,8 +87,6 @@ public final class Hierarchy extends Component implements Derivable {
     public boolean parentsHaveHierarchyInCommon(Hierarchy secondHierarchy) {
 
         return this.parent.hasAHierarchyInCommon(secondHierarchy.parent);
-
-
     }
     /**
      *
@@ -236,6 +234,8 @@ public final class Hierarchy extends Component implements Derivable {
 
                 parent.addHierarchy(newHierarchy);
             } catch (Exception e) {
+
+                // TODO: the subscriptions must be traslated to here.
 
                 JOptionPane.showMessageDialog(diagram, e);
                 parent.removeHierarchy(newHierarchy);

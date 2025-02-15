@@ -75,7 +75,7 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
         if (newHierarchy.isChild(this)) {
             for (Hierarchy hierarchy : this.hierarchies) {
                 if (hierarchy.isChild(this)) {
-                    if (hierarchy.parentsHaveHierarchyInCommon(newHierarchy)) {
+                    if (!hierarchy.parentsHaveHierarchyInCommon(newHierarchy)) {
                         return false;
                     }
                 }
@@ -121,15 +121,11 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
      * @return {@code TRUE} if they have a hierarchy in common.
      */
     public boolean hasAHierarchyInCommon(EntityWrapper entity) {
-
         for (Hierarchy hierarchy : this.hierarchies) {
-
             if (hierarchy.isChild(this) && hierarchy.isChild(entity)) {
-
                 return true;
             }
         }
-
         return false;
     }
 
