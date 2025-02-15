@@ -2,7 +2,6 @@ package com.iroumec.eerd.association;
 
 import com.iroumec.components.Component;
 import com.iroumec.EERDiagram;
-import com.iroumec.eerd.EERComponent;
 import com.iroumec.eerd.relationship.Relationship;
 import com.iroumec.eerd.relationship.relatable.Relatable;
 import com.iroumec.eerd.relationship.relatable.RelatableImplementation;
@@ -14,7 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Association extends EERComponent implements Relatable, Derivable {
+public class Association extends Component implements Relatable, Derivable {
 
     /**
      * Core {@code Relationship} forming the association.

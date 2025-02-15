@@ -10,39 +10,42 @@ import com.iroumec.derivation.elements.Element;
 import com.iroumec.derivation.elements.ElementDecorator;
 import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.derivation.exporters.DerivationExporter;
-import com.iroumec.eerd.EERComponent;
+import com.iroumec.eerd.association.Association;
+import com.iroumec.eerd.attribute.Attribute;
 import com.iroumec.eerd.entity.EntityWrapper;
+import com.iroumec.eerd.hierarchy.Discriminant;
 import com.iroumec.eerd.hierarchy.Hierarchy;
+import com.iroumec.eerd.relationship.Cardinality;
 import com.iroumec.eerd.relationship.Relationship;
 import com.iroumec.executables.Button;
 import com.iroumec.executables.Item;
 import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
-import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.security.Guard;
 import java.util.*;
 
 public final class EERDiagram extends Diagram {
 
     @Override
     protected void addComponent(@NotNull Component component) {
-        Set<Class<?>> allowedTypes = Set.of(EERComponent.class, Line.class, Guard.class, Note.class);
+        Set<Class<?>> allowedTypes = Set.of(
+                Relationship.class, Cardinality.class, Hierarchy.class, Discriminant.class,
+                EntityWrapper.class, Attribute.class, Association.class
+        );
 
         if (allowedTypes.stream().noneMatch(type -> type.isInstance(component))) {
             throw new IllegalArgumentException(
-                    "The component must be a type of EERComponent or an utility component such as Line, Guard, or Note."
-                    + "Provided: " + component.getClass().getName()
+                    "The component must be a type of \n" + allowedTypes
+                    + "\nProvided: " + component.getClass().getName()
             );
         }
 
         super.addComponent(component);
     }
-
 
     @Override
     public JPopupMenu getBackgroundPopupMenu() {

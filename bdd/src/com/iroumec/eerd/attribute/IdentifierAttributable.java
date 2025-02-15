@@ -21,18 +21,18 @@ import java.util.List;
  * <p>
  * It represents a component that can have identifier attributes, such as alternatives and main.
  */
-public abstract class IdAttrEERComp extends DescAttrEERComp {
+public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
     private Attribute mainAttribute;
 
     /**
-     * Constructs an {@code DescAttrEERComp}.
+     * Constructs an {@code DescriptiveAttributable}.
      *
      * @param text Component's name.
      * @param x    X coordinate value in the {@code Diagram}.
      * @param y    Y coordinate value in the {@code Diagram}.
      */
-    protected IdAttrEERComp(String text, int x, int y) {
+    protected IdentifierAttributable(String text, int x, int y) {
         super(text, x, y);
         this.mainAttribute = null;
     }

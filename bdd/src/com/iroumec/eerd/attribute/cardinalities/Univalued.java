@@ -1,7 +1,7 @@
 package com.iroumec.eerd.attribute.cardinalities;
 
 import com.iroumec.eerd.attribute.Attribute;
-import com.iroumec.eerd.attribute.DescAttrEERComp;
+import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.derivation.Derivation;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +30,7 @@ public final class Univalued implements Cardinality {
     }
 
     @Override
-    public List<Derivation> getDerivations(@NotNull DescAttrEERComp owner, @NotNull Attribute attribute) {
+    public List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner, @NotNull Attribute attribute) {
         return new ArrayList<>();
     }
 

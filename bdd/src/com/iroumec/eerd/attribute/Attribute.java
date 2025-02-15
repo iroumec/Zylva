@@ -12,7 +12,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public final class Attribute extends DescAttrEERComp {
+public final class Attribute extends DescriptiveAttributable {
 
     private final Rol rol;
     private Presence presence;
@@ -21,7 +21,7 @@ public final class Attribute extends DescAttrEERComp {
     /**
      * {@code Attribute}'s owner.
      */
-    private final DescAttrEERComp owner;
+    private final DescriptiveAttributable owner;
 
     public final static int lineLength = 25;
     public final static int circleRadius = 5;
@@ -205,13 +205,13 @@ public final class Attribute extends DescAttrEERComp {
         // Required parameters.
         public final Rol rol;
         public final String text;
-        public final DescAttrEERComp owner;
+        public final DescriptiveAttributable owner;
 
         // Optional parameters - initialized with a default value.
         public Presence presence = Obligatory.getInstance();
         public Cardinality cardinality = Univalued.getInstance();
 
-        public Builder(Rol rol, String text, DescAttrEERComp owner) {
+        public Builder(Rol rol, String text, DescriptiveAttributable owner) {
             this.rol = rol;
             this.text = text;
             this.owner = owner;

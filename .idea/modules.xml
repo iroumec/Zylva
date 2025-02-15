@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/Zylva.iml" filepath="$PROJECT_DIR$/Zylva.iml" />
       <module fileurl="file://$PROJECT_DIR$/bdd/bdd.iml" filepath="$PROJECT_DIR$/bdd/bdd.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bdd/derivation/derivation.iml" filepath="$PROJECT_DIR$/bdd/derivation/derivation.iml" />
     </modules>
   </component>
 </project>

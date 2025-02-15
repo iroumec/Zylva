@@ -1,4 +1,4 @@
-package com.iroumec.components.basicComponents.guards;
+package com.iroumec.eerd.hierarchy;
 
 import com.iroumec.components.basicComponents.Guard;
 import com.iroumec.components.basicComponents.Line;

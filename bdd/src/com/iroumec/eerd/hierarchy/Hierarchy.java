@@ -3,12 +3,10 @@ package com.iroumec.eerd.hierarchy;
 import com.iroumec.components.Component;
 import com.iroumec.components.Diagram;
 import com.iroumec.components.basicComponents.Line;
-import com.iroumec.components.basicComponents.guards.Discriminant;
 import com.iroumec.components.basicComponents.line.lineMultiplicity.DoubleLine;
 import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
 import com.iroumec.derivation.elements.SingleElement;
-import com.iroumec.eerd.EERComponent;
 import com.iroumec.eerd.entity.EntityWrapper;
 import com.iroumec.structures.Pair;
 import com.iroumec.userPreferences.LanguageManager;
@@ -29,7 +27,7 @@ import java.util.List;
  * instance can only be an instance of one of the children). This is notated with the letter "d" (disjunct). In the
  * other hand, an overlapping hierarchy is notated with the letter "o" (overlapping).
  */
-public final class Hierarchy extends EERComponent implements Derivable {
+public final class Hierarchy extends Component implements Derivable {
 
     /**
      * The symbol of the hierarchy, also denoting its exclusivity.

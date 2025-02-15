@@ -3,7 +3,7 @@ package com.iroumec.eerd.attribute.roles;
 import com.iroumec.derivation.Derivation;
 import com.iroumec.eerd.attribute.Attribute;
 import com.iroumec.eerd.attribute.cardinalities.Cardinality;
-import com.iroumec.eerd.attribute.DescAttrEERComp;
+import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.eerd.attribute.presences.Presence;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +20,7 @@ public interface Rol {
     JPopupMenu getPopupMenu(Attribute attribute);
 
     // TODO: is necessary to pass the presence and cardinality or could they be obtained from the attribute?
-    List<Derivation> getDerivations(@NotNull DescAttrEERComp owner,
+    List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner,
                                     @NotNull Attribute attribute,
                                     @NotNull Presence presence,
                                     @NotNull Cardinality cardinality);

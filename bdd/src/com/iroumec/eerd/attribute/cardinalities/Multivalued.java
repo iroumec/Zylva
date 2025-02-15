@@ -5,7 +5,7 @@ import com.iroumec.derivation.elements.ElementDecorator;
 import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.derivation.elements.containers.Replacer;
 import com.iroumec.eerd.attribute.Attribute;
-import com.iroumec.eerd.attribute.DescAttrEERComp;
+import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -44,7 +44,7 @@ public final class Multivalued implements Cardinality {
     }
 
     @Override
-    public List<Derivation> getDerivations(@NotNull DescAttrEERComp owner, @NotNull Attribute attribute) {
+    public List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner, @NotNull Attribute attribute) {
 
         Derivation derivation = new Derivation(attribute.getIdentifier());
 

@@ -1,6 +1,7 @@
-package com.iroumec.components.basicComponents.guards;
+package com.iroumec.eerd.relationship;
 
 import com.iroumec.components.basicComponents.Line;
+import com.iroumec.eerd.relationship.cardinalities.CardinalityMenu;
 import com.iroumec.userPreferences.LanguageManager;
 import com.iroumec.components.basicComponents.Guard;
 
@@ -8,16 +9,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Optional;
 
-public class Cardinality extends Guard {
+public final class Cardinality extends Guard {
 
     private final Line line;
+    private final CardinalityMenu menu;
     private String minimumValue, maximumValue;
 
-    public Cardinality(String minimumValue, String maximumValue, Line line) {
+    public Cardinality(String minimumValue, String maximumValue, Line line, CardinalityMenu menu) {
         super(giveFormat(minimumValue, maximumValue), line);
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
         this.line = line;
+        this.menu = menu;
     }
 
     public static String giveFormat(String firstValue, String secondValue) {
@@ -36,19 +39,13 @@ public class Cardinality extends Guard {
     @Override
     protected JPopupMenu getPopupMenu() {
 
-        JPopupMenu popupMenu = new JPopupMenu();
-
-        JMenuItem item = new JMenuItem(LanguageManager.getMessage("action.changeValues"));
-        item.addActionListener(_ -> this.changeCardinality());
-        popupMenu.add(item);
-
-        return popupMenu;
+        return this.menu.getPopupMenu(this);
     }
 
     /**
      * Given a cardinality, changes its values.
      */
-    private void changeCardinality() {
+    public void changeCardinality() {
 
         JTextField cardinalidadMinimaCampo = new JTextField(3);
         JTextField cardinalidadMaximaCampo = new JTextField(3);

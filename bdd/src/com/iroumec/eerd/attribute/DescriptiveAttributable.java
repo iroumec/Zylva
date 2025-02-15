@@ -3,7 +3,6 @@ package com.iroumec.eerd.attribute;
 import com.iroumec.components.Component;
 import com.iroumec.derivation.Derivable;
 import com.iroumec.derivation.Derivation;
-import com.iroumec.eerd.EERComponent;
 import com.iroumec.eerd.attribute.cardinalities.Cardinality;
 import com.iroumec.eerd.attribute.cardinalities.Multivalued;
 import com.iroumec.eerd.attribute.cardinalities.Univalued;
@@ -21,7 +20,7 @@ import java.util.List;
 /**
  * Descriptive Attributable EER Component.
  */
-public abstract class DescAttrEERComp extends EERComponent implements Derivable {
+public abstract class DescriptiveAttributable extends Component implements Derivable {
 
     /**
      * List of {@code Attribute} of the component.
@@ -29,13 +28,13 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
     private final List<Attribute> attributes;
 
     /**
-     * Constructs an {@code DescAttrEERComp}.
+     * Constructs an {@code DescriptiveAttributable}.
      *
      * @param text Component's name.
      * @param x X coordinate value in the {@code Diagram}.
      * @param y Y coordinate value in the {@code Diagram}.
      */
-    protected DescAttrEERComp(String text, int x, int y) {
+    protected DescriptiveAttributable(String text, int x, int y) {
         super(text, x, y);
 
         this.attributes = new ArrayList<>();
@@ -208,6 +207,7 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
      *
      * @param cardinality Cardinality of the attribute.
      */
+    @SuppressWarnings("Duplicates")
     public void addAttribute(Cardinality cardinality) {
 
         JCheckBox boxOptional = new JCheckBox(LanguageManager.getMessage("attribute.optional"));
@@ -274,7 +274,7 @@ public abstract class DescAttrEERComp extends EERComponent implements Derivable 
 
     final void makeCorrectionInDiagram(Attribute attribute) {
 
-        Component.addComponent(attribute, diagram);
+        addComponent(attribute, diagram);
 
         // This is necessary due to the repaint will not be done until this method ends, because it's asynchronous.
         // Maybe it would be good to search other possible solutions because this is not so efficient...

@@ -5,7 +5,7 @@ import com.iroumec.derivation.elements.SingleElement;
 import com.iroumec.derivation.elements.containers.Final;
 import com.iroumec.derivation.elements.containers.Holder;
 import com.iroumec.eerd.attribute.Attribute;
-import com.iroumec.eerd.attribute.DescAttrEERComp;
+import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.eerd.attribute.cardinalities.Cardinality;
 import com.iroumec.eerd.attribute.cardinalities.Univalued;
 import com.iroumec.eerd.attribute.presences.Obligatory;
@@ -42,7 +42,7 @@ public final class Main implements Rol {
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<Derivation> getDerivations(@NotNull DescAttrEERComp owner,
+    public List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner,
                                            @NotNull Attribute attribute,
                                            @NotNull Presence presence,
                                            @NotNull Cardinality cardinality) {

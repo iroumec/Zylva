@@ -2,7 +2,6 @@ package com.iroumec.eerd.relationship;
 
 import com.iroumec.components.Component;
 import com.iroumec.components.basicComponents.Line;
-import com.iroumec.components.basicComponents.guards.StaticCardinality;
 import com.iroumec.components.basicComponents.line.lineMultiplicity.DoubleLine;
 import com.iroumec.components.basicComponents.line.lineShape.SquaredLine;
 import com.iroumec.EERDiagram;
@@ -14,9 +13,10 @@ import com.iroumec.derivation.elements.containers.Holder;
 import com.iroumec.derivation.elements.containers.Replacer;
 import com.iroumec.derivation.elements.containers.sources.Common;
 import com.iroumec.eerd.association.Association;
-import com.iroumec.eerd.attribute.DescAttrEERComp;
-import com.iroumec.components.basicComponents.guards.Cardinality;
+import com.iroumec.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.eerd.entity.EntityWrapper;
+import com.iroumec.eerd.relationship.cardinalities.Dynamic;
+import com.iroumec.eerd.relationship.cardinalities.Static;
 import com.iroumec.eerd.relationship.relatable.Relatable;
 import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public final class Relationship extends DescAttrEERComp {
+public final class Relationship extends DescriptiveAttributable {
 
     /**
      * Members of the relationship. A map is used for efficiency purposes.
@@ -78,8 +78,8 @@ public final class Relationship extends DescAttrEERComp {
 
             // TODO: wrong because of the instance of and because of the access to the attributes.
             // TODO: replace with getMin and getMax point occupied or something similar.
-            if (participant.getKey() instanceof DescAttrEERComp descAttrEERComp) {
-                out.addAll(descAttrEERComp.getAttributes());
+            if (participant.getKey() instanceof DescriptiveAttributable descriptiveAttributable) {
+                out.addAll(descriptiveAttributable.getAttributes());
             }
         }
 
@@ -345,9 +345,9 @@ public final class Relationship extends DescAttrEERComp {
                 Cardinality cardinality;
 
                 if (numberOfComponents == 2) {
-                    cardinality = new Cardinality("1", "N", line);
+                    cardinality = new Cardinality("1", "N", line, Dynamic.getInstance());
                 } else {
-                    cardinality = new Cardinality("0", "N", line);
+                    cardinality = new Cardinality("0", "N", line, Dynamic.getInstance());
                 }
                 newComponents.add(cardinality);
 
@@ -401,8 +401,8 @@ public final class Relationship extends DescAttrEERComp {
                 (Component) relatable).lineShape(new SquaredLine()).build();
         newComponents.add(secondLine);
 
-        Cardinality firstCardinality = new Cardinality("1", "N", firstLine);
-        Cardinality secondCardinality = new Cardinality("1", "N", secondLine);
+        Cardinality firstCardinality = new Cardinality("1", "N", firstLine, Dynamic.getInstance());
+        Cardinality secondCardinality = new Cardinality("1", "N", secondLine, Dynamic.getInstance());
 
         newComponents.add(firstCardinality);
         newComponents.add(secondCardinality);
@@ -465,7 +465,7 @@ public final class Relationship extends DescAttrEERComp {
                     ).lineMultiplicity(new DoubleLine(3)).build();
                     componentsToAdd.add(strongLine);
 
-                    Cardinality cardinality = new Cardinality("1", "N", strongLine);
+                    Cardinality cardinality = new Cardinality("1", "N", strongLine, Dynamic.getInstance());
                     componentsToAdd.add(cardinality);
 
                     newRelationship.addMember(entity, cardinality);
@@ -479,7 +479,7 @@ public final class Relationship extends DescAttrEERComp {
                     componentsToAdd.add(weakLine);
 
                     // A weak entity can only be related to a strong entity if the latter has a 1:1 cardinality.
-                    Cardinality staticCardinality = new StaticCardinality("1", "1", weakLine);
+                    Cardinality staticCardinality = new Cardinality("1", "1", weakLine, Static.getInstance());
                     componentsToAdd.add(staticCardinality);
 
                     newRelationship.addMember(entity, staticCardinality);

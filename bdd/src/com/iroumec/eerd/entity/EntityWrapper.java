@@ -2,7 +2,7 @@ package com.iroumec.eerd.entity;
 
 import com.iroumec.components.Component;
 import com.iroumec.EERDiagram;
-import com.iroumec.eerd.attribute.IdAttrEERComp;
+import com.iroumec.eerd.attribute.IdentifierAttributable;
 import com.iroumec.eerd.hierarchy.Hierarchy;
 import com.iroumec.eerd.relationship.Relationship;
 import com.iroumec.eerd.relationship.relatable.Relatable;
@@ -14,7 +14,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class EntityWrapper extends IdAttrEERComp implements Relatable {
+public final class EntityWrapper extends IdentifierAttributable implements Relatable {
 
     /**
      * Wrapped entity.
