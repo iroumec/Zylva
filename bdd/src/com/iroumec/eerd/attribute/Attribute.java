@@ -37,6 +37,8 @@ public final class Attribute extends DescriptiveAttributable implements Derivabl
         this.presence = builder.presence;
         this.cardinality = builder.cardinality;
 
+        this.suscribeTo(owner, Subscription.DELETION);
+
         setDrawingPriority(0);
     }
 

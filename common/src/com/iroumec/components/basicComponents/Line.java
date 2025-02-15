@@ -8,7 +8,6 @@ import com.iroumec.components.basicComponents.line.lineShape.LineShape;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public final class Line extends Component {
 
@@ -29,6 +28,10 @@ public final class Line extends Component {
         this.lineShape = builder.lineShape;
         this.lineMultiplicity = builder.lineMultiplicity;
         this.strokeWidth = builder.strokeWidth;
+
+        this.suscribeTo(firstComponent, Subscription.DELETION);
+        this.suscribeTo(secondComponent, Subscription.DELETION);
+
         setDrawingPriority(2);
     }
 

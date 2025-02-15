@@ -19,6 +19,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
     /**
      * A component subscribes in DELETION to another when the latter's elimination implies the former's elimination.
+     * This is the subscription the component should choose if its life dependes on another one.
      * <p>
      * A component suscribes in REFERENCE to another when the latter's elimination implies the former cleaning its
      * references to the latter.
@@ -505,6 +506,8 @@ public abstract class Component implements Serializable, Deletable, Multilingual
 
             this.diagram.removeComponent(component);
         });
+
+        this.diagram.repaint();
     }
 
     private void notifyDeletion(Component component) {

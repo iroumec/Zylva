@@ -63,6 +63,8 @@ public final class Hierarchy extends Component implements Derivable {
         this.parent = parent;
         this.children = new ArrayList<>();
 
+        this.suscribeTo(parent, Subscription.DELETION);
+
         setDrawingPriority(5);
     }
 
@@ -73,6 +75,8 @@ public final class Hierarchy extends Component implements Derivable {
      */
     private void addChild(EntityWrapper entity) {
         this.children.add(entity);
+        this.suscribeTo(entity, Subscription.DELETION);
+        this.suscribeTo(entity, Subscription.REFERENCE);
     }
 
     /**

@@ -28,6 +28,8 @@ public class Association extends Component implements Relatable, Derivable {
         this.relationship = relationship;
         this.relationship.setAssociation(this);
 
+        this.suscribeTo(relationship, Subscription.DELETION);
+
         setDrawingPriority(1);
     }
 
