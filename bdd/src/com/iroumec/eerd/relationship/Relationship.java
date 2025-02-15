@@ -60,6 +60,7 @@ public final class Relationship extends DescriptiveAttributable {
 
         if (member == null) {
             member = new Member(relatableComponent);
+            this.members.put(relatableComponent, member);
             relatableComponent.addRelationship(this);
         }
 
@@ -139,7 +140,7 @@ public final class Relationship extends DescriptiveAttributable {
             this.diagram.repaint();
         } else {
 
-            JOptionPane.showMessageDialog(this.diagram, "An association can only be created for N:N or N:N:N relationships.");
+            JOptionPane.showMessageDialog(this.diagram, LanguageManager.getMessage("association.warning"));
         }
     }
 
@@ -208,7 +209,7 @@ public final class Relationship extends DescriptiveAttributable {
         actionItem.addActionListener(_ -> this.rename());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem("action.setForDelete");
+        actionItem = new JMenuItem("action.delete");
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
@@ -314,7 +315,7 @@ public final class Relationship extends DescriptiveAttributable {
 
         // Not all the components are relatable.
         if (numberOfComponents != components.size() || numberOfComponents < 1 || numberOfComponents > 3) {
-            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.relationshipCreation"));
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("relationship.warning"));
             return;
         }
 
@@ -436,7 +437,7 @@ public final class Relationship extends DescriptiveAttributable {
         // entities.size() != components.length when all at least one of the components passed is not an instance
         // of entity wrapper.
         if (entities.size() != components.size() || entities.size() != 2) {
-            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.dependencyCreation"));
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("dependency.warning"));
             return;
         }
 
@@ -507,8 +508,8 @@ public final class Relationship extends DescriptiveAttributable {
         // THe JOptionPane with buttons is shown.
         int selection = JOptionPane.showOptionDialog(
                 diagram,
-                LanguageManager.getMessage("input.weakEntity"),
-                LanguageManager.getMessage("input.option"),
+                LanguageManager.getMessage("weakEntity.input"),
+                LanguageManager.getMessage("input.selectAnOption"),
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.QUESTION_MESSAGE,
                 null,
@@ -519,7 +520,7 @@ public final class Relationship extends DescriptiveAttributable {
             case 0 -> (entities.getFirst());
             case 1 -> (entities.getLast());
             default -> {
-                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("input.weakEntity"));
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("weakEntity.input"));
                 yield selectWeakEntity(entities, diagram);
             }
         };

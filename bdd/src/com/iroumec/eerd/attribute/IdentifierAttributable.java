@@ -66,7 +66,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         );
 
         // Create the dialog directly
-        JDialog dialog = pane.createDialog(this.diagram, LanguageManager.getMessage("input.attributeInformation"));
+        JDialog dialog = pane.createDialog(this.diagram, LanguageManager.getMessage("attribute.input"));
 
         dialog.setVisible(true);
 
@@ -101,7 +101,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
         if (this.hasMainAttribute()) {
 
-            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.mainAttribute"));
+            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("attribute.warning"));
         }
 
         String name = getValidName(this.diagram);
@@ -147,7 +147,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         // The pair of options are added to the panel.
         panel.add(panelAttribute);
 
-        int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.attributeType"),
+        int result = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("attribute.input.rol"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
         // In case the user closes the dialog...
@@ -214,22 +214,6 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         }
 
         return super.getAttributeBounds(attributePosition);
-    }
-
-    @Override
-    protected List<Attribute> getAttributes(int level) {
-
-        List<Attribute> out = super.getAttributes(level);
-
-        if (this.hasMainAttribute()) {
-
-            if (level == 1) {
-
-                out.addFirst(mainAttribute);
-            }
-        }
-
-        return out;
     }
 
     @Override

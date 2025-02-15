@@ -96,31 +96,6 @@ public abstract class DescriptiveAttributable extends Component implements Deriv
     }
 
     /**
-     * The first level is 1.
-     *
-     * @return {@code List<Attribute>} containing all the attributes of the component in the specified level.
-     */
-    protected List<Attribute> getAttributes(int level) {
-
-        if (level < 0) {
-            throw new IllegalArgumentException("The level must be a positive integer. It was " + level + ".");
-        }
-
-        if (level == 0) {
-            return new ArrayList<>();
-        }
-
-        List<Attribute> out = new ArrayList<>();
-
-        for (Attribute attribute : this.attributes) {
-            out.add(attribute);
-            out.addAll(attribute.getAttributes((level - 1)));
-        }
-
-        return out;
-    }
-
-    /**
      *
      * @return {@code List<Attribute>} containing all the attributes of the component.
      */
@@ -185,7 +160,7 @@ public abstract class DescriptiveAttributable extends Component implements Deriv
         );
 
         // Create the dialog directly
-        JDialog dialog = pane.createDialog(this.diagram, LanguageManager.getMessage("input.attributeInformation"));
+        JDialog dialog = pane.createDialog(this.diagram, LanguageManager.getMessage("attribute.input"));
 
         dialog.setVisible(true);
 
@@ -226,7 +201,7 @@ public abstract class DescriptiveAttributable extends Component implements Deriv
         );
 
         // Create the dialog directly
-        JDialog dialog = pane.createDialog(this.diagram, LanguageManager.getMessage("input.attributeInformation"));
+        JDialog dialog = pane.createDialog(this.diagram, LanguageManager.getMessage("attribute.input"));
 
         dialog.setVisible(true);
 

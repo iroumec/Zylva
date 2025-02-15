@@ -22,7 +22,8 @@ public abstract class Component implements Serializable, Deletable, Multilingual
      * <p>
      * Save as a constant due to it doesn't change and the compile process is expensive.
      */
-    private final static Pattern validNamePattern = Pattern.compile("^[a-zA-Z0-9_-]+$");
+    private final static Pattern validNamePattern = Pattern
+            .compile("^[a-zA-Z0-9_-áéíóúÁÉÍÓÚñÑ]+$");
 
     /**
      * Drawing priority of the component.
@@ -125,8 +126,6 @@ public abstract class Component implements Serializable, Deletable, Multilingual
         this.text = text;
         this.x = x;
         this.y = y;
-
-        this.popupMenu = this.getPopupMenu();
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -237,6 +236,11 @@ public abstract class Component implements Serializable, Deletable, Multilingual
      * @param y Y coordinate value where the {@code JPopupMenu} will be shown.
      */
     public void showPopupMenu(java.awt.Component origin, int x, int y) {
+
+        if (this.popupMenu == null) {
+            this.popupMenu = this.getPopupMenu();
+        }
+
         this.popupMenu.show(origin, x, y);
     }
 

@@ -5,7 +5,7 @@ import com.iroumec.userPreferences.LanguageManager;
 
 import javax.swing.*;
 
-public class Dynamic implements CardinalityMenu {
+public final class Dynamic implements CardinalityMenu {
 
     private final static Dynamic INSTANCE = new Dynamic();
 

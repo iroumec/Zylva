@@ -182,7 +182,7 @@ public final class Hierarchy extends Component implements Derivable {
 
         // The number of entities and components are different in case not all the components are entities.
         if (numberOfEntities != numberOfComponents || numberOfEntities < 3) {
-            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.threeEntities"));
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("hierarchy.creationWarning.input"));
             return;
         }
 
@@ -217,10 +217,10 @@ public final class Hierarchy extends Component implements Derivable {
                         for (EntityWrapper s : subtipos) {
                             s.removeHierarchy(newHierarchy);
 
-                            String message = LanguageManager.getMessage("warning.theEntity") + " "
+                            String message = LanguageManager.getMessage("hierarchy.creationWarning.theEntity") + " "
                                     + '\"' + subtipo.getText() + '\"'
-                                    + " " + LanguageManager.getMessage("warning.alreadyParticipatesInHierarchy") + " "
-                                    + LanguageManager.getMessage("warning.multipleInheritanceOnlyAllowed");
+                                    + " " + LanguageManager.getMessage("hierarchy.creationWarning.alreadyParticipatesInHierarchy") + " "
+                                    + LanguageManager.getMessage("hierarchy.creationWarning.multipleInheritance");
 
                             JOptionPane.showMessageDialog(diagram, message);
 
@@ -247,7 +247,7 @@ public final class Hierarchy extends Component implements Derivable {
 
             Component.addComponent(newHierarchy, diagram);
         } else {
-            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("warning.alreadyParent"));
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("hierarchy.creationWarning.alreadyParent"));
         }
     }
 
@@ -290,7 +290,7 @@ public final class Hierarchy extends Component implements Derivable {
         panel.add(panelEC);
         panel.add(panelTP);
 
-        int option = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.option"),
+        int option = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.selectAnOption"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
         // If the user clicked "Cancel" or closed the window.
@@ -328,7 +328,7 @@ public final class Hierarchy extends Component implements Derivable {
             String discriminantText = JOptionPane.showInputDialog(
                     diagram,
                     null,
-                    "Enter a discriminant",
+                    LanguageManager.getMessage("hierarchy.input.discriminant"),
                     JOptionPane.QUESTION_MESSAGE // Message Source.
             );
 
@@ -359,7 +359,7 @@ public final class Hierarchy extends Component implements Derivable {
         }
 
         // Muestra el JOptionPane con los botones
-        int selection = JOptionPane.showOptionDialog(diagram, LanguageManager.getMessage("hierarchy.selectParent"), "Selección",
+        int selection = JOptionPane.showOptionDialog(diagram, null, LanguageManager.getMessage("hierarchy.input.selectParent"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
 
         try {
@@ -418,7 +418,7 @@ public final class Hierarchy extends Component implements Derivable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem actionItem = new JMenuItem("action.setForDelete");
+        JMenuItem actionItem = new JMenuItem("action.delete");
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
@@ -512,7 +512,7 @@ public final class Hierarchy extends Component implements Derivable {
 
         if (isThereMultipleInheritance()) {
 
-            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.multipleInheritance"));
+            JOptionPane.showMessageDialog(null, LanguageManager.getMessage("hierarchy.deleteWarning.multipleInheritance"));
             return false;
         }
 

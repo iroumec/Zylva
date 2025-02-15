@@ -92,6 +92,8 @@ public class LanguageManager {
         messages = ResourceBundle.getBundle("resources/messages", currentLocale);
 
         UserPreferences.savePreference(Preference.LANGUAGE, language);
+
+        notifyComponents();
     }
 
     private static void notifyComponents() {

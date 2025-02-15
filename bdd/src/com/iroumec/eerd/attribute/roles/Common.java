@@ -36,11 +36,11 @@ public final class Common implements Rol {
         item.addActionListener(_ -> attribute.addAttribute());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.swapOptionality");
+        item = new JMenuItem("action.swapPresence");
         item.addActionListener(_ -> attribute.swapPresence());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.swapMultivalued");
+        item = new JMenuItem("action.swapCardinality");
         item.addActionListener(_ -> attribute.swapCardinality());
         popupMenu.add(item);
 

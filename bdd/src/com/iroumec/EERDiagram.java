@@ -2,6 +2,7 @@ package com.iroumec;
 
 import com.iroumec.components.Component;
 import com.iroumec.components.Diagram;
+import com.iroumec.components.basicComponents.Line;
 import com.iroumec.components.basicComponents.Note;
 import com.iroumec.derivation.Constraint;
 import com.iroumec.derivation.Derivable;
@@ -34,7 +35,7 @@ public final class EERDiagram extends Diagram {
     protected void addComponent(@NotNull Component component) {
         Set<Class<?>> allowedTypes = Set.of(
                 Relationship.class, Cardinality.class, Hierarchy.class, Discriminant.class,
-                EntityWrapper.class, Attribute.class, Association.class
+                EntityWrapper.class, Attribute.class, Association.class, Line.class
         );
 
         if (allowedTypes.stream().noneMatch(type -> type.isInstance(component))) {

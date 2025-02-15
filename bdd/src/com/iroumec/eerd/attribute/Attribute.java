@@ -71,7 +71,12 @@ public final class Attribute extends DescriptiveAttributable {
         Rectangle textBounds = calculateTextBounds(g2, this.getText(), textPosition);
 
         setShape(textBounds);
-        drawText(g2, this.getText(), textPosition);
+
+        g2.drawString(this.getText(),
+                textBounds.x + lineLength + circleRadius * 2 + minorCorrection,
+                textBounds.y + minorCorrection
+        );
+
         drawOwnerLine(g2, textPosition);
         this.presence.draw(g2, textPosition.x, textPosition.y, textPosition.x + lineLength, textPosition.y);
         this.cardinality.draw(g2, textPosition.x + lineLength, textPosition.y);
@@ -83,8 +88,6 @@ public final class Attribute extends DescriptiveAttributable {
                 textBounds.width,
                 textBounds.height)
         );
-
-        resetGraphics(g2);
 
         //g2.draw(this.getShape());
     }
@@ -141,21 +144,6 @@ public final class Attribute extends DescriptiveAttributable {
     }
 
     /**
-     * Draws the text.
-     *
-     * @param g2 Graphics context.
-     * @param text Text to be drawn.
-     * @param position Text position.
-     */
-    private void drawText(Graphics2D g2, String text, Point position) {
-        g2.setFont(new Font("Arial Unicode MS", Font.BOLD, 10));
-        g2.drawString(text,
-                position.x + lineLength + circleRadius * 2 + minorCorrection,
-                position.y + minorCorrection)
-        ;
-    }
-
-    /**
      * Draws a line to the owner.
      *
      * @param g2 Graphics context.
@@ -180,11 +168,6 @@ public final class Attribute extends DescriptiveAttributable {
                     textPosition.y
             );
         }
-    }
-
-    private void resetGraphics(Graphics2D g2) {
-        g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        g2.setColor(Color.BLACK);
     }
 
     /**
@@ -246,7 +229,7 @@ public final class Attribute extends DescriptiveAttributable {
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.setForDelete");
+        item = new JMenuItem("action.delete");
         item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 

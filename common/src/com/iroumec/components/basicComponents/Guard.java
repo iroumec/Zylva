@@ -12,7 +12,6 @@ public abstract class Guard extends Component {
     public Guard(@NotNull String text, Line line) {
         super(text);
         this.line = line;
-        line.setText(this.getText());
 
         // The guard will always be drawn above its line.
         setDrawingPriority(line.getDrawingPriority() + 1);

@@ -262,18 +262,11 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
         item.addActionListener(_ -> this.rename());
         popupMenu.add(item);
 
-        item = new JMenuItem("action.setForDelete");
+        item = new JMenuItem("action.delete");
         item.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(item);
 
         return popupMenu;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void notifyRemovingOf(Component component) {
-        // Empty on purpose.
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

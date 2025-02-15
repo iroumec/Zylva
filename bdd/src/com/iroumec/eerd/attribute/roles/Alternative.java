@@ -38,7 +38,7 @@ public final class Alternative implements Rol {
         item.addActionListener(_ -> attribute.addAttribute(Univalued.getInstance()));
         popupMenu.add(item);
 
-        item = new JMenuItem("action.swapOptionality");
+        item = new JMenuItem("action.swapPresence");
         item.addActionListener(_ -> attribute.swapPresence());
         popupMenu.add(item);
 

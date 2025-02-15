@@ -100,7 +100,7 @@ public class Association extends Component implements Relatable, Derivable {
         item.addActionListener(_ -> Relationship.addReflexiveRelationship((EERDiagram) this.diagram, this));
         popupMenu.add(item);
 
-        item = new JMenuItem("action.setForDelete");
+        item = new JMenuItem("action.delete");
         item.addActionListener(_ -> this.setForDelete());
         popupMenu.add(item);
 
