@@ -1,8 +1,11 @@
 package com.iroumec.userPreferences;
 
+import com.iroumec.components.Diagram;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class LanguageManager {
 
@@ -14,10 +17,14 @@ public class LanguageManager {
      * <p></p>
      * By default, the preferred language is English.
      */
-    public static void initialize() {
+    public static void initialize(Diagram diagram) {
+
         String language = UserPreferences.loadStringPreference(Preference.LANGUAGE, "en");
         currentLocale = Locale.forLanguageTag(language);
-        messages = ResourceBundle.getBundle("resources/messages", currentLocale);
+
+        List<ResourceBundle> resourceBundle = diagram.getResourceBundles(currentLocale);
+
+        messages = new CombinedResourceBundle(resourceBundle.toArray(new ResourceBundle[0]));
     }
 
     /**
@@ -89,8 +96,9 @@ public class LanguageManager {
      * @return The message according to the key.
      */
     public static String getMessage(String key) {
+
         if (messages == null) {
-            initialize();
+            throw new IllegalStateException("LanguageManager not initialized.");
         }
 
         try {

@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class MainFrame extends JFrame {
+public final class MainFrame extends JFrame {
 
     private final Diagram diagram;
 

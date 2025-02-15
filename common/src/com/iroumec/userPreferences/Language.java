@@ -20,7 +20,5 @@ public enum Language {
         return LanguageManager.getMessage(this.key);
     }
 
-    public String getKey() { return this.key; }
-
     public String getAcronym() { return this.acronym; }
 }

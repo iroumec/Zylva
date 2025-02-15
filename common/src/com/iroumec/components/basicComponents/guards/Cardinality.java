@@ -35,7 +35,7 @@ public class Cardinality extends Guard {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem item = new JMenuItem("action.changeCardinality");
+        JMenuItem item = new JMenuItem(LanguageManager.getMessage("action.changeValues"));
         item.addActionListener(_ -> this.changeCardinality());
         popupMenu.add(item);
 
@@ -58,7 +58,7 @@ public class Cardinality extends Guard {
 
         this.diagram.setFocus(cardinalidadMinimaCampo);
 
-        int resultado = JOptionPane.showConfirmDialog(null, miPanel, LanguageManager.getMessage("input.twoValues"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int resultado = JOptionPane.showConfirmDialog(null, miPanel, LanguageManager.getMessage("cardinality.twoValues"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
         if (resultado == JOptionPane.OK_OPTION) {
             String minText = cardinalidadMinimaCampo.getText().trim();
@@ -68,19 +68,19 @@ public class Cardinality extends Guard {
 
             // Validates if the fields are not empty.
             if (minText.isEmpty() || maxText.isEmpty()) {
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.emptyFields"), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("cardinality.warning.emptyFields"), LanguageManager.getMessage("error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Validates if the minimum cardinality is a valid number.
             if (minValue.isEmpty() || minValue.get() < 0) {
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMinimum"), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("cardinality.warning.invalidMinimum"), LanguageManager.getMessage("error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             // Validates if the maximum cardinality is a valid number or a letter.
             if (!isIntegerOrLetter(maxText) || (isInteger(maxText) && Integer.parseInt(maxText) < 1)) {
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidMaximum"), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("cardinality.warning.invalidMaximum"), LanguageManager.getMessage("error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -88,7 +88,7 @@ public class Cardinality extends Guard {
             if (isInteger(maxText)) {
                 int maxValue = Integer.parseInt(maxText);
                 if (minValue.get() > maxValue) {
-                    JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.invalidRange"), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, LanguageManager.getMessage("cardinality.warning.invalidRange"), LanguageManager.getMessage("error"), JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }

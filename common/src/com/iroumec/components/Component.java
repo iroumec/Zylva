@@ -8,12 +8,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
+import java.util.regex.Pattern;
 
 public abstract class Component implements Serializable {
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                                  Attributes                                                    */
     /* -------------------------------------------------------------------------------------------------------------- */
+
+    /**
+     * Regex that defines if the name is valid.
+     * <p>
+     * Save as a constant due to it doesn't change and the compile process is expensive.
+     */
+    private final static Pattern validNamePattern = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     /**
      * Drawing priority of the component.
@@ -311,28 +319,71 @@ public abstract class Component implements Serializable {
      */
     public void rename() {
 
-        String newText;
+        String newText = getValidName(this.diagram);
 
-        do {
-
-            newText= JOptionPane.showInputDialog(
-                    this.diagram,
-                    null,
-                    LanguageManager.getMessage("input.newText"),
-                    JOptionPane.QUESTION_MESSAGE
-            );
-
-            // "newText" can be null when the user pressed "cancel"
-            if (newText != null && newText.isEmpty()) {
-                JOptionPane.showMessageDialog(this.diagram, LanguageManager.getMessage("warning.oneCharacter"));
-            }
-        } while (newText != null && newText.isEmpty());
-
-        // If "Cancel" was not pressed
         if (newText != null) {
+
             this.setText(newText);
             this.diagram.repaint();
         }
+    }
+
+    /**
+     * It makes sure to return a non-empty name.
+     *
+     * @return {@code String} entered by the user.
+     */
+    protected static String getValidName(Diagram diagram) {
+
+        String name = JOptionPane.showInputDialog(
+                diagram,
+                null,
+                LanguageManager.getMessage("text.input"),
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        boolean nameIsEmpty = false;
+        boolean nameIsDuplicated = false;
+        boolean nameIsInvalid = false;
+
+        if (name != null) {
+
+            nameIsEmpty = name.trim().isEmpty();
+            nameIsInvalid = !validNamePattern.matcher(name).matches();
+
+            if (!nameIsEmpty && !nameIsInvalid) {
+                nameIsDuplicated = diagram.existsComponent(name);
+            }
+        }
+
+        while (name != null && (nameIsEmpty || nameIsDuplicated || nameIsInvalid)) {
+
+            if (nameIsEmpty) {
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("text.warning.empty"));
+            } else if (nameIsInvalid) {
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("text.warning.invalid"));
+            } else {
+                JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("text.warning.duplicated"));
+            }
+
+            name = JOptionPane.showInputDialog(
+                    diagram,
+                    null,
+                    LanguageManager.getMessage("text.input"),
+                    JOptionPane.QUESTION_MESSAGE
+            );
+
+            if (name != null) {
+                nameIsEmpty = name.trim().isEmpty();
+                nameIsInvalid = !validNamePattern.matcher(name).matches();
+
+                if (!nameIsEmpty && !nameIsInvalid) {
+                    nameIsDuplicated = diagram.existsComponent(name);
+                }
+            }
+        }
+
+        return name;
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */

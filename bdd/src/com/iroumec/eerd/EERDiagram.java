@@ -18,6 +18,8 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.security.Guard;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public final class EERDiagram extends Diagram {
 
@@ -172,6 +174,16 @@ public final class EERDiagram extends Diagram {
 //                diagram.addAssociation();
 //            }
 //        });
+
+        return out;
+    }
+
+    @Override
+    public List<ResourceBundle> getResourceBundles(Locale currentLocale) {
+
+        List<ResourceBundle> out = super.getResourceBundles(currentLocale);
+
+        out.add(ResourceBundle.getBundle("EERresources/messages", currentLocale));
 
         return out;
     }

@@ -29,11 +29,13 @@ final class FileMenu extends JMenu {
 
     public void addExecutableItem(Item item) {
 
+        // TODO: the language don't have to be reset yet.
         if (item.requireLanguageReset()) {
             item.addActionListener(_ -> FileMenu.this.resetLanguage());
         }
 
         items.add(item);
+        this.add(item);
     }
 
     void resetLanguage() {

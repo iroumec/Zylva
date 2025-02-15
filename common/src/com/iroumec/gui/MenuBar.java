@@ -7,11 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class MenuBar extends JMenuBar {
+final class MenuBar extends JMenuBar {
 
     private final MainFrame owner;
-    private final static String HELP_KEY = "help";
-    private final static String CLEAN_KEY = "clean";
+    private final static String HELP_KEY = "menuBar.help";
+    private final static String CLEAN_KEY = "menuBar.clean";
     private final JButton cleanFrameButton, helpButton;
 
     // TODO: separate this giant constructor in various methods.
@@ -92,22 +92,19 @@ class MenuBar extends JMenuBar {
         /*                                              Help Button                                                   */
         /* ---------------------------------------------------------------------------------------------------------- */
 
+        // TODO: los controles dependen del diagrama.
         this.helpButton = new JButton(LanguageManager.getMessage(HELP_KEY));
         helpButton.addActionListener(_ -> {
 
-            // The texts are define here and a stringBuilder is used so that they're automatically
-            // updated when the language is changed.
             String controls = LanguageManager.getMessage("menuBar.controls") + ": "
-                    + "\nCtrl + E: " + LanguageManager.getMessage("add.entity")
-                    + "\nCtrl + R: " + LanguageManager.getMessage("add.relationship")
-                    + "\nCtrl + D: " + LanguageManager.getMessage("add.dependency")
-                    + "\nCtrl + H: " + LanguageManager.getMessage("add.hierarchy")
-                    + "\nCtrl + N: " + LanguageManager.getMessage("add.note")
-                    + "\nCtrl + A: " + LanguageManager.getMessage("add.association")
-                    + "\nSupr: " + LanguageManager.getMessage("menuBar.delete");
+                    + "\nCtrl + E: " + LanguageManager.getMessage("control.addEntity")
+                    + "\nCtrl + R: " + LanguageManager.getMessage("control.addRelationship")
+                    + "\nCtrl + D: " + LanguageManager.getMessage("control.addDependency")
+                    + "\nCtrl + H: " + LanguageManager.getMessage("control.addHierarchy")
+                    + "\nCtrl + N: " + LanguageManager.getMessage("control.addNote")
+                    + "\nSupr: " + LanguageManager.getMessage("control.delete");
 
             String credits = LanguageManager.getMessage("credits.author")
-                    + '\n' + LanguageManager.getMessage("credits.credits")
                     + "\nhttps://github.com/iroumec";
 
             JOptionPane.showMessageDialog(null, controls + "\n\n" + credits); // Show the updated message
@@ -127,7 +124,6 @@ class MenuBar extends JMenuBar {
         helpButton.setBorderPainted(Boolean.FALSE);
 
         helpButton.setFocusable(false);
-
         add(helpButton);
     }
 

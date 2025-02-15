@@ -53,12 +53,7 @@ public final class Note extends Component {
 
     public static void addNote(Diagram diagram) {
 
-        String text = JOptionPane.showInputDialog(
-                diagram,
-                null,
-                LanguageManager.getMessage("input.text"),
-                JOptionPane.QUESTION_MESSAGE
-        );
+        String text = getValidName(diagram);
 
         if (text != null) {
             Component.addComponent(new Note(text, diagram.getMouseX(), diagram.getMouseY()), diagram);
@@ -74,11 +69,11 @@ public final class Note extends Component {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem actionItem = new JMenuItem("action.changeText");
+        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.rename"));
         actionItem.addActionListener(_ -> this.rename());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem("action.setForDelete");
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
         actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 

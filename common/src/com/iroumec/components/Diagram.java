@@ -2,9 +2,7 @@ package com.iroumec.components;
 
 import com.iroumec.executables.Button;
 import com.iroumec.executables.Item;
-import com.iroumec.userPreferences.LanguageManager;
-import com.iroumec.userPreferences.Preference;
-import com.iroumec.userPreferences.UserPreferences;
+import com.iroumec.userPreferences.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -45,6 +43,8 @@ public abstract class Diagram extends JPanel {
      * Constructs a {@code Diagram}.
      */
     public Diagram() {
+
+        LanguageManager.initialize(this);
 
         this.setOpaque(Boolean.TRUE);
         this.setBackground(Color.WHITE);
@@ -468,12 +468,12 @@ public abstract class Diagram extends JPanel {
 
             // A JFileChooser is created.
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle(LanguageManager.getMessage("input.PNGExport"));
+            fileChooser.setDialogTitle(LanguageManager.getMessage("saveFile"));
 
             fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Image Files", "png"));
 
             // The save file dialog is shown.
-            int userSelection = fileChooser.showSaveDialog(null);
+            int userSelection = fileChooser.showSaveDialog(this);
 
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
@@ -481,18 +481,18 @@ public abstract class Diagram extends JPanel {
                 // The high-resolution image is written to a file.
                 ImageIO.write(imagen, "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
 
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("warning.imageSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("fileSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
             }
         } catch (IOException e) {
             Logger logger = Logger.getLogger(String.valueOf(Calendar.DATE));
-            logger.log(Level.WARNING, LanguageManager.getMessage("error.PNGExport"), e);
+            logger.log(Level.WARNING, "Error while exporting diagram " + this.getClass() + " to PNG.", e);
         }
     }
 
     public void saveDiagram() {
 
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle(LanguageManager.getMessage("fileManager.saveDiagram.dialog"));
+        fileChooser.setDialogTitle(LanguageManager.getMessage("saveFile"));
 
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Diagram Files", "mer"));
 
@@ -517,11 +517,11 @@ public abstract class Diagram extends JPanel {
                 out.close();
                 fileOut.close();
 
-                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("fileSavedSuccessfully"));
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("fileSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
 
             } catch (IOException i) {
 
-                JOptionPane.showMessageDialog(null,LanguageManager.getMessage("fileManager.saveDiagram.exception"));
+                JOptionPane.showMessageDialog(null,LanguageManager.getMessage("unexpectedError"));
             }
         }
     }
@@ -533,7 +533,7 @@ public abstract class Diagram extends JPanel {
         // Filtro de archivo para solo mostrar archivos .mer
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Diagram Files", "mer"));
 
-        fileChooser.setDialogTitle("Specify the file you want to load.");
+        fileChooser.setDialogTitle("loadFile");
 
         int userSelection = fileChooser.showOpenDialog(null);
 
@@ -565,7 +565,7 @@ public abstract class Diagram extends JPanel {
                 in.close();
                 fileIn.close();
 
-            } catch (IOException i) {
+            } catch (Exception e) {
 
                 try {
 
@@ -581,13 +581,7 @@ public abstract class Diagram extends JPanel {
                     // Unexpected.
                 }
 
-                JOptionPane.showMessageDialog(null,"The program didn't find the specified file.");
-
-            } catch (ClassNotFoundException c) {
-
-                // The classes were not found.
-                JOptionPane.showMessageDialog(null,"An unexpected error occurred while saving the file.");
-
+                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("unexpectedError"));
             }
         }
     }
@@ -642,7 +636,10 @@ public abstract class Diagram extends JPanel {
         out.add(loadDiagram);
 
         Item changeLanguage = new Item("fileMenu.changeLanguage", true);
-        changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage());
+        changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage(
+                Language.ENGLISH,
+                Language.SPANISH
+        ));
         out.add(changeLanguage);
 
         // TODO: que cambie el texto dependiendo de si está activado o no.
@@ -668,8 +665,8 @@ public abstract class Diagram extends JPanel {
 
                 int confirmation = JOptionPane.showConfirmDialog(
                         Diagram.this,
-                        LanguageManager.getMessage("input.delete"),
-                        LanguageManager.getMessage("title.delete"),
+                        LanguageManager.getMessage("deleteAll.warning"),
+                        LanguageManager.getMessage("deleteAll.title"),
                         JOptionPane.YES_NO_OPTION,
                         JOptionPane.QUESTION_MESSAGE
                 );
@@ -708,6 +705,15 @@ public abstract class Diagram extends JPanel {
             }
         });
         out.add(cleanKey);
+
+        return out;
+    }
+
+    public List<ResourceBundle> getResourceBundles(Locale currentLocale) {
+
+        List<ResourceBundle> out = new ArrayList<>();
+
+        out.add(ResourceBundle.getBundle("resources/messages", currentLocale));
 
         return out;
     }
