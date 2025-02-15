@@ -69,7 +69,7 @@ java -jar .../ZylvaEERD.jar
 - Expanding the app to more types of diagrams.
 - Optimization and improvements in the performance.
 - Adding the possibility of using a command-line interface.
-- Adding the possibility to have various *tabs* open at the same time.
+- Adding the possibility of having various *tabs* open at the same time.
 
 # About the author.
 

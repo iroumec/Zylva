@@ -13,13 +13,13 @@ public class Constraint {
     private final String referenced;
     private final List<Pair<Element, Element>> references;
 
-    Constraint(String referencing, String referenced) {
+    public Constraint(String referencing, String referenced) {
         this.referencing = referencing;
         this.referenced = referenced;
         this.references = new java.util.ArrayList<>();
     }
 
-    void addReference(Element referencing, Element referenced) {
+    public void addReference(Element referencing, Element referenced) {
         this.references.add(new Pair<>(referencing, referenced));
     }
 
@@ -76,19 +76,19 @@ public class Constraint {
                 "[" + referencedAttributes + "]";
     }
 
-    void transferConstraintsTo(Constraint constraint) {
+    public void transferConstraintsTo(Constraint constraint) {
         for (Pair<Element, Element> reference : this.references) {
             constraint.addReference(reference.first(), reference.second());
         }
     }
 
-    void setAsDuplicated() {
+    public void setAsDuplicated() {
         for (Pair<Element, Element> reference : this.references) {
             reference.first().addDecoration(ElementDecorator.DUPLICATED);
         }
     }
 
-    boolean hasSameReferencesAs(Constraint constraint) {
+    public boolean hasSameReferencesAs(Constraint constraint) {
         for (Pair<Element, Element> reference : this.references) {
             if (!constraint.hasReference(reference)) {
                 return false;

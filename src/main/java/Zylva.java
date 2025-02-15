@@ -1,7 +1,7 @@
 package main.java;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.iroumec.eerd.EERDiagram;
+import com.iroumec.EERDiagram;
 import com.iroumec.gui.MainFrame;
 
 import javax.swing.*;

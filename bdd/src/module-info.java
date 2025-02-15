@@ -1,5 +1,6 @@
 module bdd {
     exports com.iroumec.eerd;
+    exports com.iroumec;
     requires java.logging;
     requires java.sql;
 

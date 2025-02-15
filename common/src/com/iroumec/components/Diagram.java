@@ -191,7 +191,7 @@ public abstract class Diagram extends JPanel {
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public List<Component> getListComponents() { return new ArrayList<>(this.components); }
+    public List<Component> getDiagramComponents() { return new ArrayList<>(this.components); }
 
     public boolean existsComponent(String componentName) {
 
@@ -315,7 +315,7 @@ public abstract class Diagram extends JPanel {
             if (e.isControlDown()) {
                 this.handleControlClick();
             } else {
-                List<Component> components = getListComponents().reversed();
+                List<Component> components = getDiagramComponents().reversed();
                 for (Component component : components) {
                     if (component.getBounds().contains(e.getPoint())) {
                         draggedComponent = component;
@@ -346,7 +346,7 @@ public abstract class Diagram extends JPanel {
         if (e.isPopupTrigger()) {
             boolean componentClicked = false;
 
-            for (Component component : getListComponents().reversed()) {
+            for (Component component : getDiagramComponents().reversed()) {
                 if (component.getBounds().contains(e.getPoint())) {
                     cleanSelectedComponents();
                     selectedComponents.add(component);
