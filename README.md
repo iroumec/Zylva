@@ -9,25 +9,25 @@ Zylva EERD is an enhanced entity-relationship model diagram application develope
 
 # Easy and fast controls!
 
-![exampleCreation.gif](src/resources/multimedia/exampleCreation.gif)
+![exampleCreation.gif](src/main/resources/multimedia/exampleCreation.gif)
 
 # Exportation!
 
 You can save and load your diagrams, as well as exporting them as PNG images.
 
-![exampleDiagram.png](src/resources/multimedia/exampleDiagram.png)
+![exampleDiagram.png](src/main/resources/multimedia/exampleDiagram.png)
 
 # Use it as you prefer!
 
 The application is compatible with both mouse and keyboard shortcuts!
 
-![mouseAndKeyboardControls.gif](src/resources/multimedia/mouseAndKeyboardControls.gif)
+![mouseAndKeyboardControls.gif](src/main/resources/multimedia/mouseAndKeyboardControls.gif)
 
 # Languages.
 
 The language of the application can be changed at any moment!
 
-![languageSelection.gif](src/resources/multimedia/languageSelection.gif)
+![languageSelection.gif](src/main/resources/multimedia/languageSelection.gif)
 
 > [!CAUTION]
 >
@@ -55,7 +55,7 @@ java -jar .../ZylvaEERD.jar
 > 
 > In case you find yourself facing this error:
 > 
->![javaException.png](src/resources/multimedia/javaException.png)
+>![javaException.png](src/main/resources/multimedia/javaException.png)
 > 
 > It occurs due to an old version of Java or JDK being installed in your device.
 > To fix it, completely uninstall all Java and JDK versions,
