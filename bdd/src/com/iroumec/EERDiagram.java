@@ -324,4 +324,15 @@ public final class EERDiagram extends Diagram {
 
         addReferencialIntegrityConstraint(constraint, constraints);
     }
+
+    @Override
+    public String getControls() {
+
+        return "\nCtrl + E: " + LanguageManager.getMessage("control.addEntity")
+                + "\nCtrl + R: " + LanguageManager.getMessage("control.addRelationship")
+                + "\nCtrl + D: " + LanguageManager.getMessage("control.addDependency")
+                + "\nCtrl + H: " + LanguageManager.getMessage("control.addHierarchy")
+                + "\nCtrl + N: " + LanguageManager.getMessage("control.addNote")
+                + super.getControls();
+    }
 }

@@ -652,6 +652,12 @@ public abstract class Diagram extends JPanel implements Multilingual {
         return out;
     }
 
+    public String getControls() {
+
+        return "\nSupr: " + LanguageManager.getMessage("control.delete")
+                + "\nCtrl + Supr: " + LanguageManager.getMessage("control.cleanDiagram");
+    }
+
     public List<JButton> getMainFrameKeys() {
 
         List<JButton> out = new ArrayList<>();

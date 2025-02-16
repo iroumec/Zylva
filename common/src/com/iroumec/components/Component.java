@@ -128,20 +128,6 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     }
 
     /**
-     * Removes all the subscriptions from the specified {@code Component}.
-     */
-    private void removeAllSubscriptionsFrom(Component component) {
-
-        for (Set<Component> subscriber : component.subscribers.values()) {
-            subscriber.remove(this);
-        }
-
-        for (Set<Component> subscription : this.subscriptions.values()) {
-            subscription.remove(component);
-        }
-    }
-
-    /**
      * The component unsubscribes from all its suscriptions. This way, the component doesn't keep a reference
      * to this subscriber which it's already in the deletion process.
      */
