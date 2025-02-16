@@ -116,7 +116,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     /*                                                  Method                                                        */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    public void suscribeTo(Component component, Subscription subscription) {
+    public void subscribeTo(Component component, Subscription subscription) {
 
         // The subscription is added to the another component's subscribers.
         Set<Component> subscribers = component.subscribers.get(subscription);

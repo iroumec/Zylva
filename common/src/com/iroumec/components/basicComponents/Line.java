@@ -29,8 +29,8 @@ public final class Line extends Component {
         this.lineMultiplicity = builder.lineMultiplicity;
         this.strokeWidth = builder.strokeWidth;
 
-        this.suscribeTo(firstComponent, Subscription.DELETION);
-        this.suscribeTo(secondComponent, Subscription.DELETION);
+        this.subscribeTo(firstComponent, Subscription.DELETION);
+        this.subscribeTo(secondComponent, Subscription.DELETION);
 
         setDrawingPriority(2);
     }

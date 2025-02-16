@@ -62,10 +62,10 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
 
             // If the relatable component will be deleted, notify me, so I can evaluate if a need to be also
             // deleted.
-            this.suscribeTo((Component) relatableComponent, Subscription.DELETION);
+            this.subscribeTo((Component) relatableComponent, Subscription.DELETION);
 
             // If the relatable component was deleted, notify me as well so I can clean my references to it.
-            this.suscribeTo((Component) relatableComponent, Subscription.REFERENCE);
+            this.subscribeTo((Component) relatableComponent, Subscription.REFERENCE);
         }
 
         member.addCardinality(cardinality);
@@ -513,7 +513,6 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
     }
 
     // TODO: return all possible combinations.
-    // TODO: why does it return always an empty list?
     private List<Derivation> getTernaryRelationshipDerivation(Derivation mainDerivation,
                                                               List<DerivationMember> members) {
 

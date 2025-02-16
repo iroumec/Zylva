@@ -63,6 +63,8 @@ public final class Hierarchy extends Component implements Derivable {
         this.parent = parent;
         this.children = new ArrayList<>();
 
+        this.subscribeTo(parent, Subscription.DELETION);
+
         setDrawingPriority(5);
     }
 
@@ -73,6 +75,8 @@ public final class Hierarchy extends Component implements Derivable {
      */
     private void addChild(EntityWrapper entity) {
         this.children.add(entity);
+        this.subscribeTo(entity, Subscription.DELETION);
+        this.subscribeTo(parent, Subscription.REFERENCE);
     }
 
     /**
@@ -97,6 +101,10 @@ public final class Hierarchy extends Component implements Derivable {
      */
     public boolean isChild(EntityWrapper entity) {
         return this.children.contains(entity);
+    }
+
+    public boolean isChild(Hierarchy hierarchy) {
+        return this.children.contains(hierarchy.parent);
     }
 
     /**
@@ -191,76 +199,46 @@ public final class Hierarchy extends Component implements Derivable {
             return;
         }
 
-        main: if (!parent.isAlreadyParent()) {
+        if (parent.isAlreadyParent()) {
+            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("hierarchy.creationWarning.alreadyParent"));
+            return;
+        }
 
-            List<EntityWrapper> children = getChildrenList(parent, entities);
+        List<EntityWrapper> children = getChildrenList(parent, entities);
 
-            Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(diagram, parent);
+        for (EntityWrapper child : children) {
 
-            if (newHierarchyData == null) {
+            if (child.isThereMultipleInheritanceConflict(parent)) {
+
+                String message = LanguageManager.getMessage("hierarchy.creationWarning.theEntity") + " "
+                        + '\"' + child.getText() + '\"'
+                        + " " + LanguageManager.getMessage("hierarchy.creationWarning.alreadyParticipatesInHierarchy") + " "
+                        + LanguageManager.getMessage("hierarchy.creationWarning.multipleInheritance");
+
+                JOptionPane.showMessageDialog(diagram, message);
+
                 return;
             }
-
-            // TODO: no debería esperarse a la data para chequear si hay herencia múltiple. Apenas obtener al padre
-            // debería hacerse.
-
-            // Separar la obtención de data de la jerarquía, de ser posible.
-            Hierarchy newHierarchy = newHierarchyData.first();
-            List<Component> data = newHierarchyData.second();
-
-            try {
-                for (EntityWrapper subtipo : children) {
-                    newHierarchy.addChild(subtipo);
-
-                    if (!subtipo.addHierarchy(newHierarchy)) {
-
-                        // Repairing action.
-                        parent.removeHierarchy(newHierarchy);
-                        for (EntityWrapper s : children) {
-                            s.removeHierarchy(newHierarchy);
-
-                            String message = LanguageManager.getMessage("hierarchy.creationWarning.theEntity") + " "
-                                    + '\"' + subtipo.getText() + '\"'
-                                    + " " + LanguageManager.getMessage("hierarchy.creationWarning.alreadyParticipatesInHierarchy") + " "
-                                    + LanguageManager.getMessage("hierarchy.creationWarning.multipleInheritance");
-
-                            JOptionPane.showMessageDialog(diagram, message);
-
-                            // Exit.
-                            break main;
-                        }
-                    }
-                }
-
-                parent.addHierarchy(newHierarchy);
-            } catch (Exception e) {
-
-                // TODO: the subscriptions must be moved to here.
-
-                JOptionPane.showMessageDialog(diagram, e);
-                parent.removeHierarchy(newHierarchy);
-
-                for (EntityWrapper s : children) {
-                    s.removeHierarchy(newHierarchy);
-                }
-            }
-
-            for (Component component : data) {
-                Component.addComponent(component, diagram);
-            }
-
-            for (EntityWrapper child : children) {
-                newHierarchy.children.add(child);
-                newHierarchy.suscribeTo(child, Subscription.DELETION);
-                newHierarchy.suscribeTo(child, Subscription.REFERENCE);
-            }
-
-            newHierarchy.suscribeTo(parent, Subscription.DELETION);
-
-            Component.addComponent(newHierarchy, diagram);
-        } else {
-            JOptionPane.showMessageDialog(diagram, LanguageManager.getMessage("hierarchy.creationWarning.alreadyParent"));
         }
+
+        Pair<Hierarchy, List<Component>> newHierarchyData = getHierarchy(diagram, parent);
+
+        if (newHierarchyData == null) {
+            return;
+        }
+
+        Hierarchy newHierarchy = newHierarchyData.first();
+        List<Component> data = newHierarchyData.second();
+
+        for (EntityWrapper child : children) {
+            newHierarchy.addChild(child);
+        }
+
+        for (Component component : data) {
+            Component.addComponent(component, diagram);
+        }
+
+        Component.addComponent(newHierarchy, diagram);
     }
 
     /**

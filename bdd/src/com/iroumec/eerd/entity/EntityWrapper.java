@@ -86,6 +86,38 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
         return true;
     }
 
+    public boolean isThereMultipleInheritanceConflict(EntityWrapper parent) {
+
+        // For each hierarchy in which the entity is a child, it will be checked
+        // if it shares parent with the parent to be added.
+        for (Hierarchy hierarchy : this.hierarchies) {
+
+            if (hierarchy.isChild(this)) {
+
+                if (!parent.isChildOfTheParentOf(hierarchy)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isChildOfTheParentOf(Hierarchy anotherHierarchy) {
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+
+            if (hierarchy.isChild(this)) {
+
+                if (!hierarchy.isChild(anotherHierarchy)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Removes a {@code Hierarchy} from the {@code Entity}.
      *
