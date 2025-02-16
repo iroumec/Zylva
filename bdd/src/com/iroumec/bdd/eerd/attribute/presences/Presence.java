@@ -5,8 +5,9 @@ import com.iroumec.bdd.derivation.elements.containers.Holder;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public interface Presence {
+public interface Presence extends Serializable {
 
     Holder getHolder();
 

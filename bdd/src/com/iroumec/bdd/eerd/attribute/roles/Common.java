@@ -3,7 +3,6 @@ package com.iroumec.bdd.eerd.attribute.roles;
 import com.iroumec.bdd.derivation.Derivation;
 import com.iroumec.bdd.derivation.elements.Element;
 import com.iroumec.bdd.derivation.elements.SingleElement;
-import com.iroumec.bdd.derivation.elements.containers.Final;
 import com.iroumec.bdd.derivation.elements.containers.Holder;
 import com.iroumec.bdd.eerd.attribute.Attribute;
 import com.iroumec.bdd.eerd.attribute.DescriptiveAttributable;
@@ -49,7 +48,6 @@ public final class Common implements Rol {
     }
 
     @Override
-    @SuppressWarnings("unused")
     public List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner,
                                            @NotNull Attribute attribute,
                                            @NotNull Presence presence,
@@ -65,15 +63,10 @@ public final class Common implements Rol {
 
             Derivation derivation = new Derivation(owner.getText());
 
-            Holder holder;
-            if (attribute.isCompound()) {
-                // The presence will be always obligatory.
-                holder = presence.getHolder();
-            } else {
-                holder = Final.getInstance();
-            }
+            Holder holder = this.getHolder(attribute, presence);
 
             Element element = new SingleElement(attribute.getIdentifier(), holder);
+            presence.addDecoration(element);
             derivation.addCommonElement(element);
 
             out.add(derivation);

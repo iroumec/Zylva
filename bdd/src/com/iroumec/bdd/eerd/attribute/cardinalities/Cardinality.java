@@ -6,9 +6,10 @@ import com.iroumec.bdd.eerd.attribute.DescriptiveAttributable;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.List;
 
-public interface Cardinality {
+public interface Cardinality extends Serializable {
 
     Cardinality getOpposite();
 

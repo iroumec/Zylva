@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 
@@ -593,9 +594,9 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         if (firstMember.maxCardinality.equals("1") || secondMember.maxCardinality.equals("1")) {
 
             if (firstMember.maxCardinality.equals("1") && secondMember.maxCardinality.equals("1")) {
-                out.addAll(get1to1BinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+                out.addAll(get1to1BinaryRelationshipDerivations(firstMember, secondMember));
             } else {
-                out.addAll(get1toNBinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+                out.addAll(get1toNBinaryRelationshipDerivations(firstMember, secondMember));
             }
         } else {
             out.addAll(getNtoNBinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
@@ -614,9 +615,9 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
 
             if (firstMember.maxCardinality.equals("1") && secondMember.maxCardinality.equals("1")) {
                 // TODO: I couldn't find any rules for this kind of derivation. Is it possible?
-                out.addAll(get1to1BinaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+                out.addAll(get1to1BinaryRelationshipDerivations(firstMember, secondMember));
             } else {
-                out.addAll(get1toNUnaryRelationshipDerivations(mainDerivation, firstMember, secondMember));
+                out.addAll(get1toNUnaryRelationshipDerivations(firstMember, secondMember));
             }
         } else {
             // There is no much difference between the unary and binary NtoN derivation.
@@ -626,44 +627,35 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         return out;
     }
 
-    private List<Derivation> get1toNUnaryRelationshipDerivations(Derivation mainDerivation,
-                                                                 DerivationMember firstMember,
+    private List<Derivation> get1toNUnaryRelationshipDerivations(DerivationMember firstMember,
                                                                  DerivationMember secondMember) {
 
         String minCardinality = (firstMember.maxCardinality.equals("1")) ? firstMember.minCardinality : secondMember.minCardinality;
 
         Derivation derivation = new Derivation(firstMember.name);
 
+        // TODO: fix this.
+
         if (minCardinality.equals("0")) {
 
-            if (!mainDerivation.isEmpty()) {
-                derivation.addCommonElement(new SingleElement(this.getIdentifier(),
-                        new Replacer(new Common(), ElementDecorator.OPTIONAL)));
-            }
+            derivation.addCommonElement(new SingleElement(this.getIdentifier(),
+                    new Replacer(new Common(), ElementDecorator.OPTIONAL)));
 
-            derivation.addCommonElement(
-                    new SingleElement(secondMember.name,
-                            new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL, ElementDecorator.DUPLICATED))
-            );
+            derivation.addCommonElement(new SingleElement(secondMember.name,
+                    new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL, ElementDecorator.DUPLICATED)));
 
         } else { // It's equal to 1.
 
-            if (!mainDerivation.isEmpty()) {
-                derivation.addCommonElement(new SingleElement(this.getIdentifier(),
-                        new Replacer(new Common())));
-            }
+            derivation.addCommonElement(new SingleElement(this.getIdentifier(), new Replacer(new Common())));
 
-            derivation.addIdentificationElement(
-                    new SingleElement(secondMember.name,
-                            new Replacer(ElementDecorator.FOREIGN, ElementDecorator.DUPLICATED))
-            );
+            derivation.addIdentificationElement(new SingleElement(secondMember.name,
+                    new Replacer(ElementDecorator.FOREIGN, ElementDecorator.DUPLICATED)));
         }
 
         return List.of(derivation);
     }
 
-    private List<Derivation> get1toNBinaryRelationshipDerivations(Derivation mainDerivation,
-                                                                  DerivationMember firstMember,
+    private List<Derivation> get1toNBinaryRelationshipDerivations(DerivationMember firstMember,
                                                                   DerivationMember secondMember) {
 
         DerivationMember oneSideMember = (firstMember.maxCardinality.equals("1")) ? firstMember : secondMember;
@@ -679,30 +671,19 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
             decorators.add(ElementDecorator.OPTIONAL);
         }
 
-        // If the main derivation has common attributes, the derivation will take them.
-        if (!mainDerivation.isEmpty()) {
-            derivation.addCommonElement(
-                    new SingleElement(
-                            this.getIdentifier(),
-                            new Replacer(new Common(), decorators.toArray(new ElementDecorator[0]))
-                    )
-            );
-        }
+        // The derivation takes the attributes of the relationship.
+        derivation.addCommonElement(new SingleElement(this.getIdentifier(),
+                new Replacer(new Common(), decorators.toArray(new ElementDecorator[0]))));
 
         decorators.add(ElementDecorator.FOREIGN);
 
-        derivation.addCommonElement(
-                new SingleElement(
-                        oneSideMember.name,
-                        new Replacer(decorators.toArray(new ElementDecorator[0]))
-                )
-        );
+        derivation.addCommonElement(new SingleElement(oneSideMember.name,
+                new Replacer(decorators.toArray(new ElementDecorator[0]))));
 
         return List.of(derivation);
     }
 
-    private List<Derivation> get1to1BinaryRelationshipDerivations(Derivation mainDerivation,
-                                                                  DerivationMember firstMember,
+    private List<Derivation> get1to1BinaryRelationshipDerivations(DerivationMember firstMember,
                                                                   DerivationMember secondMember) {
 
         List<Derivation> out = new ArrayList<>();
@@ -740,13 +721,8 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
                         new Replacer(decorators.toArray(new ElementDecorator[0])))
         );
 
-        if (!mainDerivation.isEmpty()) {
-
-            // The derivation member has all the common attributes of the relationship.
-            derivation.addCommonElement(
-                    new SingleElement(this.getIdentifier(), new Replacer(new Common()))
-            );
-        }
+        // The derivation member has all the common attributes of the relationship (if it has).
+        derivation.addCommonElement(new SingleElement(this.getIdentifier(), new Replacer(new Common())));
 
         out.add(derivation);
 
@@ -758,28 +734,22 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
                                                                   DerivationMember secondMember) {
 
         // The names of the members will be replaced with their identification attributes.
-        mainDerivation.addIdentificationElement(
-                new SingleElement(firstMember.name, new Replacer(ElementDecorator.FOREIGN))
-        );
+        mainDerivation.addIdentificationElement(new SingleElement(firstMember.name,
+                new Replacer(ElementDecorator.FOREIGN)));
 
         List<ElementDecorator> decoratorsForSecondMember = new ArrayList<>();
         decoratorsForSecondMember.add(ElementDecorator.FOREIGN);
 
         // N:N unary relationship.
-        if (firstMember.name.equals(secondMember.name)) {
-            decoratorsForSecondMember.add(ElementDecorator.DUPLICATED);
-        }
+        if (firstMember.name.equals(secondMember.name)) { decoratorsForSecondMember.add(ElementDecorator.DUPLICATED); }
 
-        mainDerivation.addIdentificationElement(
-                new SingleElement(secondMember.name,
-                        new Replacer(decoratorsForSecondMember.toArray(new ElementDecorator[0])))
-        );
+        mainDerivation.addIdentificationElement(new SingleElement(secondMember.name,
+                new Replacer(decoratorsForSecondMember.toArray(new ElementDecorator[0]))));
 
-        // TODO: improve this.
         return new ArrayList<>();
     }
 
-    private static class Member {
+    private static class Member implements Serializable {
 
         private final Relatable relatable;
         private final List<Cardinality> cardinalities;

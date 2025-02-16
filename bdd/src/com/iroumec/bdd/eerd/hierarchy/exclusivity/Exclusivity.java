@@ -4,10 +4,11 @@ import com.iroumec.bdd.derivation.Derivation;
 import com.iroumec.bdd.eerd.entity.EntityWrapper;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface Exclusivity {
+public interface Exclusivity extends Serializable {
 
     String getSymbol();
 

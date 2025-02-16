@@ -4,7 +4,6 @@ import com.iroumec.bdd.derivation.Derivation;
 import com.iroumec.bdd.derivation.elements.Element;
 import com.iroumec.bdd.derivation.elements.ElementDecorator;
 import com.iroumec.bdd.derivation.elements.SingleElement;
-import com.iroumec.bdd.derivation.elements.containers.Final;
 import com.iroumec.bdd.derivation.elements.containers.Holder;
 import com.iroumec.bdd.eerd.attribute.Attribute;
 import com.iroumec.bdd.eerd.attribute.DescriptiveAttributable;
@@ -47,7 +46,6 @@ public final class Alternative implements Rol {
     }
 
     @Override
-    @SuppressWarnings("Duplicates")
     public List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner,
                                            @NotNull Attribute attribute,
                                            @NotNull Presence presence,
@@ -56,14 +54,7 @@ public final class Alternative implements Rol {
         List<Derivation> out = new ArrayList<>();
         Derivation derivation = new Derivation(owner.getText());
 
-        // TODO: transform this in function.
-        Holder holder;
-        if (attribute.isCompound()) {
-            // The presence will be always obligatory.
-            holder = presence.getHolder();
-        } else {
-            holder = Final.getInstance();
-        }
+        Holder holder = this.getHolder(attribute, presence);
 
         Element element = new SingleElement(attribute.getIdentifier(), holder);
         element.addDecoration(ElementDecorator.ALTERNATIVE);

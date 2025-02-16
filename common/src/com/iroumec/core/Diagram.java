@@ -479,7 +479,6 @@ public abstract class Diagram extends JPanel implements Multilingual {
             g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-            // Scale the graphics to the desired resolution.
             g.scale(scaleFactor, scaleFactor);
 
             // A translation is applied to centre the content in the image.
@@ -525,7 +524,6 @@ public abstract class Diagram extends JPanel implements Multilingual {
 
             File fileToSave = fileChooser.getSelectedFile();
 
-            // Verificar si el archivo tiene la extensión .mer, si no, agregarla
             if (!fileToSave.getName().endsWith(".mer")) {
                 fileToSave = new File(fileToSave.getAbsolutePath() + ".mer");
             }
@@ -545,6 +543,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
             } catch (IOException i) {
 
                 JOptionPane.showMessageDialog(null,LanguageManager.getMessage("unexpectedError"));
+
+                throw new RuntimeException(i);
             }
         }
     }
@@ -556,7 +556,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         // Filtro de archivo para solo mostrar archivos .mer
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Diagram Files", "mer"));
 
-        fileChooser.setDialogTitle("loadFile");
+        fileChooser.setDialogTitle(LanguageManager.getMessage("loadFile"));
 
         int userSelection = fileChooser.showOpenDialog(null);
 
