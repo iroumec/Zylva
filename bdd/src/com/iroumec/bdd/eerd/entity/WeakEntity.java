@@ -53,13 +53,6 @@ final class WeakEntity implements Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public boolean relationshipCanBeManipulated(Relationship relationship) {
-        return !this.relationship.equals(relationship);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
     public String getIdentifier() {
         return this.entityWrapper.getIdentifier();
     }

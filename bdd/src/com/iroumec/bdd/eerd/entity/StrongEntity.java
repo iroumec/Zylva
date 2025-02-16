@@ -1,7 +1,6 @@
 package com.iroumec.bdd.eerd.entity;
 
 import com.iroumec.bdd.derivation.Derivation;
-import com.iroumec.bdd.eerd.relationship.Relationship;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -37,14 +36,11 @@ record StrongEntity(EntityWrapper entityWrapper) implements Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public boolean relationshipCanBeManipulated(Relationship relationship) {
-        return true;
-    }
-
-    @Override
     public String getIdentifier() {
         return this.entityWrapper.getIdentifier();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<Derivation> getDerivations() {

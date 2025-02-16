@@ -2,7 +2,6 @@ package com.iroumec.bdd.eerd.entity;
 
 import com.iroumec.core.Deletable;
 import com.iroumec.bdd.derivation.Derivable;
-import com.iroumec.bdd.eerd.relationship.Relationship;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -17,11 +16,4 @@ interface Entity extends Serializable, Derivable, Deletable {
      * @param shape Shape of the {@code Entity}.
      */
     void fillShape(Graphics2D graphics2D, RoundRectangle2D shape);
-
-    /**
-     * Determines if a relationship can be added or not.
-     *
-     * @param relationship Relationship to be added,
-     */
-    boolean relationshipCanBeManipulated(Relationship relationship);
 }
