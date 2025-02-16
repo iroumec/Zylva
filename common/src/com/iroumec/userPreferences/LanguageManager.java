@@ -1,6 +1,6 @@
 package com.iroumec.userPreferences;
 
-import com.iroumec.components.Diagram;
+import com.iroumec.core.Diagram;
 
 import javax.swing.*;
 import java.awt.*;

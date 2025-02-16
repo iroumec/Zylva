@@ -6,5 +6,5 @@ module bdd {
 
     requires common;
 
-    exports com.iroumec;
+    exports com.iroumec.bdd;
 }

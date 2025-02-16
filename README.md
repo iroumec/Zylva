@@ -1,6 +1,6 @@
 # Introduction.
 
-Zylva EERD is an enhanced entity-relationship model diagram application developed completely in Java.
+Zylva is an enhanced entity-relationship (EER) model diagram application developed completely in Java.
 
 > [!CAUTION]
 >

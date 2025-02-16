@@ -4,11 +4,10 @@ module common {
     requires java.prefs;
     requires java.logging;
 
-    exports com.iroumec.gui;
+    exports com.iroumec.core;
     exports com.iroumec.structures;
-    exports com.iroumec.components;
     exports com.iroumec.userPreferences;
-    exports com.iroumec.components.basicComponents;
-    exports com.iroumec.components.basicComponents.line.lineShape;
-    exports com.iroumec.components.basicComponents.line.lineMultiplicity;
+    exports com.iroumec.components.line.lineShape;
+    exports com.iroumec.components.line.lineMultiplicity;
+    exports com.iroumec.components;
 }
