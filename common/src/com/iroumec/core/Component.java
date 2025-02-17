@@ -39,7 +39,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
      * Save as a constant due to it doesn't change and the compile process is expensive.
      */
     private final static Pattern validNamePattern = Pattern
-            .compile("^[a-zA-Z0-9_áéíóúÁÉÍÓÚñÑ]+$");
+            .compile("^[a-zA-Z0-9_\\-áéíóúÁÉÍÓÚñÑ]+$");
 
     /**
      * This attribute indicates if the component is being selected or not.
