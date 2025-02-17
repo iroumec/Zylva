@@ -1,5 +1,7 @@
 package com.iroumec.bdd.eerd.entity;
 
+import com.iroumec.bdd.derivation.elements.ElementDecorator;
+import com.iroumec.bdd.derivation.elements.containers.Replacer;
 import com.iroumec.core.Component;
 import com.iroumec.bdd.derivation.Derivable;
 import com.iroumec.bdd.derivation.Derivation;
@@ -75,7 +77,8 @@ final class WeakEntity implements Entity {
 
         Derivation derivation = new Derivation(this.getIdentifier());
 
-        derivation.addIdentificationElement(new SingleElement(opposite.getIdentifier()));
+        derivation.addIdentificationElement(new SingleElement(opposite.getIdentifier(),
+                new Replacer(ElementDecorator.FOREIGN)));
 
         return List.of(derivation);
     }

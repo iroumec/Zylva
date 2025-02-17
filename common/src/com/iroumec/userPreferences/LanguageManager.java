@@ -45,7 +45,7 @@ public class LanguageManager {
         JFrame frame = new JFrame(LanguageManager.getMessage("language.selectOption"));
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(300, 120);
-        frame.setLocationRelativeTo(null); // Center window
+        frame.setLocationRelativeTo(diagram);
 
         // Panel for components.
         JPanel panel = new JPanel();
@@ -68,7 +68,7 @@ public class LanguageManager {
                 String selectedAcronym = selectedLanguage.getAcronym();
                 applyLanguage(diagram, selectedAcronym);
                 frame.dispose();
-                JOptionPane.showMessageDialog(frame,
+                JOptionPane.showMessageDialog(diagram,
                         LanguageManager.getMessage("language.languageChanged"),
                         LanguageManager.getMessage("configurationApplied"),
                         JOptionPane.INFORMATION_MESSAGE);

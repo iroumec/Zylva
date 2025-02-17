@@ -550,6 +550,8 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
 
         Derivation mainDerivation = new Derivation(this.getIdentifier());
 
+        out.add(mainDerivation);
+
         List<DerivationMember> derivationMembers = new ArrayList<>();
 
         for (Member member : this.members.values()) {

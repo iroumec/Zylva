@@ -12,7 +12,9 @@ public final class ElementGroup extends Element {
         this.elements = new ArrayList<>();
     }
 
-    public boolean isEmpty() { return this.elements.isEmpty(); }
+    public void addElement(Element element) {
+        this.elements.add(element);
+    }
 
     @Override
     public void replace(SingleElement element, Element replacement) {
@@ -28,14 +30,11 @@ public final class ElementGroup extends Element {
         }
     }
 
-    public void addElement(Element element) {
-        this.elements.add(element);
-    }
-
     /**
      * @param element Element to be removed.
      * @return {@code TRUE} if the element was removed.
      */
+    @Override
     public boolean removeElement(Element element) {
 
         // The element is in the list.
@@ -46,12 +45,20 @@ public final class ElementGroup extends Element {
         // The element must be searched.
         for (Element e : elements) {
             if (e.removeElement(element)) {
+
+                if (e.isEmpty()) {
+                    this.elements.remove(e);
+                }
+
                 return true;
             }
         }
 
         return false;
     }
+
+    @Override
+    public boolean isEmpty() { return this.elements.isEmpty(); }
 
     @Override
     public List<SingleElement> getReplacementsNeeded() {
@@ -80,11 +87,27 @@ public final class ElementGroup extends Element {
     }
 
     @Override
+    public boolean contains(SingleElement element) {
+
+        for (Element e : elements) {
+            if (e.contains(element)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public String toString() {
 
         StringBuilder out = new StringBuilder();
 
-        out.append(super.toString()).append("[");
+        String decorator = super.toString();
+
+        if (!decorator.isEmpty()) {
+            out.append(decorator).append("[");
+        }
 
         boolean addComma = false;
 
@@ -99,7 +122,9 @@ public final class ElementGroup extends Element {
             out.append(element.toString());
         }
 
-        out.append("]");
+        if (!decorator.isEmpty()) {
+            out.append("]");
+        }
 
         return out.toString();
     }

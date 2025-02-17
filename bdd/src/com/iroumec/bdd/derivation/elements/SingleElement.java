@@ -39,7 +39,13 @@ public final class SingleElement extends Element {
     @Override
     public String toString() {
 
-        return super.toString() + "[" + this.name + "]";
+        String out = super.toString();
+
+        if (!out.isEmpty()) {
+            return out + "[" + this.name + "]";
+        } else {
+            return this.name;
+        }
     }
 
     @Override
@@ -63,14 +69,7 @@ public final class SingleElement extends Element {
     }
 
     @Override
-    public List<SingleElement> getPartitions() {
-
-        List<SingleElement> out = new ArrayList<>();
-
-        out.add(this);
-
-        return out;
-    }
+    public List<SingleElement> getPartitions() { return List.of(this); }
 
     @Override
     public void replace(SingleElement element, Element replacement) {
@@ -97,6 +96,9 @@ public final class SingleElement extends Element {
 
         return copy;
     }
+
+    @Override
+    public boolean contains(SingleElement element) { return this.equals(element); }
 
     @Override
     public boolean equals(Object o) {

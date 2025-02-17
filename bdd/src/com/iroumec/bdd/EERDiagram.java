@@ -275,7 +275,7 @@ public final class EERDiagram extends Diagram {
 
                 // Useful in case of having a reference to a reference... and don't depend on the order.
                 // But it's necessary to be careful at the moment of having a duplicated.
-                // TODO: what happens is the cycle is not 1-1? Could happen a case like that?
+                // TODO: what happens if the cycle is not 1-1? Could happen a case like that?
                 if (!derivation.getName().equals(replacementDerivation.getName())) {
                     fillReferences(replacementDerivation, derivations, constraints,
                             derivationsToRemove, alreadyFilledDerivations);
@@ -397,22 +397,24 @@ public final class EERDiagram extends Diagram {
                         <head>
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Results</title>
                         """);
 
-        htmlContent.append(getHTMLStyles());
+        htmlContent.append("\n    <title>")
+                .append(LanguageManager.getMessage("derivation.results"))
+                .append("</title>")
+                .append(getHTMLStyles());
 
         htmlContent.append("""
                             </head>
                             <body>
-                            <h1>Derivation.</h1>
-                            <div class="dotted-line"></div>
-                            <h2>Relationships:</h2>
-                            """);
+                            """)
+                        .append("\n<h1>").append(LanguageManager.getMessage("derivation.title")).append("</h1>")
+                .append("\n<div class=\"dotted-line\"></div>")
+                .append("\n<h2>").append(LanguageManager.getMessage("derivation.relationships")).append(":</h2>");
 
         for (Derivation derivation : derivations) {
             htmlContent
-                    .append("<ul>\n")
+                    .append("\n<ul>\n")
                     .append("<li>").append(derivation.formatToHTML()).append("</li>\n")
                     .append("</ul>\n")
             ;
@@ -422,7 +424,7 @@ public final class EERDiagram extends Diagram {
 
             htmlContent
                     .append("<div class=\"dotted-line\"></div>\n")
-                    .append("<h2>Referential integrity constraints:</h2>\n")
+                    .append("<h2>").append(LanguageManager.getMessage("derivation.constraints")).append(":</h2>\n")
             ;
 
             for (Constraint constraint : constraints) {
@@ -437,9 +439,11 @@ public final class EERDiagram extends Diagram {
         htmlContent
                 .append("<div class=\"dotted-line\"></div>\n")
                 .append("<p>\n")
-                .append("<span class=\"bold\">Disclaimer!</span>\n")
-                .append("There could be more valid derivations. This is just one of those.\n")
-                .append("</p>")
+                .append("<span class=\"bold\">")
+                .append(LanguageManager.getMessage("derivation.disclaimer"))
+                .append("</span>\n")
+                .append(LanguageManager.getMessage("derivation.moreValidDerivations"))
+                .append("\n</p>")
         ;
 
         htmlContent

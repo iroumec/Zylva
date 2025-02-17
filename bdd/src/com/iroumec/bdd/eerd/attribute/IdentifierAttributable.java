@@ -190,7 +190,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
                 return 0;
             } else {
 
-                return super.getAbsoluteAttributePosition(attribute) + 1;
+                return super.getAbsoluteAttributePosition(attribute) + mainAttribute.getNumberOfAttributes() + 1;
             }
         }
 

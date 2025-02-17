@@ -9,6 +9,7 @@ import com.iroumec.bdd.eerd.attribute.cardinalities.Cardinality;
 import com.iroumec.bdd.eerd.attribute.cardinalities.Univalued;
 import com.iroumec.bdd.eerd.attribute.presences.Obligatory;
 import com.iroumec.bdd.eerd.attribute.presences.Presence;
+import com.iroumec.userPreferences.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -29,7 +30,7 @@ public final class Main implements Rol {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem menuItem = new JMenuItem("action.addAttribute");
+        JMenuItem menuItem = new JMenuItem(LanguageManager.getMessage("action.addAttribute"));
         menuItem.addActionListener(_ -> attribute.addAttribute(
                 Obligatory.getInstance(),
                 Univalued.getInstance()

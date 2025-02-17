@@ -23,6 +23,12 @@ Most of the application commands are compatible with both mouse and keyboard sho
 
 ![mouseAndKeyboardControls.gif](src/main/resources/multimedia/mouseAndKeyboardControls.gif)
 
+# Derivation.
+
+Derivate your diagrams automatically and get the result in an HTML format!
+
+![derivationExample.png](src/main/resources/multimedia/derivationExample.png)
+
 # Languages.
 
 The language of the application can be changed at any moment!

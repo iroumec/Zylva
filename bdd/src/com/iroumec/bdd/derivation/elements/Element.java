@@ -32,6 +32,12 @@ public abstract class Element {
         }
     }
 
+    public boolean hasDecoration(ElementDecorator decorator) {
+        return this.decorations.contains(decorator);
+    }
+
+    public abstract boolean contains(SingleElement element);
+
     public abstract String formatToHTML();
 
     final String applyDecorators(String text) {
@@ -55,6 +61,8 @@ public abstract class Element {
     public abstract int getNumberOfElements();
 
     public abstract List<SingleElement> getPartitions();
+
+    public boolean isEmpty() { return false;}
 
     /* -------------------------------------------------------------------------------------------------------------- */
     /*                                               Overridden Methods                                               */

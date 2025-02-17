@@ -1,5 +1,7 @@
 package com.iroumec.bdd.eerd.hierarchy;
 
+import com.iroumec.bdd.derivation.elements.ElementDecorator;
+import com.iroumec.bdd.derivation.elements.containers.Replacer;
 import com.iroumec.core.Component;
 import com.iroumec.core.Diagram;
 import com.iroumec.components.Line;
@@ -284,7 +286,7 @@ public final class Hierarchy extends Component implements Derivable {
         panel.add(panelEC);
         panel.add(panelTP);
 
-        int option = JOptionPane.showOptionDialog(null, panel, LanguageManager.getMessage("input.selectAnOption"),
+        int option = JOptionPane.showOptionDialog(diagram, panel, LanguageManager.getMessage("input.selectAnOption"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 
         // If the user clicked "Cancel" or closed the window.
@@ -321,6 +323,8 @@ public final class Hierarchy extends Component implements Derivable {
                 return null;
             }
 
+            newHierarchy.exclusivity = ((Disjunct) newHierarchy.exclusivity).setDiscriminant(discriminant);
+
             componentsToAdd.add(discriminant);
         }
 
@@ -353,7 +357,7 @@ public final class Hierarchy extends Component implements Derivable {
         }
 
         // Muestra el JOptionPane con los botones
-        int selection = JOptionPane.showOptionDialog(diagram, null, LanguageManager.getMessage("hierarchy.input.selectParent"),
+        int selection = JOptionPane.showOptionDialog(diagram, LanguageManager.getMessage("hierarchy.input.selectParent"), LanguageManager.getMessage("input.selectAnOption"),
                 JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, opciones, opciones[0]);
 
         try {
@@ -460,7 +464,10 @@ public final class Hierarchy extends Component implements Derivable {
         for (EntityWrapper child : this.children) {
 
             Derivation childDerivation = new Derivation(child.getIdentifier());
-            childDerivation.addIdentificationElement(new SingleElement(this.parent.getIdentifier()));
+            childDerivation.addIdentificationElement(
+                    new SingleElement(this.parent.getIdentifier(),
+                    new Replacer(ElementDecorator.FOREIGN))
+            );
             out.add(childDerivation);
         }
 

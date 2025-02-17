@@ -91,20 +91,47 @@ public class Derivation {
 
         Derivation unification = new Derivation(firstDerivation.name);
 
+        ElementGroup identificationElements = new ElementGroup();
+
         if (!firstDerivation.identificationElements.isEmpty()) {
-            unification.addIdentificationElement(firstDerivation.identificationElements.getCopy());
+            identificationElements.addElement(firstDerivation.identificationElements.getCopy());
         }
 
         if (!secondDerivation.identificationElements.isEmpty()) {
-            unification.addIdentificationElement(secondDerivation.identificationElements.getCopy());
+            identificationElements.addElement(secondDerivation.identificationElements.getCopy());
         }
 
+        ElementGroup commonElements = new ElementGroup();
+
         if (!firstDerivation.commonElements.isEmpty()) {
-            unification.addCommonElement(firstDerivation.commonElements.getCopy());
+            commonElements.addElement(firstDerivation.commonElements.getCopy());
         }
 
         if (!secondDerivation.commonElements.isEmpty()) {
-            unification.addCommonElement(secondDerivation.commonElements.getCopy());
+            commonElements.addElement(secondDerivation.commonElements.getCopy());
+        }
+
+        List<SingleElement> elementsToRemove = new ArrayList<>();
+
+        for (SingleElement commonElement : commonElements.getPartitions()) {
+            for (SingleElement identificationElement : identificationElements.getPartitions()) {
+                if (commonElement.equals(identificationElement)
+                        && !commonElement.hasDecoration(ElementDecorator.DUPLICATED)) {
+                    elementsToRemove.add(commonElement);
+                }
+            }
+        }
+
+        for (SingleElement element : elementsToRemove) {
+            commonElements.removeElement(element);
+        }
+
+        if (!commonElements.isEmpty()) {
+            unification.addCommonElement(commonElements);
+        }
+
+        if (!identificationElements.isEmpty()) {
+            unification.addIdentificationElement(identificationElements);
         }
 
         return unification;
