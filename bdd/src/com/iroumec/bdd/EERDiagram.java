@@ -184,6 +184,19 @@ public final class EERDiagram extends Diagram {
     private void derivate() {
         Map<String, Derivation> derivations = new HashMap<>();
 
+        Optional<Component> noMainAttributeEntity = this.getDiagramComponents().stream()
+                .filter(EntityWrapper.class::isInstance)
+                .filter(entity -> !((EntityWrapper) entity).hasMainAttribute())
+                .findFirst();
+
+        if (noMainAttributeEntity.isPresent()) {
+            JOptionPane.showMessageDialog(this,
+                    LanguageManager.getMessage("derivation.mainAttributeCondition"),
+                    LanguageManager.getMessage("derivation.title"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         this.getDiagramComponents().stream()
                 .filter(Derivable.class::isInstance)
                 .map(Derivable.class::cast)

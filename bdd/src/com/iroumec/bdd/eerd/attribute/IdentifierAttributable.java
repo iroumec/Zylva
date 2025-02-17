@@ -37,7 +37,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         this.mainAttribute = null;
     }
 
-    boolean hasMainAttribute() {
+    public boolean hasMainAttribute() {
         return mainAttribute != null;
     }
 
@@ -111,6 +111,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         }
 
         this.mainAttribute = new Attribute.Builder(Main.getInstance(), name, this).build();
+        this.subscribeTo(mainAttribute, Subscription.REFERENCE);
 
         this.makeCorrectionInDiagram(mainAttribute);
     }

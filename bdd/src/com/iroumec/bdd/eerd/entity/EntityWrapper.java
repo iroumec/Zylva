@@ -284,6 +284,24 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
+    public boolean hasMainAttribute() {
+
+        if (super.hasMainAttribute()) {
+            return true;
+        }
+
+        for (Hierarchy hierarchy : this.hierarchies) {
+            if (hierarchy.isChild(this)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
     public String getIdentifier() { return this.getText(); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
