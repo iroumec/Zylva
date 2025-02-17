@@ -98,10 +98,14 @@ public class Association extends Component implements Relatable {
         return popupMenu;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public int getDrawingPriority() {
         return this.relationship.getDrawingPriority() - 3;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void notifyRemovingOf(Component component) {

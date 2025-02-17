@@ -19,7 +19,7 @@ You can save and load your diagrams, as well as exporting them as PNG images.
 
 # Use it as you prefer!
 
-The application is compatible with both mouse and keyboard shortcuts!
+Most of the application commands are compatible with both mouse and keyboard shortcuts!
 
 ![mouseAndKeyboardControls.gif](src/main/resources/multimedia/mouseAndKeyboardControls.gif)
 
@@ -28,13 +28,6 @@ The application is compatible with both mouse and keyboard shortcuts!
 The language of the application can be changed at any moment!
 
 ![languageSelection.gif](src/main/resources/multimedia/languageSelection.gif)
-
-> [!CAUTION]
->
-> Excepting English and Spanish,
-> the rest of the languages were achieved using ChatGPT and Grazie Pro.
-> There might be errors in the translation!
-> Don't hesitate to report them.
 
 # Installation.
 
@@ -65,16 +58,15 @@ java -jar .../ZylvaEERD.jar
 
 - Undo/Redo.
 - Normalization.
+- More languages.
 - Adding more personalization tools.
 - Expanding the app to more types of diagrams.
 - Optimization and improvements in the performance.
 - Adding the possibility of using a command-line interface.
 - Adding the possibility of having various *tabs* open at the same time.
 
-# About the author.
+# What motivated me to do this?
 
-My name is Iñaki. I'm a student of System Engineering. This is my first Java project.
-
-During my career, in the *Databases I* subject, I worked with an overcomplicated and not too well-worked software
-made in 2016 by other students of the career. Crashes and low performance motivated me to create an application which
-could achieve that purpose in a better way.
+This is my first Java project. During my career, in the *Databases I* subject, I worked with an overcomplicated and
+not too well-worked software made in 2016 by other students of the career. Crashes and low performance motivated me to
+create an application which could achieve that purpose in a better way.

@@ -238,10 +238,10 @@ public final class EntityWrapper extends IdentifierAttributable implements Relat
         return popupMenu;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
-    public int getDrawingPriority() {
-        return DRAWING_PRIORITY;
-    }
+    public int getDrawingPriority() { return DRAWING_PRIORITY; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 

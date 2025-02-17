@@ -76,6 +76,7 @@ public final class Attribute extends DescriptiveAttributable implements Derivabl
         if (this.getLevel() == 1) {
 
             x = (int) ownerBounds.getMaxX() + 5;
+            y += minorCorrection * 2;
         } else {
 
             attributePosition ++; // Due to attributes of level > 1 are drawn under the owner attribute.
@@ -204,7 +205,9 @@ public final class Attribute extends DescriptiveAttributable implements Derivabl
                 textBounds.height)
         );
 
+        g2.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         g2.drawString(this.getText(), (int) this.getBounds().getX(), (int) this.getBounds().getMaxY() - minorCorrection);
+        g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
         //g2.draw(this.getShape());
     }
@@ -267,10 +270,10 @@ public final class Attribute extends DescriptiveAttributable implements Derivabl
     @Override
     public boolean canBeSelectedBySelectionArea() { return false; }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
-    public int getDrawingPriority() {
-        return this.owner.getDrawingPriority() - 1;
-    }
+    public int getDrawingPriority() { return this.owner.getDrawingPriority() - 1; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 

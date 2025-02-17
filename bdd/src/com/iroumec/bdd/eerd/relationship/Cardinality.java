@@ -32,16 +32,6 @@ public final class Cardinality extends Guard {
 
     public Line getLine() { return this.line; }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    protected JPopupMenu getPopupMenu() {
-
-        return this.menu.getPopupMenu(this);
-    }
-
     /**
      * Given a cardinality, changes its values.
      */
@@ -142,5 +132,15 @@ public final class Cardinality extends Guard {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected JPopupMenu getPopupMenu() {
+
+        return this.menu.getPopupMenu(this);
     }
 }

@@ -15,7 +15,7 @@ public interface Cardinality extends Serializable {
 
     boolean generatesDerivation();
 
-    void draw(Graphics2D g2, int x, int y);
+    default void draw(Graphics2D g2, int x, int y) {}
 
     List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner, @NotNull Attribute attribute);
 }

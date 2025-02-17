@@ -274,8 +274,12 @@ public final class EERDiagram extends Diagram {
             if (replacementDerivation != null) {
 
                 // Useful in case of having a reference to a reference... and don't depend on the order.
-                fillReferences(replacementDerivation, derivations, constraints,
-                        derivationsToRemove, alreadyFilledDerivations);
+                // But it's necessary to be careful at the moment of having a duplicated.
+                // TODO: what happens is the cycle is not 1-1? Could happen a case like that?
+                if (!derivation.getName().equals(replacementDerivation.getName())) {
+                    fillReferences(replacementDerivation, derivations, constraints,
+                            derivationsToRemove, alreadyFilledDerivations);
+                }
 
                 Element replacement = elementToReplace.abstractElements(
                         derivations.get(elementToReplace.getName())
@@ -299,7 +303,8 @@ public final class EERDiagram extends Diagram {
                     derivation.replace(elementToReplace, replacement);
                 }
             } else {
-                // Derivation: remove replacement.
+                
+                derivation.removeElement(elementToReplace);
             }
         }
 

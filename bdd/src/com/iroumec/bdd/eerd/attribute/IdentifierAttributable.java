@@ -164,6 +164,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         }
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public List<Rectangle> getAttributeBounds() {
 
@@ -175,6 +177,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
         return out;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected int getAbsoluteAttributePosition(Attribute attribute) {
@@ -193,6 +197,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         return super.getAbsoluteAttributePosition(attribute);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     protected int getRelativeAttributePosition(Attribute attribute) {
 
@@ -209,6 +215,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
         return super.getRelativeAttributePosition(attribute);
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected Rectangle getAttributeBounds(int attributePosition) {
@@ -228,6 +236,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         return super.getAttributeBounds(attributePosition);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public List<Attribute> getAttributes() {
 
@@ -240,6 +250,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
         return out;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected int getNumberOfAttributes() {
@@ -254,8 +266,12 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         return out;
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     protected boolean hasAttributes() { return super.hasAttributes() || this.hasMainAttribute(); }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected void setSelected(boolean isSelected) {
@@ -267,6 +283,8 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
             mainAttribute.setSelected(isSelected);
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void cleanReferencesTo(Component component) {

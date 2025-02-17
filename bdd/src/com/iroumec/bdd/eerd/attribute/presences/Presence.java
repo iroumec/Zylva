@@ -11,7 +11,7 @@ public interface Presence extends Serializable {
 
     Holder getHolder();
 
-    void addDecoration(@NotNull Element element);
+    default void addDecoration(@NotNull Element element) {}
 
     Presence getOpposite();
 

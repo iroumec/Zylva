@@ -13,8 +13,5 @@ public final class Static implements CardinalityMenu {
     public static Static getInstance() { return INSTANCE; }
 
     @Override
-    public JPopupMenu getPopupMenu(Cardinality cardinality) {
-
-        return new JPopupMenu();
-    }
+    public JPopupMenu getPopupMenu(Cardinality cardinality) { return new JPopupMenu(); }
 }

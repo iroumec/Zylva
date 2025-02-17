@@ -46,11 +46,11 @@ public abstract class Element {
 
     }
 
+    public abstract boolean removeElement(Element element);
+
     public abstract void clearAllDecorations();
 
-    final void emptyDecorations() {
-        this.decorations.clear();
-    }
+    final void emptyDecorations() { this.decorations.clear(); }
 
     public abstract int getNumberOfElements();
 

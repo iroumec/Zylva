@@ -68,7 +68,11 @@ public class LanguageManager {
                 String selectedAcronym = selectedLanguage.getAcronym();
                 applyLanguage(diagram, selectedAcronym);
                 frame.dispose();
-                JOptionPane.showMessageDialog(frame, LanguageManager.getMessage("language.languageChanged"));
+                JOptionPane.showMessageDialog(frame,
+                        LanguageManager.getMessage("language.languageChanged"),
+                        LanguageManager.getMessage("configurationApplied"),
+                        JOptionPane.INFORMATION_MESSAGE);
+
             }
         });
 

@@ -23,6 +23,10 @@ public enum ElementDecorator implements CharSequence {
         return "<span class=\"" + styleName + "\">" + text + "</span>";
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public int length() {
         return notation.length();

@@ -32,6 +32,27 @@ public final class ElementGroup extends Element {
         this.elements.add(element);
     }
 
+    /**
+     * @param element Element to be removed.
+     * @return {@code TRUE} if the element was removed.
+     */
+    public boolean removeElement(Element element) {
+
+        // The element is in the list.
+        if (this.elements.remove(element)) {
+            return true;
+        }
+
+        // The element must be searched.
+        for (Element e : elements) {
+            if (e.removeElement(element)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @Override
     public List<SingleElement> getReplacementsNeeded() {
 

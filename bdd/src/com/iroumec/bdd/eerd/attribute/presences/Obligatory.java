@@ -1,21 +1,19 @@
 package com.iroumec.bdd.eerd.attribute.presences;
 
-import com.iroumec.bdd.derivation.elements.Element;
 import com.iroumec.bdd.derivation.elements.containers.Holder;
 import com.iroumec.bdd.derivation.elements.containers.Replacer;
 import com.iroumec.bdd.derivation.elements.containers.sources.Common;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
 public final class Obligatory implements Presence {
 
-    private static final Obligatory instance = new Obligatory();
+    private static final Obligatory INSTANCE = new Obligatory();
 
     private Obligatory() {}
 
     public static Obligatory getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     @Override
@@ -24,19 +22,8 @@ public final class Obligatory implements Presence {
     }
 
     @Override
-    public void addDecoration(@NotNull Element element) {
-        // Empty on purpose.
-    }
+    public Presence getOpposite() { return Optional.getInstance(); }
 
     @Override
-    public Presence getOpposite() {
-
-        return Optional.getInstance();
-    }
-
-    @Override
-    public void draw(Graphics2D g2, int x1, int y1, int x2, int y2) {
-
-        g2.drawLine(x1, y1, x2, y2);
-    }
+    public void draw(Graphics2D g2, int x1, int y1, int x2, int y2) { g2.drawLine(x1, y1, x2, y2); }
 }

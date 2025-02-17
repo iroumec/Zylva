@@ -11,14 +11,11 @@ import java.awt.*;
 
 public final class Optional implements Presence {
 
-    private final static Optional instance = new Optional();
+    private final static Optional INSTANCE = new Optional();
 
     private Optional() {}
 
-    public static Optional getInstance() {
-
-        return instance;
-    }
+    public static Optional getInstance() { return INSTANCE; }
 
     @Override
     public Holder getHolder() {
@@ -31,10 +28,7 @@ public final class Optional implements Presence {
     }
 
     @Override
-    public Presence getOpposite() {
-
-        return Obligatory.getInstance();
-    }
+    public Presence getOpposite() { return Obligatory.getInstance(); }
 
     @Override
     public void draw(Graphics2D g2, int x1, int y1, int x2, int y2) {

@@ -43,14 +43,10 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
      * @param y Y coordinate of the relationship.
      */
     private Relationship(String text, int x, int y) {
-
         super(text, x, y);
-
         this.members = new HashMap<>();
         this.shape = new Polygon();
     }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
 
     private void addMember(Relatable relatableComponent, Cardinality cardinality) {
 
@@ -71,27 +67,13 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         member.addCardinality(cardinality);
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    public List<Rectangle> getAssociationBounds() {
-
-        List<Rectangle> out = super.getAttributeBounds();
-
-        this.members.keySet().forEach(member -> out.addAll(member.getAssociationBounds()));
-
-        out.add(this.getBounds());
-
-        return out;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
+    /**
+     * Updates the diagonals forming the relationship's shape.
+     */
     private void updateDiagonals(int textWidth, int textHeight, int margin) {
         horizontalDiagonal = textWidth + 2 * margin; // Diagonal horizontal basada en el ancho del texto
         verticalDiagonal = textHeight + 2 * margin; // Diagonal vertical basada en el alto del texto
     }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
 
     public boolean allDerivedMaxCardinalitiesAreEqualToN() {
 
@@ -100,7 +82,6 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         }
 
         for (Member member : this.members.values()) {
-
             if (!member.areAllDerivedMaxCardinalitiesEqualToN()) {
                 return false;
             }
@@ -130,175 +111,16 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         }
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    public List<Rectangle> getAssociationBounds() {
 
-    @Override
-    public void draw(Graphics2D g2) {
+        List<Rectangle> out = super.getAttributeBounds();
 
-        FontMetrics fm = g2.getFontMetrics();
+        this.members.keySet().forEach(member -> out.addAll(member.getAssociationBounds()));
 
-        int anchoTexto = fm.stringWidth(this.getText());
-        int altoTexto = fm.getHeight();
-
-        int xTexto = getX() - anchoTexto / 2;
-        int yTexto = getY() + altoTexto / 4; // It's divided by four to compensate the text baseline.
-
-        g2.setStroke(new BasicStroke(1));
-
-        int margin = 15; // Margin around the text.
-
-        // It is not necessary to do this all the time. Only if the text is changed.
-        this.updateDiagonals(anchoTexto, altoTexto, margin);
-
-        shape.reset();
-        shape.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
-        shape.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
-        shape.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
-        shape.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
-
-        g2.setColor(Color.WHITE);
-        g2.fillPolygon(shape);
-
-        g2.setColor(Color.BLACK);
-        g2.drawString(this.getText(), xTexto, yTexto);
-
-        if (this.isSelected()) {
-            this.setSelectionOptions(g2);
-        }
-
-        g2.drawPolygon(shape);
-        this.setShape(shape);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    protected JPopupMenu getPopupMenu() {
-
-        JPopupMenu popupMenu = new JPopupMenu();
-
-        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.addAttribute"));
-        actionItem.addActionListener(_ -> this.addAttribute());
-        popupMenu.add(actionItem);
-
-        if (association == null) {
-
-            actionItem = new JMenuItem(LanguageManager.getMessage("action.addAssociation"));
-            actionItem.addActionListener(_ -> this.createAssociation());
-            popupMenu.add(actionItem);
-        }
-
-        //noinspection DuplicatedCode
-        actionItem = new JMenuItem(LanguageManager.getMessage("action.rename"));
-        actionItem.addActionListener(_ -> this.rename());
-        popupMenu.add(actionItem);
-
-        actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
-        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
-        popupMenu.add(actionItem);
-
-        return popupMenu;
-    }
-
-    @Override
-    public int getDrawingPriority() {
-
-        int drawingPriority = 0;
-
-        for (Relatable relatable : this.members.keySet()) {
-            drawingPriority = Math.min(((Component) relatable).getDrawingPriority(), drawingPriority);
-        }
-
-        return drawingPriority - 1;
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public void cleanReferencesTo(Component component) {
-
-        super.cleanReferencesTo(component);
-
-        if (component instanceof Relatable relatable) {
-
-            // If component is a participant, it is assumed that its lines were removed in the
-            // notifyRemovingOf() method.
-            this.members.remove(relatable);
-        }
-
-        if (component instanceof Association) {
-            this.association = null;
-            this.resetPopupMenu();
-        }
-    }
-
-    @Override
-    public void notifyRemovingOf(Component component) {
-
-        if (component instanceof Relatable relatable && this.members.containsKey(relatable)) {
-
-            if (this.members.size() <= 2) {
-
-                this.setForDelete();
-            } else {
-
-                Member member = this.members.get(relatable);
-
-                for (Line line : member.getLines()) {
-                    line.setForDelete();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
-
-        Rectangle bounds = this.getBounds();
-
-        // Vertical line that comes from inside the relationship (in entities is not visible).
-        int x = ((int) bounds.getCenterX() + (int) bounds.getMaxX()) / 2;
-        int y = (int) bounds.getCenterY();
-        g2.drawLine(x, y, x, textPosition.y);
-
-        // Horizontal line that comes from inside the attributable component.
-        g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    public List<Derivation> getDerivations() {
-
-        List<Derivation> out = new ArrayList<>();
-
-        Derivation mainDerivation = new Derivation(this.getIdentifier());
-
-        List<DerivationMember> derivationMembers = new ArrayList<>();
-
-        for (Member member : this.members.values()) {
-            derivationMembers.addAll(member.getDerivationMembers());
-        }
-
-        switch (derivationMembers.size()) {
-            case 2: out.addAll(getBinaryRelationshipDerivation(mainDerivation, derivationMembers)); break;
-            case 3: out.addAll(getTernaryRelationshipDerivation(mainDerivation, derivationMembers)); break;
-            default: throw new RuntimeException("Invalid number of members for a plural derivation.");
-        }
+        out.add(this.getBounds());
 
         return out;
     }
-
-    @Override
-    public String getIdentifier() {
-        return this.getText();
-    }
-
-    /* ---------------------------------------------------------------------------------------------------------- */
-    /*                                           Add Relationship                                                 */
-    /* ---------------------------------------------------------------------------------------------------------- */
 
     /**
      * Adds a new <Code>Relationship</Code> to the <Code>this</Code>.
@@ -409,12 +231,8 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         }
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                           Add Dependency                                                       */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     /**
-     * Adds a new <Code>Dependency</Code> to the <Code>this</Code>.
+     * Adds a new <Code>Dependency</Code> to the <Code>Diagram</Code>.
      * <p></p>
      * Two strong entities must be selected.
      */
@@ -514,6 +332,249 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
             }
         };
     }
+
+    private static class Member implements Serializable {
+
+        private final Relatable relatable;
+        private final List<Cardinality> cardinalities;
+
+        public Member(@NotNull Relatable relatable) {
+            this.relatable = relatable;
+            this.cardinalities = new ArrayList<>();
+        }
+
+        public void addCardinality(@NotNull Cardinality cardinality) {
+            this.cardinalities.add(cardinality);
+        }
+
+        public List<Line> getLines() {
+
+            List<Line> out = new ArrayList<>();
+
+            for (Cardinality cardinality : this.cardinalities) {
+                out.add(cardinality.getLine());
+            }
+
+            return out;
+        }
+
+        public boolean areAllDerivedMaxCardinalitiesEqualToN() {
+
+            for (Cardinality cardinality : this.cardinalities) {
+
+                String maxCardinality = cardinality.getMaximumCardinality();
+
+                // Letters or numbers greater than one.
+                if (!maxCardinality.matches("[a-zA-Z]|[2-9]\\d*")) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public List<DerivationMember> getDerivationMembers() {
+
+            List<DerivationMember> out = new ArrayList<>();
+
+            for (Cardinality cardinality : this.cardinalities) {
+                out.add(new DerivationMember(
+                        relatable.getIdentifier(),
+                        cardinality.getMinimumCardinality(),
+                        cardinality.getMaximumCardinality())
+                );
+            }
+
+            return out;
+        }
+    }
+
+    public Relatable getOppositeMember(Relatable relatable) {
+
+        Optional<Relatable> result = this.members.keySet().stream()
+                .filter(member -> !member.equals(relatable))
+                .findFirst(); // It returns the first member that is different from relatable.
+
+        return result.orElse(null);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void draw(Graphics2D g2) {
+
+        FontMetrics fm = g2.getFontMetrics();
+
+        int anchoTexto = fm.stringWidth(this.getText());
+        int altoTexto = fm.getHeight();
+
+        int xTexto = getX() - anchoTexto / 2;
+        int yTexto = getY() + altoTexto / 4; // It's divided by four to compensate the text baseline.
+
+        g2.setStroke(new BasicStroke(1));
+
+        int margin = 15; // Margin around the text.
+
+        // It is not necessary to do this all the time. Only if the text is changed.
+        this.updateDiagonals(anchoTexto, altoTexto, margin);
+
+        shape.reset();
+        shape.addPoint(getX(), getY() - verticalDiagonal / 2); // Upper point
+        shape.addPoint(getX() + horizontalDiagonal / 2, getY()); // Right point
+        shape.addPoint(getX(), getY() + verticalDiagonal / 2); // Lower point
+        shape.addPoint(getX() - horizontalDiagonal / 2, getY()); // Left point
+
+        g2.setColor(Color.WHITE);
+        g2.fillPolygon(shape);
+
+        g2.setColor(Color.BLACK);
+        g2.drawString(this.getText(), xTexto, yTexto);
+
+        if (this.isSelected()) {
+            this.setSelectionOptions(g2);
+        }
+
+        g2.drawPolygon(shape);
+        this.setShape(shape);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected JPopupMenu getPopupMenu() {
+
+        JPopupMenu popupMenu = new JPopupMenu();
+
+        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.addAttribute"));
+        actionItem.addActionListener(_ -> this.addAttribute());
+        popupMenu.add(actionItem);
+
+        if (association == null) {
+
+            actionItem = new JMenuItem(LanguageManager.getMessage("action.addAssociation"));
+            actionItem.addActionListener(_ -> this.createAssociation());
+            popupMenu.add(actionItem);
+        }
+
+        //noinspection DuplicatedCode
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.rename"));
+        actionItem.addActionListener(_ -> this.rename());
+        popupMenu.add(actionItem);
+
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
+        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
+        popupMenu.add(actionItem);
+
+        return popupMenu;
+    }
+
+    /* ---------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public int getDrawingPriority() {
+
+        int drawingPriority = 0;
+
+        for (Relatable relatable : this.members.keySet()) {
+            drawingPriority = Math.min(((Component) relatable).getDrawingPriority(), drawingPriority);
+        }
+
+        return drawingPriority - 1;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void cleanReferencesTo(Component component) {
+
+        super.cleanReferencesTo(component);
+
+        if (component instanceof Relatable relatable) {
+
+            // If component is a participant, it is assumed that its lines were removed in the
+            // notifyRemovingOf() method.
+            this.members.remove(relatable);
+        }
+
+        if (component instanceof Association) {
+            this.association = null;
+            this.resetPopupMenu();
+        }
+    }
+
+    /* ---------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void notifyRemovingOf(Component component) {
+
+        if (component instanceof Relatable relatable && this.members.containsKey(relatable)) {
+
+            if (this.members.size() <= 2) {
+
+                this.setForDelete();
+            } else {
+
+                Member member = this.members.get(relatable);
+
+                for (Line line : member.getLines()) {
+                    line.setForDelete();
+                }
+            }
+        }
+    }
+
+    /* ---------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected void drawStartLineToAttribute(Graphics2D g2, Point textPosition) {
+
+        Rectangle bounds = this.getBounds();
+
+        // Vertical line that comes from inside the relationship (in entities is not visible).
+        int x = ((int) bounds.getCenterX() + (int) bounds.getMaxX()) / 2;
+        int y = (int) bounds.getCenterY();
+        g2.drawLine(x, y, x, textPosition.y);
+
+        // Horizontal line that comes from inside the attributable component.
+        g2.drawLine(x, textPosition.y, textPosition.x, textPosition.y);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public List<Derivation> getDerivations() {
+
+        List<Derivation> out = new ArrayList<>();
+
+        Derivation mainDerivation = new Derivation(this.getIdentifier());
+
+        List<DerivationMember> derivationMembers = new ArrayList<>();
+
+        for (Member member : this.members.values()) {
+            derivationMembers.addAll(member.getDerivationMembers());
+        }
+
+        switch (derivationMembers.size()) {
+            case 2: out.addAll(getBinaryRelationshipDerivation(mainDerivation, derivationMembers)); break;
+            case 3: out.addAll(getTernaryRelationshipDerivation(mainDerivation, derivationMembers)); break;
+            default: throw new RuntimeException("Invalid number of members for a plural derivation.");
+        }
+
+        return out;
+    }
+
+    /* ---------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String getIdentifier() {
+        return this.getText();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                          Derivation Related                                                    */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     // TODO: return all possible combinations.
     private List<Derivation> getTernaryRelationshipDerivation(Derivation mainDerivation,
@@ -634,22 +695,20 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
 
         Derivation derivation = new Derivation(firstMember.name);
 
-        // TODO: fix this.
-
         if (minCardinality.equals("0")) {
 
             derivation.addCommonElement(new SingleElement(this.getIdentifier(),
                     new Replacer(new Common(), ElementDecorator.OPTIONAL)));
 
             derivation.addCommonElement(new SingleElement(secondMember.name,
-                    new Replacer(ElementDecorator.FOREIGN, ElementDecorator.OPTIONAL, ElementDecorator.DUPLICATED)));
+                    new Replacer(ElementDecorator.DUPLICATED, ElementDecorator.OPTIONAL, ElementDecorator.FOREIGN)));
 
         } else { // It's equal to 1.
 
             derivation.addCommonElement(new SingleElement(this.getIdentifier(), new Replacer(new Common())));
 
             derivation.addIdentificationElement(new SingleElement(secondMember.name,
-                    new Replacer(ElementDecorator.FOREIGN, ElementDecorator.DUPLICATED)));
+                    new Replacer(ElementDecorator.DUPLICATED, ElementDecorator.FOREIGN)));
         }
 
         return List.of(derivation);
@@ -749,139 +808,74 @@ public final class Relationship extends DescriptiveAttributable implements Deriv
         return new ArrayList<>();
     }
 
-    private static class Member implements Serializable {
-
-        private final Relatable relatable;
-        private final List<Cardinality> cardinalities;
-
-        public Member(@NotNull Relatable relatable) {
-            this.relatable = relatable;
-            this.cardinalities = new ArrayList<>();
-        }
-
-        public void addCardinality(@NotNull Cardinality cardinality) {
-            this.cardinalities.add(cardinality);
-        }
-
-        public List<Line> getLines() {
-
-            List<Line> out = new ArrayList<>();
-
-            for (Cardinality cardinality : this.cardinalities) {
-                out.add(cardinality.getLine());
-            }
-
-            return out;
-        }
-
-        public boolean areAllDerivedMaxCardinalitiesEqualToN() {
-
-            for (Cardinality cardinality : this.cardinalities) {
-
-                String maxCardinality = cardinality.getMaximumCardinality();
-
-                // Letters or numbers greater than one.
-                if (!maxCardinality.matches("[a-zA-Z]|[2-9]\\d*")) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public List<DerivationMember> getDerivationMembers() {
-
-            List<DerivationMember> out = new ArrayList<>();
-
-            for (Cardinality cardinality : this.cardinalities) {
-                out.add(new DerivationMember(
-                        relatable.getIdentifier(),
-                        cardinality.getMinimumCardinality(),
-                        cardinality.getMaximumCardinality())
-                );
-            }
-
-            return out;
-        }
-    }
-
     private record DerivationMember(String name, String minCardinality, String maxCardinality) {
 
-            private DerivationMember(@NotNull String name, @NotNull String minCardinality, @NotNull String maxCardinality) {
-                this.name = name;
-                this.minCardinality = adaptMinCardinality(minCardinality);
-                this.maxCardinality = adaptMaxCardinality(maxCardinality);
+        private DerivationMember(@NotNull String name, @NotNull String minCardinality, @NotNull String maxCardinality) {
+            this.name = name;
+            this.minCardinality = adaptMinCardinality(minCardinality);
+            this.maxCardinality = adaptMaxCardinality(maxCardinality);
+        }
+
+        /**
+         * Minimum cardinalities, in the derivation format, can only take two values: 0 or 1.
+         * If the minimum cardinality has a value greater than one, it'll be replaced by 1 and
+         * the user will have to specify a business rule for that minimum.
+         *
+         * @param minCardinality Minimum cardinality.
+         * @return The minimum cardinality adapted to the derivation rules.
+         */
+        private String adaptMinCardinality(@NotNull String minCardinality) {
+
+            if (minCardinality.isEmpty()) {
+                throw new IllegalArgumentException("Min cardinality cannot be empty.");
             }
 
-            /**
-             * Minimum cardinalities, in the derivation format, can only take two values: 0 or 1.
-             * If the minimum cardinality has a value greater than one, it'll be replaced by 1 and
-             * the user will have to specify a business rule for that minimum.
-             *
-             * @param minCardinality Minimum cardinality.
-             * @return The minimum cardinality adapted to the derivation rules.
-             */
-            private String adaptMinCardinality(@NotNull String minCardinality) {
+            try {
+                int minCardinalityParse = Integer.parseInt(minCardinality);
 
-                if (minCardinality.isEmpty()) {
-                    throw new IllegalArgumentException("Min cardinality cannot be empty.");
+                if (minCardinalityParse < 0) {
+                    throw new IllegalArgumentException("Min cardinality cannot be negative.");
                 }
 
-                try {
-                    int minCardinalityParse = Integer.parseInt(minCardinality);
-
-                    if (minCardinalityParse < 0) {
-                        throw new IllegalArgumentException("Min cardinality cannot be negative.");
-                    }
-
-                    if (minCardinalityParse > 1) {
-                        return "1";
-                    }
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Min cardinality must be a number.");
+                if (minCardinalityParse > 1) {
+                    return "1";
                 }
-
-                return minCardinality;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Min cardinality must be a number.");
             }
 
-            /**
-             * Minimum cardinalities, in the derivation format, can only take two values: 1 or N (another letter can be used).
-             * If the maximum cardinality has a value greater than one and different from N, it'll be replaced by N and
-             * the user will have to specify a business rule for that maximum.
-             *
-             * @param maxCardinality Maximum cardinality.
-             * @return The maximum cardinality adapted to the derivation rules.
-             */
-            private String adaptMaxCardinality(@NotNull String maxCardinality) {
+            return minCardinality;
+        }
 
-                if (maxCardinality.isEmpty()) {
-                    throw new IllegalArgumentException("Min cardinality cannot be empty.");
+        /**
+         * Minimum cardinalities, in the derivation format, can only take two values: 1 or N (another letter can be used).
+         * If the maximum cardinality has a value greater than one and different from N, it'll be replaced by N and
+         * the user will have to specify a business rule for that maximum.
+         *
+         * @param maxCardinality Maximum cardinality.
+         * @return The maximum cardinality adapted to the derivation rules.
+         */
+        private String adaptMaxCardinality(@NotNull String maxCardinality) {
+
+            if (maxCardinality.isEmpty()) {
+                throw new IllegalArgumentException("Min cardinality cannot be empty.");
+            }
+
+            try { // It's a number.
+                int maxCardinalityParse = Integer.parseInt(maxCardinality);
+
+                if (maxCardinalityParse < 1) {
+                    throw new IllegalArgumentException("Max cardinality cannot be less than 1.");
                 }
 
-                try { // It's a number.
-                    int maxCardinalityParse = Integer.parseInt(maxCardinality);
-
-                    if (maxCardinalityParse < 1) {
-                        throw new IllegalArgumentException("Max cardinality cannot be less than 1.");
-                    }
-
-                    if (maxCardinalityParse > 1) {
-                        return "N";
-                    }
-                } catch (NumberFormatException e) { // It's okay if it's a number.
-                    return maxCardinality;
+                if (maxCardinalityParse > 1) {
+                    return "N";
                 }
-
+            } catch (NumberFormatException e) { // It's okay if it's a number.
                 return maxCardinality;
             }
-    }
 
-    public Relatable getOppositeMember(Relatable relatable) {
-
-        Optional<Relatable> result = this.members.keySet().stream()
-                .filter(member -> !member.equals(relatable))
-                .findFirst(); // It returns the first member that is different from relatable.
-
-        return result.orElse(null);
+            return maxCardinality;
+        }
     }
 }

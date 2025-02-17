@@ -5,7 +5,6 @@ import com.iroumec.bdd.eerd.attribute.DescriptiveAttributable;
 import com.iroumec.bdd.derivation.Derivation;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +31,5 @@ public final class Univalued implements Cardinality {
     @Override
     public List<Derivation> getDerivations(@NotNull DescriptiveAttributable owner, @NotNull Attribute attribute) {
         return new ArrayList<>();
-    }
-
-    @Override
-    public void draw(Graphics2D g2, int x, int y) {
-        // Empty on purpose.
     }
 }

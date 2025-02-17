@@ -31,15 +31,11 @@ public interface Rol extends Serializable {
 
     default Holder getHolder(@NotNull Attribute attribute, @NotNull Presence presence) {
 
-        Holder out;
-
         if (attribute.isCompound()) {
             // The presence will be always obligatory.
-            out = presence.getHolder();
-        } else {
-            out = Final.getInstance();
+            return presence.getHolder();
         }
 
-        return out;
+        return Final.getInstance();
     }
 }

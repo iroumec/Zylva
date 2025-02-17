@@ -39,6 +39,15 @@ public class Derivation {
         return out;
     }
 
+    public void removeElement(Element element) {
+
+        // If the element to be removed is not found in the common elements...
+        // Searches in the identification elements.
+        if (!commonElements.removeElement(element)) {
+            identificationElements.removeElement(element);
+        }
+    }
+
     public void replace(SingleElement element, Element replacement) {
 
         this.commonElements.replace(element, replacement);
@@ -57,22 +66,6 @@ public class Derivation {
         return this.identificationElements.isEmpty() && this.commonElements.isEmpty();
     }
 
-    @Override
-    public String toString() {
-
-        String out = this.name + "(";
-
-        out += this.identificationElements.toString();
-
-        if (!this.identificationElements.isEmpty() && !this.commonElements.isEmpty()) {
-            out += ",";
-        }
-
-        out += this.commonElements.toString() + ")";
-
-        return out;
-    }
-
     public String formatToHTML() {
 
         String out = this.name + "(";
@@ -88,9 +81,7 @@ public class Derivation {
         return out;
     }
 
-    public String getName() {
-        return this.name;
-    }
+    public String getName() { return this.name; }
 
     public static Derivation unify(Derivation firstDerivation, Derivation secondDerivation) {
 
@@ -133,6 +124,28 @@ public class Derivation {
         return this.getNumberOfCommonElements() + this.getNumberOfIdentificationElements();
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String toString() {
+
+        String out = this.name + "(";
+
+        out += this.identificationElements.toString();
+
+        if (!this.identificationElements.isEmpty() && !this.commonElements.isEmpty()) {
+            out += ",";
+        }
+
+        out += this.commonElements.toString() + ")";
+
+        return out;
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -140,8 +153,8 @@ public class Derivation {
         return Objects.equals(name, that.name);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
+    public int hashCode() { return Objects.hash(name); }
 }

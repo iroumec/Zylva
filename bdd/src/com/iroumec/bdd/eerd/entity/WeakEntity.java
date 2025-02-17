@@ -29,7 +29,6 @@ final class WeakEntity implements Entity {
      * @param relationship {@code Relationship} where the entity is weak.
      */
     WeakEntity(EntityWrapper entityWrapper, Relationship relationship) {
-
         this.entityWrapper = entityWrapper;
         this.relationship = relationship;
     }
@@ -53,9 +52,7 @@ final class WeakEntity implements Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public String getIdentifier() {
-        return this.entityWrapper.getIdentifier();
-    }
+    public String getIdentifier() { return this.entityWrapper.getIdentifier(); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
@@ -65,8 +62,9 @@ final class WeakEntity implements Entity {
         if (this.relationship.equals(component)) {
             this.entityWrapper.setStrongVersion();
         }
-
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public List<Derivation> getDerivations() {

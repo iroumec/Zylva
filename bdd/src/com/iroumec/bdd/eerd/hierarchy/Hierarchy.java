@@ -172,10 +172,6 @@ public final class Hierarchy extends Component implements Derivable {
         this.diagram.repaint();
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                            Add Hierarchy                                                       */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
     /**
      * Adds a new <Code>Hierarchy</Code> to the <Code>this</Code>.
      * <p></p>
@@ -402,6 +398,8 @@ public final class Hierarchy extends Component implements Derivable {
 
         return popupMenu;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public int getDrawingPriority() {

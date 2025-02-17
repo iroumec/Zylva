@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class Common implements Rol {
@@ -57,22 +56,17 @@ public final class Common implements Rol {
 
         if (cardinality.generatesDerivation()) {
             return cardinality.getDerivations(owner, attribute);
-        } else {
-
-            List<Derivation> out = new ArrayList<>();
-
-            Derivation derivation = new Derivation(owner.getText());
-
-            Holder holder = this.getHolder(attribute, presence);
-
-            Element element = new SingleElement(attribute.getIdentifier(), holder);
-            presence.addDecoration(element);
-            derivation.addCommonElement(element);
-
-            out.add(derivation);
-
-            return out;
         }
+
+        Derivation derivation = new Derivation(owner.getText());
+
+        Holder holder = this.getHolder(attribute, presence);
+
+        Element element = new SingleElement(attribute.getIdentifier(), holder);
+        presence.addDecoration(element);
+        derivation.addCommonElement(element);
+
+        return List.of(derivation);
     }
 
     @Override

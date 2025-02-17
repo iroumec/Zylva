@@ -36,9 +36,7 @@ record StrongEntity(EntityWrapper entityWrapper) implements Entity {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    public String getIdentifier() {
-        return this.entityWrapper.getIdentifier();
-    }
+    public String getIdentifier() { return this.entityWrapper.getIdentifier(); }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 

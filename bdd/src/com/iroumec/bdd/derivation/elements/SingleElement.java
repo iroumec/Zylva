@@ -48,6 +48,11 @@ public final class SingleElement extends Element {
     }
 
     @Override
+    public boolean removeElement(Element element) {
+        return false;
+    }
+
+    @Override
     public void clearAllDecorations() {
         super.emptyDecorations();
     }
