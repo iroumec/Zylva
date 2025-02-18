@@ -24,7 +24,7 @@ Most of the application commands are compatible with both mouse and keyboard sho
 
 ![mouseAndKeyboardControls.gif](src/main/resources/multimedia/mouseAndKeyboardControls.gif)
 
-# Derivation.
+# Derivation!
 
 Derivate your diagrams automatically and get the result in an HTML format!
 
@@ -68,8 +68,8 @@ java -jar .../ZylvaEERD.jar
 - More languages.
 - Complete the documentation.
 - Adding more personalization tools.
-- Expanding the app to more types of diagrams.
 - Provide all possible derivations of a diagram.
+- Expanding the app to more types of diagrams.
 - Optimization and improvements in the performance.
 - Adding the possibility of using a command-line interface.
 - Adding the possibility of having various *tabs* open at the same time.
