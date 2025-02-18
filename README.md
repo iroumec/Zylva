@@ -1,6 +1,6 @@
 # Introduction.
 
-Zylva is an enhanced entity-relationship (EER) model diagram application developed completely in Java.
+Zylva is an enhanced entity-relationship (EER) model diagram and derivation application developed completely in Java.
 
 > [!CAUTION]
 >
