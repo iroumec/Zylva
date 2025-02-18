@@ -15,6 +15,10 @@ public abstract class Guard extends Component {
         this.subscribeTo(line, Subscription.DELETION);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public void draw(Graphics2D g2) {
 
@@ -45,10 +49,14 @@ public abstract class Guard extends Component {
         //g2.draw(shape);
     }
 
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public String toString() {
         return this.getText();
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void notifyRemovingOf(Component component) {
@@ -57,6 +65,8 @@ public abstract class Guard extends Component {
             this.setForDelete();
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public int getDrawingPriority() {

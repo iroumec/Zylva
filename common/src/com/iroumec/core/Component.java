@@ -12,11 +12,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-public abstract class Component implements Serializable, Deletable, Multilingual {
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                                  Attributes                                                    */
-    /* -------------------------------------------------------------------------------------------------------------- */
+public abstract class Component implements Serializable, Deletable, Selectable, Multilingual {
 
     /**
      * A component subscribes in DELETION to another when the latter's elimination implies the former's elimination.
@@ -79,11 +75,11 @@ public abstract class Component implements Serializable, Deletable, Multilingual
         this(0, 0);
     }
 
-    protected Component(String text) { this(text, 0, 0); }
-
     protected Component(int x, int y) {
         this("", x, y);
     }
+
+    protected Component(String text) { this(text, 0, 0); }
 
     /**
      * Constructs a <code>Component</code>.
@@ -108,9 +104,15 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                                  Method                                                        */
+    /*                                                  Methods                                                       */
     /* -------------------------------------------------------------------------------------------------------------- */
 
+    /**
+     * Subscribes to a component.
+     *
+     * @param component Component who will gain a subscription.
+     * @param subscription Type of subscription.
+     */
     public void subscribeTo(Component component, Subscription subscription) {
 
         // The subscription is added to the another component's subscribers.
@@ -148,7 +150,6 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     /**
      * @return A {@code JPopupMenu} loaded with the actions the component can do.
      */
-    @SuppressWarnings("duplicated")
     protected abstract JPopupMenu getPopupMenu();
 
     /**
@@ -176,19 +177,6 @@ public abstract class Component implements Serializable, Deletable, Multilingual
      * @param shape New {@code Shape}.
      */
     public void setShape(Shape shape) { this.shape = shape; }
-
-    /**
-     * Changes the selection state of the component.
-     *
-     * @param isSelected New selection state.
-     */
-    protected void setSelected(boolean isSelected) { this.selected = isSelected; }
-
-    /**
-     *
-     * @return {@code TRUE} if the entity is being selected.
-     */
-    protected boolean isSelected() { return this.selected; }
 
     /**
      * Updates the text of the component.
@@ -261,22 +249,7 @@ public abstract class Component implements Serializable, Deletable, Multilingual
         this.diagram = diagram;
     }
 
-    // The color and the stroke are changed if the entity is selected.
-    public void setSelectionOptions(Graphics2D graphics2D) {
-        graphics2D.setColor(new Color(120, 190, 235));
-        graphics2D.setStroke(new BasicStroke(2));
-    }
-
-    public boolean canBeSelectedBySelectionArea() { return true; }
-
-    @Override
-    public void resetLanguage() {
-        this.popupMenu = this.getPopupMenu();
-    }
-
     public Shape getShape() { return this.shape; }
-
-    public abstract int getDrawingPriority();
 
     /**
      * This way, the subclasses don't hace direct access to the diagram.
@@ -287,32 +260,6 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     protected static void addComponent(@NotNull Component component, @NotNull Diagram diagram) {
         diagram.addComponent(component);
         component.setDiagram(diagram);
-    }
-
-    /**
-     *
-     * @return {@code TRUE} if the components live in the same diagram and {@code FALSE} in any other case.
-     */
-    @SuppressWarnings("unused")
-    protected static boolean liveInTheSameDiagram(@NotNull Component firstComponent,
-                                                  @NotNull Component secondComponent) {
-
-        return firstComponent.diagram.equals(secondComponent.diagram);
-    }
-
-    /**
-     *
-     * @return {@code TRUE} if the components have the same name.
-     */
-
-    @Override
-    public String toString() {
-
-        if (this.text.isEmpty()) {
-            return super.toString();
-        } else {
-            return this.text;
-        }
     }
 
     public void setDrawingPanel(Diagram diagram) {
@@ -333,6 +280,11 @@ public abstract class Component implements Serializable, Deletable, Multilingual
         }
     }
 
+    /**
+     * It makes sure to return a non-empty name.
+     *
+     * @return {@code String} entered by the user.
+     */
     protected static String getValidText(@NotNull Diagram diagram) {
         return getValidText(diagram, LanguageManager.getMessage("text.input"));
     }
@@ -503,12 +455,47 @@ public abstract class Component implements Serializable, Deletable, Multilingual
     /*                                                 Abstract Methods                                               */
     /* -------------------------------------------------------------------------------------------------------------- */
 
-    // Maybe this should be moved to a class drawable.
-
     /**
      * Draws the component.
      *
      * @param g2 Graphics context.
      */
     public abstract void draw(Graphics2D g2);
+
+    /**
+     *
+     * @return The drawing priority of the component. The lower the number, the higher the priority.
+     */
+    public abstract int getDrawingPriority();
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void setSelected(boolean isSelected) { this.selected = isSelected; }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public boolean isSelected() { return this.selected; }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void resetLanguage() {
+        this.popupMenu = this.getPopupMenu();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public String toString() {
+
+        if (this.text.isEmpty()) {
+            return super.toString();
+        } else {
+            return this.text;
+        }
+    }
 }

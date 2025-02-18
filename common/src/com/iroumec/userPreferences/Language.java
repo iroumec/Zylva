@@ -15,10 +15,18 @@ public enum Language {
         this.acronym = acronym;
     }
 
+    /**
+     *
+     * @return The acronym of the language, according to the ISO 639-2.
+     */
+    public String getAcronym() { return this.acronym; }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
     @Override
     public String toString() {
         return LanguageManager.getMessage(this.key);
     }
-
-    public String getAcronym() { return this.acronym; }
 }

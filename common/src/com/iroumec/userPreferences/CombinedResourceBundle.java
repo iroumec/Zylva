@@ -6,11 +6,23 @@ import java.util.*;
 
 public final class CombinedResourceBundle extends ResourceBundle {
 
+    /**
+     * Array of {@code ResourceBundle}s that participe in the combination.
+     */
     private final ResourceBundle[] bundles;
 
+    /**
+     * Constructs a {@code CombinedResourceBundle}.
+     *
+     * @param bundles {@code ResourceBundle}s conforming it.
+     */
     public CombinedResourceBundle(ResourceBundle... bundles) {
         this.bundles = bundles;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     protected Object handleGetObject(@NotNull String key) {
@@ -21,6 +33,8 @@ public final class CombinedResourceBundle extends ResourceBundle {
         }
         return null;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public @NotNull Enumeration<String> getKeys() {

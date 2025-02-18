@@ -50,6 +50,11 @@ public final class Note extends Component {
         return lines;
     }
 
+    /**
+     * Adds a note to the diagram.
+     *
+     * @param diagram {@code Diagram} where the note will be added.
+     */
     public static void addNote(Diagram diagram) {
 
         String text = Note.getValidText(diagram);
@@ -79,6 +84,8 @@ public final class Note extends Component {
 
         return popupMenu;
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public int getDrawingPriority() {

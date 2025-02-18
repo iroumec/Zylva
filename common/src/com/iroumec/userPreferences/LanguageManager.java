@@ -99,6 +99,9 @@ public class LanguageManager {
         notifyComponents();
     }
 
+    /**
+     * Notifies all the multilingual object subscribed to the language reset list.
+     */
     private static void notifyComponents() {
         for (Multilingual multilingual : languageResetList) {
             multilingual.resetLanguage();

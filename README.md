@@ -4,8 +4,9 @@ Zylva is an enhanced entity-relationship (EER) model diagram application develop
 
 > [!CAUTION]
 >
-> This is still a pre-release, which may contain severe bugs. 
-> Suggestions and contributions to possible improvements are highly appreciated!
+> The application has only been tested by me, its author.
+> It may contain severe bugs I haven't identified yet.
+> Suggestions and contributions to possible improvements are highly appreciated.
 
 # Easy and fast controls!
 
@@ -65,8 +66,10 @@ java -jar .../ZylvaEERD.jar
 - Undo/Redo.
 - Normalization.
 - More languages.
+- Complete the documentation.
 - Adding more personalization tools.
 - Expanding the app to more types of diagrams.
+- Provide all possible derivations of a diagram.
 - Optimization and improvements in the performance.
 - Adding the possibility of using a command-line interface.
 - Adding the possibility of having various *tabs* open at the same time.

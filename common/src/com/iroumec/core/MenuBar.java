@@ -101,7 +101,10 @@ final class MenuBar extends JMenuBar implements Multilingual {
             String credits = LanguageManager.getMessage("credits.author")
                     + "\nhttps://github.com/iroumec";
 
-            JOptionPane.showMessageDialog(null, controls + "\n\n" + credits); // Show the updated message
+            String librariesCredits = "Look and Feel: \nhttps://github.com/JFormDesigner/FlatLaf/tree/main";
+
+            JOptionPane.showMessageDialog(null, controls
+                    + "\n\n" + credits + "\n\n" + librariesCredits);
         });
 
         this.addMouseInteraction(helpButton);

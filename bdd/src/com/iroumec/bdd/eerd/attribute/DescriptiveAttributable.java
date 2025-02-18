@@ -284,15 +284,16 @@ public abstract class DescriptiveAttributable extends Component {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    protected void setSelected(boolean isSelected) {
+    public void setSelected(boolean isSelected) {
 
         super.setSelected(isSelected);
 
         for (Attribute attribute : this.attributes) {
             attribute.setSelected(isSelected);
         }
-
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public void cleanReferencesTo(Component component) {

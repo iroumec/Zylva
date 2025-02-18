@@ -37,9 +37,11 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
         this.mainAttribute = null;
     }
 
-    public boolean hasMainAttribute() {
-        return mainAttribute != null;
-    }
+    /**
+     * @return {@code TRUE} if the component has a main attribute.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean hasMainAttribute() { return mainAttribute != null; }
 
     /**
      * Asks for the attribute's presence and creates and attribute with that information.
@@ -99,7 +101,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
     protected void addMainAttribute() {
 
-        if (this.hasMainAttribute()) {
+        if (this.mainAttribute != null) {
 
             JOptionPane.showMessageDialog(null, LanguageManager.getMessage("attribute.warning"));
         }
@@ -184,7 +186,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
     @Override
     protected int getAbsoluteAttributePosition(Attribute attribute) {
 
-        if (this.hasMainAttribute()) {
+        if (this.mainAttribute != null) {
 
             if (attribute.equals(this.mainAttribute)) {
 
@@ -203,7 +205,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
     @Override
     protected int getRelativeAttributePosition(Attribute attribute) {
 
-        if (this.hasMainAttribute()) {
+        if (this.mainAttribute != null) {
 
             if (attribute.equals(this.mainAttribute)) {
 
@@ -222,7 +224,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
     @Override
     protected Rectangle getAttributeBounds(int attributePosition) {
 
-        if (this.hasMainAttribute()) {
+        if (this.mainAttribute != null) {
 
             if (attributePosition == 0) {
 
@@ -244,7 +246,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
         List<Attribute> out = new ArrayList<>(super.getAttributes());
 
-        if (this.hasMainAttribute()) {
+        if (this.mainAttribute != null) {
 
             out.addFirst(mainAttribute);
         }
@@ -259,7 +261,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
 
         int out = super.getNumberOfAttributes();
 
-        if (this.hasMainAttribute()) {
+        if (this.mainAttribute != null) {
 
             out++;
         }
@@ -270,16 +272,16 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    protected boolean hasAttributes() { return super.hasAttributes() || this.hasMainAttribute(); }
+    protected boolean hasAttributes() { return super.hasAttributes() || this.mainAttribute != null; }
 
     /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
-    protected void setSelected(boolean isSelected) {
+    public void setSelected(boolean isSelected) {
 
         super.setSelected(isSelected);
 
-        if (this.hasMainAttribute()) {
+        if (mainAttribute != null) {
 
             mainAttribute.setSelected(isSelected);
         }
@@ -290,7 +292,7 @@ public abstract class IdentifierAttributable extends DescriptiveAttributable {
     @Override
     public void cleanReferencesTo(Component component) {
         if (component instanceof Attribute attribute) {
-            if (this.hasMainAttribute() && attribute.equals(this.mainAttribute)) {
+            if (attribute.equals(this.mainAttribute)) {
                 this.mainAttribute = null;
             } else {
                 super.cleanReferencesTo(component);

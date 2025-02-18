@@ -159,6 +159,8 @@ public final class Hierarchy extends Component implements Derivable {
                 return;
             }
 
+            Component.addComponent(discriminant, this.diagram);
+
             this.exclusivity = Disjunct.getInstance().setDiscriminant(discriminant);
         } else {
 
@@ -392,12 +394,12 @@ public final class Hierarchy extends Component implements Derivable {
 
         JPopupMenu popupMenu = new JPopupMenu();
 
-        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
-        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
+        JMenuItem actionItem = new JMenuItem(LanguageManager.getMessage("action.swapExclusivity"));
+        actionItem.addActionListener(_ -> this.swapExclusivity());
         popupMenu.add(actionItem);
 
-        actionItem = new JMenuItem(LanguageManager.getMessage("action.swapExclusivity"));
-        actionItem.addActionListener(_ -> this.swapExclusivity());
+        actionItem = new JMenuItem(LanguageManager.getMessage("action.delete"));
+        actionItem.addActionListener(_ -> this.deleteWithConfirmation());
         popupMenu.add(actionItem);
 
         return popupMenu;

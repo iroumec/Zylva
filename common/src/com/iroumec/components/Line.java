@@ -11,6 +11,9 @@ import java.awt.*;
 
 public final class Line extends Component {
 
+    /**
+     * Components joined by the line.
+     */
     private final Component firstComponent;
     private final Component secondComponent;
 
@@ -34,50 +37,8 @@ public final class Line extends Component {
     }
 
     public Point getCenterPoint() {
-
-        return this.lineShape.getCenterPoint(firstComponent.getX(), firstComponent.getY(), secondComponent.getX(), secondComponent.getY());
-
-    }
-
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
-
-    @Override
-    protected JPopupMenu getPopupMenu() {
-        return new JPopupMenu();
-    }
-
-    @Override
-    public void draw(Graphics2D g2) {
-
-        int x1 = firstComponent.getX();
-        int y1 = firstComponent.getY();
-        int x2 = secondComponent.getX();
-        int y2 = secondComponent.getY();
-
-        Stroke currentStroke = g2.getStroke();
-
-        g2.setStroke(new BasicStroke(this.strokeWidth));
-        this.lineMultiplicity.draw(g2, lineShape, x1, y1, x2, y2);
-        g2.setStroke(currentStroke);
-    }
-
-    @Override
-    public void notifyRemovingOf(Component component) {
-
-        if (component.equals(this.firstComponent) || component.equals(this.secondComponent)) {
-            this.setForDelete();
-        }
-    }
-
-    @Override
-    public Rectangle getBounds() {
-
-        Point centerPoint = this.getCenterPoint();
-
-        return new Rectangle(centerPoint.x, centerPoint.y, 0, 0);
-
+        return this.lineShape.getCenterPoint(firstComponent.getX(), firstComponent.getY(),
+                secondComponent.getX(), secondComponent.getY());
     }
 
     /* -------------------------------------------------------------------------------------------------------------- */
@@ -119,6 +80,55 @@ public final class Line extends Component {
             return new Line(this);
         }
     }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    /*                                               Overridden Methods                                               */
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    protected JPopupMenu getPopupMenu() {
+        return new JPopupMenu();
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void draw(Graphics2D g2) {
+
+        int x1 = firstComponent.getX();
+        int y1 = firstComponent.getY();
+        int x2 = secondComponent.getX();
+        int y2 = secondComponent.getY();
+
+        Stroke currentStroke = g2.getStroke();
+
+        g2.setStroke(new BasicStroke(this.strokeWidth));
+        this.lineMultiplicity.draw(g2, lineShape, x1, y1, x2, y2);
+        g2.setStroke(currentStroke);
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public void notifyRemovingOf(Component component) {
+
+        if (component.equals(this.firstComponent) || component.equals(this.secondComponent)) {
+            this.setForDelete();
+        }
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+
+    @Override
+    public Rectangle getBounds() {
+
+        Point centerPoint = this.getCenterPoint();
+
+        return new Rectangle(centerPoint.x, centerPoint.y, 0, 0);
+
+    }
+
+    /* -------------------------------------------------------------------------------------------------------------- */
 
     @Override
     public int getDrawingPriority() {
