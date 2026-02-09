@@ -4,10 +4,10 @@ module common {
     requires java.prefs;
     requires java.logging;
 
-    exports com.iroumec.core;
-    exports com.iroumec.structures;
-    exports com.iroumec.userPreferences;
-    exports com.iroumec.components.line.lineShape;
-    exports com.iroumec.components.line.lineMultiplicity;
-    exports com.iroumec.components;
+    exports com.zylva.core;
+    exports com.zylva.structures;
+    exports com.zylva.userPreferences;
+    exports com.zylva.components.line.lineShape;
+    exports com.zylva.components.line.lineMultiplicity;
+    exports com.zylva.components;
 }
