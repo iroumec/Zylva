@@ -27,6 +27,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
     private boolean selectingArea;
     private JPopupMenu backgroundPopupMenu;
     private boolean antialiasing = true;
+    private final static String resourcesBundlesPath = "i18n.common_messages";
 
     /**
      * Mouse x and y coordinates. This is useful for when a combination of keys are pressed.
@@ -737,7 +738,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
 
         List<ResourceBundle> out = new ArrayList<>();
 
-        out.add(ResourceBundle.getBundle("i18n.messages", currentLocale));
+        out.add(ResourceBundle.getBundle(resourcesBundlesPath, currentLocale));
 
         return out;
     }

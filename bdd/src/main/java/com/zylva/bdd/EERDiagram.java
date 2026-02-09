@@ -35,6 +35,8 @@ import java.util.List;
 
 public final class EERDiagram extends Diagram {
 
+    private final static String resourcesBundlesPath = "i18n.bdd_messages";
+
     private void derivate() {
         Map<String, Derivation> derivations = new HashMap<>();
 
@@ -483,7 +485,7 @@ public final class EERDiagram extends Diagram {
 
         List<ResourceBundle> out = super.getResourceBundles(currentLocale);
 
-        out.add(ResourceBundle.getBundle("i18n.messages", currentLocale));
+        out.add(ResourceBundle.getBundle(resourcesBundlesPath, currentLocale));
 
         return out;
     }
