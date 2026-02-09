@@ -62,6 +62,13 @@ java -jar .../ZylvaEERD.jar
 > To fix it, completely uninstall all Java and JDK versions,
 > install the new versions linked above and execute it again.
 
+You can also run the application using Maven, executing the next commands in the application's folder:
+
+```sh
+mvn clean install
+mvn -pl app exec:java
+```
+
 # What's next?
 
 - Undo/Redo.
