@@ -6,6 +6,7 @@ Zylva is an enhanced entity-relationship (EER) model diagram and derivation appl
 >
 > The application has only been tested by me, its author.
 > It may contain severe bugs I haven't identified yet.
+> 
 > Suggestions and contributions to possible improvements are highly appreciated.
 
 # Easy and fast controls!
