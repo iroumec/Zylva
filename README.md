@@ -10,31 +10,31 @@ Zylva is an enhanced entity-relationship (EER) model diagram and derivation appl
 
 # Easy and fast controls!
 
-![exampleCreation.gif](app/src/main/resources/multimedia/exampleCreation.gif)
+![exampleCreation.gif](resources/multimedia/exampleCreation.gif)
 
 # Exportation!
 
 You can save and load your diagrams, as well as exporting them as PNG images.
 
-![exampleDiagram.png](app/src/main/resources/multimedia/exampleDiagram.png)
+![exampleDiagram.png](resources/multimedia/exampleDiagram.png)
 
 # Use it as you prefer!
 
 Most of the application commands are compatible with both mouse and keyboard shortcuts!
 
-![mouseAndKeyboardControls.gif](app/src/main/resources/multimedia/mouseAndKeyboardControls.gif)
+![mouseAndKeyboardControls.gif](resources/multimedia/mouseAndKeyboardControls.gif)
 
 # Derivation!
 
 Derivate your diagrams automatically and get the result in an HTML format!
 
-![derivationExample.png](app/src/main/resources/multimedia/derivationExample.png)
+![derivationExample.png](resources/multimedia/derivationExample.png)
 
 # Languages.
 
 The language of the application can be changed at any moment!
 
-![languageSelection.gif](app/src/main/resources/multimedia/languageSelection.gif)
+![languageSelection.gif](resources/multimedia/languageSelection.gif)
 
 # Installation.
 
@@ -55,7 +55,7 @@ java -jar .../ZylvaEERD.jar
 > 
 > In case you find yourself facing this error:
 > 
->![javaException.png](app/src/main/resources/multimedia/javaException.png)
+>![javaException.png](resources/multimedia/javaException.png)
 > 
 > It occurs due to an old version of Java or JDK being installed in your device.
 > To fix it, completely uninstall all Java and JDK versions,
