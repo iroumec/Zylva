@@ -2,11 +2,10 @@ package com.zylva.bdd.eerd.relationship;
 
 import com.zylva.bdd.derivation.Derivable;
 
-import java.awt.*;
-import java.io.Serializable;
 import java.util.List;
+import java.awt.Rectangle;
 
-public interface Relatable extends Serializable, Derivable {
+public interface Relatable extends Derivable {
 
     List<Rectangle> getAssociationBounds();
 }
