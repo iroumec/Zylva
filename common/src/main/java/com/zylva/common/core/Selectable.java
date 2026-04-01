@@ -1,6 +1,8 @@
 package com.zylva.common.core;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 
 public interface Selectable {
 
@@ -16,10 +18,13 @@ public interface Selectable {
      */
     void setSelected(boolean isSelected);
 
-    default boolean canBeSelectedBySelectionArea() { return true; }
+    default boolean canBeSelectedBySelectionArea() {
+        return true;
+    }
 
     /**
-     * Changes the color and the stroke to highlight that the component is being selected.
+     * Changes the color and the stroke to highlight that the component is being
+     * selected.
      */
     default void setSelectionOptions(Graphics2D graphics2D) {
         graphics2D.setColor(new Color(120, 190, 235));

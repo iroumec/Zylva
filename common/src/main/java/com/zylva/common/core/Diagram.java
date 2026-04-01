@@ -1,7 +1,6 @@
 package com.zylva.common.core;
 
 import com.zylva.common.userPreferences.*;
-import com.zylva.common.userPreferences.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -30,12 +29,14 @@ public abstract class Diagram extends JPanel implements Multilingual {
     private final static String resourcesBundlesPath = "i18n.common_messages";
 
     /**
-     * Mouse x and y coordinates. This is useful for when a combination of keys are pressed.
+     * Mouse x and y coordinates. This is useful for when a combination of keys are
+     * pressed.
      */
     private int mouseX, mouseY;
 
     /**
-     * Useful to save the difference between the component position and the mouse position.
+     * Useful to save the difference between the component position and the mouse
+     * position.
      */
     private int offsetX, offsetY;
 
@@ -60,7 +61,10 @@ public abstract class Diagram extends JPanel implements Multilingual {
 
     public abstract JPopupMenu getBackgroundPopupMenu();
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     @Override
     public void paintComponent(Graphics g) {
@@ -102,7 +106,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
 
         for (Component component : this.components) {
 
-            if (component.canBeSelectedBySelectionArea() && selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
+            if (component.canBeSelectedBySelectionArea()
+                    && selectionArea.getBounds().contains(new Point(component.getX(), component.getY()))) {
 
                 // If the component is inside the selection area...
                 selectedComponents.add(component);
@@ -141,11 +146,13 @@ public abstract class Diagram extends JPanel implements Multilingual {
     }
 
     /**
-     * This method is provided so the diagrams can validate if a component can be added to it or not.
+     * This method is provided so the diagrams can validate if a component can be
+     * added to it or not.
      *
      * @param component {@code Component} to be added.
-     * @return A boolean indicating if the component can be added to the diagram. An exception will be interpreted
-     * as the cancel of the adding.
+     * @return A boolean indicating if the component can be added to the diagram. An
+     *         exception will be interpreted
+     *         as the cancel of the adding.
      */
     protected abstract boolean addingIsValid(@NotNull Component component);
 
@@ -160,12 +167,14 @@ public abstract class Diagram extends JPanel implements Multilingual {
     }
 
     /**
-     * The drawing priority of the components may change dynamically. In that case, this method must be invoked to
+     * The drawing priority of the components may change dynamically. In that case,
+     * this method must be invoked to
      * sort the components.
      */
     public void sortComponents() {
 
-        // The algorithm used is a Timsort, a combination of a Merge Sort and an Insertion Sort.
+        // The algorithm used is a Timsort, a combination of a Merge Sort and an
+        // Insertion Sort.
         this.components.sort(Comparator.comparing(Component::getDrawingPriority));
     }
 
@@ -182,7 +191,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
     public void cleanSelectedComponents() {
 
         for (Component selectedComponent : selectedComponents) {
-           selectedComponent.setSelected(Boolean.FALSE);
+            selectedComponent.setSelected(Boolean.FALSE);
         }
 
         selectedComponents.clear();
@@ -213,9 +222,14 @@ public abstract class Diagram extends JPanel implements Multilingual {
         return this.mouseY;
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
-    protected List<Component> getDiagramComponents() { return new ArrayList<>(this.components); }
+    protected List<Component> getDiagramComponents() {
+        return new ArrayList<>(this.components);
+    }
 
     boolean existsComponent(String componentName) {
 
@@ -289,16 +303,24 @@ public abstract class Diagram extends JPanel implements Multilingual {
             }
 
             @Override
-            public void ancestorRemoved(AncestorEvent event) {}
+            public void ancestorRemoved(AncestorEvent event) {
+            }
 
             @Override
-            public void ancestorMoved(AncestorEvent event) {}
+            public void ancestorMoved(AncestorEvent event) {
+            }
         });
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                           Mouse Interactions Methods                                           */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
+    /* Mouse Interactions Methods */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     private void initializeMouseListeners() {
 
@@ -403,7 +425,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
             }
         }
 
-        // When the mouse is released, the component dragged is unselected and the dragging stops.
+        // When the mouse is released, the component dragged is unselected and the
+        // dragging stops.
         if (draggedComponent != null) {
             draggedComponent.setSelected(Boolean.FALSE);
         }
@@ -445,8 +468,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
                 Math.min(e.getX(), selectionAreaStartX),
                 Math.min(e.getY(), selectionAreaStartY),
                 Math.abs(e.getX() - selectionAreaStartX),
-                Math.abs(e.getY() - selectionAreaStartY)
-        );
+                Math.abs(e.getY() - selectionAreaStartY));
     }
 
     private void dragComponent(MouseEvent e) {
@@ -505,7 +527,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
                 // The high-resolution image is written to a file.
                 ImageIO.write(imagen, "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
 
-                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("fileSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
+                JOptionPane.showMessageDialog(this,
+                        LanguageManager.getMessage("fileSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
             }
         } catch (IOException e) {
             Logger logger = Logger.getLogger(String.valueOf(Calendar.DATE));
@@ -540,11 +563,12 @@ public abstract class Diagram extends JPanel implements Multilingual {
                 out.close();
                 fileOut.close();
 
-                JOptionPane.showMessageDialog(this, LanguageManager.getMessage("fileSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
+                JOptionPane.showMessageDialog(this,
+                        LanguageManager.getMessage("fileSaved") + " " + fileToSave.getAbsolutePath() + ".png.");
 
             } catch (IOException i) {
 
-                JOptionPane.showMessageDialog(null,LanguageManager.getMessage("unexpectedError"));
+                JOptionPane.showMessageDialog(null, LanguageManager.getMessage("unexpectedError"));
 
                 throw new RuntimeException(i);
             }
@@ -612,7 +636,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
     }
 
     /**
-     * With the objective of the PNG not containing too much empty space, only the minimal area containing the
+     * With the objective of the PNG not containing too much empty space, only the
+     * minimal area containing the
      * components is exported.
      *
      * @return The minimal rectangle enclosing the components in the drawing panel.
@@ -632,7 +657,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
             maxY = Math.max(maxY, (int) bounds.getMaxY());
         }
 
-        if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || maxX == Integer.MIN_VALUE || maxY == Integer.MIN_VALUE) {
+        if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || maxX == Integer.MIN_VALUE
+                || maxY == Integer.MIN_VALUE) {
             return new Rectangle(0, 0, 0, 0); // There are no components.
         }
 
@@ -664,8 +690,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         changeLanguage.addActionListener(_ -> LanguageManager.changeLanguage(
                 Diagram.this,
                 Language.ENGLISH,
-                Language.SPANISH
-        ));
+                Language.SPANISH));
         LanguageManager.suscribeToLanguageResetList(this);
         out.add(changeLanguage);
 
@@ -688,7 +713,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
         List<JButton> out = new ArrayList<>();
 
         JButton deleteKey = new JButton("Delete key");
-        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "Supr");
+        deleteKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0),
+                "Supr");
         deleteKey.getActionMap().put("Supr", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
 
@@ -697,8 +723,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
                         LanguageManager.getMessage("delete.warning"),
                         LanguageManager.getMessage("deleteAll.title"),
                         JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                );
+                        JOptionPane.QUESTION_MESSAGE);
 
                 if (confirmation == JOptionPane.YES_OPTION) {
 
@@ -723,7 +748,8 @@ public abstract class Diagram extends JPanel implements Multilingual {
         out.add(deleteKey);
 
         JButton cleanKey = new JButton("Clean diagram key");
-        cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
+        cleanKey.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.CTRL_DOWN_MASK), "cleanDiagram");
         cleanKey.getActionMap().put("cleanDiagram", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 Diagram.this.reset();

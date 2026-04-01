@@ -14,7 +14,7 @@ final class MenuBar extends JMenuBar implements Multilingual {
     private final static String CLEAN_KEY = "menuBar.clean";
     private final JButton cleanFrameButton, helpButton;
 
-    public MenuBar(MainFrame mainFrame, Diagram diagram) {
+    public MenuBar(final MainFrame mainFrame, final Diagram diagram) {
 
         LanguageManager.suscribeToLanguageResetList(this);
 
@@ -29,7 +29,7 @@ final class MenuBar extends JMenuBar implements Multilingual {
         initializeHelpButton(diagram);
     }
 
-    private void initializeMouseListeners(MainFrame mainFrame) {
+    private void initializeMouseListeners(final MainFrame mainFrame) {
 
         // Mouse position.
         Point point = new Point();

@@ -1,13 +1,19 @@
 package com.zylva.common.core;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.BoxLayout;
 
 public final class MainFrame extends JFrame {
 
-    public MainFrame(String title, Diagram diagram) {
+    public MainFrame(final String title, final Diagram diagram) {
 
-        setUndecorated(false);  // Removing of the title bar.
+        setUndecorated(false); // Removing of the title bar.
         setTitle(title);
         setSize(800, 600);
         setLocationRelativeTo(null);
