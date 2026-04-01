@@ -1,10 +1,11 @@
 package com.zylva.common.core;
 
-import com.zylva.common.userPreferences.LanguageManager;
 import com.zylva.common.userPreferences.Multilingual;
+import com.zylva.common.userPreferences.LanguageManager;
 
-import javax.swing.*;
 import java.util.List;
+
+import javax.swing.JMenu;
 
 final class FileMenu extends JMenu implements Multilingual {
 

@@ -4,21 +4,32 @@ import com.zylva.common.userPreferences.LanguageManager;
 import com.zylva.common.userPreferences.Multilingual;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.io.Serializable;
-import java.util.*;
-import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashSet;
 import java.util.regex.Pattern;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 public abstract class Component implements Serializable, Deletable, Selectable, Multilingual {
 
     /**
-     * A component subscribes in DELETION to another when the latter's elimination implies the former's elimination.
-     * This is the subscription the component should choose if its life dependes on another one.
+     * A component subscribes in DELETION to another when the latter's elimination
+     * implies the former's elimination.
+     * This is the subscription the component should choose if its life dependes on
+     * another one.
      * <p>
-     * A component suscribes in REFERENCE to another when the latter's elimination implies the former cleaning its
+     * A component suscribes in REFERENCE to another when the latter's elimination
+     * implies the former cleaning its
      * references to the latter.
      */
     public enum Subscription {
@@ -32,7 +43,8 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
     /**
      * Regex that defines if the name is valid.
      * <p>
-     * Save as a constant due to it doesn't change and the compile process is expensive.
+     * Save as a constant due to it doesn't change and the compile process is
+     * expensive.
      */
     private final static Pattern validNamePattern = Pattern
             .compile("^[a-zA-Z0-9_\\-áéíóúÁÉÍÓÚñÑ]+$");
@@ -67,9 +79,9 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
      */
     private JPopupMenu popupMenu;
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                                Constructors                                                    */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    // ========================================================================
+    // Constructors
+    // ========================================================================
 
     protected Component() {
         this(0, 0);
@@ -79,14 +91,16 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
         this("", x, y);
     }
 
-    protected Component(String text) { this(text, 0, 0); }
+    protected Component(String text) {
+        this(text, 0, 0);
+    }
 
     /**
      * Constructs a <code>Component</code>.
      *
      * @param text The text of the component.
-     * @param x The x coordinate of the component in the drawing panel.
-     * @param y The y coordinate of the component in the drawing panel.
+     * @param x    The x coordinate of the component in the drawing panel.
+     * @param y    The y coordinate of the component in the drawing panel.
      */
     protected Component(@NotNull String text, int x, int y) {
         this.selected = false;
@@ -103,14 +117,14 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
         this.subscriptions.put(Subscription.REFERENCE, new HashSet<>());
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                                  Methods                                                       */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    // ========================================================================
+    // Methods
+    // ========================================================================
 
     /**
      * Subscribes to a component.
      *
-     * @param component Component who will gain a subscription.
+     * @param component    Component who will gain a subscription.
      * @param subscription Type of subscription.
      */
     public void subscribeTo(Component component, Subscription subscription) {
@@ -125,16 +139,14 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
     }
 
     /**
-     * The component unsubscribes from all its suscriptions. This way, the component doesn't keep a reference
+     * The component unsubscribes from all its suscriptions. This way, the component
+     * doesn't keep a reference
      * to this subscriber which it's already in the deletion process.
      */
     private void clearSubscriberFromSubscriptions() {
 
-        this.subscriptions.values().forEach(subscriptions ->
-            subscriptions.forEach(component ->
-                component.removeSubscriber(this)
-            )
-        );
+        this.subscriptions.values()
+                .forEach(subscriptions -> subscriptions.forEach(component -> component.removeSubscriber(this)));
     }
 
     /**
@@ -153,10 +165,13 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
     protected abstract JPopupMenu getPopupMenu();
 
     /**
-     * Resets the current {@code JPopupMenu}. This method is useful in cases where the {@code JPopupMenu} obtained
+     * Resets the current {@code JPopupMenu}. This method is useful in cases where
+     * the {@code JPopupMenu} obtained
      * depends on another variable.
      */
-    public void resetPopupMenu() { this.popupMenu = getPopupMenu(); }
+    public void resetPopupMenu() {
+        this.popupMenu = getPopupMenu();
+    }
 
     /**
      *
@@ -176,20 +191,26 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
      *
      * @param shape New {@code Shape}.
      */
-    public void setShape(Shape shape) { this.shape = shape; }
+    public void setShape(Shape shape) {
+        this.shape = shape;
+    }
 
     /**
      * Updates the text of the component.
      *
      * @param text New text.
      */
-    public void setText(String text) { this.text = text; }
+    public void setText(String text) {
+        this.text = text;
+    }
 
     /**
      *
      * @return The text or name of the component.
      */
-    public String getText() { return this.text; }
+    public String getText() {
+        return this.text;
+    }
 
     /**
      * Updates the x coordinate value of the component.
@@ -221,20 +242,24 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
      *
      * @return X coordinate value of the component.
      */
-    public int getX() { return this.x; }
+    public int getX() {
+        return this.x;
+    }
 
     /**
      *
      * @return y coordinate value of the component.
      */
-    public int getY() { return this.y; }
+    public int getY() {
+        return this.y;
+    }
 
     /**
      * Shows the {@code JPopupMenu} of the component.
      *
      * @param origin {@code java.awt.Component} necessary to show the menu.
-     * @param x X coordinate value where the {@code JPopupMenu} will be shown.
-     * @param y Y coordinate value where the {@code JPopupMenu} will be shown.
+     * @param x      X coordinate value where the {@code JPopupMenu} will be shown.
+     * @param y      Y coordinate value where the {@code JPopupMenu} will be shown.
      */
     public void showPopupMenu(java.awt.Component origin, int x, int y) {
 
@@ -249,13 +274,15 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
         this.diagram = diagram;
     }
 
-    public Shape getShape() { return this.shape; }
+    public Shape getShape() {
+        return this.shape;
+    }
 
     /**
      * This way, the subclasses don't hace direct access to the diagram.
      *
      * @param component Component to be added.
-     * @param diagram Diagram in which the component will be added.
+     * @param diagram   Diagram in which the component will be added.
      */
     protected static void addComponent(@NotNull Component component, @NotNull Diagram diagram) {
         diagram.addComponent(component);
@@ -300,8 +327,7 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
                 diagram,
                 null,
                 message,
-                JOptionPane.QUESTION_MESSAGE
-        );
+                JOptionPane.QUESTION_MESSAGE);
 
         boolean nameIsEmpty = false;
         boolean nameIsDuplicated = false;
@@ -331,8 +357,7 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
                     diagram,
                     null,
                     LanguageManager.getMessage("text.input"),
-                    JOptionPane.QUESTION_MESSAGE
-            );
+                    JOptionPane.QUESTION_MESSAGE);
 
             if (name != null) {
                 nameIsEmpty = name.trim().isEmpty();
@@ -347,9 +372,15 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
         return name;
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                                 Deletion Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
+    /* Deletion Methods */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     /**
      * Deletes the component and their close-related components.
@@ -361,8 +392,7 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
                 LanguageManager.getMessage("delete.warning"),
                 LanguageManager.getMessage("delete.title"),
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
+                JOptionPane.QUESTION_MESSAGE);
 
         if (confirmation == JOptionPane.YES_OPTION) {
 
@@ -375,7 +405,8 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
 
     /**
      * Each component knows when it must be deleted.
-     * <p></p>
+     * <p>
+     * </p>
      * This method doesn't guarantee that the entity will be removed.
      */
     public final void setForDelete() {
@@ -414,18 +445,15 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
 
             component.subscribers.forEach((key, subscribers) ->
 
-                    subscribers.forEach(subscriber -> {
+            subscribers.forEach(subscriber -> {
 
-                        // The subscriptions to the component from its subscribers are removed.
-                        subscriber.subscriptions.values().forEach(subscriptions ->
-                                subscriptions.remove(component)
-                        );
+                // The subscriptions to the component from its subscribers are removed.
+                subscriber.subscriptions.values().forEach(subscriptions -> subscriptions.remove(component));
 
-                        if (key == Subscription.REFERENCE) {
-                            subscriber.cleanReferencesTo(component);
-                        }
-                    })
-            );
+                if (key == Subscription.REFERENCE) {
+                    subscriber.cleanReferencesTo(component);
+                }
+            }));
 
             component.clearSubscriberFromSubscriptions();
 
@@ -451,9 +479,9 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
         }
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                                 Abstract Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    // ========================================================================
+    // Abstract Methods
+    // ========================================================================
 
     /**
      * Draws the component.
@@ -464,30 +492,50 @@ public abstract class Component implements Serializable, Deletable, Selectable, 
 
     /**
      *
-     * @return The drawing priority of the component. The lower the number, the higher the priority.
+     * @return The drawing priority of the component. The lower the number, the
+     *         higher the priority.
      */
     public abstract int getDrawingPriority();
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
+    /* Overridden Methods */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     @Override
-    public void setSelected(boolean isSelected) { this.selected = isSelected; }
+    public void setSelected(boolean isSelected) {
+        this.selected = isSelected;
+    }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     @Override
-    public boolean isSelected() { return this.selected; }
+    public boolean isSelected() {
+        return this.selected;
+    }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     @Override
     public void resetLanguage() {
         this.popupMenu = this.getPopupMenu();
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    /*
+     * -----------------------------------------------------------------------------
+     * ---------------------------------
+     */
 
     @Override
     public String toString() {

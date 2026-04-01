@@ -1,15 +1,23 @@
 package com.zylva.common.core;
 
-import com.zylva.common.userPreferences.LanguageManager;
-import com.zylva.common.userPreferences.Multilingual;
+import javax.swing.JMenuItem;
 
-import javax.swing.*;
+import com.zylva.common.userPreferences.Multilingual;
+import com.zylva.common.userPreferences.LanguageManager;
 
 public final class Item extends JMenuItem implements Multilingual {
 
+    /**
+     * Represents the key used to obtain the message displayed in the item.
+     */
     private final String key;
 
-    public Item(String languageKey) {
+    /**
+     * Creates a new Item.
+     * 
+     * @param languageKey Key of the message displayed in the item.
+     */
+    public Item(final String languageKey) {
         super(LanguageManager.getMessage(languageKey));
         LanguageManager.suscribeToLanguageResetList(this);
         this.key = languageKey;

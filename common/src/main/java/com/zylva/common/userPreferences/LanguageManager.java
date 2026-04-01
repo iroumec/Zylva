@@ -2,10 +2,20 @@ package com.zylva.common.userPreferences;
 
 import com.zylva.common.core.Diagram;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.Locale;
+import java.util.Arrays;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.awt.FlowLayout;
+import java.util.Comparator;
+import java.util.ResourceBundle;
+
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 
 public class LanguageManager {
 
@@ -15,7 +25,8 @@ public class LanguageManager {
 
     /**
      * This method initializes the preferred language.
-     * <p></p>
+     * <p>
+     * </p>
      * By default, the preferred language is English.
      */
     public static void initialize(Diagram diagram) {
@@ -33,11 +44,12 @@ public class LanguageManager {
     }
 
     /**
-     * The language of the text appearing to the frame is changed to the selected language.
+     * The language of the text appearing to the frame is changed to the selected
+     * language.
      * <p>
      * The preference is saved for future executions of the program.
      */
-    public static void changeLanguage(Diagram diagram, Language ... languages) {
+    public static void changeLanguage(Diagram diagram, Language... languages) {
 
         Arrays.sort(languages, Comparator.comparing(Language::toString));
 
@@ -53,7 +65,8 @@ public class LanguageManager {
 
         // ComboBox for language selection.
         JComboBox<Language> languageComboBox = new JComboBox<>(languages);
-        languageComboBox.setSelectedItem(LanguageManager.getMessage("language." + LanguageManager.getCurrentLanguage()));
+        languageComboBox
+                .setSelectedItem(LanguageManager.getMessage("language." + LanguageManager.getCurrentLanguage()));
         languageComboBox.setPreferredSize(new Dimension(200, 25)); // Set fixed size to reduce padding.
         panel.add(languageComboBox);
 
@@ -109,7 +122,8 @@ public class LanguageManager {
     }
 
     /**
-     * This method returns a message depending on the key parameter in the selected language.
+     * This method returns a message depending on the key parameter in the selected
+     * language.
      *
      * @param key The key to access the message.
      * @return The message according to the key.

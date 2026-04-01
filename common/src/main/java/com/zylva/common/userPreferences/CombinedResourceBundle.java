@@ -1,8 +1,12 @@
 package com.zylva.common.userPreferences;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 
-import java.util.*;
+import org.jetbrains.annotations.NotNull;
 
 public final class CombinedResourceBundle extends ResourceBundle {
 
@@ -20,9 +24,9 @@ public final class CombinedResourceBundle extends ResourceBundle {
         this.bundles = bundles;
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
-    /*                                               Overridden Methods                                               */
-    /* -------------------------------------------------------------------------------------------------------------- */
+    // ========================================================================
+    // Overridden Methods
+    // ========================================================================
 
     @Override
     protected Object handleGetObject(@NotNull String key) {
@@ -34,7 +38,7 @@ public final class CombinedResourceBundle extends ResourceBundle {
         return null;
     }
 
-    /* -------------------------------------------------------------------------------------------------------------- */
+    // ========================================================================
 
     @Override
     public @NotNull Enumeration<String> getKeys() {

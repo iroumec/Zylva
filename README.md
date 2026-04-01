@@ -1,4 +1,4 @@
-# Introduction.
+# Introduction
 
 Zylva is an enhanced entity-relationship (EER) model diagram and derivation application developed completely in Java.
 
@@ -6,58 +6,59 @@ Zylva is an enhanced entity-relationship (EER) model diagram and derivation appl
 >
 > The application has only been tested by me, its author.
 > It may contain severe bugs I haven't identified yet.
-> 
+>
 > Suggestions and contributions to possible improvements are highly appreciated.
 
-# Easy and fast controls!
+## Easy and fast controls
 
 ![exampleCreation.gif](resources/multimedia/exampleCreation.gif)
 
-# Exportation!
+## Exportation
 
 You can save and load your diagrams, as well as exporting them as PNG images.
 
 ![exampleDiagram.png](resources/multimedia/exampleDiagram.png)
 
-# Use it as you prefer!
+## Use it as you prefer
 
 Most of the application commands are compatible with both mouse and keyboard shortcuts!
 
 ![mouseAndKeyboardControls.gif](resources/multimedia/mouseAndKeyboardControls.gif)
 
-# Derivation!
+## Derivation
 
 Derivate your diagrams automatically and get the result in an HTML format!
 
 ![derivationExample.png](resources/multimedia/derivationExample.png)
 
-# Languages.
+## Languages
 
 The language of the application can be changed at any moment!
 
 ![languageSelection.gif](resources/multimedia/languageSelection.gif)
 
-# Installation.
+## Installation
 
 Make sure you have downloaded Java Runtime Environment >= 8 Build 441 and JDK >= 23. Here are the links:
-- https://www.java.com/en/download/manual.jsp
-- https://www.oracle.com/java/technologies/downloads/
 
-Once the previous programs are installed, you need to download and execute the *.jar* file
+- <https://www.java.com/en/download/manual.jsp>
+- <https://www.oracle.com/java/technologies/downloads/>
+
+Once the previous programs are installed, you need to download and execute the _.jar_ file
 you can find in the latest release in the [Releases](https://github.com/iroumec/Zylva-EERD/releases) section.
 Once downloaded, you can execute it by double-clicking on it or via command-line,
 writing the next command and replacing the ellipsis with the path of the file.
 
-```
+```sh
 java -jar .../ZylvaEERD.jar
 ```
 
 > [!IMPORTANT]
-> 
+>
 > In case you find yourself facing this error:
-> 
->![javaException.png](resources/multimedia/javaException.png)
-> 
+>
+> ![javaException.png](resources/multimedia/javaException.png)
+>
 > It occurs due to an old version of Java or JDK being installed in your device.
 > To fix it, completely uninstall all Java and JDK versions,
 > install the new versions linked above and execute it again.
@@ -69,7 +70,7 @@ mvn clean install
 mvn -pl app exec:java
 ```
 
-# What's next?
+## What's next?
 
 - Undo/Redo.
 - Normalization.
@@ -80,10 +81,10 @@ mvn -pl app exec:java
 - Expanding the app to more types of diagrams.
 - Optimization and improvements in the performance.
 - Adding the possibility of using a command-line interface.
-- Adding the possibility of having various *tabs* open at the same time.
+- Adding the possibility of having various _tabs_ open at the same time.
 
-# What motivated me to do this?
+## What motivated me to do this?
 
-This is my first Java project. During my career, in the *Databases I* subject, I worked with an overcomplicated and
+This is my first Java project. During my career, in the _Databases I_ subject, I worked with an overcomplicated and
 not too well-worked software made in 2016 by other students of the career. Crashes and low performance motivated me to
 create an application which could achieve that purpose in a better way.
