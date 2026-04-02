@@ -4,6 +4,7 @@ module common {
     requires org.jetbrains.annotations;
 
     requires transitive java.desktop;
+    requires org.jspecify;
 
     exports com.zylva.common.core;
     exports com.zylva.common.structures;

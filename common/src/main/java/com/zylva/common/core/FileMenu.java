@@ -15,12 +15,12 @@ final class FileMenu extends JMenu implements Multilingual {
 
         super(LanguageManager.getMessage(LANGUAGE_KEY));
 
-        LanguageManager.suscribeToLanguageResetList(this);
+        LanguageManager.subscribeToLanguageResetList(this);
 
         List<Item> items = diagram.getFileMenuItems();
 
         for (Item item : items) {
-            LanguageManager.suscribeToLanguageResetList(item);
+            LanguageManager.subscribeToLanguageResetList(item);
             this.add(item);
         }
     }

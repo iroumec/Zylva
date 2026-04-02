@@ -16,7 +16,7 @@ final class MenuBar extends JMenuBar implements Multilingual {
 
     public MenuBar(final MainFrame mainFrame, final Diagram diagram) {
 
-        LanguageManager.suscribeToLanguageResetList(this);
+        LanguageManager.subscribeToLanguageResetList(this);
 
         initializeMouseListeners(mainFrame);
 

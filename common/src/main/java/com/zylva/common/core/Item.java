@@ -19,7 +19,7 @@ public final class Item extends JMenuItem implements Multilingual {
      */
     public Item(final String languageKey) {
         super(LanguageManager.getMessage(languageKey));
-        LanguageManager.suscribeToLanguageResetList(this);
+        LanguageManager.subscribeToLanguageResetList(this);
         this.key = languageKey;
     }
 

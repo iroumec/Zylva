@@ -1,6 +1,7 @@
 package com.zylva.common.userPreferences;
 
 import com.zylva.common.core.Diagram;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Locale;
@@ -20,6 +21,8 @@ import javax.swing.JOptionPane;
 public class LanguageManager {
 
     private final static List<Multilingual> languageResetList = new ArrayList<>();
+    public static final int WIDTH = 300;
+    public static final int HEIGHT = 120;
     private static Locale currentLocale;
     private static ResourceBundle messages;
 
@@ -39,7 +42,7 @@ public class LanguageManager {
         messages = new CombinedResourceBundle(resourceBundle.toArray(new ResourceBundle[0]));
     }
 
-    public static void suscribeToLanguageResetList(Multilingual multilingual) {
+    public static void subscribeToLanguageResetList(Multilingual multilingual) {
         languageResetList.add(multilingual);
     }
 
@@ -49,15 +52,11 @@ public class LanguageManager {
      * <p>
      * The preference is saved for future executions of the program.
      */
-    public static void changeLanguage(Diagram diagram, Language... languages) {
+    public static void changeLanguage(final Diagram diagram, final Language... languages) {
 
         Arrays.sort(languages, Comparator.comparing(Language::toString));
 
-        // Create the frame.
-        JFrame frame = new JFrame(LanguageManager.getMessage("language.selectOption"));
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(300, 120);
-        frame.setLocationRelativeTo(diagram);
+        JFrame frame = getLanguageFrame(diagram);
 
         // Panel for components.
         JPanel panel = new JPanel();
@@ -92,6 +91,15 @@ public class LanguageManager {
         // Add the panel to frame.
         frame.add(panel);
         frame.setVisible(true);
+    }
+
+    private static @NonNull JFrame getLanguageFrame(Diagram diagram) {
+        // Create the frame.
+        JFrame frame = new JFrame(LanguageManager.getMessage("language.selectOption"));
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(WIDTH, HEIGHT);
+        frame.setLocationRelativeTo(diagram);
+        return frame;
     }
 
     private static String getCurrentLanguage() {

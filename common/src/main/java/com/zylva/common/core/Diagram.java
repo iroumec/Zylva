@@ -135,7 +135,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
         int index = Collections.binarySearch(
                 this.components,
                 component,
-                Comparator.comparing(Component::getDrawingPriority) // Cambiado aquí
+                Comparator.comparing(Component::getDrawingPriority)
         );
         if (index < 0) {
             index = -index - 1;
@@ -691,7 +691,7 @@ public abstract class Diagram extends JPanel implements Multilingual {
                 Diagram.this,
                 Language.ENGLISH,
                 Language.SPANISH));
-        LanguageManager.suscribeToLanguageResetList(this);
+        LanguageManager.subscribeToLanguageResetList(this);
         out.add(changeLanguage);
 
         // TODO: que cambie el texto dependiendo de si está activado o no.
