@@ -3,10 +3,20 @@ package com.zylva.common.core;
 import com.zylva.common.userPreferences.LanguageManager;
 import com.zylva.common.userPreferences.Multilingual;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Point;
+import javax.swing.JButton;
+import javax.swing.JMenuBar;
+import javax.swing.UIManager;
+import javax.swing.JOptionPane;
+import java.awt.event.MouseEvent;
+import javax.swing.AbstractButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
 
+/**
+ * Menu bar.
+ */
 final class MenuBar extends JMenuBar implements Multilingual {
 
     private final static Color HIGHLIGHT_COLOR = new Color(215, 239, 249);
@@ -14,6 +24,12 @@ final class MenuBar extends JMenuBar implements Multilingual {
     private final static String CLEAN_KEY = "menuBar.clean";
     private final JButton cleanFrameButton, helpButton;
 
+    /**
+     * Construct a menu bar.
+     *
+     * @param mainFrame Main frame.
+     * @param diagram Diagram.
+     */
     public MenuBar(final MainFrame mainFrame, final Diagram diagram) {
 
         LanguageManager.subscribeToLanguageResetList(this);
@@ -22,10 +38,14 @@ final class MenuBar extends JMenuBar implements Multilingual {
 
         initializeFileMenu(diagram);
 
-        this.cleanFrameButton = new JButton(LanguageManager.getMessage(CLEAN_KEY));
+        this.cleanFrameButton = new JButton(
+                LanguageManager.getMessage(CLEAN_KEY)
+        );
         initializeCleanButton(diagram);
 
-        this.helpButton = new JButton(LanguageManager.getMessage(HELP_KEY));
+        this.helpButton = new JButton(
+                LanguageManager.getMessage(HELP_KEY)
+        );
         initializeHelpButton(diagram);
     }
 
@@ -47,7 +67,10 @@ final class MenuBar extends JMenuBar implements Multilingual {
                 // Mouse position in the frame.
                 Point p = mainFrame.getLocation();
                 // MainRol frame location is updated.
-                mainFrame.setLocation(p.x + e.getX() - point.x, p.y + e.getY() - point.y);
+                mainFrame.setLocation(
+                        p.x + e.getX() - point.x,
+                        p.y + e.getY() - point.y
+                );
             }
         });
     }
@@ -71,7 +94,8 @@ final class MenuBar extends JMenuBar implements Multilingual {
 
         addMouseInteraction(cleanFrameButton);
 
-        cleanFrameButton.setFocusable(false); // If this is not disabled, when enter is pressed, the frame is cleaned.
+        cleanFrameButton.setFocusable(false);
+        // If this is not disabled, when enter is pressed, the frame is cleaned.
     }
 
     private void addMouseInteraction(AbstractButton button) {

@@ -10,7 +10,7 @@ public enum Language {
 
     private final String key, acronym;
 
-    Language(String key, String acronym) {
+    Language(final String key, final String acronym) {
         this.key = key;
         this.acronym = acronym;
     }
@@ -23,15 +23,9 @@ public enum Language {
         return this.acronym;
     }
 
-    /*
-     * -----------------------------------------------------------------------------
-     * ---------------------------------
-     */
-    /* Overridden Methods */
-    /*
-     * -----------------------------------------------------------------------------
-     * ---------------------------------
-     */
+    // ========================================================================
+    // Overridden Methods
+    // ========================================================================
 
     @Override
     public String toString() {

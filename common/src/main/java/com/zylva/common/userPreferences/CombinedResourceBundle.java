@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public final class CombinedResourceBundle extends ResourceBundle {
 
     /**
-     * Array of {@code ResourceBundle}s that participe in the combination.
+     * Array of {@code ResourceBundle}s that participate in the combination.
      */
     private final ResourceBundle[] bundles;
 
@@ -20,7 +20,7 @@ public final class CombinedResourceBundle extends ResourceBundle {
      *
      * @param bundles {@code ResourceBundle}s conforming it.
      */
-    public CombinedResourceBundle(ResourceBundle... bundles) {
+    public CombinedResourceBundle(final ResourceBundle... bundles) {
         this.bundles = bundles;
     }
 

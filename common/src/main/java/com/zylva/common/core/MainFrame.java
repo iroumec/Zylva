@@ -11,13 +11,13 @@ import javax.swing.BoxLayout;
 
 public final class MainFrame extends JFrame {
 
-    private final int FRAME_WIDTH = 800;
-    private final int FRAME_HEIGHT = 600;
-
     public MainFrame(final String title, final Diagram diagram) {
 
         setUndecorated(false); // Removing of the title bar.
         setTitle(title);
+
+        int FRAME_WIDTH = 800;
+        int FRAME_HEIGHT = 600;
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setLocationRelativeTo(null);
 

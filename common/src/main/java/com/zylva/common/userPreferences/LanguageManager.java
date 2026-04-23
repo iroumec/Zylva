@@ -32,7 +32,7 @@ public class LanguageManager {
      * </p>
      * By default, the preferred language is English.
      */
-    public static void initialize(Diagram diagram) {
+    public static void initialize(final Diagram diagram) {
 
         String language = UserPreferences.loadStringPreference(Preference.LANGUAGE, "en");
         currentLocale = Locale.forLanguageTag(language);
@@ -42,7 +42,7 @@ public class LanguageManager {
         messages = new CombinedResourceBundle(resourceBundle.toArray(new ResourceBundle[0]));
     }
 
-    public static void subscribeToLanguageResetList(Multilingual multilingual) {
+    public static void subscribeToLanguageResetList(final Multilingual multilingual) {
         languageResetList.add(multilingual);
     }
 
@@ -111,7 +111,7 @@ public class LanguageManager {
      *
      * @param language The language the interface will switch to.
      */
-    private static void applyLanguage(Diagram diagram, String language) {
+    private static void applyLanguage(final Diagram diagram, final String language) {
 
         UserPreferences.savePreference(Preference.LANGUAGE, language);
 
@@ -136,7 +136,7 @@ public class LanguageManager {
      * @param key The key to access the message.
      * @return The message according to the key.
      */
-    public static String getMessage(String key) {
+    public static String getMessage(final String key) {
 
         if (messages == null) {
             throw new IllegalStateException("LanguageManager not initialized.");
